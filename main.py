@@ -12,11 +12,15 @@ print("\nAnalysing watchlist...\n")
 for ticker in watchlist.load():
 
     try:
+
         result = engine.analyse(ticker)
+
         results.append(result)
+
         print(f"✓ {ticker}")
 
     except Exception as e:
+
         print(f"✗ {ticker}: {e}")
 
 results.sort(
@@ -24,26 +28,64 @@ results.sort(
     reverse=True,
 )
 
-print("\n" + "=" * 70)
+print("\n" + "=" * 120)
 print("AI INVESTMENT INTELLIGENCE PLATFORM")
-print("=" * 70)
+print("=" * 120)
 
 print(
-    f"{'Ticker':<10}"
-    f"{'Quality':<10}"
-    f"{'Value':<10}"
-    f"{'Tech':<10}"
-    f"{'Overall':<10}"
-    f"{'Rating'}"
+    "{:<8} {:>8} {:>8} {:>8} {:>8} {:>8} {:>10} {:>10} {}".format(
+        "Ticker",
+        "Quality",
+        "Value",
+        "Tech",
+        "Risk",
+        "News",
+        "Overall",
+        "Rating",
+        "",
+    )
 )
-print("-" * 70)
+
+print("-" * 120)
 
 for stock in results:
+
     print(
-        f"{stock['Ticker']:<10}"
-        f"{stock['Business Quality']:<10}"
-        f"{stock['Valuation']:<10}"
-        f"{stock['Technical']:<10}"
-        f"{stock['Overall Score']:<10}"
-        f"{stock['Rating']}"
+        "{:<8} {:>8.1f} {:>8.1f} {:>8.1f} {:>8.1f} {:>8.1f} {:>10.1f} {:>10}".format(
+            stock["Ticker"],
+            stock["Business Quality"],
+            stock["Valuation"],
+            stock["Technical"],
+            stock["Risk"],
+            stock["News"],
+            stock["Overall Score"],
+            stock["Rating"],
+        )
     )
+
+    print("")
+
+    print("  Strengths:")
+
+    if stock["Strengths"]:
+        for strength in stock["Strengths"]:
+            print(f"    • {strength}")
+    else:
+        print("    • None")
+
+    print("")
+
+    print("  Weaknesses:")
+
+    if stock["Weaknesses"]:
+        for weakness in stock["Weaknesses"]:
+            print(f"    • {weakness}")
+    else:
+        print("    • None")
+
+    print("")
+
+    print("Investment Report:")
+    print(stock["Report"])
+
+    print("-" * 120)

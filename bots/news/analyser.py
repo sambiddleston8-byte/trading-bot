@@ -1,73 +1,81 @@
 import yfinance as yf
 
+from bots.catalyst.analyser import CatalystAnalyser
+
 
 class NewsAnalyser:
 
     POSITIVE = [
-        "beats",
+        "beat",
+        "growth",
+        "record",
+        "contract",
+        "approval",
+        "partnership",
+        "profit",
         "upgrade",
         "buyback",
-        "contract",
-        "partnership",
-        "record",
-        "growth",
-        "profit",
-        "approval",
         "launch",
         "expands",
-        "strong"
+        "surge",
     ]
 
     NEGATIVE = [
         "miss",
         "downgrade",
         "lawsuit",
-        "decline",
-        "delay",
-        "cuts",
-        "loss",
-        "warning",
         "investigation",
+        "delay",
+        "recall",
+        "decline",
+        "loss",
+        "offering",
+        "dilution",
         "bankruptcy",
-        "recall"
     ]
+
+    def __init__(self):
+        self.catalyst = CatalystAnalyser()
 
     def analyse(self, symbol):
 
-        company = yf.Ticker(symbol)
-
-        try:
-            news = company.news
-        except Exception:
-            news = []
+        news = yf.Ticker(symbol).news
 
         positive = 0
         negative = 0
 
-        for article in news:
+        headlines = []
 
-            title = (
-                article["content"]["title"]
-            ).lower()
+        for article in news[:10]:
 
-            for word in self.POSITIVE:
+            content = article.get("content", {})
+            title = content.get("title", "")
 
-                if word in title:
-                    positive += 1
+            if title:
+                headlines.append(title)
 
-            for word in self.NEGATIVE:
+            lower = title.lower()
 
-                if word in title:
-                    negative += 1
+            if any(word in lower for word in self.POSITIVE):
+                positive += 1
+
+            if any(word in lower for word in self.NEGATIVE):
+                negative += 1
+
+        news_score = 50 + (positive * 10) - (negative * 10)
+        news_score = max(0, min(100, news_score))
+
+        catalyst = self.catalyst.analyse(headlines)
 
         return {
-
-            "Headline Count": len(news),
-
-            "Positive": positive,
-
-            "Negative": negative,
-
-            "News": news
-
+            "News Score": news_score,
+            "Positive Headlines": positive,
+            "Negative Headlines": negative,
+            "Headlines": headlines,
+            "Catalyst Score": catalyst["Catalyst Score"],
+            "Events": catalyst["Events"],
+            "Catalysts": [
+                event["headline"]
+                for event in catalyst["Events"]
+            ],
         }

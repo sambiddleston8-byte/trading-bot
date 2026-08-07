@@ -68,7 +68,7 @@ class RiskAnalyser:
             return 80
         elif beta < 1.5:
             return 60
-        elif beta < 2.0:
+        elif beta < 2:
             return 40
         else:
             return 20
@@ -91,15 +91,34 @@ class RiskAnalyser:
         else:
             return 20
 
+    def dilution_risk(self, symbol):
+
+        shares = self.engine.get_shares_outstanding(symbol)
+
+        if shares is None:
+            return None
+
+        if shares < 500_000_000:
+            return 100
+        elif shares < 2_000_000_000:
+            return 80
+        elif shares < 5_000_000_000:
+            return 60
+        elif shares < 10_000_000_000:
+            return 40
+        else:
+            return 20
+
     def analyse(self, symbol):
 
-        risk_score = average_scores([
+        score = average_scores([
             self.debt_risk(symbol),
             self.profitability_risk(symbol),
             self.beta_risk(symbol),
             self.size_risk(symbol),
+            self.dilution_risk(symbol),
         ])
 
         return {
-            "Risk Score": risk_score
+            "Risk Score": score
         }

@@ -90,3 +90,9 @@ class FinancialDataEngine:
 
     def get_ebitda(self, symbol):
         return self.get_company_info(symbol).get("ebitda")
+
+    def get_shares_outstanding(self, symbol):
+        return self.get_company_info(symbol).get("sharesOutstanding")
+
+    def get_float_shares(self, symbol):
+        return self.get_company_info(symbol).get("floatShares")

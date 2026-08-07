@@ -1,20 +1,63 @@
-import pandas as pd
+import yfinance as yf
 
 
-def run_backtest(data):
-    cash = 10000
-    shares = 0
+class BacktestEngine:
 
-    for i in range(len(data)):
-        price = data["Close"].iloc[i]
+    def get_return(
+        self,
+        symbol,
+        period="1y",
+    ):
 
-        if shares == 0:
-            shares = cash / price
-            cash = 0
+        history = yf.Ticker(symbol).history(period=period)
 
-        else:
-            continue
+        if len(history) < 2:
+            return None
 
-    final_value = cash + (shares * data["Close"].iloc[-1])
+        start = float(history["Close"].iloc[0])
+        end = float(history["Close"].iloc[-1])
 
-    return final_value
+        return round(((end - start) / start) * 100, 2)
+
+    def compare(
+        self,
+        symbol,
+        benchmark="SPY",
+        period="1y",
+    ):
+
+        stock = self.get_return(symbol, period)
+        market = self.get_return(benchmark, period)
+
+        if stock is None or market is None:
+            return None
+
+        return {
+            "Ticker": symbol,
+            "Stock Return": stock,
+            "Benchmark Return": market,
+            "Outperformance": round(stock - market, 2),
+            "Beat Market": stock > market,
+        }
+
+    def compare_watchlist(
+        self,
+        watchlist,
+        benchmark="SPY",
+        period="1y",
+    ):
+
+        results = []
+
+        for ticker in watchlist:
+
+            result = self.compare(
+                ticker,
+                benchmark,
+                period,
+            )
+
+            if result:
+                results.append(result)
+
+        return results
