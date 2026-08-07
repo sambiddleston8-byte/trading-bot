@@ -1,27 +1,35 @@
+from core.watchlist import Watchlist
 from core.decision_engine import DecisionEngine
 
 engine = DecisionEngine()
 
-stock = engine.analyse("AAPL")
+watchlist = Watchlist("data/watchlists/growth.txt")
 
-print()
+results = []
 
-print("=" * 65)
+print("\nAnalysing watchlist...\n")
 
-print(f"{stock['Ticker']} INVESTMENT ANALYSIS")
+for ticker in watchlist.load():
 
-print("=" * 65)
+    try:
+        result = engine.analyse(ticker)
+        results.append(result)
+        print(f"✓ {ticker}")
 
-print(f"Fundamental Score : {stock['Fundamental Score']}")
+    except Exception as e:
+        print(f"✗ {ticker}: {e}")
 
-print(f"Technical Score   : {stock['Technical Score']}")
+results.sort(
+    key=lambda x: x["Overall Score"],
+    reverse=True,
+)
 
-print()
+print("\n" + "=" * 70)
+print("AI INVESTMENT INTELLIGENCE PLATFORM")
+print("=" * 70)
 
-print(f"Overall Score     : {stock['Overall Score']}")
+print(f"{'Ticker':<10}{'Overall':<12}{'Rating'}")
+print("-" * 70)
 
-print()
-
-print(f"Investment Rating : {stock['Rating']}")
-
-print("=" * 65)
+for stock in results:
+    print(stock)

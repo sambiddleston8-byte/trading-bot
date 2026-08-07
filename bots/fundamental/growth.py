@@ -67,3 +67,16 @@ class GrowthAnalyser:
             return 40
         else:
             return 0
+
+    def score(self, symbol):
+
+        revenue = self.revenue_score(symbol)
+        net_income = self.net_income_score(symbol)
+
+        return round(
+            (
+                revenue +
+                net_income
+            ) / 2,
+            1
+        )
