@@ -7,21 +7,15 @@ class ProfitabilityAnalyser:
         self.engine = FinancialDataEngine()
 
     def gross_margin(self, symbol):
-
         company = self.engine.get_company(symbol)
-
         return company.info.get("grossMargins")
 
     def operating_margin(self, symbol):
-
         company = self.engine.get_company(symbol)
-
         return company.info.get("operatingMargins")
 
     def roe(self, symbol):
-
         company = self.engine.get_company(symbol)
-
         return company.info.get("returnOnEquity")
 
     def gross_margin_score(self, symbol):

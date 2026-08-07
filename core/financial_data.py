@@ -37,6 +37,14 @@ class FinancialDataEngine:
     def get_eps(self, symbol):
         return self.get_company_info(symbol).get("trailingEps")
 
+    def get_diluted_eps_history(self, symbol):
+        income = self.get_income_statement(symbol)
+
+        if "Diluted EPS" not in income.index:
+            return None
+
+        return income.loc["Diluted EPS"]
+
     # ---------- VALUATION ----------
 
     def get_trailing_pe(self, symbol):
