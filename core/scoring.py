@@ -1,29 +1,30 @@
 class ScoringEngine:
 
     def overall_score(
-
         self,
-
-        fundamental,
-
+        business_quality,
+        valuation,
         technical,
-
     ):
 
         return round(
-
             (
-
-                fundamental
-
-                +
-
+                business_quality +
+                valuation +
                 technical
-
-            )
-
-            / 2,
-
+            ) / 3,
             1,
-
         )
+
+
+def calculate_overall_score(
+    business_quality,
+    valuation,
+    technical,
+):
+
+    return ScoringEngine().overall_score(
+        business_quality,
+        valuation,
+        technical,
+    )

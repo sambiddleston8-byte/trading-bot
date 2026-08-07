@@ -6,6 +6,9 @@ class FinancialDataEngine:
     def get_company(self, symbol):
         return yf.Ticker(symbol)
 
+    def get_company_info(self, symbol):
+        return self.get_company(symbol).info
+
     def get_income_statement(self, symbol):
         return self.get_company(symbol).financials
 
@@ -15,8 +18,7 @@ class FinancialDataEngine:
     def get_cash_flow(self, symbol):
         return self.get_company(symbol).cashflow
 
-    def get_company_info(self, symbol):
-        return self.get_company(symbol).info
+    # ---------- BUSINESS QUALITY ----------
 
     def get_revenue(self, symbol):
         return self.get_income_statement(symbol).loc["Total Revenue"]
@@ -38,16 +40,16 @@ class FinancialDataEngine:
     def get_cash(self, symbol):
         return self.get_balance_sheet(symbol).loc["Cash And Cash Equivalents"]
 
-    def get_eps(self, symbol):
-        return self.get_company_info(symbol).get("trailingEps")
-
     def get_diluted_eps_history(self, symbol):
+
         income = self.get_income_statement(symbol)
 
         if "Diluted EPS" not in income.index:
             return None
 
         return income.loc["Diluted EPS"]
+
+    # ---------- RETURNS ----------
 
     def get_roe(self, symbol):
         return self.get_company_info(symbol).get("returnOnEquity")
@@ -57,6 +59,14 @@ class FinancialDataEngine:
 
     def get_roic(self, symbol):
         return self.get_company_info(symbol).get("returnOnInvestedCapital")
+
+    # ---------- RISK ----------
+
+    def get_beta(self, symbol):
+        return self.get_company_info(symbol).get("beta")
+
+    def get_market_cap(self, symbol):
+        return self.get_company_info(symbol).get("marketCap")
 
     # ---------- VALUATION ----------
 
