@@ -1,88 +1,51 @@
 from core.financial_data import FinancialDataEngine
+from core.scoring_engine import ScoringEngine
+from core.utils import average_scores
 
 
 class ProfitabilityAnalyser:
 
     def __init__(self):
         self.engine = FinancialDataEngine()
+        self.scoring = ScoringEngine()
 
     def gross_margin(self, symbol):
-        company = self.engine.get_company(symbol)
-        return company.info.get("grossMargins")
+        return self.engine.get_company_info(symbol).get("grossMargins")
 
     def operating_margin(self, symbol):
-        company = self.engine.get_company(symbol)
-        return company.info.get("operatingMargins")
+        return self.engine.get_company_info(symbol).get("operatingMargins")
 
     def roe(self, symbol):
-        company = self.engine.get_company(symbol)
-        return company.info.get("returnOnEquity")
+        return self.engine.get_roe(symbol)
 
-    def gross_margin_score(self, symbol):
+    def roa(self, symbol):
+        return self.engine.get_roa(symbol)
 
-        margin = self.gross_margin(symbol)
-
-        if margin is None:
-            return 0
-
-        if margin >= 0.60:
-            return 100
-        elif margin >= 0.40:
-            return 80
-        elif margin >= 0.20:
-            return 60
-        elif margin >= 0.10:
-            return 40
-        else:
-            return 0
-
-    def operating_margin_score(self, symbol):
-
-        margin = self.operating_margin(symbol)
-
-        if margin is None:
-            return 0
-
-        if margin >= 0.30:
-            return 100
-        elif margin >= 0.20:
-            return 80
-        elif margin >= 0.10:
-            return 60
-        elif margin >= 0.05:
-            return 40
-        else:
-            return 0
-
-    def roe_score(self, symbol):
-
-        roe = self.roe(symbol)
-
-        if roe is None:
-            return 0
-
-        if roe >= 0.30:
-            return 100
-        elif roe >= 0.20:
-            return 80
-        elif roe >= 0.15:
-            return 60
-        elif roe >= 0.10:
-            return 40
-        else:
-            return 0
+    def roic(self, symbol):
+        return self.engine.get_roic(symbol)
 
     def score(self, symbol):
 
-        gross = self.gross_margin_score(symbol)
-        operating = self.operating_margin_score(symbol)
-        roe = self.roe_score(symbol)
+        scores = []
 
-        return round(
-            (
-                gross +
-                operating +
-                roe
-            ) / 3,
-            1
-        )
+        gross = self.gross_margin(symbol)
+        if gross is not None:
+            scores.append(self.scoring.score_margin(gross))
+
+        operating = self.operating_margin(symbol)
+        if operating is not None:
+            scores.append(self.scoring.score_margin(operating))
+
+        roe = self.roe(symbol)
+        if roe is not None:
+            scores.append(self.scoring.score_return(roe))
+
+        roa = self.roa(symbol)
+        if roa is not None:
+            scores.append(self.scoring.score_return(roa))
+
+        roic = self.roic(symbol)
+        if roic is not None:
+            scores.append(self.scoring.score_return(roic))
+
+        return average_scores(scores)

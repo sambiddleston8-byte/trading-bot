@@ -49,6 +49,15 @@ class FinancialDataEngine:
 
         return income.loc["Diluted EPS"]
 
+    def get_roe(self, symbol):
+        return self.get_company_info(symbol).get("returnOnEquity")
+
+    def get_roa(self, symbol):
+        return self.get_company_info(symbol).get("returnOnAssets")
+
+    def get_roic(self, symbol):
+        return self.get_company_info(symbol).get("returnOnInvestedCapital")
+
     # ---------- VALUATION ----------
 
     def get_trailing_pe(self, symbol):
