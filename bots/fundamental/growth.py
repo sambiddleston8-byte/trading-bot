@@ -1,10 +1,12 @@
 from core.financial_data import FinancialDataEngine
+from core.scoring_engine import ScoringEngine
 
 
 class GrowthAnalyser:
 
     def __init__(self):
         self.engine = FinancialDataEngine()
+        self.scoring = ScoringEngine()
 
     def revenue_growth(self, symbol):
 
@@ -80,37 +82,21 @@ class GrowthAnalyser:
 
         return (latest - previous) / previous
 
-    def growth_to_score(self, growth):
-
-        if growth is None:
-            return 0
-
-        if growth >= 0.20:
-            return 100
-        elif growth >= 0.10:
-            return 80
-        elif growth >= 0.05:
-            return 60
-        elif growth >= 0:
-            return 40
-        else:
-            return 0
-
     def score(self, symbol):
 
-        revenue = self.growth_to_score(
+        revenue = self.scoring.score_growth(
             self.revenue_growth(symbol)
         )
 
-        income = self.growth_to_score(
+        income = self.scoring.score_growth(
             self.net_income_growth(symbol)
         )
 
-        eps = self.growth_to_score(
+        eps = self.scoring.score_growth(
             self.eps_growth(symbol)
         )
 
-        cashflow = self.growth_to_score(
+        cashflow = self.scoring.score_growth(
             self.operating_cash_flow_growth(symbol)
         )
 
