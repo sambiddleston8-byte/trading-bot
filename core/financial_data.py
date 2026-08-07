@@ -19,20 +19,24 @@ class FinancialDataEngine:
         return self.get_company(symbol).info
 
     def get_revenue(self, symbol):
-        income = self.get_income_statement(symbol)
-        return income.loc["Total Revenue"]
+        return self.get_income_statement(symbol).loc["Total Revenue"]
 
     def get_net_income(self, symbol):
-        income = self.get_income_statement(symbol)
-        return income.loc["Net Income"]
+        return self.get_income_statement(symbol).loc["Net Income"]
+
+    def get_operating_cash_flow(self, symbol):
+        cashflow = self.get_cash_flow(symbol)
+
+        if "Operating Cash Flow" not in cashflow.index:
+            return None
+
+        return cashflow.loc["Operating Cash Flow"]
 
     def get_total_debt(self, symbol):
-        balance = self.get_balance_sheet(symbol)
-        return balance.loc["Total Debt"]
+        return self.get_balance_sheet(symbol).loc["Total Debt"]
 
     def get_cash(self, symbol):
-        balance = self.get_balance_sheet(symbol)
-        return balance.loc["Cash And Cash Equivalents"]
+        return self.get_balance_sheet(symbol).loc["Cash And Cash Equivalents"]
 
     def get_eps(self, symbol):
         return self.get_company_info(symbol).get("trailingEps")
