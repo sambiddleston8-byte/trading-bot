@@ -77,3 +77,18 @@ class ProfitabilityAnalyser:
             return 40
         else:
             return 0
+
+    def score(self, symbol):
+
+        gross = self.gross_margin_score(symbol)
+        operating = self.operating_margin_score(symbol)
+        roe = self.roe_score(symbol)
+
+        return round(
+            (
+                gross +
+                operating +
+                roe
+            ) / 3,
+            1
+        )

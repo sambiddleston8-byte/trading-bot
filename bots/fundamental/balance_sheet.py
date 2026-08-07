@@ -32,6 +32,9 @@ class BalanceSheetAnalyser:
         if debt is None or cash is None:
             return 0
 
+        if debt == 0:
+            return 100
+
         ratio = cash / debt
 
         if ratio >= 2:
@@ -44,3 +47,7 @@ class BalanceSheetAnalyser:
             return 40
         else:
             return 0
+
+    def score(self, symbol):
+
+        return self.debt_score(symbol)

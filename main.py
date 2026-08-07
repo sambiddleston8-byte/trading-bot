@@ -28,8 +28,22 @@ print("\n" + "=" * 70)
 print("AI INVESTMENT INTELLIGENCE PLATFORM")
 print("=" * 70)
 
-print(f"{'Ticker':<10}{'Overall':<12}{'Rating'}")
+print(
+    f"{'Ticker':<10}"
+    f"{'Quality':<10}"
+    f"{'Value':<10}"
+    f"{'Tech':<10}"
+    f"{'Overall':<10}"
+    f"{'Rating'}"
+)
 print("-" * 70)
 
 for stock in results:
-    print(stock)
+    print(
+        f"{stock['Ticker']:<10}"
+        f"{stock['Business Quality']:<10}"
+        f"{stock['Valuation']:<10}"
+        f"{stock['Technical']:<10}"
+        f"{stock['Overall Score']:<10}"
+        f"{stock['Rating']}"
+    )

@@ -35,5 +35,27 @@ class FinancialDataEngine:
         return balance.loc["Cash And Cash Equivalents"]
 
     def get_eps(self, symbol):
-        company = self.get_company(symbol)
-        return company.info.get("trailingEps")
+        return self.get_company_info(symbol).get("trailingEps")
+
+    # ---------- VALUATION ----------
+
+    def get_trailing_pe(self, symbol):
+        return self.get_company_info(symbol).get("trailingPE")
+
+    def get_forward_pe(self, symbol):
+        return self.get_company_info(symbol).get("forwardPE")
+
+    def get_peg_ratio(self, symbol):
+        return self.get_company_info(symbol).get("pegRatio")
+
+    def get_price_to_book(self, symbol):
+        return self.get_company_info(symbol).get("priceToBook")
+
+    def get_price_to_sales(self, symbol):
+        return self.get_company_info(symbol).get("priceToSalesTrailing12Months")
+
+    def get_enterprise_value(self, symbol):
+        return self.get_company_info(symbol).get("enterpriseValue")
+
+    def get_ebitda(self, symbol):
+        return self.get_company_info(symbol).get("ebitda")

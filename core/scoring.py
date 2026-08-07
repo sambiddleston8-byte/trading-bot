@@ -1,15 +1,29 @@
-FUNDAMENTAL_WEIGHT = 0.70
-TECHNICAL_WEIGHT = 0.30
+class ScoringEngine:
 
+    def overall_score(
 
-def calculate_overall_score(fundamental, technical):
-    """
-    Calculate the weighted overall investment score.
-    """
+        self,
 
-    score = (
-        (fundamental * FUNDAMENTAL_WEIGHT)
-        + (technical * TECHNICAL_WEIGHT)
-    )
+        fundamental,
 
-    return round(score, 1)
+        technical,
+
+    ):
+
+        return round(
+
+            (
+
+                fundamental
+
+                +
+
+                technical
+
+            )
+
+            / 2,
+
+            1,
+
+        )
