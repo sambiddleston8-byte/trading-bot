@@ -1,6 +1,9 @@
 from bots.fundamental.analyser import FundamentalAnalyser
 from bots.technical.analyser import TechnicalAnalyser
 
+from core.scoring import calculate_overall_score
+from core.rating import get_rating
+
 
 class DecisionEngine:
 
@@ -17,14 +20,23 @@ class DecisionEngine:
         fundamental_score = fundamental["Fundamental Score"]
         technical_score = technical["Technical Score"]
 
-        overall = round(
-            (fundamental_score + technical_score) / 2,
-            1
+        overall_score = calculate_overall_score(
+            fundamental_score,
+            technical_score
         )
 
+        rating = get_rating(overall_score)
+
         return {
+
             "Ticker": symbol,
+
             "Fundamental Score": fundamental_score,
+
             "Technical Score": technical_score,
-            "Overall Score": overall
+
+            "Overall Score": overall_score,
+
+            "Rating": rating
+
         }

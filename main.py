@@ -2,15 +2,26 @@ from core.decision_engine import DecisionEngine
 
 engine = DecisionEngine()
 
-result = engine.analyse("AAPL")
+stock = engine.analyse("AAPL")
 
 print()
 
-print("=" * 40)
-print("INVESTMENT ANALYSIS")
-print("=" * 40)
+print("=" * 65)
 
-for key, value in result.items():
-    print(f"{key:<22} {value}")
+print(f"{stock['Ticker']} INVESTMENT ANALYSIS")
 
-print("=" * 40)
+print("=" * 65)
+
+print(f"Fundamental Score : {stock['Fundamental Score']}")
+
+print(f"Technical Score   : {stock['Technical Score']}")
+
+print()
+
+print(f"Overall Score     : {stock['Overall Score']}")
+
+print()
+
+print(f"Investment Rating : {stock['Rating']}")
+
+print("=" * 65)
