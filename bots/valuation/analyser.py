@@ -1,132 +1,125 @@
-from core.financial_data import FinancialDataEngine
+import yfinance as yf
 
 
 class ValuationAnalyser:
 
-    def __init__(self):
-        self.engine = FinancialDataEngine()
-
-    def trailing_pe_score(self, symbol):
-
-        pe = self.engine.get_trailing_pe(symbol)
-
-        if pe is None:
-            return 50
-
-        if pe <= 15:
-            return 100
-        elif pe <= 20:
-            return 80
-        elif pe <= 30:
-            return 60
-        elif pe <= 40:
-            return 40
-        else:
-            return 20
-
-    def forward_pe_score(self, symbol):
-
-        pe = self.engine.get_forward_pe(symbol)
-
-        if pe is None:
-            return 50
-
-        if pe <= 15:
-            return 100
-        elif pe <= 20:
-            return 80
-        elif pe <= 30:
-            return 60
-        elif pe <= 40:
-            return 40
-        else:
-            return 20
-
-    def peg_score(self, symbol):
-
-        peg = self.engine.get_peg_ratio(symbol)
-
-        if peg is None:
-            return 50
-
-        if peg <= 1:
-            return 100
-        elif peg <= 1.5:
-            return 80
-        elif peg <= 2:
-            return 60
-        elif peg <= 3:
-            return 40
-        else:
-            return 20
-
-    def price_to_book_score(self, symbol):
-
-        pb = self.engine.get_price_to_book(symbol)
-
-        if pb is None:
-            return 50
-
-        if pb <= 2:
-            return 100
-        elif pb <= 4:
-            return 80
-        elif pb <= 6:
-            return 60
-        elif pb <= 10:
-            return 40
-        else:
-            return 20
-
-    def price_to_sales_score(self, symbol):
-
-        ps = self.engine.get_price_to_sales(symbol)
-
-        if ps is None:
-            return 50
-
-        if ps <= 2:
-            return 100
-        elif ps <= 4:
-            return 80
-        elif ps <= 8:
-            return 60
-        elif ps <= 12:
-            return 40
-        else:
-            return 20
-
     def analyse(self, symbol):
 
-        trailing = self.trailing_pe_score(symbol)
-        forward = self.forward_pe_score(symbol)
-        peg = self.peg_score(symbol)
-        pb = self.price_to_book_score(symbol)
-        ps = self.price_to_sales_score(symbol)
+        stock = yf.Ticker(symbol)
+        info = stock.info
 
-        valuation = round(
-            (
-                trailing +
-                forward +
-                peg +
-                pb +
-                ps
-            ) / 5,
-            1
-        )
+        pe = info.get("trailingPE")
+        forward_pe = info.get("forwardPE")
+        peg = info.get("pegRatio")
+        ps = info.get("priceToSalesTrailing12Months")
+        pb = info.get("priceToBook")
+
+        score = 50
+        strengths = []
+        weaknesses = []
+
+        # P/E
+
+        if pe:
+
+            if pe < 20:
+                score += 10
+                strengths.append("Low P/E ratio")
+
+            elif pe > 35:
+                score -= 10
+                weaknesses.append("High P/E ratio")
+
+        # Forward P/E
+
+        if forward_pe:
+
+            if forward_pe < 20:
+                score += 10
+                strengths.append("Attractive forward earnings valuation")
+
+            elif forward_pe > 35:
+                score -= 10
+                weaknesses.append("Expensive forward valuation")
+
+        # PEG
+
+        if peg:
+
+            if peg < 1.5:
+                score += 10
+                strengths.append("PEG indicates attractive growth valuation")
+
+            elif peg > 3:
+                score -= 10
+                weaknesses.append("Growth appears expensive")
+
+        # Price to Sales
+
+        if ps:
+
+            if ps < 5:
+                score += 10
+                strengths.append("Reasonable Price/Sales ratio")
+
+            elif ps > 15:
+                score -= 10
+                weaknesses.append("Very expensive relative to revenue")
+
+        # Price to Book
+
+        if pb:
+
+            if pb < 3:
+                score += 10
+                strengths.append("Reasonable Price/Book ratio")
+
+            elif pb > 10:
+                score -= 10
+                weaknesses.append("High Price/Book multiple")
+
+        score = max(0, min(score, 100))
+
+        confidence = 80
+
+        if score >= 80:
+
+            summary = (
+                "Valuation appears attractive compared with current fundamentals."
+            )
+
+        elif score >= 60:
+
+            summary = (
+                "Valuation appears broadly reasonable."
+            )
+
+        else:
+
+            summary = (
+                "Shares appear expensive based on current valuation metrics."
+            )
 
         return {
 
-            "Trailing PE": trailing,
+            "PE": pe,
 
-            "Forward PE": forward,
+            "Forward PE": forward_pe,
 
             "PEG": peg,
 
-            "Price to Book": pb,
-
             "Price to Sales": ps,
 
-            "Valuation Score": valuation
+            "Price to Book": pb,
+
+            "Valuation Score": score,
+
+            "Confidence": confidence,
+
+            "Strengths": strengths,
+
+            "Weaknesses": weaknesses,
+
+            "Summary": summary,
 
         }

@@ -3,6 +3,8 @@ from bots.valuation.analyser import ValuationAnalyser
 from bots.technical.analyser import TechnicalAnalyser
 from bots.risk.analyser import RiskAnalyser
 from bots.news.analyser import NewsAnalyser
+from bots.management.analyser import ManagementAnalyser
+from bots.metrics.analyser import MetricsAnalyser
 from bots.summary.analyser import SummaryAnalyser
 from bots.report.analyser import ReportAnalyser
 
@@ -20,16 +22,26 @@ class DecisionEngine:
         self.technical = TechnicalAnalyser()
         self.risk = RiskAnalyser()
         self.news = NewsAnalyser()
+        self.management = ManagementAnalyser()
+        self.metrics = MetricsAnalyser()
+
         self.summary = SummaryAnalyser()
         self.report = ReportAnalyser()
 
     def analyse(self, symbol):
+
+        # --------------------------------
+        # Specialist Bot Analysis
+        # --------------------------------
+
+        metrics = self.metrics.analyse(symbol)
 
         business = self.business.analyse(symbol)
         valuation = self.valuation.analyse(symbol)
         technical = self.technical.analyse(symbol)
         risk = self.risk.analyse(symbol)
         news = self.news.analyse(symbol)
+        management = self.management.analyse(symbol)
 
         analysis = InvestmentAnalysis(symbol)
 
@@ -43,6 +55,10 @@ class DecisionEngine:
         analysis.headlines = news["Headlines"]
         analysis.catalysts = news["Catalysts"]
 
+        # --------------------------------
+        # Overall Decision
+        # --------------------------------
+
         analysis.overall = calculate_overall_score(
             analysis.business_quality,
             analysis.valuation,
@@ -52,27 +68,80 @@ class DecisionEngine:
             analysis.catalyst,
         )
 
-        analysis.rating = get_rating(analysis.overall)
+        analysis.rating = get_rating(
+            analysis.overall
+        )
 
-        summary = self.summary.analyse(analysis)
+        # --------------------------------
+        # Human-readable summary
+        # --------------------------------
+
+        summary = self.summary.analyse(
+            analysis
+        )
 
         analysis.summary = summary["Summary"]
 
-        report = self.report.build(analysis)
+        report = self.report.build(
+            analysis
+        )
+
+        # --------------------------------
+        # Return Complete Analysis
+        # --------------------------------
 
         return {
+
+            # Basic Information
+
             "Ticker": analysis.ticker,
-            "Business Quality": analysis.business_quality,
-            "Valuation": analysis.valuation,
-            "Technical": analysis.technical,
-            "Risk": analysis.risk,
-            "News": analysis.news,
-            "Catalyst": analysis.catalyst,
+
+            "Metrics": metrics,
+
+            # Scores
+
             "Overall Score": analysis.overall,
+
             "Rating": analysis.rating,
+
+            "Business Quality": analysis.business_quality,
+
+            "Valuation": analysis.valuation,
+
+            "Technical": analysis.technical,
+
+            "Risk": analysis.risk,
+
+            "News": analysis.news,
+
+            "Catalyst": analysis.catalyst,
+
+            # Specialist Bot Outputs
+
+            "Business Analysis": business,
+
+            "Valuation Analysis": valuation,
+
+            "Technical Analysis": technical,
+
+            "Risk Analysis": risk,
+
+            "News Analysis": news,
+
+            "Management Analysis": management,
+
+            # Report
+
             "Strengths": summary["Strengths"],
+
             "Weaknesses": summary["Weaknesses"],
+
             "Summary": analysis.summary,
+
             "Report": report,
+
             "Catalysts": analysis.catalysts,
+
+            "Headlines": analysis.headlines,
+
         }

@@ -4,48 +4,40 @@ class ReportAnalyser:
 
         report = []
 
-        report.append(f"Investment Thesis for {analysis.ticker}")
+        report.append("=" * 60)
+        report.append(f"Investment Report: {analysis.ticker}")
+        report.append("=" * 60)
         report.append("")
 
-        if analysis.summary:
-            report.append(analysis.summary)
-            report.append("")
+        report.append(f"Overall Rating : {analysis.rating}")
+        report.append(f"Overall Score  : {analysis.overall}")
+        report.append("")
 
-        important = []
+        report.append("SECTION 1 - INVESTMENT THESIS")
+        report.append("----------------------------------------")
+        report.append(analysis.summary)
+        report.append("")
 
-        for headline in analysis.catalysts:
+        report.append("SECTION 2 - SCORE BREAKDOWN")
+        report.append("----------------------------------------")
+        report.append(f"Business Quality : {analysis.business_quality}")
+        report.append(f"Valuation        : {analysis.valuation}")
+        report.append(f"Technical        : {analysis.technical}")
+        report.append(f"Risk             : {analysis.risk}")
+        report.append(f"News             : {analysis.news}")
+        report.append(f"Catalysts        : {analysis.catalyst}")
+        report.append("")
 
-            lower = headline.lower()
+        report.append("SECTION 3 - KEY CATALYSTS")
+        report.append("----------------------------------------")
 
-            # Ignore headlines that don't mention the company
-            if analysis.ticker.lower() not in lower:
-                continue
+        if analysis.catalysts:
+            for catalyst in analysis.catalysts[:5]:
+                report.append(f"• {catalyst}")
+        else:
+            report.append("No significant catalysts identified.")
 
-            # Only keep genuinely important catalysts
-            if any(
-                word in lower
-                for word in [
-                    "earnings",
-                    "beat",
-                    "miss",
-                    "approval",
-                    "contract",
-                    "partnership",
-                    "launch",
-                    "upgrade",
-                    "downgrade",
-                    "lawsuit",
-                ]
-            ):
-                important.append(headline)
-
-        if important:
-
-            report.append("Key Catalysts:")
-
-            for catalyst in important[:3]:
-                report.append(f"- {catalyst}")
-
-            report.append("")
+        report.append("")
+        report.append("=" * 60)
 
         return "\n".join(report)
