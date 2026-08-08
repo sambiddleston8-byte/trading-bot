@@ -920,6 +920,21 @@ class FundamentalAnalysisEngine:
         }
 
         # ----------------------------------------------------
+        # VALIDATED DATA QUALITY
+        # ----------------------------------------------------
+
+        validated_data_quality = {}
+
+        if isinstance(
+            validation,
+            dict,
+        ):
+            validated_data_quality = validation.get(
+                "data_quality",
+                {},
+            )
+
+        # ----------------------------------------------------
         # RESULT
         # ----------------------------------------------------
 
@@ -1067,6 +1082,28 @@ class FundamentalAnalysisEngine:
 
             "key_drivers":
                 key_drivers,
+
+            # ------------------------------------------------
+            # Canonical downstream fields.
+            # ------------------------------------------------
+
+            "forward_revenue_growth":
+                forward_revenue_growth,
+
+            "forward_eps_growth":
+                forward_eps_growth,
+
+            "fcf_margin":
+                fcf_margin,
+
+            "roic":
+                roic,
+
+            "net_debt":
+                net_debt,
+
+            "data_quality":
+                validated_data_quality,
 
         }
 

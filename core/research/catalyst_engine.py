@@ -1,4 +1,11 @@
 from datetime import datetime, timezone
+import re
+
+import yfinance as yf
+
+from core.research.news_research_engine import (
+    NewsResearchEngine,
+)
 
 
 class CatalystEngine:
@@ -197,6 +204,32 @@ class CatalystEngine:
             [],
         )
 
+        ranked = cls.rank(
+            research
+        )
+
+        positive_score = sum(
+            item.get(
+                "catalyst_score",
+                0,
+            )
+            for item in ranked
+            if item.get(
+                "direction"
+            ) == "POSITIVE"
+        )
+
+        negative_score = sum(
+            item.get(
+                "catalyst_score",
+                0,
+            )
+            for item in ranked
+            if item.get(
+                "direction"
+            ) == "NEGATIVE"
+        )
+
         return {
             "ticker": research.get("ticker"),
             "total_catalysts": len(catalysts),
@@ -222,7 +255,476 @@ class CatalystEngine:
                 for item in catalysts
                 if item.get("already_priced") is True
             ),
+            "positive_score": round(
+                positive_score,
+                2,
+            ),
+            "negative_score": round(
+                negative_score,
+                2,
+            ),
+            "net_score": round(
+                positive_score - negative_score,
+                2,
+            ),
         }
+
+    @classmethod
+    def analyse(
+        cls,
+        ticker,
+    ):
+
+        ticker = (
+            ticker
+            .upper()
+            .strip()
+        )
+
+        research = cls.build(
+            ticker
+        )
+
+        # ------------------------------------------------
+        # Live news evidence.
+        # ------------------------------------------------
+
+        news = NewsResearchEngine.analyse(
+            ticker
+        )
+
+        evidence_items = news.get(
+            "evidence",
+            [],
+        )
+
+        # ------------------------------------------------
+        # Keyword-based event classification.
+        #
+        # This is deliberately conservative. The system
+        # creates a catalyst only when there is evidence
+        # suggesting an identifiable event.
+        # ------------------------------------------------
+
+        rules = [
+
+            (
+                "earnings",
+                {
+                    "earnings",
+                    "quarter",
+                    "revenue",
+                    "eps",
+                    "profit",
+                },
+            ),
+
+            (
+                "guidance",
+                {
+                    "guidance",
+                    "outlook",
+                    "forecast",
+                },
+            ),
+
+            (
+                "regulatory",
+                {
+                    "regulation",
+                    "regulatory",
+                    "antitrust",
+                    "government",
+                    "export",
+                    "restriction",
+                },
+            ),
+
+            (
+                "geopolitical",
+                {
+                    "china",
+                    "taiwan",
+                    "geopolitical",
+                    "trade",
+                    "sanction",
+                },
+            ),
+
+            (
+                "industry",
+                {
+                    "industry",
+                    "market",
+                    "ai",
+                    "datacenter",
+                    "semiconductor",
+                    "cloud",
+                },
+            ),
+
+            (
+                "contracts",
+                {
+                    "contract",
+                    "deal",
+                    "agreement",
+                    "order",
+                },
+            ),
+
+            (
+                "product",
+                {
+                    "launch",
+                    "product",
+                    "chip",
+                    "platform",
+                },
+            ),
+
+            (
+                "customer",
+                {
+                    "customer",
+                    "hyperscaler",
+                    "client",
+                },
+            ),
+
+            (
+                "capital_allocation",
+                {
+                    "buyback",
+                    "repurchase",
+                    "acquisition",
+                    "capex",
+                    "capital",
+                },
+            ),
+
+            (
+                "management",
+                {
+                    "ceo",
+                    "cfo",
+                    "management",
+                    "executive",
+                },
+            ),
+
+            (
+                "legal",
+                {
+                    "lawsuit",
+                    "litigation",
+                    "court",
+                    "legal",
+                    "probe",
+                },
+            ),
+
+            (
+                "macro",
+                {
+                    "rates",
+                    "interest rate",
+                    "recession",
+                    "inflation",
+                    "economy",
+                    "economic",
+                },
+            ),
+        ]
+
+        seen = set()
+
+        for evidence in evidence_items:
+
+            title = (
+                evidence.get(
+                    "headline"
+                )
+                or ""
+            )
+
+            lower = title.lower()
+
+            for category, keywords in rules:
+
+                if not any(
+                    keyword in lower
+                    for keyword in keywords
+                ):
+                    continue
+
+                key = (
+                    category,
+                    title.lower().strip(),
+                )
+
+                if key in seen:
+                    continue
+
+                seen.add(key)
+
+                impact = 6
+
+                if any(
+                    word in lower
+                    for word in {
+                        "restriction",
+                        "ban",
+                        "lawsuit",
+                        "miss",
+                        "cut",
+                        "warning",
+                        "slowdown",
+                        "probe",
+                    }
+                ):
+                    direction = "NEGATIVE"
+                    impact = 8
+
+                elif any(
+                    word in lower
+                    for word in {
+                        "beat",
+                        "raised",
+                        "record",
+                        "strong",
+                        "contract",
+                        "approval",
+                        "launch",
+                        "surge",
+                    }
+                ):
+                    direction = "POSITIVE"
+                    impact = 8
+
+                else:
+                    direction = (
+                        "POSITIVE"
+                        if evidence.get(
+                            "impact"
+                        ) == "POSITIVE"
+                        else
+                        "NEGATIVE"
+                        if evidence.get(
+                            "impact"
+                        ) == "NEGATIVE"
+                        else
+                        "BOTH"
+                    )
+
+                catalyst = cls.create(
+                    ticker=ticker,
+                    title=title,
+                    category=category,
+                    direction=direction,
+                    impact=impact,
+                    probability=0.50,
+                    expected_date=(
+                        evidence.get(
+                            "published_at"
+                        )
+                    ),
+                    source=evidence.get(
+                        "source"
+                    ),
+                    url=evidence.get(
+                        "url"
+                    ),
+                    description=title,
+                    already_priced=None,
+                    confidence=evidence.get(
+                        "confidence",
+                        "MEDIUM",
+                    ),
+                )
+
+                catalyst[
+                    "evidence"
+                ] = [
+                    evidence
+                ]
+
+                catalyst[
+                    "independent_source_count"
+                ] = news.get(
+                    "independent_source_count",
+                    0,
+                )
+
+                cls.add(
+                    research,
+                    catalyst,
+                )
+
+        # ------------------------------------------------
+        # Explicit upcoming earnings catalyst.
+        # ------------------------------------------------
+
+        try:
+
+            calendar = (
+                yf.Ticker(
+                    ticker
+                ).calendar
+            )
+
+            earnings_date = None
+
+            if hasattr(
+                calendar,
+                "to_dict"
+            ):
+
+                calendar_dict = (
+                    calendar.to_dict()
+                )
+
+                for key, value in (
+                    calendar_dict.items()
+                ):
+
+                    key_lower = str(
+                        key
+                    ).lower()
+
+                    if "earnings date" in key_lower:
+
+                        if isinstance(
+                            value,
+                            dict,
+                        ):
+
+                            values = list(
+                                value.values()
+                            )
+
+                            if values:
+                                earnings_date = values[0]
+
+                        elif isinstance(
+                            value,
+                            list,
+                        ):
+
+                            if value:
+                                earnings_date = value[0]
+
+            elif isinstance(
+                calendar,
+                dict,
+            ):
+
+                for key, value in calendar.items():
+
+                    if "earnings date" in str(
+                        key
+                    ).lower():
+
+                        earnings_date = value
+
+            if earnings_date is not None:
+
+                catalyst = cls.create(
+                    ticker=ticker,
+                    title="Next earnings report",
+                    category="earnings",
+                    direction="BOTH",
+                    impact=9,
+                    probability=0.70,
+                    expected_date=str(
+                        earnings_date
+                    ),
+                    source="YAHOO FINANCE",
+                    description=(
+                        "Upcoming earnings are a major "
+                        "potential information event."
+                    ),
+                    already_priced=None,
+                    confidence="MEDIUM",
+                )
+
+                catalyst[
+                    "evidence"
+                ] = [
+                    {
+                        "headline":
+                            "Upcoming earnings report",
+
+                        "source":
+                            "YAHOO FINANCE",
+
+                        "source_type":
+                            "SECONDARY_DATA",
+
+                        "source_tier":
+                            3,
+
+                        "underlying_source":
+                            "YAHOO-EARNINGS-CALENDAR",
+
+                        "published_at":
+                            cls.now(),
+
+                        "url":
+                            None,
+
+                        "evidence_type":
+                            "FACT",
+
+                        "impact":
+                            "NEUTRAL",
+
+                        "confidence":
+                            "HIGH",
+
+                        "event_date":
+                            str(
+                                earnings_date
+                            ),
+
+                        "description":
+                            (
+                                "Yahoo Finance earnings "
+                                "calendar identifies an "
+                                "upcoming earnings event."
+                            ),
+                    }
+                ]
+
+                catalyst[
+                    "evidence_count"
+                ] = 1
+
+                catalyst[
+                    "evidence_status"
+                ] = "SUPPORTED"
+
+                cls.add(
+                    research,
+                    catalyst,
+                )
+
+        except Exception:
+            pass
+
+        return cls.finalise(
+            research
+        )
+
+    @classmethod
+    def research(
+        cls,
+        ticker,
+    ):
+
+        return cls.analyse(
+            ticker
+        )
 
     @classmethod
     def build(cls, ticker):

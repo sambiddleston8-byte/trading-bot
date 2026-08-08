@@ -5,7 +5,7 @@ from pathlib import Path
 
 class InvestmentResearchPipeline:
 
-    VERSION = "1.0"
+    VERSION = "1.1-research-integrated"
 
     # ========================================================
     # TIME
@@ -289,18 +289,24 @@ class InvestmentResearchPipeline:
             expectations={
                 "forward_revenue_growth":
                     fundamental.get(
+                        "growth",
+                        {},
+                    ).get(
                         "forward_revenue_growth"
                     ),
 
                 "forward_eps_growth":
                     fundamental.get(
+                        "growth",
+                        {},
+                    ).get(
                         "forward_eps_growth"
                     ),
 
                 "forecast_confidence":
                     fundamental.get(
-                        "validation",
-                        {}
+                        "forecast_validation",
+                        {},
                     ).get(
                         "overall_confidence"
                     ),
@@ -549,12 +555,30 @@ class InvestmentResearchPipeline:
         # Normalise catalyst scores.
         # ----------------------------------------------------
 
+        catalyst_summary = (
+            catalyst_data.get(
+                "summary",
+                {},
+            )
+            if isinstance(
+                catalyst_data.get(
+                    "summary",
+                    {}
+                ),
+                dict,
+            )
+            else {}
+        )
+
         positive_score = (
             catalyst_data.get(
                 "positive_score",
-                catalyst_data.get(
-                    "positive",
-                    0,
+                catalyst_summary.get(
+                    "positive_score",
+                    catalyst_summary.get(
+                        "positive_catalysts",
+                        0,
+                    ),
                 ),
             )
         )
@@ -562,9 +586,12 @@ class InvestmentResearchPipeline:
         negative_score = (
             catalyst_data.get(
                 "negative_score",
-                catalyst_data.get(
-                    "negative",
-                    0,
+                catalyst_summary.get(
+                    "negative_score",
+                    catalyst_summary.get(
+                        "negative_catalysts",
+                        0,
+                    ),
                 ),
             )
         )
@@ -637,22 +664,44 @@ class InvestmentResearchPipeline:
 
                 "current_price":
                     valuation_data.get(
-                        "current_price"
+                        "Current Price"
                     ),
 
                 "base_intrinsic_value":
                     valuation_data.get(
-                        "base_intrinsic_value"
+                        "Intrinsic Value",
+                        {},
+                    ).get(
+                        "Base"
                     ),
 
                 "expected_return":
                     valuation_data.get(
-                        "expected_return"
+                        "Expected Return",
+                        {},
+                    ).get(
+                        "Base"
+                    ),
+
+                "annualised_expected_return":
+                    valuation_data.get(
+                        "Expected Return",
+                        {},
+                    ).get(
+                        "Annualised"
                     ),
 
                 "status":
                     valuation_data.get(
-                        "status"
+                        "Status"
+                    ),
+
+                "validation_confidence":
+                    valuation_data.get(
+                        "Financial Data Validation",
+                        {},
+                    ).get(
+                        "Overall Confidence"
                     ),
 
             },
@@ -710,11 +759,49 @@ class InvestmentResearchPipeline:
                         "thesis_survives"
                     ),
 
+                "challenges":
+                    thesis_data.get(
+                        "challenges",
+                        [],
+                    ),
+
+                "investigation":
+                    thesis_data.get(
+                        "investigation",
+                    ),
+
             },
 
             "decision":
                 decision.get(
                     "decision"
+                ),
+
+            # Canonical valuation fields for downstream audit,
+            # synthesis and portfolio ranking.
+
+            "current_price":
+                valuation_data.get(
+                    "Current Price",
+                    valuation_data.get(
+                        "current_price"
+                    ),
+                ),
+
+            "base_intrinsic_value":
+                valuation_data.get(
+                    "Intrinsic Value",
+                    {},
+                ).get(
+                    "Base"
+                ),
+
+            "expected_return":
+                valuation_data.get(
+                    "Expected Return",
+                    {},
+                ).get(
+                    "Base"
                 ),
 
         }

@@ -177,7 +177,7 @@ class ThesisChallenger:
         )
 
         data_quality = investigation.get(
-            "execution",
+            "data_quality",
             {}
         )
 
@@ -200,9 +200,14 @@ class ThesisChallenger:
 
             for challenge in challenges:
 
-                if challenge.get(
-                    "area"
-                ) == area:
+                if (
+                    challenge.get(
+                        "area"
+                    ) == area
+                    and challenge.get(
+                        "status"
+                    ) == "UNTESTED"
+                ):
 
                     cls.add_finding(
                         challenge,
@@ -526,41 +531,166 @@ class ThesisChallenger:
             )
 
         # ----------------------------------------------------
-        # 9. NEWS / EVIDENCE
+        # 9. RESEARCH EVIDENCE MAPPING
+        #
+        # Use actual headlines to test previously-uncovered
+        # challenge areas. Areas remain UNTESTED when there is
+        # no relevant evidence rather than being manufactured.
         # ----------------------------------------------------
 
-        evidence_count = 0
+        evidence_items = []
 
         if isinstance(
             news,
             dict,
         ):
 
-            evidence_count = (
-                news.get(
-                    "evidence_count",
-                    0,
-                )
+            evidence_items = news.get(
+                "evidence",
+                [],
             )
 
-        if float(
-            evidence_count
-        ) >= 3:
+        keyword_areas = {
+
+            "competition": {
+                "amd",
+                "intel",
+                "custom chip",
+                "custom silicon",
+                "asic",
+                "tpu",
+                "competitor",
+                "competition",
+            },
+
+            "capital_allocation": {
+                "buyback",
+                "repurchase",
+                "acquisition",
+                "capex",
+                "capital allocation",
+            },
+
+            "management": {
+                "ceo",
+                "cfo",
+                "management",
+                "executive",
+                "jensen",
+            },
+
+            "regulation": {
+                "regulation",
+                "regulatory",
+                "antitrust",
+                "export restriction",
+                "export control",
+                "government",
+                "probe",
+            },
+
+            "macro": {
+                "interest rate",
+                "rates",
+                "inflation",
+                "recession",
+                "economy",
+                "economic slowdown",
+            },
+
+            "industry": {
+                "industry",
+                "semiconductor",
+                "ai",
+                "datacenter",
+                "cloud",
+                "hyperscaler",
+            },
+
+            "geopolitical": {
+                "china",
+                "taiwan",
+                "geopolitical",
+                "trade war",
+                "sanction",
+            },
+
+            "execution": {
+                "supply",
+                "production",
+                "manufacturing",
+                "capacity",
+                "delay",
+                "delivery",
+                "execution",
+            },
+        }
+
+        for area, keywords in (
+            keyword_areas.items()
+        ):
+
+            relevant = []
+
+            for evidence in evidence_items:
+
+                headline = (
+                    evidence.get(
+                        "headline"
+                    )
+                    or ""
+                ).lower()
+
+                if any(
+                    keyword in headline
+                    for keyword in keywords
+                ):
+
+                    relevant.append(
+                        evidence
+                    )
+
+            if not relevant:
+                continue
+
+            negative = sum(
+                1
+                for item in relevant
+                if item.get(
+                    "impact"
+                ) == "NEGATIVE"
+            )
+
+            positive = sum(
+                1
+                for item in relevant
+                if item.get(
+                    "impact"
+                ) == "POSITIVE"
+            )
+
+            if negative > positive:
+
+                impact = "MATERIAL_NEGATIVE"
+
+            elif positive > negative:
+
+                impact = "POSITIVE"
+
+            else:
+
+                impact = "MATERIAL_NEGATIVE"
 
             test_area(
-                "consensus",
-                "Multiple research evidence items are available for independent review.",
-                "POSITIVE",
+                area,
+                (
+                    f"{len(relevant)} relevant research "
+                    f"evidence item(s) were identified for "
+                    f"the {area} challenge."
+                ),
+                impact,
                 "MEDIUM",
-            )
-
-        else:
-
-            test_area(
-                "consensus",
-                "News evidence remains limited and should not be heavily relied upon.",
-                "MATERIAL_NEGATIVE",
-                "LOW",
+                relevant[:5],
             )
 
         return investigation

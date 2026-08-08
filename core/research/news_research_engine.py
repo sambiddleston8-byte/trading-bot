@@ -1,4 +1,7 @@
 from datetime import datetime, timezone
+import re
+
+from core.research_engine import ResearchEngine
 
 
 class NewsResearchEngine:
@@ -75,6 +78,12 @@ class NewsResearchEngine:
             "tier": 3,
             "type": "SECONDARY_DATA",
             "independence_group": "DATA",
+        },
+
+        "GOOGLE NEWS": {
+            "tier": 2,
+            "type": "SECONDARY",
+            "independence_group": "MEDIA",
         },
 
         "MARKETWATCH": {
@@ -575,6 +584,173 @@ class NewsResearchEngine:
             "quality":
                 quality,
         }
+
+    # ========================================================
+    # LIVE RESEARCH ADAPTER
+    #
+    # ResearchEngine already collects:
+    # - Google News RSS
+    # - Yahoo Finance RSS
+    # - Yahoo company data
+    # - SEC filings
+    #
+    # This adapter converts that raw research into the
+    # structured evidence format used by the new pipeline.
+    # ========================================================
+
+    @classmethod
+    def analyse(
+        cls,
+        ticker,
+    ):
+
+        raw = ResearchEngine().collect(
+            ticker
+        )
+
+        research = cls.build(
+            ticker
+        )
+
+        raw_news = raw.get(
+            "News",
+            [],
+        )
+
+        for article in raw_news:
+
+            title = (
+                article.get(
+                    "Title"
+                )
+                or ""
+            ).strip()
+
+            if not title:
+                continue
+
+            source = (
+                article.get(
+                    "Source"
+                )
+                or "UNKNOWN"
+            )
+
+            normalized_title = re.sub(
+                r"\\s+",
+                " ",
+                title.lower(),
+            ).strip()
+
+            # ------------------------------------------------
+            # Evidence classification.
+            #
+            # This deliberately separates FACT from
+            # interpretation. A headline alone is not treated
+            # as proof of a future outcome.
+            # ------------------------------------------------
+
+            lower = title.lower()
+
+            negative_terms = {
+                "miss",
+                "cut",
+                "cuts",
+                "warning",
+                "slowdown",
+                "decline",
+                "drop",
+                "lawsuit",
+                "probe",
+                "investigation",
+                "restriction",
+                "ban",
+                "delay",
+                "weak",
+                "loss",
+                "pressure",
+                "risk",
+            }
+
+            positive_terms = {
+                "beat",
+                "beats",
+                "raised",
+                "raise",
+                "record",
+                "growth",
+                "strong",
+                "launch",
+                "approval",
+                "contract",
+                "demand",
+                "surge",
+                "upgrade",
+            }
+
+            negative_hits = sum(
+                1
+                for term in negative_terms
+                if term in lower
+            )
+
+            positive_hits = sum(
+                1
+                for term in positive_terms
+                if term in lower
+            )
+
+            if negative_hits > positive_hits:
+                impact = "NEGATIVE"
+
+            elif positive_hits > negative_hits:
+                impact = "POSITIVE"
+
+            else:
+                impact = "NEUTRAL"
+
+            evidence = cls.create_evidence(
+                ticker=ticker,
+                headline=title,
+                source=source,
+                published_at=article.get(
+                    "Published"
+                ),
+                url=article.get(
+                    "Link"
+                ),
+                summary=title,
+                evidence_type="FACT",
+                impact=impact,
+                event_id=None,
+                underlying_source=(
+                    normalized_title
+                ),
+                confidence="MEDIUM",
+            )
+
+            cls.add(
+                research,
+                evidence,
+            )
+
+        research[
+            "raw_research"
+        ] = raw
+
+        return cls.finalise(
+            research
+        )
+
+    @classmethod
+    def research(
+        cls,
+        ticker,
+    ):
+
+        return cls.analyse(
+            ticker
+        )
 
     # ========================================================
     # BUILD RESEARCH PACKAGE

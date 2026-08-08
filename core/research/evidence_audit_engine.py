@@ -125,13 +125,31 @@ class EvidenceAuditEngine:
             "current_price"
         )
 
+        if current_price is None:
+
+            current_price = analysis.get(
+                "current_price"
+            )
+
         intrinsic_value = valuation.get(
             "base_intrinsic_value"
         )
 
+        if intrinsic_value is None:
+
+            intrinsic_value = analysis.get(
+                "base_intrinsic_value"
+            )
+
         expected_return = valuation.get(
             "expected_return"
         )
+
+        if expected_return is None:
+
+            expected_return = analysis.get(
+                "expected_return"
+            )
 
         if current_price is None:
 
