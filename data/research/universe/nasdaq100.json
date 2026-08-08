@@ -1,0 +1,1834 @@
+{
+  "universe": "nasdaq100",
+  "provider": "GITHUB_RAW_CSV",
+  "version": "8.0-github-raw",
+  "created_at": "2026-08-08T23:33:01.531398+00:00",
+  "count": 101,
+  "overlap_count": 0,
+  "companies": [
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "sector": "Computer Manufacturing",
+      "industry": "Computer Manufacturing",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ABNB",
+      "name": "Airbnb",
+      "sector": "Diversified Commercial Services",
+      "industry": "Diversified Commercial Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ADBE",
+      "name": "Adobe Inc.",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ADI",
+      "name": "Analog Devices",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ADP",
+      "name": "Automatic Data Processing",
+      "sector": "Diversified Commercial Services",
+      "industry": "Diversified Commercial Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ADSK",
+      "name": "Autodesk",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "AEP",
+      "name": "American Electric Power",
+      "sector": "Electric Utilities",
+      "industry": "Electric Utilities",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ALNY",
+      "name": "Alnylam Pharmaceuticals",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "AMAT",
+      "name": "Applied Materials",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "AMGN",
+      "name": "Amgen",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "AMZN",
+      "name": "Amazon",
+      "sector": "Catalog/Specialty Distribution",
+      "industry": "Catalog/Specialty Distribution",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "APP",
+      "name": "AppLovin",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ARM",
+      "name": "Arm Holdings",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ASML",
+      "name": "ASML Holding",
+      "sector": "Industrial Machinery",
+      "industry": "Industrial Machinery",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "AXON",
+      "name": "Axon Enterprise",
+      "sector": "Ordnance & Accessories",
+      "industry": "Ordnance & Accessories",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "BKNG",
+      "name": "Booking Holdings",
+      "sector": "Transportation Services",
+      "industry": "Transportation Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "BKR",
+      "name": "Baker Hughes",
+      "sector": "Oil Equipment & Services",
+      "industry": "Oil Equipment & Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CCEP",
+      "name": "Coca-Cola Europacific Partners",
+      "sector": "Soft Drinks",
+      "industry": "Soft Drinks",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CDNS",
+      "name": "Cadence Design Systems",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CEG",
+      "name": "Constellation Energy",
+      "sector": "Electric Utilities",
+      "industry": "Electric Utilities",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CHTR",
+      "name": "Charter Communications",
+      "sector": "Cable & Other Pay Television Services",
+      "industry": "Cable & Other Pay Television Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CMCSA",
+      "name": "Comcast",
+      "sector": "Cable & Other Pay Television Services",
+      "industry": "Cable & Other Pay Television Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "COST",
+      "name": "Costco",
+      "sector": "Department/Specialty Retail Stores",
+      "industry": "Department/Specialty Retail Stores",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CPRT",
+      "name": "Copart",
+      "sector": "Retail",
+      "industry": "Retail",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CRWD",
+      "name": "CrowdStrike",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CSCO",
+      "name": "Cisco",
+      "sector": "Computer Communications Equipment",
+      "industry": "Computer Communications Equipment",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CSGP",
+      "name": "CoStar Group",
+      "sector": "Real Estate",
+      "industry": "Real Estate",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CSX",
+      "name": "CSX Corporation",
+      "sector": "Railroads",
+      "industry": "Railroads",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CTAS",
+      "name": "Cintas",
+      "sector": "Garments & Clothing",
+      "industry": "Garments & Clothing",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "CTSH",
+      "name": "Cognizant",
+      "sector": "EDP Services",
+      "industry": "EDP Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "DASH",
+      "name": "DoorDash",
+      "sector": "EDP Services",
+      "industry": "EDP Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "DDOG",
+      "name": "Datadog",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "DXCM",
+      "name": "DexCom",
+      "sector": "Medical/Dental Instruments",
+      "industry": "Medical/Dental Instruments",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "EA",
+      "name": "Electronic Arts",
+      "sector": "Miscellaneous Amusement & Recreation Services",
+      "industry": "Miscellaneous Amusement & Recreation Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "EXC",
+      "name": "Exelon",
+      "sector": "Power Generation",
+      "industry": "Power Generation",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "FANG",
+      "name": "Diamondback Energy",
+      "sector": "Oil & Gas Production",
+      "industry": "Oil & Gas Production",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "FAST",
+      "name": "Fastenal",
+      "sector": "Construction & Materials",
+      "industry": "Construction & Materials",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "FER",
+      "name": "Ferrovial",
+      "sector": "Military, Government, Technical",
+      "industry": "Military, Government, Technical",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "FTNT",
+      "name": "Fortinet",
+      "sector": "Computer Peripheral Equipment",
+      "industry": "Computer Peripheral Equipment",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "GEHC",
+      "name": "GE HealthCare",
+      "sector": "Medical Electronics",
+      "industry": "Medical Electronics",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "GILD",
+      "name": "Gilead Sciences",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "GOOG",
+      "name": "Alphabet Inc. (Class C)",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet Inc. (Class A)",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "HON",
+      "name": "Honeywell",
+      "sector": "Aerospace",
+      "industry": "Aerospace",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "IDXX",
+      "name": "Idexx Laboratories",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "INSM",
+      "name": "Insmed Incorporated",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "INTC",
+      "name": "Intel",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "INTU",
+      "name": "Intuit",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ISRG",
+      "name": "Intuitive Surgical",
+      "sector": "Industrial Specialties",
+      "industry": "Industrial Specialties",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "KDP",
+      "name": "Keurig Dr Pepper",
+      "sector": "Soft Drinks",
+      "industry": "Soft Drinks",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "KHC",
+      "name": "Kraft Heinz",
+      "sector": "Packaged Foods",
+      "industry": "Packaged Foods",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "KLAC",
+      "name": "KLA Corporation",
+      "sector": "Electronic Components",
+      "industry": "Electronic Components",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "LIN",
+      "name": "Linde plc",
+      "sector": "Major Chemicals",
+      "industry": "Major Chemicals",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "LRCX",
+      "name": "Lam Research",
+      "sector": "Industrial Machinery",
+      "industry": "Industrial Machinery",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MAR",
+      "name": "Marriott International",
+      "sector": "Hotels/Resorts",
+      "industry": "Hotels/Resorts",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MCHP",
+      "name": "Microchip Technology",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MDLZ",
+      "name": "Mondelez International",
+      "sector": "Packaged Foods",
+      "industry": "Packaged Foods",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MELI",
+      "name": "Mercado Libre",
+      "sector": "Catalog/Specialty Distribution",
+      "industry": "Catalog/Specialty Distribution",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MNST",
+      "name": "Monster Beverage",
+      "sector": "Soft Drinks",
+      "industry": "Soft Drinks",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MPWR",
+      "name": "Monolithic Power Systems",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell Technology",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MSTR",
+      "name": "MicroStrategy",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "MU",
+      "name": "Micron Technology",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "NFLX",
+      "name": "Netflix, Inc.",
+      "sector": "Consumer Electronics",
+      "industry": "Consumer Electronics",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "name": "Nvidia",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "NXPI",
+      "name": "NXP Semiconductors",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ODFL",
+      "name": "Old Dominion Freight Line",
+      "sector": "Trucking Freight/Courier Services",
+      "industry": "Trucking Freight/Courier Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ORLY",
+      "name": "O'Reilly Automotive",
+      "sector": "Auto & Home Supply Stores",
+      "industry": "Auto & Home Supply Stores",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "PANW",
+      "name": "Palo Alto Networks",
+      "sector": "Computer Peripheral Equipment",
+      "industry": "Computer Peripheral Equipment",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "PAYX",
+      "name": "Paychex",
+      "sector": "Diversified Commercial Services",
+      "industry": "Diversified Commercial Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "PCAR",
+      "name": "Paccar",
+      "sector": "Motor Vehicles",
+      "industry": "Motor Vehicles",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "PDD",
+      "name": "PDD Holdings",
+      "sector": "EDP Services",
+      "industry": "EDP Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "PEP",
+      "name": "PepsiCo",
+      "sector": "Soft Drinks",
+      "industry": "Soft Drinks",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "PLTR",
+      "name": "Palantir Technologies",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "PYPL",
+      "name": "PayPal",
+      "sector": "Diversified Commercial Services",
+      "industry": "Diversified Commercial Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "QCOM",
+      "name": "Qualcomm",
+      "sector": "Broadcasting & Communications Equipment",
+      "industry": "Broadcasting & Communications Equipment",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "REGN",
+      "name": "Regeneron Pharmaceuticals",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ROP",
+      "name": "Roper Technologies",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ROST",
+      "name": "Ross Stores",
+      "sector": "Clothing/Shoe/Accessory Stores",
+      "industry": "Clothing/Shoe/Accessory Stores",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "SBUX",
+      "name": "Starbucks",
+      "sector": "Restaurants",
+      "industry": "Restaurants",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "SHOP",
+      "name": "Shopify",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "SNPS",
+      "name": "Synopsys",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "STX",
+      "name": "Seagate Technology",
+      "sector": "Electronic Components",
+      "industry": "Electronic Components",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "TEAM",
+      "name": "Atlassian",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "TMUS",
+      "name": "T-Mobile US",
+      "sector": "Telecommunications Service Providers",
+      "industry": "Telecommunications Service Providers",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "TRI",
+      "name": "Thomson Reuters",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "name": "Tesla, Inc.",
+      "sector": "Automobiles & Parts",
+      "industry": "Automobiles & Parts",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "TTWO",
+      "name": "Take-Two Interactive",
+      "sector": "Miscellaneous Amusement & Recreation Services",
+      "industry": "Miscellaneous Amusement & Recreation Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "TXN",
+      "name": "Texas Instruments",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "VRSK",
+      "name": "Verisk Analytics",
+      "sector": "Diversified Commercial Services",
+      "industry": "Diversified Commercial Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "VRTX",
+      "name": "Vertex Pharmaceuticals",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "WBD",
+      "name": "Warner Bros. Discovery",
+      "sector": "Miscellaneous Amusement & Recreation Services",
+      "industry": "Miscellaneous Amusement & Recreation Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "WDAY",
+      "name": "Workday, Inc.",
+      "sector": "EDP Services",
+      "industry": "EDP Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "WDC",
+      "name": "Western Digital",
+      "sector": "Electronic Components",
+      "industry": "Electronic Components",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "WMT",
+      "name": "Walmart",
+      "sector": "Department/Specialty Retail Stores",
+      "industry": "Department/Specialty Retail Stores",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "XEL",
+      "name": "Xcel Energy",
+      "sector": "Power Generation",
+      "industry": "Power Generation",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    },
+    {
+      "ticker": "ZS",
+      "name": "Zscaler",
+      "sector": "EDP Services",
+      "industry": "EDP Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.317376+00:00"
+      ]
+    }
+  ],
+  "source_policy": "PUBLIC_INDEX_CONSTITUENT_DATA",
+  "validation": {
+    "sp500_minimum": 450,
+    "nasdaq100_minimum": 90,
+    "partial_universe": false
+  }
+}

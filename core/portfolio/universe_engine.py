@@ -2,481 +2,321 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
+import csv
+import io
 import json
-import re
-
-import pandas as pd
-import urllib.request
+import requests
 
 
 class UniverseEngine:
-    """
-    Builds investable equity universes.
 
-    Supported:
-        - S&P 500
-        - Nasdaq-100
-        - Both / combined
+    VERSION = "8.0-github-raw"
 
-    Membership is kept separate from research so that the
-    portfolio layer can later change its universe without
-    changing the individual-stock research engine.
-    """
-
+    # VERIFIED LIVE GITHUB RAW FILES
     SP500_URL = (
-        "https://en.wikipedia.org/wiki/"
-        "List_of_S%26P_500_companies"
+        "https://raw.githubusercontent.com/"
+        "datasets/s-and-p-500-companies/"
+        "main/data/constituents.csv"
     )
 
     NASDAQ100_URL = (
-        "https://en.wikipedia.org/wiki/"
-        "Nasdaq-100"
+        "https://raw.githubusercontent.com/"
+        "Gary-Strauss/NASDAQ100_Constituents/"
+        "master/data/nasdaq100_constituents.csv"
+    )
+
+    MIN_SP500 = 450
+    MIN_NASDAQ100 = 90
+
+    USER_AGENT = (
+        "Mozilla/5.0 "
+        "(Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 "
+        "(KHTML, like Gecko) "
+        "Chrome/140.0 Safari/537.36"
     )
 
     @staticmethod
     def now():
+
         return datetime.now(
             timezone.utc
         ).isoformat()
 
     @staticmethod
-    def normalise_ticker(ticker):
-        """
-        Convert exchange notation to Yahoo Finance notation.
+    def normalise_ticker(
+        value
+    ):
 
-        Examples:
-            BRK.B -> BRK-B
-            BF.B  -> BF-B
-        """
+        if value is None:
+            return None
 
-        ticker = str(
-            ticker
-        ).strip().upper()
-
-        ticker = re.sub(
-            r"\s+",
-            "",
-            ticker,
+        value = (
+            str(value)
+            .strip()
+            .upper()
+            .replace(
+                ".",
+                "-"
+            )
         )
 
-        ticker = ticker.replace(
-            ".",
-            "-",
-        )
-
-        return ticker
+        return value or None
 
     @classmethod
-    def _load_sp500(cls):
+    def download_csv(
+        cls,
+        url,
+        label,
+    ):
 
-        url = (
-            "https://raw.githubusercontent.com/"
-            "datasets/s-and-p-500-companies/"
-            "main/data/constituents.csv"
+        print(
+            f"Downloading {label}..."
         )
 
-        try:
+        response = requests.get(
+            url,
+            headers={
+                "User-Agent":
+                    cls.USER_AGENT,
 
-            table = pd.read_csv(
-                url
-            )
-
-        except Exception as exc:
-
-            raise RuntimeError(
-                "Unable to retrieve S&P 500 "
-                "constituents: "
-                f"{exc}"
-            ) from exc
-
-        required = {
-            "Symbol",
-            "Security",
-            "GICS Sector",
-        }
-
-        missing = (
-            required
-            - set(table.columns)
+                "Accept":
+                    "text/csv,"
+                    "text/plain,"
+                    "*/*",
+            },
+            timeout=30,
         )
 
-        if missing:
+        print(
+            "HTTP status:",
+            response.status_code,
+        )
+
+        response.raise_for_status()
+
+        text = response.text
+
+        if not text.strip():
 
             raise RuntimeError(
-                "S&P 500 source is missing "
-                f"columns: {sorted(missing)}"
+                f"{label} returned an empty file."
             )
 
-        rows = []
-
-        for _, row in table.iterrows():
-
-            ticker = cls.normalise_ticker(
-                row["Symbol"]
-            )
-
-            if not ticker:
-                continue
-
-            rows.append(
-                {
-                    "ticker": ticker,
-                    "name": str(
-                        row["Security"]
-                    ),
-                    "index_membership": [
-                        "SP500"
-                    ],
-                    "sector": str(
-                        row["GICS Sector"]
-                    ),
-                    "source":
-                        "GITHUB_DATASETS",
-                }
-            )
-
-        if len(rows) < 450:
-
-            raise RuntimeError(
-                "S&P 500 source returned "
-                f"only {len(rows)} constituents."
-            )
-
-        return rows
+        return text
 
     @classmethod
-    def _load_nasdaq100(cls):
+    def load_sp500(
+        cls
+    ):
 
-        # ----------------------------------------------------
-        # OFFICIAL NASDAQ SOURCE
-        #
-        # Nasdaq publishes the NDX constituent/weighting
-        # file directly from nasdaq.com.
-        #
-        # We use the official index file rather than:
-        #   - Wikipedia
-        #   - third-party datasets
-        #   - scraped websites
-        #   - unofficial GitHub repositories
-        # ----------------------------------------------------
+        retrieved_at = cls.now()
 
-        url = (
-            "https://www.nasdaq.com/"
-            "docs/2026/05/04/NDX.pdf"
+        text = cls.download_csv(
+            cls.SP500_URL,
+            "S&P 500",
         )
 
-        try:
+        reader = csv.DictReader(
+            io.StringIO(text)
+        )
 
-            request = urllib.request.Request(
-                url,
-                headers={
-                    "User-Agent":
-                        "Mozilla/5.0 "
-                        "(Macintosh; Intel Mac OS X) "
-                        "AppleWebKit/537.36 "
-                        "(KHTML, like Gecko) "
-                        "Chrome/131 Safari/537.36",
-                    "Accept":
-                        "application/pdf,"
-                        "*/*;q=0.8",
-                },
-            )
-
-            with urllib.request.urlopen(
-                request,
-                timeout=30,
-            ) as response:
-
-                content = response.read()
-
-        except Exception as exc:
+        if not reader.fieldnames:
 
             raise RuntimeError(
-                "Unable to retrieve the official "
-                "Nasdaq-100 constituent file: "
-                f"{exc}"
-            ) from exc
-
-        if not content.startswith(
-            b"%PDF"
-        ):
-
-            raise RuntimeError(
-                "Nasdaq returned content that "
-                "does not appear to be a PDF."
+                "S&P 500 CSV has no header."
             )
 
-        # ----------------------------------------------------
-        # Parse the official PDF.
-        #
-        # pdfplumber is preferred because the Nasdaq file
-        # is a structured table rather than ordinary HTML.
-        # ----------------------------------------------------
-
-        try:
-
-            import pdfplumber
-            from io import BytesIO
-
-            pdf = pdfplumber.open(
-                BytesIO(content)
-            )
-
-        except Exception as exc:
-
-            raise RuntimeError(
-                "Unable to parse official Nasdaq "
-                f"NDX PDF: {exc}"
-            ) from exc
+        print(
+            "Columns:",
+            reader.fieldnames,
+        )
 
         rows = []
-
-        try:
-
-            for page in pdf.pages:
-
-                tables = (
-                    page.extract_tables()
-                )
-
-                for table in tables:
-
-                    if not table:
-                        continue
-
-                    for row in table:
-
-                        if not row:
-                            continue
-
-                        cleaned = [
-                            (
-                                str(value)
-                                .strip()
-                                if value is not None
-                                else ""
-                            )
-                            for value in row
-                        ]
-
-                        if len(cleaned) < 2:
-                            continue
-
-                        symbol = None
-                        name = None
-                        weight = None
-
-                        # Nasdaq's official PDF normally
-                        # contains:
-                        #
-                        # Name | Symbol | Weight (%)
-                        #
-                        # Identify the symbol by looking
-                        # for a plausible ticker field.
-                        for index, value in enumerate(
-                            cleaned
-                        ):
-
-                            candidate = (
-                                cls.normalise_ticker(
-                                    value
-                                )
-                            )
-
-                            if (
-                                candidate
-                                and
-                                1
-                                <= len(candidate)
-                                <= 6
-                                and
-                                candidate
-                                not in {
-                                    "NAME",
-                                    "SYMBOL",
-                                    "WEIGHT",
-                                    "PERCENT",
-                                }
-                                and
-                                all(
-                                    character.isalpha()
-                                    or
-                                    character == "-"
-                                    for character
-                                    in candidate
-                                )
-                            ):
-
-                                symbol = candidate
-
-                                if index > 0:
-                                    name = cleaned[
-                                        index - 1
-                                    ]
-
-                                break
-
-                        # Extract weight when present.
-                        for value in cleaned:
-
-                            candidate = (
-                                value
-                                .replace(
-                                    "%",
-                                    ""
-                                )
-                                .replace(
-                                    ",",
-                                    ""
-                                )
-                                .strip()
-                            )
-
-                            try:
-
-                                numeric = float(
-                                    candidate
-                                )
-
-                                if (
-                                    0
-                                    <
-                                    numeric
-                                    <=
-                                    100
-                                ):
-
-                                    weight = numeric
-                                    break
-
-                            except (
-                                TypeError,
-                                ValueError,
-                            ):
-
-                                continue
-
-                        if (
-                            symbol is None
-                            or
-                            symbol
-                            in {
-                                "NAME",
-                                "SYMBOL",
-                            }
-                        ):
-
-                            continue
-
-                        rows.append(
-                            {
-                                "ticker":
-                                    symbol,
-
-                                "name":
-                                    name
-                                    or
-                                    symbol,
-
-                                "index_membership":
-                                    [
-                                        "NASDAQ100"
-                                    ],
-
-                                "sector":
-                                    "",
-
-                                "weight":
-                                    weight,
-
-                                "source":
-                                    "NASDAQ_OFFICIAL",
-                            }
-                        )
-
-        finally:
-
-            pdf.close()
-
-        # ----------------------------------------------------
-        # Deduplicate.
-        # ----------------------------------------------------
-
-        deduplicated = []
         seen = set()
 
-        for row in rows:
+        for item in reader:
 
-            ticker = row[
-                "ticker"
-            ]
+            ticker = (
+                cls.normalise_ticker(
+                    item.get(
+                        "Symbol"
+                    )
+                )
+            )
 
-            if ticker in seen:
+            if (
+                not ticker
+                or ticker in seen
+            ):
                 continue
 
             seen.add(
                 ticker
             )
 
-            deduplicated.append(
-                row
+            rows.append(
+                {
+                    "ticker":
+                        ticker,
+
+                    "name":
+                        item.get(
+                            "Security",
+                            ticker,
+                        ),
+
+                    "sector":
+                        item.get(
+                            "GICS Sector",
+                            "",
+                        ),
+
+                    "industry":
+                        item.get(
+                            "GICS Sub-Industry",
+                            "",
+                        ),
+
+                    "index_membership":
+                        [
+                            "SP500"
+                        ],
+
+                    "source":
+                        "GITHUB_DATASETS_SP500",
+
+                    "source_url":
+                        cls.SP500_URL,
+
+                    "retrieved_at":
+                        retrieved_at,
+                }
             )
 
-        # Nasdaq-100 should never silently return a tiny
-        # partial universe.
-        if len(
-            deduplicated
-        ) < 90:
+        print(
+            "S&P 500 rows:",
+            len(rows),
+        )
+
+        if len(rows) < cls.MIN_SP500:
 
             raise RuntimeError(
-                "Official Nasdaq-100 PDF produced "
-                f"only {len(deduplicated)} "
-                "recognised constituents."
+                "S&P 500 validation failed. "
+                f"Only {len(rows)} "
+                "constituents received."
             )
 
-        return deduplicated
+        return rows
 
     @classmethod
-    def get_universe(
-        cls,
-        universe="both",
+    def load_nasdaq100(
+        cls
     ):
 
-        universe = str(
-            universe
-        ).lower().strip()
+        retrieved_at = cls.now()
 
-        if universe not in {
-            "sp500",
-            "nasdaq100",
-            "both",
-        }:
-            raise ValueError(
-                "Universe must be "
-                "'sp500', 'nasdaq100', or 'both'."
+        text = cls.download_csv(
+            cls.NASDAQ100_URL,
+            "NASDAQ-100",
+        )
+
+        reader = csv.DictReader(
+            io.StringIO(text)
+        )
+
+        if not reader.fieldnames:
+
+            raise RuntimeError(
+                "NASDAQ-100 CSV has no header."
             )
+
+        print(
+            "Columns:",
+            reader.fieldnames,
+        )
 
         rows = []
+        seen = set()
 
-        if universe in {
-            "sp500",
-            "both",
-        }:
-            rows.extend(
-                cls._load_sp500()
+        for item in reader:
+
+            ticker = (
+                cls.normalise_ticker(
+                    item.get(
+                        "Ticker"
+                    )
+                )
             )
 
-        if universe in {
-            "nasdaq100",
-            "both",
-        }:
-            rows.extend(
-                cls._load_nasdaq100()
+            if (
+                not ticker
+                or ticker in seen
+            ):
+                continue
+
+            seen.add(
+                ticker
             )
 
-        # ----------------------------------------------------
-        # Deduplicate by ticker while preserving membership.
-        # ----------------------------------------------------
+            rows.append(
+                {
+                    "ticker":
+                        ticker,
+
+                    "name":
+                        item.get(
+                            "Company",
+                            ticker,
+                        ),
+
+                    "sector":
+                        item.get(
+                            "GICS_Sector",
+                            "",
+                        ),
+
+                    "industry":
+                        item.get(
+                            "GICS_Sub_Industry",
+                            "",
+                        ),
+
+                    "index_membership":
+                        [
+                            "NASDAQ100"
+                        ],
+
+                    "source":
+                        "GITHUB_GARY_STRAUSS",
+
+                    "source_url":
+                        cls.NASDAQ100_URL,
+
+                    "retrieved_at":
+                        retrieved_at,
+                }
+            )
+
+        print(
+            "NASDAQ-100 rows:",
+            len(rows),
+        )
+
+        if len(rows) < cls.MIN_NASDAQ100:
+
+            raise RuntimeError(
+                "NASDAQ-100 validation failed. "
+                f"Only {len(rows)} "
+                "constituents received."
+            )
+
+        return rows
+
+    @staticmethod
+    def merge(
+        rows
+    ):
 
         companies = {}
 
@@ -488,140 +328,231 @@ class UniverseEngine:
 
             if ticker not in companies:
 
-                companies[
-                    ticker
-                ] = {
-                    "ticker": ticker,
-                    "name": row[
-                        "name"
-                    ],
-                    "index_membership": [],
-                    "sector": row.get(
-                        "sector",
-                        "",
-                    ),
-                    "sources": [],
+                companies[ticker] = {
+                    "ticker":
+                        ticker,
+
+                    "name":
+                        row["name"],
+
+                    "sector":
+                        row["sector"],
+
+                    "industry":
+                        row["industry"],
+
+                    "index_membership":
+                        [],
+
+                    "sources":
+                        [],
+
+                    "source_urls":
+                        [],
+
+                    "retrieved_at":
+                        [],
                 }
 
-            for membership in row[
-                "index_membership"
-            ]:
+            company = companies[
+                ticker
+            ]
 
-                if membership not in companies[
-                    ticker
-                ][
+            membership = (
+                row[
                     "index_membership"
-                ]:
-
-                    companies[
-                        ticker
-                    ][
-                        "index_membership"
-                    ].append(
-                        membership
-                    )
-
-            source = row.get(
-                "source"
+                ][0]
             )
 
-            if (
-                source
-                and
-                source not in companies[
-                    ticker
-                ][
-                    "sources"
+            if membership not in (
+                company[
+                    "index_membership"
                 ]
             ):
 
-                companies[
-                    ticker
-                ][
-                    "sources"
+                company[
+                    "index_membership"
                 ].append(
-                    source
+                    membership
                 )
 
-        result = list(
-            companies.values()
+            for key, value in (
+                (
+                    "sources",
+                    row["source"],
+                ),
+                (
+                    "source_urls",
+                    row["source_url"],
+                ),
+                (
+                    "retrieved_at",
+                    row["retrieved_at"],
+                ),
+            ):
+
+                if value not in (
+                    company[key]
+                ):
+
+                    company[key].append(
+                        value
+                    )
+
+        return sorted(
+            companies.values(),
+            key=lambda item:
+                item["ticker"],
         )
 
-        result.sort(
-            key=lambda item:
-                item["ticker"]
+    @classmethod
+    def get_universe(
+        cls,
+        universe="both",
+    ):
+
+        universe = (
+            str(
+                universe
+            )
+            .lower()
+            .strip()
+        )
+
+        if universe not in {
+            "sp500",
+            "nasdaq100",
+            "both",
+        }:
+
+            raise ValueError(
+                "Universe must be "
+                "sp500, nasdaq100 "
+                "or both."
+            )
+
+        rows = []
+
+        if universe in {
+            "sp500",
+            "both",
+        }:
+
+            rows.extend(
+                cls.load_sp500()
+            )
+
+        if universe in {
+            "nasdaq100",
+            "both",
+        }:
+
+            rows.extend(
+                cls.load_nasdaq100()
+            )
+
+        companies = cls.merge(
+            rows
+        )
+
+        overlap_count = sum(
+            1
+            for company in companies
+            if len(
+                company[
+                    "index_membership"
+                ]
+            ) > 1
         )
 
         return {
-            "universe": universe,
-            "created_at": cls.now(),
-            "count": len(result),
-            "companies": result,
-            "overlap_count": sum(
-                1
-                for item in result
-                if len(
-                    item[
-                        "index_membership"
-                    ]
-                ) > 1
-            ),
+            "universe":
+                universe,
+
+            "provider":
+                "GITHUB_RAW_CSV",
+
+            "version":
+                cls.VERSION,
+
+            "created_at":
+                cls.now(),
+
+            "count":
+                len(companies),
+
+            "overlap_count":
+                overlap_count,
+
+            "companies":
+                companies,
+
+            "source_policy":
+                "PUBLIC_INDEX_CONSTITUENT_DATA",
+
+            "validation":
+                {
+                    "sp500_minimum":
+                        cls.MIN_SP500,
+
+                    "nasdaq100_minimum":
+                        cls.MIN_NASDAQ100,
+
+                    "partial_universe":
+                        False,
+                },
         }
 
     @classmethod
     def save(
         cls,
         data,
-        path=None,
     ):
 
-        if path is None:
-
-            path = (
-                "data/research/universe/"
-                f"{data['universe']}.json"
-            )
-
-        path = Path(
-            path
+        directory = Path(
+            "data/research/universe"
         )
 
-        path.parent.mkdir(
+        directory.mkdir(
             parents=True,
             exist_ok=True,
         )
 
-        with path.open(
-            "w",
-            encoding="utf-8",
-        ) as f:
-
-            json.dump(
-                data,
-                f,
-                indent=2,
+        path = (
+            directory
+            / (
+                f"{data['universe']}.json"
             )
-
-        return str(
-            path
         )
+
+        path.write_text(
+            json.dumps(
+                data,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+
+        return path
 
 
 if __name__ == "__main__":
 
+    print()
     print("=" * 80)
     print("UNIVERSE ENGINE TEST")
     print("=" * 80)
 
-    for universe in [
+    for universe in (
         "sp500",
         "nasdaq100",
         "both",
-    ]:
+    ):
 
         print()
         print(
-            f"Loading {universe.upper()}..."
+            "TESTING:",
+            universe.upper(),
         )
 
         data = (
@@ -639,13 +570,24 @@ if __name__ == "__main__":
         )
 
         print(
+            "Provider:",
+            data[
+                "provider"
+            ],
+        )
+
+        print(
             "Count:",
-            data["count"],
+            data[
+                "count"
+            ],
         )
 
         print(
             "Overlap:",
-            data["overlap_count"],
+            data[
+                "overlap_count"
+            ],
         )
 
         print(
@@ -655,5 +597,5 @@ if __name__ == "__main__":
 
     print()
     print("=" * 80)
-    print("UNIVERSE ENGINE OK")
+    print("UNIVERSE ENGINE PASSED")
     print("=" * 80)

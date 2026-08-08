@@ -1,10 +1,10 @@
 {
-  "universe": "sp500",
+  "universe": "both",
   "provider": "GITHUB_RAW_CSV",
   "version": "8.0-github-raw",
-  "created_at": "2026-08-08T23:33:01.315009+00:00",
-  "count": 503,
-  "overlap_count": 0,
+  "created_at": "2026-08-08T23:33:01.692881+00:00",
+  "count": 517,
+  "overlap_count": 87,
   "companies": [
     {
       "ticker": "A",
@@ -21,7 +21,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -30,16 +30,20 @@
       "sector": "Information Technology",
       "industry": "Technology Hardware, Storage & Peripherals",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -57,7 +61,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -66,16 +70,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Hotels, Resorts & Cruise Lines",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -93,7 +101,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -111,7 +119,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -129,7 +137,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -138,16 +146,20 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -156,16 +168,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -183,7 +199,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -192,16 +208,20 @@
       "sector": "Industrials",
       "industry": "Human Resource & Employment Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -210,16 +230,20 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -237,7 +261,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -246,16 +270,20 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -273,7 +301,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -291,7 +319,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -309,7 +337,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -327,7 +355,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -345,7 +373,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -363,7 +391,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -381,7 +409,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -399,7 +427,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -417,7 +445,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -435,7 +463,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "ALNY",
+      "name": "Alnylam Pharmaceuticals",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -444,16 +490,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductor Materials & Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -471,7 +521,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -480,16 +530,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -507,7 +561,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -516,16 +570,20 @@
       "sector": "Health Care",
       "industry": "Biotechnology",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -543,7 +601,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -561,7 +619,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -570,16 +628,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Broadline Retail",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -597,7 +659,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -615,7 +677,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -633,7 +695,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -651,7 +713,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -669,7 +731,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -687,7 +749,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -705,7 +767,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -714,16 +776,20 @@
       "sector": "Communication Services",
       "industry": "Advertising",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -741,7 +807,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -759,7 +825,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -777,7 +843,43 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "ARM",
+      "name": "Arm Holdings",
+      "sector": "Semiconductors",
+      "industry": "Semiconductors",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
+      ]
+    },
+    {
+      "ticker": "ASML",
+      "name": "ASML Holding",
+      "sector": "Industrial Machinery",
+      "industry": "Industrial Machinery",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -795,7 +897,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -813,7 +915,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -822,16 +924,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -849,7 +955,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -867,7 +973,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -876,16 +982,20 @@
       "sector": "Industrials",
       "industry": "Aerospace & Defense",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -903,7 +1013,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -921,7 +1031,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -939,7 +1049,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -957,7 +1067,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -975,7 +1085,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -993,7 +1103,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1011,7 +1121,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1029,7 +1139,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1047,7 +1157,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1065,7 +1175,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1083,7 +1193,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1101,7 +1211,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1110,16 +1220,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Hotels, Resorts & Cruise Lines",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -1128,16 +1242,20 @@
       "sector": "Energy",
       "industry": "Oil & Gas Equipment & Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -1155,7 +1273,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1173,7 +1291,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1191,7 +1309,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1209,7 +1327,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1227,7 +1345,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1245,7 +1363,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1263,7 +1381,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1281,7 +1399,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1299,7 +1417,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1317,7 +1435,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1335,7 +1453,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1353,7 +1471,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1371,7 +1489,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1389,7 +1507,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1407,7 +1525,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1425,7 +1543,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1443,7 +1561,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1461,7 +1579,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "CCEP",
+      "name": "Coca-Cola Europacific Partners",
+      "sector": "Soft Drinks",
+      "industry": "Soft Drinks",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -1479,7 +1615,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1497,7 +1633,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1506,16 +1642,20 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -1533,7 +1673,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1542,16 +1682,20 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -1569,7 +1713,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1587,7 +1731,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1605,7 +1749,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1623,7 +1767,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1632,16 +1776,20 @@
       "sector": "Communication Services",
       "industry": "Cable & Satellite",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -1659,7 +1807,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1677,7 +1825,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1695,7 +1843,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1713,7 +1861,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1731,7 +1879,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1740,16 +1888,20 @@
       "sector": "Communication Services",
       "industry": "Cable & Satellite",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -1767,7 +1919,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1785,7 +1937,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1803,7 +1955,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1821,7 +1973,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1839,7 +1991,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1857,7 +2009,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1875,7 +2027,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1893,7 +2045,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1911,7 +2063,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1929,7 +2081,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1947,7 +2099,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1965,7 +2117,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -1974,16 +2126,20 @@
       "sector": "Consumer Staples",
       "industry": "Consumer Staples Merchandise Retail",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2001,7 +2157,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2010,16 +2166,20 @@
       "sector": "Industrials",
       "industry": "Diversified Support Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2037,7 +2197,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2055,7 +2215,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2073,7 +2233,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2091,7 +2251,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2100,16 +2260,20 @@
       "sector": "Information Technology",
       "industry": "Systems Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2118,16 +2282,20 @@
       "sector": "Information Technology",
       "industry": "Communications Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2136,16 +2304,20 @@
       "sector": "Real Estate",
       "industry": "Real Estate Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2154,16 +2326,20 @@
       "sector": "Industrials",
       "industry": "Rail Transportation",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2172,16 +2348,20 @@
       "sector": "Industrials",
       "industry": "Diversified Support Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2190,16 +2370,20 @@
       "sector": "Information Technology",
       "industry": "IT Consulting & Other Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2217,7 +2401,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2235,7 +2419,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2253,7 +2437,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2271,7 +2455,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2289,7 +2473,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2307,7 +2491,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2316,16 +2500,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Specialized Consumer Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2343,7 +2531,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2352,16 +2540,20 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2379,7 +2571,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2397,7 +2589,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2415,7 +2607,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2433,7 +2625,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2451,7 +2643,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2469,7 +2661,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2487,7 +2679,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2505,7 +2697,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2523,7 +2715,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2541,7 +2733,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2559,7 +2751,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2577,7 +2769,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2595,7 +2787,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2613,7 +2805,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2631,7 +2823,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2649,7 +2841,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2667,7 +2859,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2685,7 +2877,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2703,7 +2895,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2712,16 +2904,38 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
+      ]
+    },
+    {
+      "ticker": "EA",
+      "name": "Electronic Arts",
+      "sector": "Miscellaneous Amusement & Recreation Services",
+      "industry": "Miscellaneous Amusement & Recreation Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -2739,7 +2953,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2757,7 +2971,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2775,7 +2989,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2793,7 +3007,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2811,7 +3025,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2829,7 +3043,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2847,7 +3061,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2865,7 +3079,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2883,7 +3097,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2901,7 +3115,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2919,7 +3133,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2937,7 +3151,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2955,7 +3169,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2973,7 +3187,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -2991,7 +3205,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3009,7 +3223,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3027,7 +3241,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3045,7 +3259,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3063,7 +3277,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3081,7 +3295,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3099,7 +3313,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3117,7 +3331,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3126,16 +3340,20 @@
       "sector": "Utilities",
       "industry": "Electric Utilities",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3153,7 +3371,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3171,7 +3389,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3189,7 +3407,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3207,7 +3425,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3225,7 +3443,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3234,16 +3452,20 @@
       "sector": "Energy",
       "industry": "Oil & Gas Exploration & Production",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3252,16 +3474,20 @@
       "sector": "Industrials",
       "industry": "Trading Companies & Distributors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3279,7 +3505,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3297,7 +3523,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3315,7 +3541,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3333,7 +3559,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3351,7 +3577,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "FER",
+      "name": "Ferrovial",
+      "sector": "Military, Government, Technical",
+      "industry": "Military, Government, Technical",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3369,7 +3613,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3387,7 +3631,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3405,7 +3649,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3423,7 +3667,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3441,7 +3685,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3459,7 +3703,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3477,7 +3721,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3495,7 +3739,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3513,7 +3757,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3531,7 +3775,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3549,7 +3793,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3567,7 +3811,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3576,16 +3820,20 @@
       "sector": "Information Technology",
       "industry": "Systems Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3603,7 +3851,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3621,7 +3869,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3639,7 +3887,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3657,7 +3905,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3666,16 +3914,20 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3693,7 +3945,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3711,7 +3963,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3720,16 +3972,20 @@
       "sector": "Health Care",
       "industry": "Biotechnology",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3747,7 +4003,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3765,7 +4021,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3783,7 +4039,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3801,7 +4057,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3819,7 +4075,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3828,16 +4084,20 @@
       "sector": "Communication Services",
       "industry": "Interactive Media & Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3846,16 +4106,20 @@
       "sector": "Communication Services",
       "industry": "Interactive Media & Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -3873,7 +4137,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3891,7 +4155,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3909,7 +4173,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3927,7 +4191,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3945,7 +4209,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3963,7 +4227,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3981,7 +4245,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -3999,7 +4263,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4017,7 +4281,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4035,7 +4299,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4053,7 +4317,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4071,7 +4335,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4089,7 +4353,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4098,16 +4362,20 @@
       "sector": "Industrials",
       "industry": "Industrial Conglomerates",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4125,7 +4393,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4143,7 +4411,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4161,7 +4429,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4179,7 +4447,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4197,7 +4465,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4215,7 +4483,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4233,7 +4501,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4251,7 +4519,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4269,7 +4537,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4287,7 +4555,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4305,7 +4573,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4323,7 +4591,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4341,7 +4609,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4359,7 +4627,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4368,16 +4636,20 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4395,7 +4667,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4413,7 +4685,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4431,7 +4703,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "INSM",
+      "name": "Insmed Incorporated",
+      "sector": "Biotechnology",
+      "industry": "Biotechnology",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4440,16 +4730,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4458,16 +4752,20 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4485,7 +4783,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4503,7 +4801,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4521,7 +4819,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4539,7 +4837,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4557,7 +4855,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4566,16 +4864,20 @@
       "sector": "Health Care",
       "industry": "Health Care Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4593,7 +4895,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4611,7 +4913,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4629,7 +4931,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4647,7 +4949,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4665,7 +4967,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4683,7 +4985,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4701,7 +5003,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4719,7 +5021,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4737,7 +5039,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4755,7 +5057,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4764,16 +5066,20 @@
       "sector": "Consumer Staples",
       "industry": "Soft Drinks & Non-alcoholic Beverages",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4791,7 +5097,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4809,7 +5115,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4818,16 +5124,20 @@
       "sector": "Consumer Staples",
       "industry": "Packaged Foods & Meats",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4845,7 +5155,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4863,7 +5173,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4872,16 +5182,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductor Materials & Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -4899,7 +5213,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4917,7 +5231,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4935,7 +5249,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4953,7 +5267,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4971,7 +5285,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -4989,7 +5303,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5007,7 +5321,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5025,7 +5339,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5043,7 +5357,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5061,7 +5375,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5079,7 +5393,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5088,16 +5402,20 @@
       "sector": "Materials",
       "industry": "Industrial Gases",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5115,7 +5433,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5133,7 +5451,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5151,7 +5469,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5169,7 +5487,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5187,7 +5505,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5196,16 +5514,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductor Materials & Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5223,7 +5545,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5241,7 +5563,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5259,7 +5581,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5277,7 +5599,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5295,7 +5617,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5313,7 +5635,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5331,7 +5653,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5340,16 +5662,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Hotels, Resorts & Cruise Lines",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5367,7 +5693,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5385,7 +5711,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5394,16 +5720,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5421,7 +5751,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5439,7 +5769,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5448,16 +5778,20 @@
       "sector": "Consumer Staples",
       "industry": "Packaged Foods & Meats",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5475,7 +5809,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "MELI",
+      "name": "Mercado Libre",
+      "sector": "Catalog/Specialty Distribution",
+      "industry": "Catalog/Specialty Distribution",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5493,7 +5845,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5502,16 +5854,20 @@
       "sector": "Communication Services",
       "industry": "Interactive Media & Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5529,7 +5885,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5547,7 +5903,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5565,7 +5921,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5583,7 +5939,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5592,16 +5948,20 @@
       "sector": "Consumer Staples",
       "industry": "Soft Drinks & Non-alcoholic Beverages",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5619,7 +5979,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5637,7 +5997,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5655,7 +6015,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5664,16 +6024,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5691,7 +6055,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5709,7 +6073,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5727,7 +6091,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5736,16 +6100,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5763,7 +6131,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5781,7 +6149,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5790,16 +6158,20 @@
       "sector": "Information Technology",
       "industry": "Systems Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5817,7 +6189,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "MSTR",
+      "name": "MicroStrategy",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5835,7 +6225,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5853,7 +6243,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5862,16 +6252,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5889,7 +6283,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5907,7 +6301,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5925,7 +6319,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5943,7 +6337,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5961,7 +6355,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -5970,16 +6364,20 @@
       "sector": "Communication Services",
       "industry": "Movies & Entertainment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -5997,7 +6395,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6015,7 +6413,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6033,7 +6431,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6051,7 +6449,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6069,7 +6467,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6087,7 +6485,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6105,7 +6503,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6123,7 +6521,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6141,7 +6539,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6150,16 +6548,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6177,7 +6579,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6195,7 +6597,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6213,7 +6615,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6222,16 +6624,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6249,7 +6655,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6258,16 +6664,20 @@
       "sector": "Industrials",
       "industry": "Cargo Ground Transportation",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6285,7 +6695,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6303,7 +6713,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6321,7 +6731,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6339,7 +6749,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6348,16 +6758,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Automotive Retail",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6375,7 +6789,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6393,7 +6807,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6402,16 +6816,20 @@
       "sector": "Information Technology",
       "industry": "Systems Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6420,16 +6838,20 @@
       "sector": "Industrials",
       "industry": "Human Resource & Employment Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6438,16 +6860,20 @@
       "sector": "Industrials",
       "industry": "Construction Machinery & Heavy Transportation Equipment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6465,7 +6891,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "PDD",
+      "name": "PDD Holdings",
+      "sector": "EDP Services",
+      "industry": "EDP Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6483,7 +6927,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6492,16 +6936,20 @@
       "sector": "Consumer Staples",
       "industry": "Soft Drinks & Non-alcoholic Beverages",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6519,7 +6967,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6537,7 +6985,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6555,7 +7003,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6573,7 +7021,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6591,7 +7039,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6609,7 +7057,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6627,7 +7075,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6645,7 +7093,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6654,16 +7102,20 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6681,7 +7133,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6699,7 +7151,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6717,7 +7169,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6735,7 +7187,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6753,7 +7205,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6771,7 +7223,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6789,7 +7241,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6807,7 +7259,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6825,7 +7277,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6843,7 +7295,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6861,7 +7313,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6879,7 +7331,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6897,7 +7349,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6906,16 +7358,20 @@
       "sector": "Financials",
       "industry": "Transaction & Payment Processing Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6933,7 +7389,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6942,16 +7398,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -6969,7 +7429,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6987,7 +7447,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -6996,16 +7456,20 @@
       "sector": "Health Care",
       "industry": "Biotechnology",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7023,7 +7487,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7041,7 +7505,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7059,7 +7523,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7077,7 +7541,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7095,7 +7559,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7113,7 +7577,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7122,16 +7586,20 @@
       "sector": "Information Technology",
       "industry": "Electronic Equipment & Instruments",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7140,16 +7608,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Apparel Retail",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7167,7 +7639,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7185,7 +7657,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7203,7 +7675,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7221,7 +7693,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7230,16 +7702,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Restaurants",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7257,7 +7733,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "SHOP",
+      "name": "Shopify",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7275,7 +7769,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7293,7 +7787,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7311,7 +7805,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7329,7 +7823,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7347,7 +7841,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7365,7 +7859,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7374,16 +7868,20 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7401,7 +7899,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7419,7 +7917,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7437,7 +7935,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7455,7 +7953,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7473,7 +7971,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7491,7 +7989,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7509,7 +8007,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7527,7 +8025,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7536,16 +8034,20 @@
       "sector": "Information Technology",
       "industry": "Technology Hardware, Storage & Peripherals",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7563,7 +8065,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7581,7 +8083,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7599,7 +8101,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7617,7 +8119,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7635,7 +8137,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7653,7 +8155,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7671,7 +8173,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7689,7 +8191,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7707,7 +8209,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7725,7 +8227,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7743,7 +8245,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "TEAM",
+      "name": "Atlassian",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7761,7 +8281,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7779,7 +8299,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7797,7 +8317,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7815,7 +8335,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7833,7 +8353,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7851,7 +8371,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7869,7 +8389,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7887,7 +8407,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7896,16 +8416,20 @@
       "sector": "Communication Services",
       "industry": "Wireless Telecommunication Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7923,7 +8447,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7941,7 +8465,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7959,7 +8483,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "TRI",
+      "name": "Thomson Reuters",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -7977,7 +8519,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -7995,7 +8537,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8013,7 +8555,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8031,7 +8573,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8040,16 +8582,20 @@
       "sector": "Consumer Discretionary",
       "industry": "Automobile Manufacturers",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8067,7 +8613,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8085,7 +8631,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8103,7 +8649,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8112,16 +8658,20 @@
       "sector": "Communication Services",
       "industry": "Interactive Home Entertainment",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8130,16 +8680,20 @@
       "sector": "Information Technology",
       "industry": "Semiconductors",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8157,7 +8711,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8175,7 +8729,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8193,7 +8747,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8211,7 +8765,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8229,7 +8783,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8247,7 +8801,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8265,7 +8819,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8283,7 +8837,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8301,7 +8855,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8319,7 +8873,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8337,7 +8891,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8355,7 +8909,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8373,7 +8927,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8391,7 +8945,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8409,7 +8963,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8427,7 +8981,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8445,7 +8999,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8463,7 +9017,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8472,16 +9026,20 @@
       "sector": "Industrials",
       "industry": "Research & Consulting Services",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8499,7 +9057,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8517,7 +9075,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8526,16 +9084,20 @@
       "sector": "Health Care",
       "industry": "Biotechnology",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8553,7 +9115,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8571,7 +9133,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8589,7 +9151,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8607,7 +9169,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8625,7 +9187,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8643,7 +9205,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8652,16 +9214,20 @@
       "sector": "Communication Services",
       "industry": "Broadcasting",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8670,16 +9236,20 @@
       "sector": "Information Technology",
       "industry": "Application Software",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8688,16 +9258,20 @@
       "sector": "Information Technology",
       "industry": "Technology Hardware, Storage & Peripherals",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8715,7 +9289,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8733,7 +9307,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8751,7 +9325,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8769,7 +9343,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8787,7 +9361,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8796,16 +9370,20 @@
       "sector": "Consumer Staples",
       "industry": "Consumer Staples Merchandise Retail",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8823,7 +9401,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8841,7 +9419,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8859,7 +9437,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8877,7 +9455,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8895,7 +9473,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8913,7 +9491,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8922,16 +9500,20 @@
       "sector": "Utilities",
       "industry": "Multi-Utilities",
       "index_membership": [
-        "SP500"
+        "SP500",
+        "NASDAQ100"
       ],
       "sources": [
-        "GITHUB_DATASETS_SP500"
+        "GITHUB_DATASETS_SP500",
+        "GITHUB_GARY_STRAUSS"
       ],
       "source_urls": [
-        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00",
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -8949,7 +9531,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8967,7 +9549,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -8985,7 +9567,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -9003,7 +9585,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -9021,7 +9603,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     },
     {
@@ -9039,7 +9621,25 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
+      ]
+    },
+    {
+      "ticker": "ZS",
+      "name": "Zscaler",
+      "sector": "EDP Services",
+      "industry": "EDP Services",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "sources": [
+        "GITHUB_GARY_STRAUSS"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Gary-Strauss/NASDAQ100_Constituents/master/data/nasdaq100_constituents.csv"
+      ],
+      "retrieved_at": [
+        "2026-08-08T23:33:01.618434+00:00"
       ]
     },
     {
@@ -9057,7 +9657,7 @@
         "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
       ],
       "retrieved_at": [
-        "2026-08-08T23:33:01.201602+00:00"
+        "2026-08-08T23:33:01.532594+00:00"
       ]
     }
   ],

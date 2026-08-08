@@ -18,13 +18,14 @@ idna==3.18
 itsdangerous==2.2.0
 Jinja2==3.1.6
 jiter==0.16.0
-jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
+jsonschema==4.26.0
 MarkupSafe==3.0.3
 multitasking==0.0.13
 narwhals==2.24.0
 numpy==2.5.1
 packaging==26.3
+pandas
 pandas==3.0.5
 peewee==4.3.0
 pillow==12.3.0
@@ -54,4 +55,5 @@ typing_extensions==4.16.0
 urllib3==2.7.0
 uvicorn==0.52.1
 websockets==16.1.1
+yfinance
 yfinance==1.5.2

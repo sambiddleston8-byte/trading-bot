@@ -13,4 +13,4 @@ venv/
 .vscode/
 
 # Environment variables
-.env
+.env*.pyc
