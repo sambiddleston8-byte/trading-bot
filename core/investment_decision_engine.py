@@ -368,6 +368,42 @@ class InvestmentDecisionEngine:
                 )
             )
 
+        # ----------------------------------------------------
+        # The ValuationEngine stores the Base DCF result inside
+        # the scenario results. If the top-level field is not
+        # present, recover it from the Base scenario.
+        # ----------------------------------------------------
+
+        if base_value is None:
+
+            scenarios = (
+                valuation_analysis.get(
+                    "Scenarios"
+                )
+            )
+
+            if isinstance(
+                scenarios,
+                dict,
+            ):
+
+                base_scenario = (
+                    scenarios.get(
+                        "Base"
+                    )
+                )
+
+                if isinstance(
+                    base_scenario,
+                    dict,
+                ):
+
+                    base_value = self.number(
+                        base_scenario.get(
+                            "Intrinsic Value Per Share"
+                        )
+                    )
+
         forward_revenue_growth = (
             self.number(
                 fundamental_analysis
@@ -471,6 +507,13 @@ class InvestmentDecisionEngine:
 
         if (
             expected_return is not None
+            and expected_return <= -0.25
+        ):
+
+            decision = "AVOID"
+
+        elif (
+            expected_return is not None
             and expected_return <= -0.10
         ):
 
@@ -480,13 +523,6 @@ class InvestmentDecisionEngine:
             ):
 
                 decision = "WATCHLIST"
-
-        elif (
-            expected_return is not None
-            and expected_return <= -0.25
-        ):
-
-            decision = "AVOID"
 
         result = {
 

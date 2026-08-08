@@ -1,4 +1,5 @@
 from __future__ import annotations
+from core.data_quality.freshness_checker import FreshnessChecker
 
 from datetime import datetime, timezone
 from typing import Any
@@ -7,6 +8,58 @@ from typing import Any
 class Provenance:
 
     @staticmethod
+    def add_freshness(
+        self,
+        provenance,
+    ):
+
+        if not isinstance(
+            provenance,
+            dict,
+        ):
+            return provenance
+
+        source = provenance.get(
+            "type"
+        )
+
+        retrieved_at = provenance.get(
+            "retrieved_at"
+        )
+
+        if source == "SEC":
+            freshness_source = "SEC"
+
+        elif source == "ANALYST_CONSENSUS":
+            freshness_source = (
+                "ANALYST_CONSENSUS"
+            )
+
+        elif source == "CALCULATION":
+            freshness_source = (
+                "CALCULATION"
+            )
+
+        else:
+            freshness_source = "YAHOO"
+
+        freshness = (
+            FreshnessChecker.check(
+                freshness_source,
+                retrieved_at,
+            )
+        )
+
+        enriched = dict(
+            provenance
+        )
+
+        enriched[
+            "freshness"
+        ] = freshness
+
+        return enriched
+
     def now():
         return datetime.now(
             timezone.utc
