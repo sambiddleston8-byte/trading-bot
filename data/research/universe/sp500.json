@@ -1,0 +1,5541 @@
+{
+  "universe": "sp500",
+  "created_at": "2026-08-08T23:18:42.542440+00:00",
+  "count": 503,
+  "companies": [
+    {
+      "ticker": "A",
+      "name": "Agilent Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ABBV",
+      "name": "AbbVie",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ABNB",
+      "name": "Airbnb",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ABT",
+      "name": "Abbott Laboratories",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ACGL",
+      "name": "Arch Capital Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ACN",
+      "name": "Accenture",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ADBE",
+      "name": "Adobe Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ADI",
+      "name": "Analog Devices",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ADM",
+      "name": "Archer Daniels Midland",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ADP",
+      "name": "Automatic Data Processing",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ADSK",
+      "name": "Autodesk",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AEE",
+      "name": "Ameren",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AEP",
+      "name": "American Electric Power",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AES",
+      "name": "AES Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AFL",
+      "name": "Aflac",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AIG",
+      "name": "American International Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AIZ",
+      "name": "Assurant",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AJG",
+      "name": "Arthur J. Gallagher & Co.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AKAM",
+      "name": "Akamai Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ALB",
+      "name": "Albemarle Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ALGN",
+      "name": "Align Technology",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ALL",
+      "name": "Allstate",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ALLE",
+      "name": "Allegion",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AMAT",
+      "name": "Applied Materials",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AMCR",
+      "name": "Amcor",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AME",
+      "name": "Ametek",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AMGN",
+      "name": "Amgen",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AMP",
+      "name": "Ameriprise Financial",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AMT",
+      "name": "American Tower",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AMZN",
+      "name": "Amazon",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ANET",
+      "name": "Arista Networks",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AON",
+      "name": "Aon plc",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AOS",
+      "name": "A. O. Smith",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "APA",
+      "name": "APA Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "APD",
+      "name": "Air Products",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "APH",
+      "name": "Amphenol",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "APO",
+      "name": "Apollo Global Management",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "APP",
+      "name": "AppLovin",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "APTV",
+      "name": "Aptiv",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ARE",
+      "name": "Alexandria Real Estate Equities",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ARES",
+      "name": "Ares Management",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ATO",
+      "name": "Atmos Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AVB",
+      "name": "AvalonBay Communities",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AVY",
+      "name": "Avery Dennison",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AWK",
+      "name": "American Water Works",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AXON",
+      "name": "Axon Enterprise",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AXP",
+      "name": "American Express",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "AZO",
+      "name": "AutoZone",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BA",
+      "name": "Boeing",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BAC",
+      "name": "Bank of America",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BALL",
+      "name": "Ball Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BAX",
+      "name": "Baxter International",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BBY",
+      "name": "Best Buy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BDX",
+      "name": "Becton Dickinson",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BEN",
+      "name": "Franklin Resources",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BF-B",
+      "name": "Brown\u2013Forman",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BG",
+      "name": "Bunge Global",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BIIB",
+      "name": "Biogen",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BKNG",
+      "name": "Booking Holdings",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BKR",
+      "name": "Baker Hughes",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BLDR",
+      "name": "Builders FirstSource",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BLK",
+      "name": "BlackRock",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BMY",
+      "name": "Bristol Myers Squibb",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BNY",
+      "name": "BNY Mellon",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BR",
+      "name": "Broadridge Financial Solutions",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BRK-B",
+      "name": "Berkshire Hathaway",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BRO",
+      "name": "Brown & Brown",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BSX",
+      "name": "Boston Scientific",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BX",
+      "name": "Blackstone Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "BXP",
+      "name": "BXP, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "C",
+      "name": "Citigroup",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CAH",
+      "name": "Cardinal Health",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CARR",
+      "name": "Carrier Global",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CASY",
+      "name": "Casey's",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CAT",
+      "name": "Caterpillar Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CB",
+      "name": "Chubb Limited",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CBOE",
+      "name": "Cboe Global Markets",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CBRE",
+      "name": "CBRE Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CCI",
+      "name": "Crown Castle",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CCL",
+      "name": "Carnival Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CDNS",
+      "name": "Cadence Design Systems",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CDW",
+      "name": "CDW Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CEG",
+      "name": "Constellation Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CF",
+      "name": "CF Industries",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CFG",
+      "name": "Citizens Financial Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CHD",
+      "name": "Church & Dwight",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CHRW",
+      "name": "C.H. Robinson",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CHTR",
+      "name": "Charter Communications",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CI",
+      "name": "Cigna",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CIEN",
+      "name": "Ciena",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CINF",
+      "name": "Cincinnati Financial",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CL",
+      "name": "Colgate-Palmolive",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CLX",
+      "name": "Clorox",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CMCSA",
+      "name": "Comcast",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CME",
+      "name": "CME Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CMG",
+      "name": "Chipotle Mexican Grill",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CMI",
+      "name": "Cummins",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CMS",
+      "name": "CMS Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CNC",
+      "name": "Centene Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CNP",
+      "name": "CenterPoint Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "COF",
+      "name": "Capital One",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "COHR",
+      "name": "Coherent Corp.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "COIN",
+      "name": "Coinbase",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "COO",
+      "name": "Cooper Companies (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "COP",
+      "name": "ConocoPhillips",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "COR",
+      "name": "Cencora",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "COST",
+      "name": "Costco",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CPAY",
+      "name": "Corpay",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CPRT",
+      "name": "Copart",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CPT",
+      "name": "Camden Property Trust",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CRH",
+      "name": "CRH plc",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CRL",
+      "name": "Charles River Laboratories",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CRM",
+      "name": "Salesforce",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CRWD",
+      "name": "CrowdStrike",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CSCO",
+      "name": "Cisco",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CSGP",
+      "name": "CoStar Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CSX",
+      "name": "CSX Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CTAS",
+      "name": "Cintas",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CTSH",
+      "name": "Cognizant",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CTVA",
+      "name": "Corteva",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CVNA",
+      "name": "Carvana",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CVS",
+      "name": "CVS Health",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "CVX",
+      "name": "Chevron Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "D",
+      "name": "Dominion Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DAL",
+      "name": "Delta Air Lines",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DASH",
+      "name": "DoorDash",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DD",
+      "name": "DuPont",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DDOG",
+      "name": "Datadog",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DE",
+      "name": "Deere & Company",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DECK",
+      "name": "Deckers Brands",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DELL",
+      "name": "Dell Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DG",
+      "name": "Dollar General",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DGX",
+      "name": "Quest Diagnostics",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DHI",
+      "name": "D. R. Horton",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DHR",
+      "name": "Danaher Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DIS",
+      "name": "Walt Disney Company (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DLR",
+      "name": "Digital Realty",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DLTR",
+      "name": "Dollar Tree",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DOC",
+      "name": "Healthpeak Properties",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DOV",
+      "name": "Dover Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DOW",
+      "name": "Dow Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DPZ",
+      "name": "Domino's",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DRI",
+      "name": "Darden Restaurants",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DTE",
+      "name": "DTE Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DUK",
+      "name": "Duke Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DVA",
+      "name": "DaVita",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DVN",
+      "name": "Devon Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "DXCM",
+      "name": "Dexcom",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EBAY",
+      "name": "eBay Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ECHO",
+      "name": "EchoStar",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ECL",
+      "name": "Ecolab",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ED",
+      "name": "Consolidated Edison",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EFX",
+      "name": "Equifax",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EG",
+      "name": "Everest Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EIX",
+      "name": "Edison International",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EL",
+      "name": "Est\u00e9e Lauder Companies (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ELV",
+      "name": "Elevance Health",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EME",
+      "name": "Emcor",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EMR",
+      "name": "Emerson Electric",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EOG",
+      "name": "EOG Resources",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EQIX",
+      "name": "Equinix",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EQR",
+      "name": "Equity Residential",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EQT",
+      "name": "EQT Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ERIE",
+      "name": "Erie Indemnity",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ES",
+      "name": "Eversource Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ESS",
+      "name": "Essex Property Trust",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ETN",
+      "name": "Eaton Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ETR",
+      "name": "Entergy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EVRG",
+      "name": "Evergy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EW",
+      "name": "Edwards Lifesciences",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EXC",
+      "name": "Exelon",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EXE",
+      "name": "Expand Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EXPD",
+      "name": "Expeditors International",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EXPE",
+      "name": "Expedia Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "EXR",
+      "name": "Extra Space Storage",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "F",
+      "name": "Ford Motor Company",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FANG",
+      "name": "Diamondback Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FAST",
+      "name": "Fastenal",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FCX",
+      "name": "Freeport-McMoRan",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FDS",
+      "name": "FactSet",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FDX",
+      "name": "FedEx",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FDXF",
+      "name": "FedEx Freight",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FE",
+      "name": "FirstEnergy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FERG",
+      "name": "Ferguson Enterprises",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FFIV",
+      "name": "F5, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FICO",
+      "name": "Fair Isaac",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FIS",
+      "name": "Fidelity National Information Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FISV",
+      "name": "Fiserv",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FITB",
+      "name": "Fifth Third Bancorp",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FIX",
+      "name": "Comfort Systems USA",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FLEX",
+      "name": "Flex Ltd.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FOX",
+      "name": "Fox Corporation (Class B)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FOXA",
+      "name": "Fox Corporation (Class A)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FRT",
+      "name": "Federal Realty Investment Trust",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FSLR",
+      "name": "First Solar",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FTNT",
+      "name": "Fortinet",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "FTV",
+      "name": "Fortive",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GD",
+      "name": "General Dynamics",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GDDY",
+      "name": "GoDaddy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GE",
+      "name": "GE Aerospace",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GEHC",
+      "name": "GE HealthCare",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GEN",
+      "name": "Gen Digital",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GEV",
+      "name": "GE Vernova",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GILD",
+      "name": "Gilead Sciences",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GIS",
+      "name": "General Mills",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GL",
+      "name": "Globe Life",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GLW",
+      "name": "Corning Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GM",
+      "name": "General Motors",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GNRC",
+      "name": "Generac",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GOOG",
+      "name": "Alphabet Inc. (Class C)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet Inc. (Class A)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GPC",
+      "name": "Genuine Parts Company",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GPN",
+      "name": "Global Payments",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GRMN",
+      "name": "Garmin",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GS",
+      "name": "Goldman Sachs",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "GWW",
+      "name": "W. W. Grainger",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HAL",
+      "name": "Halliburton",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HAS",
+      "name": "Hasbro",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HBAN",
+      "name": "Huntington Bancshares",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HCA",
+      "name": "HCA Healthcare",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HD",
+      "name": "Home Depot (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HIG",
+      "name": "Hartford (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HII",
+      "name": "Huntington Ingalls Industries",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HLT",
+      "name": "Hilton Worldwide",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HON",
+      "name": "Honeywell Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HONA",
+      "name": "Honeywell Aerospace",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HOOD",
+      "name": "Robinhood Markets",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HPE",
+      "name": "Hewlett Packard Enterprise",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HPQ",
+      "name": "HP Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HRL",
+      "name": "Hormel Foods",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HSIC",
+      "name": "Henry Schein",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HST",
+      "name": "Host Hotels & Resorts",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HSY",
+      "name": "Hershey Company (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HUBB",
+      "name": "Hubbell Incorporated",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HUM",
+      "name": "Humana",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "HWM",
+      "name": "Howmet Aerospace",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IBKR",
+      "name": "Interactive Brokers",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IBM",
+      "name": "IBM",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ICE",
+      "name": "Intercontinental Exchange",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IDXX",
+      "name": "Idexx Laboratories",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IEX",
+      "name": "IDEX Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IFF",
+      "name": "International Flavors & Fragrances",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "INCY",
+      "name": "Incyte",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "INTC",
+      "name": "Intel",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "INTU",
+      "name": "Intuit",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "INVH",
+      "name": "Invitation Homes",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IP",
+      "name": "International Paper",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IQV",
+      "name": "IQVIA",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IR",
+      "name": "Ingersoll Rand",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IRM",
+      "name": "Iron Mountain",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ISRG",
+      "name": "Intuitive Surgical",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IT",
+      "name": "Gartner",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ITW",
+      "name": "Illinois Tool Works",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "IVZ",
+      "name": "Invesco",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "J",
+      "name": "Jacobs Solutions",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "JBHT",
+      "name": "J.B. Hunt",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "JBL",
+      "name": "Jabil",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "JCI",
+      "name": "Johnson Controls",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "JKHY",
+      "name": "Jack Henry & Associates",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "JNJ",
+      "name": "Johnson & Johnson",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "JPM",
+      "name": "JPMorgan Chase",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KDP",
+      "name": "Keurig Dr Pepper",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KEY",
+      "name": "KeyCorp",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KEYS",
+      "name": "Keysight Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KHC",
+      "name": "Kraft Heinz",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KIM",
+      "name": "Kimco Realty",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KKR",
+      "name": "KKR & Co.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KLAC",
+      "name": "KLA Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KMB",
+      "name": "Kimberly-Clark",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KMI",
+      "name": "Kinder Morgan",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KO",
+      "name": "Coca-Cola Company (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KR",
+      "name": "Kroger",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "KVUE",
+      "name": "Kenvue",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "L",
+      "name": "Loews Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LDOS",
+      "name": "Leidos",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LEN",
+      "name": "Lennar",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LH",
+      "name": "Labcorp",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LHX",
+      "name": "L3Harris",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LII",
+      "name": "Lennox International",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LIN",
+      "name": "Linde plc",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "name": "Lumentum",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LLY",
+      "name": "Lilly (Eli)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LMT",
+      "name": "Lockheed Martin",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LNT",
+      "name": "Alliant Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LOW",
+      "name": "Lowe's",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LRCX",
+      "name": "Lam Research",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LULU",
+      "name": "Lululemon Athletica",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LUV",
+      "name": "Southwest Airlines",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LVS",
+      "name": "Las Vegas Sands",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LYB",
+      "name": "LyondellBasell",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "LYV",
+      "name": "Live Nation Entertainment",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MA",
+      "name": "Mastercard",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MAA",
+      "name": "Mid-America Apartment Communities",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MAR",
+      "name": "Marriott International",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MAS",
+      "name": "Masco",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MCD",
+      "name": "McDonald's",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MCHP",
+      "name": "Microchip Technology",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MCK",
+      "name": "McKesson Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MCO",
+      "name": "Moody's Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MDLZ",
+      "name": "Mondelez International",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MDT",
+      "name": "Medtronic",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MET",
+      "name": "MetLife",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MGM",
+      "name": "MGM Resorts",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MKC",
+      "name": "McCormick & Company",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MLM",
+      "name": "Martin Marietta Materials",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MMM",
+      "name": "3M",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MNST",
+      "name": "Monster Beverage",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MO",
+      "name": "Altria",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MOS",
+      "name": "Mosaic Company (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MPC",
+      "name": "Marathon Petroleum",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MPWR",
+      "name": "Monolithic Power Systems",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MRK",
+      "name": "Merck & Co.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MRNA",
+      "name": "Moderna",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MRSH",
+      "name": "Marsh McLennan",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell Technology",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MS",
+      "name": "Morgan Stanley",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MSCI",
+      "name": "MSCI Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MSI",
+      "name": "Motorola Solutions",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MTB",
+      "name": "M&T Bank",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MTD",
+      "name": "Mettler Toledo",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "MU",
+      "name": "Micron Technology",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NCLH",
+      "name": "Norwegian Cruise Line Holdings",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NDAQ",
+      "name": "Nasdaq, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NDSN",
+      "name": "Nordson Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NEE",
+      "name": "NextEra Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NEM",
+      "name": "Newmont",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NFLX",
+      "name": "Netflix",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NI",
+      "name": "NiSource",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NKE",
+      "name": "Nike, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NOC",
+      "name": "Northrop Grumman",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NOW",
+      "name": "ServiceNow",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NRG",
+      "name": "NRG Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NSC",
+      "name": "Norfolk Southern",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NTAP",
+      "name": "NetApp",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NTRS",
+      "name": "Northern Trust",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NUE",
+      "name": "Nucor",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "name": "Nvidia",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NVR",
+      "name": "NVR, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NWS",
+      "name": "News Corp (Class B)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NWSA",
+      "name": "News Corp (Class A)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "NXPI",
+      "name": "NXP Semiconductors",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "O",
+      "name": "Realty Income",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ODFL",
+      "name": "Old Dominion",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "OKE",
+      "name": "Oneok",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "OMC",
+      "name": "Omnicom Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ON",
+      "name": "ON Semiconductor",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ORCL",
+      "name": "Oracle Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ORLY",
+      "name": "O\u2019Reilly Automotive",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "OTIS",
+      "name": "Otis Worldwide",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "OXY",
+      "name": "Occidental Petroleum",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PANW",
+      "name": "Palo Alto Networks",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PAYX",
+      "name": "Paychex",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PCAR",
+      "name": "Paccar",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PCG",
+      "name": "PG&E Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PEG",
+      "name": "Public Service Enterprise Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PEP",
+      "name": "PepsiCo",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PFE",
+      "name": "Pfizer",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PFG",
+      "name": "Principal Financial Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PG",
+      "name": "Procter & Gamble",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PGR",
+      "name": "Progressive Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PH",
+      "name": "Parker Hannifin",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PHM",
+      "name": "PulteGroup",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PKG",
+      "name": "Packaging Corporation of America",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PLD",
+      "name": "Prologis",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PLTR",
+      "name": "Palantir Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PM",
+      "name": "Philip Morris International",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PNC",
+      "name": "PNC Financial Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PNR",
+      "name": "Pentair",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PNW",
+      "name": "Pinnacle West Capital",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PODD",
+      "name": "Insulet Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PPG",
+      "name": "PPG Industries",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PPL",
+      "name": "PPL Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PRU",
+      "name": "Prudential Financial",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PSA",
+      "name": "Public Storage",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PSKY",
+      "name": "Paramount Skydance Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PSX",
+      "name": "Phillips 66",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PTC",
+      "name": "PTC Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PWR",
+      "name": "Quanta Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "PYPL",
+      "name": "PayPal",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "Q",
+      "name": "Qnity Electronics",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "QCOM",
+      "name": "Qualcomm",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "RCL",
+      "name": "Royal Caribbean Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "REG",
+      "name": "Regency Centers",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "REGN",
+      "name": "Regeneron Pharmaceuticals",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "RF",
+      "name": "Regions Financial Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "RJF",
+      "name": "Raymond James Financial",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "RL",
+      "name": "Ralph Lauren Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "RMD",
+      "name": "ResMed",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ROK",
+      "name": "Rockwell Automation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ROL",
+      "name": "Rollins, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ROP",
+      "name": "Roper Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ROST",
+      "name": "Ross Stores",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "RSG",
+      "name": "Republic Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "RTX",
+      "name": "RTX Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "RVTY",
+      "name": "Revvity",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SBAC",
+      "name": "SBA Communications",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SBUX",
+      "name": "Starbucks",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SCHW",
+      "name": "Charles Schwab Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SHW",
+      "name": "Sherwin-Williams",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SJM",
+      "name": "J.M. Smucker Company (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SLB",
+      "name": "Schlumberger",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SMCI",
+      "name": "Supermicro",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SNA",
+      "name": "Snap-on",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SNDK",
+      "name": "Sandisk",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SNPS",
+      "name": "Synopsys",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SO",
+      "name": "Southern Company",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SOLV",
+      "name": "Solventum",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SPG",
+      "name": "Simon Property Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SPGI",
+      "name": "S&P Global",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SRE",
+      "name": "Sempra",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "STE",
+      "name": "Steris",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "STLD",
+      "name": "Steel Dynamics",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "STT",
+      "name": "State Street Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "STX",
+      "name": "Seagate Technology",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "STZ",
+      "name": "Constellation Brands",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SW",
+      "name": "Smurfit Westrock",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SWK",
+      "name": "Stanley Black & Decker",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SWKS",
+      "name": "Skyworks Solutions",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SYF",
+      "name": "Synchrony Financial",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SYK",
+      "name": "Stryker Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "SYY",
+      "name": "Sysco",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "T",
+      "name": "AT&T",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TAP",
+      "name": "Molson Coors Beverage Company",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TDG",
+      "name": "TransDigm Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TDY",
+      "name": "Teledyne Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TECH",
+      "name": "Bio-Techne",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TEL",
+      "name": "TE Connectivity",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TER",
+      "name": "Teradyne",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TFC",
+      "name": "Truist Financial",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TGT",
+      "name": "Target Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TJX",
+      "name": "TJX Companies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TKO",
+      "name": "TKO Group Holdings",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TMO",
+      "name": "Thermo Fisher Scientific",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TMUS",
+      "name": "T-Mobile US",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TPL",
+      "name": "Texas Pacific Land Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TPR",
+      "name": "Tapestry, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TRGP",
+      "name": "Targa Resources",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TRMB",
+      "name": "Trimble Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TROW",
+      "name": "T. Rowe Price",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TRV",
+      "name": "Travelers Companies (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TSCO",
+      "name": "Tractor Supply",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "name": "Tesla, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TSN",
+      "name": "Tyson Foods",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TT",
+      "name": "Trane Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TTD",
+      "name": "Trade Desk (The)",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TTWO",
+      "name": "Take-Two Interactive",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TXN",
+      "name": "Texas Instruments",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TXT",
+      "name": "Textron",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "TYL",
+      "name": "Tyler Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "UAL",
+      "name": "United Airlines Holdings",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "UBER",
+      "name": "Uber",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "UDR",
+      "name": "UDR, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "UHS",
+      "name": "Universal Health Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ULTA",
+      "name": "Ulta Beauty",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "UNH",
+      "name": "UnitedHealth Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "UNP",
+      "name": "Union Pacific Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "UPS",
+      "name": "United Parcel Service",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "URI",
+      "name": "United Rentals",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "USB",
+      "name": "U.S. Bancorp",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "V",
+      "name": "Visa Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VEEV",
+      "name": "Veeva Systems",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VICI",
+      "name": "Vici Properties",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VLO",
+      "name": "Valero Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VLTO",
+      "name": "Veralto",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VMC",
+      "name": "Vulcan Materials Company",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Materials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VRSK",
+      "name": "Verisk Analytics",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VRSN",
+      "name": "Verisign",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VRT",
+      "name": "Vertiv",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VRTX",
+      "name": "Vertex Pharmaceuticals",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VST",
+      "name": "Vistra Corp.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VTR",
+      "name": "Ventas",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VTRS",
+      "name": "Viatris",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "VZ",
+      "name": "Verizon",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WAB",
+      "name": "Wabtec",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WAT",
+      "name": "Waters Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WBD",
+      "name": "Warner Bros. Discovery",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Communication Services",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WDAY",
+      "name": "Workday, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WDC",
+      "name": "Western Digital",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WEC",
+      "name": "WEC Energy Group",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WELL",
+      "name": "Welltower",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WFC",
+      "name": "Wells Fargo",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WM",
+      "name": "Waste Management",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WMB",
+      "name": "Williams Companies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WMT",
+      "name": "Walmart",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Staples",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WRB",
+      "name": "W. R. Berkley Corporation",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WSM",
+      "name": "Williams-Sonoma, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WST",
+      "name": "West Pharmaceutical Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WTW",
+      "name": "Willis Towers Watson",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WY",
+      "name": "Weyerhaeuser",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Real Estate",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "WYNN",
+      "name": "Wynn Resorts",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "XEL",
+      "name": "Xcel Energy",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Utilities",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "XOM",
+      "name": "ExxonMobil",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Energy",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "XYL",
+      "name": "Xylem Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Industrials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "XYZ",
+      "name": "Block, Inc.",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Financials",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "YUM",
+      "name": "Yum! Brands",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Consumer Discretionary",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ZBH",
+      "name": "Zimmer Biomet",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ZBRA",
+      "name": "Zebra Technologies",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Information Technology",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    },
+    {
+      "ticker": "ZTS",
+      "name": "Zoetis",
+      "index_membership": [
+        "SP500"
+      ],
+      "sector": "Health Care",
+      "sources": [
+        "GITHUB_DATASETS"
+      ]
+    }
+  ],
+  "overlap_count": 0
+}

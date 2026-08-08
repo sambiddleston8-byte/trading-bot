@@ -639,14 +639,22 @@ class InvestmentResearchPipeline:
                         "data_confidence"
                     ),
 
+                "overall":
+                    decision_scores.get(
+                        "overall"
+                    ),
+
             },
 
             "fundamentals": {
 
                 "drivers":
                     fundamental_data.get(
-                        "drivers",
-                        []
+                        "key_drivers",
+                        fundamental_data.get(
+                            "drivers",
+                            []
+                        ),
                     ),
 
             },
@@ -664,44 +672,35 @@ class InvestmentResearchPipeline:
 
                 "current_price":
                     valuation_data.get(
-                        "Current Price"
+                        "current_price"
                     ),
 
                 "base_intrinsic_value":
                     valuation_data.get(
-                        "Intrinsic Value",
-                        {},
-                    ).get(
-                        "Base"
+                        "base_intrinsic_value"
                     ),
 
                 "expected_return":
                     valuation_data.get(
-                        "Expected Return",
-                        {},
-                    ).get(
-                        "Base"
+                        "expected_return"
                     ),
 
                 "annualised_expected_return":
-                    valuation_data.get(
-                        "Expected Return",
-                        {},
-                    ).get(
-                        "Annualised"
+                    decision.get(
+                        "annualised_expected_return"
                     ),
 
                 "status":
                     valuation_data.get(
-                        "Status"
+                        "status"
                     ),
 
                 "validation_confidence":
-                    valuation_data.get(
-                        "Financial Data Validation",
+                    decision.get(
+                        "confidence",
                         {},
                     ).get(
-                        "Overall Confidence"
+                        "fundamental"
                     ),
 
             },
@@ -782,26 +781,17 @@ class InvestmentResearchPipeline:
 
             "current_price":
                 valuation_data.get(
-                    "Current Price",
-                    valuation_data.get(
-                        "current_price"
-                    ),
+                    "current_price"
                 ),
 
             "base_intrinsic_value":
                 valuation_data.get(
-                    "Intrinsic Value",
-                    {},
-                ).get(
-                    "Base"
+                    "base_intrinsic_value"
                 ),
 
             "expected_return":
                 valuation_data.get(
-                    "Expected Return",
-                    {},
-                ).get(
-                    "Base"
+                    "expected_return"
                 ),
 
         }
@@ -1046,6 +1036,9 @@ class InvestmentResearchPipeline:
 
             "audit":
                 audit,
+
+            "synthesis_input":
+                synthesis_input,
 
         }
 
