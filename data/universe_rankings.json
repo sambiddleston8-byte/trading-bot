@@ -1,0 +1,1326 @@
+{
+  "Timestamp": "2026-08-08T19:31:20.372895",
+  "Universe Size": 132,
+  "Rankings": [
+    {
+      "Ticker": "ABNB",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 149.11,
+      "Slow MA": 143.51,
+      "Momentum": 19.82,
+      "Analysed": "2026-08-08T19:30:52.699611",
+      "Rank": 1
+    },
+    {
+      "Ticker": "ABT",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 101.97,
+      "Slow MA": 94.86,
+      "Momentum": 15.6,
+      "Analysed": "2026-08-08T19:30:52.989572",
+      "Rank": 2
+    },
+    {
+      "Ticker": "ADBE",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 240.42,
+      "Slow MA": 229.79,
+      "Momentum": 18.59,
+      "Analysed": "2026-08-08T19:30:53.155018",
+      "Rank": 3
+    },
+    {
+      "Ticker": "BKNG",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 188.8,
+      "Slow MA": 179.0,
+      "Momentum": 20.2,
+      "Analysed": "2026-08-08T19:30:56.209284",
+      "Rank": 4
+    },
+    {
+      "Ticker": "CRM",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 176.72,
+      "Slow MA": 172.06,
+      "Momentum": 18.01,
+      "Analysed": "2026-08-08T19:30:58.632663",
+      "Rank": 5
+    },
+    {
+      "Ticker": "INTU",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 304.13,
+      "Slow MA": 291.17,
+      "Momentum": 18.29,
+      "Analysed": "2026-08-08T19:31:04.717328",
+      "Rank": 6
+    },
+    {
+      "Ticker": "MSFT",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 423.84,
+      "Slow MA": 407.01,
+      "Momentum": 29.83,
+      "Analysed": "2026-08-08T19:31:10.088677",
+      "Rank": 7
+    },
+    {
+      "Ticker": "NOW",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 108.3,
+      "Slow MA": 107.32,
+      "Momentum": 15.94,
+      "Analysed": "2026-08-08T19:31:11.176808",
+      "Rank": 8
+    },
+    {
+      "Ticker": "NUE",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 250.17,
+      "Slow MA": 246.13,
+      "Momentum": 19.91,
+      "Analysed": "2026-08-08T19:31:11.415932",
+      "Rank": 9
+    },
+    {
+      "Ticker": "PYPL",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 56.25,
+      "Slow MA": 48.48,
+      "Momentum": 27.53,
+      "Analysed": "2026-08-08T19:31:14.157501",
+      "Rank": 10
+    },
+    {
+      "Ticker": "REGN",
+      "Signal": "STRONG BUY",
+      "Score": 90,
+      "Fast MA": 702.47,
+      "Slow MA": 656.71,
+      "Momentum": 18.03,
+      "Analysed": "2026-08-08T19:31:14.506846",
+      "Rank": 11
+    },
+    {
+      "Ticker": "AMGN",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 378.91,
+      "Slow MA": 361.98,
+      "Momentum": 13.09,
+      "Analysed": "2026-08-08T19:30:54.097177",
+      "Rank": 12
+    },
+    {
+      "Ticker": "AMZN",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 251.59,
+      "Slow MA": 247.51,
+      "Momentum": 11.88,
+      "Analysed": "2026-08-08T19:30:54.341383",
+      "Rank": 13
+    },
+    {
+      "Ticker": "BAC",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 61.77,
+      "Slow MA": 58.35,
+      "Momentum": 5.87,
+      "Analysed": "2026-08-08T19:30:56.073519",
+      "Rank": 14
+    },
+    {
+      "Ticker": "BLK",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 1081.81,
+      "Slow MA": 1039.06,
+      "Momentum": 9.68,
+      "Analysed": "2026-08-08T19:30:56.374625",
+      "Rank": 15
+    },
+    {
+      "Ticker": "CMCSA",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 23.89,
+      "Slow MA": 23.61,
+      "Momentum": 7.59,
+      "Analysed": "2026-08-08T19:30:57.836430",
+      "Rank": 16
+    },
+    {
+      "Ticker": "COF",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 210.03,
+      "Slow MA": 200.3,
+      "Momentum": 8.06,
+      "Analysed": "2026-08-08T19:30:58.040334",
+      "Rank": 17
+    },
+    {
+      "Ticker": "COP",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 116.5,
+      "Slow MA": 113.44,
+      "Momentum": 7.86,
+      "Analysed": "2026-08-08T19:30:58.287434",
+      "Rank": 18
+    },
+    {
+      "Ticker": "CRWD",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 195.99,
+      "Slow MA": 185.91,
+      "Momentum": 14.55,
+      "Analysed": "2026-08-08T19:30:58.761876",
+      "Rank": 19
+    },
+    {
+      "Ticker": "CVX",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 189.21,
+      "Slow MA": 182.85,
+      "Momentum": 5.76,
+      "Analysed": "2026-08-08T19:30:59.481718",
+      "Rank": 20
+    },
+    {
+      "Ticker": "DE",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 605.61,
+      "Slow MA": 596.03,
+      "Momentum": 5.79,
+      "Analysed": "2026-08-08T19:30:59.989892",
+      "Rank": 21
+    },
+    {
+      "Ticker": "EMR",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 146.56,
+      "Slow MA": 144.02,
+      "Momentum": 13.95,
+      "Analysed": "2026-08-08T19:31:01.281207",
+      "Rank": 22
+    },
+    {
+      "Ticker": "ETN",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 410.74,
+      "Slow MA": 407.75,
+      "Momentum": 10.44,
+      "Analysed": "2026-08-08T19:31:01.934025",
+      "Rank": 23
+    },
+    {
+      "Ticker": "GM",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 83.47,
+      "Slow MA": 81.35,
+      "Momentum": 12.5,
+      "Analysed": "2026-08-08T19:31:03.430082",
+      "Rank": 24
+    },
+    {
+      "Ticker": "HON",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 237.35,
+      "Slow MA": 234.67,
+      "Momentum": 8.74,
+      "Analysed": "2026-08-08T19:31:04.282769",
+      "Rank": 25
+    },
+    {
+      "Ticker": "ITW",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 283.35,
+      "Slow MA": 269.14,
+      "Momentum": 10.36,
+      "Analysed": "2026-08-08T19:31:05.037146",
+      "Rank": 26
+    },
+    {
+      "Ticker": "JPM",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 349.4,
+      "Slow MA": 332.29,
+      "Momentum": 6.26,
+      "Analysed": "2026-08-08T19:31:05.576097",
+      "Rank": 27
+    },
+    {
+      "Ticker": "LMT",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 553.3,
+      "Slow MA": 534.17,
+      "Momentum": 12.37,
+      "Analysed": "2026-08-08T19:31:07.045228",
+      "Rank": 28
+    },
+    {
+      "Ticker": "MA",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 553.67,
+      "Slow MA": 521.01,
+      "Momentum": 6.87,
+      "Analysed": "2026-08-08T19:31:07.626016",
+      "Rank": 29
+    },
+    {
+      "Ticker": "MDLZ",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 61.33,
+      "Slow MA": 60.87,
+      "Momentum": 6.43,
+      "Analysed": "2026-08-08T19:31:08.064509",
+      "Rank": 30
+    },
+    {
+      "Ticker": "MPC",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 308.14,
+      "Slow MA": 279.22,
+      "Momentum": 5.1,
+      "Analysed": "2026-08-08T19:31:09.458842",
+      "Rank": 31
+    },
+    {
+      "Ticker": "NVDA",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 206.82,
+      "Slow MA": 206.05,
+      "Momentum": 6.16,
+      "Analysed": "2026-08-08T19:31:11.514222",
+      "Rank": 32
+    },
+    {
+      "Ticker": "ORLY",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 88.58,
+      "Slow MA": 88.46,
+      "Momentum": 8.4,
+      "Analysed": "2026-08-08T19:31:12.032910",
+      "Rank": 33
+    },
+    {
+      "Ticker": "OXY",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 55.5,
+      "Slow MA": 54.42,
+      "Momentum": 5.71,
+      "Analysed": "2026-08-08T19:31:12.298637",
+      "Rank": 34
+    },
+    {
+      "Ticker": "PANW",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 341.64,
+      "Slow MA": 315.95,
+      "Momentum": 11.64,
+      "Analysed": "2026-08-08T19:31:12.445314",
+      "Rank": 35
+    },
+    {
+      "Ticker": "PFE",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 24.91,
+      "Slow MA": 24.74,
+      "Momentum": 12.65,
+      "Analysed": "2026-08-08T19:31:12.971773",
+      "Rank": 36
+    },
+    {
+      "Ticker": "PH",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 981.69,
+      "Slow MA": 945.99,
+      "Momentum": 11.71,
+      "Analysed": "2026-08-08T19:31:13.508523",
+      "Rank": 37
+    },
+    {
+      "Ticker": "PSX",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 205.86,
+      "Slow MA": 188.63,
+      "Momentum": 8.26,
+      "Analysed": "2026-08-08T19:31:14.010761",
+      "Rank": 38
+    },
+    {
+      "Ticker": "RTX",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 208.17,
+      "Slow MA": 194.84,
+      "Momentum": 13.83,
+      "Analysed": "2026-08-08T19:31:15.035432",
+      "Rank": 39
+    },
+    {
+      "Ticker": "SHW",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 338.95,
+      "Slow MA": 328.69,
+      "Momentum": 10.7,
+      "Analysed": "2026-08-08T19:31:15.723474",
+      "Rank": 40
+    },
+    {
+      "Ticker": "T",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 22.97,
+      "Slow MA": 22.51,
+      "Momentum": 12.59,
+      "Analysed": "2026-08-08T19:31:16.968047",
+      "Rank": 41
+    },
+    {
+      "Ticker": "TGT",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 141.77,
+      "Slow MA": 134.89,
+      "Momentum": 10.77,
+      "Analysed": "2026-08-08T19:31:17.198862",
+      "Rank": 42
+    },
+    {
+      "Ticker": "TMO",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 557.22,
+      "Slow MA": 517.43,
+      "Momentum": 12.7,
+      "Analysed": "2026-08-08T19:31:17.659113",
+      "Rank": 43
+    },
+    {
+      "Ticker": "VLO",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 303.99,
+      "Slow MA": 275.36,
+      "Momentum": 6.69,
+      "Analysed": "2026-08-08T19:31:19.184535",
+      "Rank": 44
+    },
+    {
+      "Ticker": "VZ",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 45.38,
+      "Slow MA": 44.9,
+      "Momentum": 11.73,
+      "Analysed": "2026-08-08T19:31:19.546854",
+      "Rank": 45
+    },
+    {
+      "Ticker": "XOM",
+      "Signal": "BUY",
+      "Score": 80,
+      "Fast MA": 152.06,
+      "Slow MA": 146.48,
+      "Momentum": 10.2,
+      "Analysed": "2026-08-08T19:31:20.372812",
+      "Rank": 46
+    },
+    {
+      "Ticker": "AAPL",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 323.43,
+      "Slow MA": 309.79,
+      "Momentum": -0.63,
+      "Analysed": "2026-08-08T19:30:52.424334",
+      "Rank": 47
+    },
+    {
+      "Ticker": "ABBV",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 251.91,
+      "Slow MA": 240.09,
+      "Momentum": -0.12,
+      "Analysed": "2026-08-08T19:30:52.596905",
+      "Rank": 48
+    },
+    {
+      "Ticker": "AON",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 362.14,
+      "Slow MA": 343.61,
+      "Momentum": 0.61,
+      "Analysed": "2026-08-08T19:30:54.594240",
+      "Rank": 49
+    },
+    {
+      "Ticker": "APD",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 296.55,
+      "Slow MA": 289.47,
+      "Momentum": 1.31,
+      "Analysed": "2026-08-08T19:30:54.807469",
+      "Rank": 50
+    },
+    {
+      "Ticker": "AXP",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 345.23,
+      "Slow MA": 336.5,
+      "Momentum": -2.76,
+      "Analysed": "2026-08-08T19:30:55.196947",
+      "Rank": 51
+    },
+    {
+      "Ticker": "CB",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 351.82,
+      "Slow MA": 339.96,
+      "Momentum": 0.71,
+      "Analysed": "2026-08-08T19:30:57.233682",
+      "Rank": 52
+    },
+    {
+      "Ticker": "CL",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 91.9,
+      "Slow MA": 90.71,
+      "Momentum": 1.7,
+      "Analysed": "2026-08-08T19:30:57.625673",
+      "Rank": 53
+    },
+    {
+      "Ticker": "CSX",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 50.68,
+      "Slow MA": 48.57,
+      "Momentum": 1.74,
+      "Analysed": "2026-08-08T19:30:59.181852",
+      "Rank": 54
+    },
+    {
+      "Ticker": "D",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 70.02,
+      "Slow MA": 68.77,
+      "Momentum": -3.84,
+      "Analysed": "2026-08-08T19:30:59.705365",
+      "Rank": 55
+    },
+    {
+      "Ticker": "DHR",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 196.6,
+      "Slow MA": 190.21,
+      "Momentum": 2.87,
+      "Analysed": "2026-08-08T19:31:00.208124",
+      "Rank": 56
+    },
+    {
+      "Ticker": "DUK",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 126.38,
+      "Slow MA": 125.48,
+      "Momentum": -0.5,
+      "Analysed": "2026-08-08T19:31:00.827059",
+      "Rank": 57
+    },
+    {
+      "Ticker": "EOG",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 141.21,
+      "Slow MA": 136.69,
+      "Momentum": 1.22,
+      "Analysed": "2026-08-08T19:31:01.477079",
+      "Rank": 58
+    },
+    {
+      "Ticker": "FTNT",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 158.95,
+      "Slow MA": 152.87,
+      "Momentum": 1.35,
+      "Analysed": "2026-08-08T19:31:02.542224",
+      "Rank": 59
+    },
+    {
+      "Ticker": "GD",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 379.27,
+      "Slow MA": 363.46,
+      "Momentum": 4.53,
+      "Analysed": "2026-08-08T19:31:02.827489",
+      "Rank": 60
+    },
+    {
+      "Ticker": "GE",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 357.55,
+      "Slow MA": 351.66,
+      "Momentum": 3.01,
+      "Analysed": "2026-08-08T19:31:03.106901",
+      "Rank": 61
+    },
+    {
+      "Ticker": "GILD",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 131.95,
+      "Slow MA": 129.52,
+      "Momentum": 2.6,
+      "Analysed": "2026-08-08T19:31:03.265414",
+      "Rank": 62
+    },
+    {
+      "Ticker": "GS",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 1059.58,
+      "Slow MA": 1054.3,
+      "Momentum": -1.48,
+      "Analysed": "2026-08-08T19:31:03.704637",
+      "Rank": 63
+    },
+    {
+      "Ticker": "HD",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 339.38,
+      "Slow MA": 334.35,
+      "Momentum": 3.59,
+      "Analysed": "2026-08-08T19:31:03.922876",
+      "Rank": 64
+    },
+    {
+      "Ticker": "JNJ",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 256.65,
+      "Slow MA": 247.73,
+      "Momentum": 0.88,
+      "Analysed": "2026-08-08T19:31:05.337015",
+      "Rank": 65
+    },
+    {
+      "Ticker": "KHC",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 25.95,
+      "Slow MA": 24.61,
+      "Momentum": 1.89,
+      "Analysed": "2026-08-08T19:31:05.741339",
+      "Rank": 66
+    },
+    {
+      "Ticker": "KO",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 84.88,
+      "Slow MA": 82.45,
+      "Momentum": 4.26,
+      "Analysed": "2026-08-08T19:31:06.201658",
+      "Rank": 67
+    },
+    {
+      "Ticker": "LLY",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 1171.16,
+      "Slow MA": 1157.55,
+      "Momentum": -0.24,
+      "Analysed": "2026-08-08T19:31:06.738288",
+      "Rank": 68
+    },
+    {
+      "Ticker": "MDT",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 84.23,
+      "Slow MA": 81.4,
+      "Momentum": 3.92,
+      "Analysed": "2026-08-08T19:31:08.311239",
+      "Rank": 69
+    },
+    {
+      "Ticker": "MO",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 71.22,
+      "Slow MA": 71.06,
+      "Momentum": -4.79,
+      "Analysed": "2026-08-08T19:31:09.288214",
+      "Rank": 70
+    },
+    {
+      "Ticker": "MRK",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 127.86,
+      "Slow MA": 123.65,
+      "Momentum": 4.08,
+      "Analysed": "2026-08-08T19:31:09.769253",
+      "Rank": 71
+    },
+    {
+      "Ticker": "MS",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 214.82,
+      "Slow MA": 214.82,
+      "Momentum": -2.14,
+      "Analysed": "2026-08-08T19:31:09.993225",
+      "Rank": 72
+    },
+    {
+      "Ticker": "NEE",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 88.02,
+      "Slow MA": 87.04,
+      "Momentum": -3.76,
+      "Analysed": "2026-08-08T19:31:10.516642",
+      "Rank": 73
+    },
+    {
+      "Ticker": "O",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 64.17,
+      "Slow MA": 62.44,
+      "Momentum": -0.85,
+      "Analysed": "2026-08-08T19:31:11.743225",
+      "Rank": 74
+    },
+    {
+      "Ticker": "PG",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 146.97,
+      "Slow MA": 146.71,
+      "Momentum": -0.11,
+      "Analysed": "2026-08-08T19:31:13.284874",
+      "Rank": 75
+    },
+    {
+      "Ticker": "PLD",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 144.83,
+      "Slow MA": 143.16,
+      "Momentum": -0.5,
+      "Analysed": "2026-08-08T19:31:13.699726",
+      "Rank": 76
+    },
+    {
+      "Ticker": "PM",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 189.85,
+      "Slow MA": 183.27,
+      "Momentum": 4.38,
+      "Analysed": "2026-08-08T19:31:13.855560",
+      "Rank": 77
+    },
+    {
+      "Ticker": "SBUX",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 104.96,
+      "Slow MA": 102.5,
+      "Momentum": -0.41,
+      "Analysed": "2026-08-08T19:31:15.235980",
+      "Rank": 78
+    },
+    {
+      "Ticker": "SCHW",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 103.86,
+      "Slow MA": 96.96,
+      "Momentum": 4.34,
+      "Analysed": "2026-08-08T19:31:15.473285",
+      "Rank": 79
+    },
+    {
+      "Ticker": "SO",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 94.97,
+      "Slow MA": 94.41,
+      "Momentum": -3.05,
+      "Analysed": "2026-08-08T19:31:16.323386",
+      "Rank": 80
+    },
+    {
+      "Ticker": "SPG",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 227.23,
+      "Slow MA": 219.97,
+      "Momentum": 1.89,
+      "Analysed": "2026-08-08T19:31:16.518485",
+      "Rank": 81
+    },
+    {
+      "Ticker": "SYK",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 330.11,
+      "Slow MA": 319.24,
+      "Momentum": 2.8,
+      "Analysed": "2026-08-08T19:31:16.728423",
+      "Rank": 82
+    },
+    {
+      "Ticker": "UNH",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 420.27,
+      "Slow MA": 412.26,
+      "Momentum": -4.13,
+      "Analysed": "2026-08-08T19:31:18.340764",
+      "Rank": 83
+    },
+    {
+      "Ticker": "UNP",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 294.99,
+      "Slow MA": 279.8,
+      "Momentum": 2.15,
+      "Analysed": "2026-08-08T19:31:18.577927",
+      "Rank": 84
+    },
+    {
+      "Ticker": "V",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 361.84,
+      "Slow MA": 344.28,
+      "Momentum": 3.88,
+      "Analysed": "2026-08-08T19:31:18.973128",
+      "Rank": 85
+    },
+    {
+      "Ticker": "VRTX",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 480.84,
+      "Slow MA": 473.16,
+      "Momentum": 2.2,
+      "Analysed": "2026-08-08T19:31:19.312859",
+      "Rank": 86
+    },
+    {
+      "Ticker": "WFC",
+      "Signal": "HOLD",
+      "Score": 70,
+      "Fast MA": 86.49,
+      "Slow MA": 84.13,
+      "Momentum": 0.68,
+      "Analysed": "2026-08-08T19:31:19.818962",
+      "Rank": 87
+    },
+    {
+      "Ticker": "META",
+      "Signal": "AVOID",
+      "Score": 60,
+      "Fast MA": 612.27,
+      "Slow MA": 599.62,
+      "Momentum": -11.52,
+      "Analysed": "2026-08-08T19:31:08.393466",
+      "Rank": 88
+    },
+    {
+      "Ticker": "TMUS",
+      "Signal": "AVOID",
+      "Score": 60,
+      "Fast MA": 182.42,
+      "Slow MA": 182.17,
+      "Momentum": -5.55,
+      "Analysed": "2026-08-08T19:31:17.823818",
+      "Rank": 89
+    },
+    {
+      "Ticker": "UPS",
+      "Signal": "AVOID",
+      "Score": 60,
+      "Fast MA": 110.63,
+      "Slow MA": 109.26,
+      "Momentum": -7.09,
+      "Analysed": "2026-08-08T19:31:18.777521",
+      "Rank": 90
+    },
+    {
+      "Ticker": "NEM",
+      "Signal": "AVOID",
+      "Score": 50,
+      "Fast MA": 95.53,
+      "Slow MA": 98.27,
+      "Momentum": 18.56,
+      "Analysed": "2026-08-08T19:31:10.725584",
+      "Rank": 91
+    },
+    {
+      "Ticker": "AVGO",
+      "Signal": "AVOID",
+      "Score": 40,
+      "Fast MA": 391.86,
+      "Slow MA": 394.83,
+      "Momentum": 6.95,
+      "Analysed": "2026-08-08T19:30:54.972055",
+      "Rank": 92
+    },
+    {
+      "Ticker": "BA",
+      "Signal": "AVOID",
+      "Score": 40,
+      "Fast MA": 219.12,
+      "Slow MA": 220.37,
+      "Momentum": 5.46,
+      "Analysed": "2026-08-08T19:30:55.617682",
+      "Rank": 93
+    },
+    {
+      "Ticker": "BSX",
+      "Signal": "AVOID",
+      "Score": 40,
+      "Fast MA": 45.55,
+      "Slow MA": 45.9,
+      "Momentum": 10.14,
+      "Analysed": "2026-08-08T19:30:56.502337",
+      "Rank": 94
+    },
+    {
+      "Ticker": "DIS",
+      "Signal": "AVOID",
+      "Score": 40,
+      "Fast MA": 97.83,
+      "Slow MA": 98.61,
+      "Momentum": 9.72,
+      "Analysed": "2026-08-08T19:31:00.465907",
+      "Rank": 95
+    },
+    {
+      "Ticker": "FCX",
+      "Signal": "AVOID",
+      "Score": 40,
+      "Fast MA": 63.03,
+      "Slow MA": 63.99,
+      "Momentum": 13.44,
+      "Analysed": "2026-08-08T19:31:02.414114",
+      "Rank": 96
+    },
+    {
+      "Ticker": "LOW",
+      "Signal": "AVOID",
+      "Score": 40,
+      "Fast MA": 210.91,
+      "Slow MA": 213.67,
+      "Momentum": 6.19,
+      "Analysed": "2026-08-08T19:31:07.292073",
+      "Rank": 97
+    },
+    {
+      "Ticker": "SLB",
+      "Signal": "AVOID",
+      "Score": 40,
+      "Fast MA": 48.89,
+      "Slow MA": 50.14,
+      "Momentum": 5.8,
+      "Analysed": "2026-08-08T19:31:15.983308",
+      "Rank": 98
+    },
+    {
+      "Ticker": "TJX",
+      "Signal": "AVOID",
+      "Score": 40,
+      "Fast MA": 156.44,
+      "Slow MA": 157.72,
+      "Momentum": 6.62,
+      "Analysed": "2026-08-08T19:31:17.432541",
+      "Rank": 99
+    },
+    {
+      "Ticker": "ADI",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 376.6,
+      "Slow MA": 394.94,
+      "Momentum": -1.45,
+      "Analysed": "2026-08-08T19:30:53.334988",
+      "Rank": 100
+    },
+    {
+      "Ticker": "AMT",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 169.96,
+      "Slow MA": 174.75,
+      "Momentum": 2.34,
+      "Analysed": "2026-08-08T19:30:54.269111",
+      "Rank": 101
+    },
+    {
+      "Ticker": "AZO",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 3034.55,
+      "Slow MA": 3060.09,
+      "Momentum": 1.78,
+      "Analysed": "2026-08-08T19:30:55.333292",
+      "Rank": 102
+    },
+    {
+      "Ticker": "C",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 132.61,
+      "Slow MA": 135.52,
+      "Momentum": -3.62,
+      "Analysed": "2026-08-08T19:30:56.740619",
+      "Rank": 103
+    },
+    {
+      "Ticker": "COST",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 941.52,
+      "Slow MA": 950.28,
+      "Momentum": 3.61,
+      "Analysed": "2026-08-08T19:30:58.487912",
+      "Rank": 104
+    },
+    {
+      "Ticker": "CSCO",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 115.27,
+      "Slow MA": 117.65,
+      "Momentum": 0.1,
+      "Analysed": "2026-08-08T19:30:58.944209",
+      "Rank": 105
+    },
+    {
+      "Ticker": "DOW",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 30.02,
+      "Slow MA": 30.86,
+      "Momentum": 1.07,
+      "Analysed": "2026-08-08T19:31:00.611187",
+      "Rank": 106
+    },
+    {
+      "Ticker": "EQIX",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 1034.88,
+      "Slow MA": 1051.55,
+      "Momentum": -0.82,
+      "Analysed": "2026-08-08T19:31:01.657154",
+      "Rank": 107
+    },
+    {
+      "Ticker": "F",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 14.33,
+      "Slow MA": 14.48,
+      "Momentum": -0.14,
+      "Analysed": "2026-08-08T19:31:02.192597",
+      "Rank": 108
+    },
+    {
+      "Ticker": "GOOGL",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 348.76,
+      "Slow MA": 356.47,
+      "Momentum": -0.81,
+      "Analysed": "2026-08-08T19:31:03.514177",
+      "Rank": 109
+    },
+    {
+      "Ticker": "MCD",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 269.15,
+      "Slow MA": 273.8,
+      "Momentum": -0.04,
+      "Analysed": "2026-08-08T19:31:07.871300",
+      "Rank": 110
+    },
+    {
+      "Ticker": "NFLX",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 71.92,
+      "Slow MA": 75.67,
+      "Momentum": 1.05,
+      "Analysed": "2026-08-08T19:31:10.799009",
+      "Rank": 111
+    },
+    {
+      "Ticker": "ORCL",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 129.47,
+      "Slow MA": 159.92,
+      "Momentum": 4.54,
+      "Analysed": "2026-08-08T19:31:11.899066",
+      "Rank": 112
+    },
+    {
+      "Ticker": "PEP",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 138.22,
+      "Slow MA": 140.39,
+      "Momentum": 1.19,
+      "Analysed": "2026-08-08T19:31:12.715665",
+      "Rank": 113
+    },
+    {
+      "Ticker": "WMT",
+      "Signal": "AVOID",
+      "Score": 30,
+      "Fast MA": 111.99,
+      "Slow MA": 114.61,
+      "Momentum": -1.8,
+      "Analysed": "2026-08-08T19:31:20.081671",
+      "Rank": 114
+    },
+    {
+      "Ticker": "AEP",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 130.96,
+      "Slow MA": 131.31,
+      "Momentum": -7.16,
+      "Analysed": "2026-08-08T19:30:53.660855",
+      "Rank": 115
+    },
+    {
+      "Ticker": "AMAT",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 534.46,
+      "Slow MA": 553.11,
+      "Momentum": -10.52,
+      "Analysed": "2026-08-08T19:30:53.825488",
+      "Rank": 116
+    },
+    {
+      "Ticker": "AMD",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 503.45,
+      "Slow MA": 514.08,
+      "Momentum": -13.36,
+      "Analysed": "2026-08-08T19:30:53.900821",
+      "Rank": 117
+    },
+    {
+      "Ticker": "CAT",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 867.63,
+      "Slow MA": 915.65,
+      "Momentum": -11.41,
+      "Analysed": "2026-08-08T19:30:57.017143",
+      "Rank": 118
+    },
+    {
+      "Ticker": "CDNS",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 343.48,
+      "Slow MA": 368.38,
+      "Momentum": -11.7,
+      "Analysed": "2026-08-08T19:30:57.365510",
+      "Rank": 119
+    },
+    {
+      "Ticker": "ELV",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 387.0,
+      "Slow MA": 395.88,
+      "Momentum": -5.29,
+      "Analysed": "2026-08-08T19:31:01.008107",
+      "Rank": 120
+    },
+    {
+      "Ticker": "ISRG",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 364.31,
+      "Slow MA": 393.18,
+      "Momentum": -6.88,
+      "Analysed": "2026-08-08T19:31:04.846086",
+      "Rank": 121
+    },
+    {
+      "Ticker": "KLAC",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 203.41,
+      "Slow MA": 221.43,
+      "Momentum": -14.43,
+      "Analysed": "2026-08-08T19:31:05.925780",
+      "Rank": 122
+    },
+    {
+      "Ticker": "LIN",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 504.58,
+      "Slow MA": 511.83,
+      "Momentum": -7.51,
+      "Analysed": "2026-08-08T19:31:06.426136",
+      "Rank": 123
+    },
+    {
+      "Ticker": "LRCX",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 308.0,
+      "Slow MA": 337.77,
+      "Momentum": -11.13,
+      "Analysed": "2026-08-08T19:31:07.455344",
+      "Rank": 124
+    },
+    {
+      "Ticker": "MU",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 888.26,
+      "Slow MA": 970.87,
+      "Momentum": -10.39,
+      "Analysed": "2026-08-08T19:31:10.287185",
+      "Rank": 125
+    },
+    {
+      "Ticker": "NKE",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 42.59,
+      "Slow MA": 43.25,
+      "Momentum": -6.02,
+      "Analysed": "2026-08-08T19:31:11.019822",
+      "Rank": 126
+    },
+    {
+      "Ticker": "QCOM",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 166.39,
+      "Slow MA": 191.69,
+      "Momentum": -11.26,
+      "Analysed": "2026-08-08T19:31:14.338939",
+      "Rank": 127
+    },
+    {
+      "Ticker": "ROK",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 461.7,
+      "Slow MA": 464.0,
+      "Momentum": -6.58,
+      "Analysed": "2026-08-08T19:31:14.764091",
+      "Rank": 128
+    },
+    {
+      "Ticker": "SNPS",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 395.24,
+      "Slow MA": 434.7,
+      "Momentum": -6.62,
+      "Analysed": "2026-08-08T19:31:16.108010",
+      "Rank": 129
+    },
+    {
+      "Ticker": "TXN",
+      "Signal": "AVOID",
+      "Score": 20,
+      "Fast MA": 283.57,
+      "Slow MA": 293.62,
+      "Momentum": -7.68,
+      "Analysed": "2026-08-08T19:31:18.129655",
+      "Rank": 130
+    },
+    {
+      "Ticker": "IBM",
+      "Signal": "AVOID",
+      "Score": 10,
+      "Fast MA": 224.2,
+      "Slow MA": 259.05,
+      "Momentum": -17.49,
+      "Analysed": "2026-08-08T19:31:04.557851",
+      "Rank": 131
+    },
+    {
+      "Ticker": "TSLA",
+      "Signal": "AVOID",
+      "Score": 10,
+      "Fast MA": 343.33,
+      "Slow MA": 380.44,
+      "Momentum": -19.42,
+      "Analysed": "2026-08-08T19:31:17.889851",
+      "Rank": 132
+    }
+  ]
+}

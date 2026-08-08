@@ -1,81 +1,91 @@
-import yfinance as yf
+import feedparser
 
-from bots.catalyst.analyser import CatalystAnalyser
+from core.company_context import CompanyContext
 
 
 class NewsAnalyser:
 
-    POSITIVE = [
-        "beat",
-        "growth",
-        "record",
-        "contract",
-        "approval",
-        "partnership",
-        "profit",
-        "upgrade",
-        "buyback",
-        "launch",
-        "expands",
-        "surge",
-    ]
+    def analyse(self, context: CompanyContext):
 
-    NEGATIVE = [
-        "miss",
-        "downgrade",
-        "lawsuit",
-        "investigation",
-        "delay",
-        "recall",
-        "decline",
-        "loss",
-        "offering",
-        "dilution",
-        "bankruptcy",
-    ]
+        symbol = context.symbol
 
-    def __init__(self):
-        self.catalyst = CatalystAnalyser()
+        url = (
+            "https://feeds.finance.yahoo.com/"
+            f"rss/2.0/headline?s={symbol}&region=US&lang=en-US"
+        )
 
-    def analyse(self, symbol):
-
-        news = yf.Ticker(symbol).news
-
-        positive = 0
-        negative = 0
+        feed = feedparser.parse(url)
 
         headlines = []
+        events = []
+        catalysts = []
 
-        for article in news[:10]:
+        for entry in feed.entries[:10]:
 
-            content = article.get("content", {})
-            title = content.get("title", "")
+            headline = entry.get(
+                "title",
+                ""
+            ).strip()
 
-            if title:
-                headlines.append(title)
+            if not headline:
+                continue
 
-            lower = title.lower()
+            headlines.append(headline)
 
-            if any(word in lower for word in self.POSITIVE):
-                positive += 1
+            events.append(
+                {
+                    "headline": headline,
+                    "category": "news",
+                    "sentiment": "neutral",
+                    "impact": 3,
+                }
+            )
 
-            if any(word in lower for word in self.NEGATIVE):
-                negative += 1
+            catalysts.append(headline)
 
-        news_score = 50 + (positive * 10) - (negative * 10)
-        news_score = max(0, min(100, news_score))
+        # --------------------------------
+        # News Score
+        # --------------------------------
 
-        catalyst = self.catalyst.analyse(headlines)
+        if len(headlines) >= 8:
+            news_score = 70
+
+        elif len(headlines) >= 4:
+            news_score = 60
+
+        elif len(headlines) > 0:
+            news_score = 55
+
+        else:
+            news_score = 50
+
+        # --------------------------------
+        # Catalyst Score
+        # --------------------------------
+
+        if len(catalysts) >= 5:
+            catalyst_score = 60
+
+        elif len(catalysts) >= 2:
+            catalyst_score = 55
+
+        else:
+            catalyst_score = 50
 
         return {
+
             "News Score": news_score,
-            "Positive Headlines": positive,
-            "Negative Headlines": negative,
+
+            "Catalyst Score": catalyst_score,
+
             "Headlines": headlines,
-            "Catalyst Score": catalyst["Catalyst Score"],
-            "Events": catalyst["Events"],
-            "Catalysts": [
-                event["headline"]
-                for event in catalyst["Events"]
-            ],
+
+            "Catalysts": catalysts,
+
+            "Events": events,
+
+            "Negative Headlines": 0,
+
+            "Positive Headlines": 0,
+
         }

@@ -1,0 +1,672 @@
+{
+  "Ticker": "NVDA",
+  "Company": "NVIDIA Corporation",
+  "Sector": "Technology",
+  "Industry": "Semiconductors",
+  "Status": "COMPLETE",
+  "Generated At": "2026-08-08T20:39:57.423886+00:00",
+  "Investment Rating": {
+    "Score": 54.77,
+    "Rating": "LOW CONVICTION"
+  },
+  "Conviction": {
+    "Overall": 50.77,
+    "Fundamentals": 80.69,
+    "Valuation": {
+      "Score": 50,
+      "Upside": null,
+      "Status": "INSUFFICIENT DATA"
+    },
+    "Catalysts": {
+      "Score": 73.3,
+      "Upcoming Catalysts": 1,
+      "High Impact Catalysts": 1
+    },
+    "Risk": {
+      "Risk Factor Score": 48.0,
+      "Balance Sheet Score": 85.0,
+      "Bear Case Valuation Score": 50,
+      "Overall Risk Signal": 59.6
+    },
+    "Evidence": {
+      "Available Research Modules": 0,
+      "Expected Research Modules": 3,
+      "Evidence Coverage": 0.0
+    }
+  },
+  "Expected Returns": {
+    "Factor Model": {
+      "Expected Return": 24.97,
+      "Horizon Days": 252,
+      "Confidence": 80.0
+    },
+    "Intrinsic Value Model": {
+      "Expected Return": null,
+      "Annualised Return": null,
+      "Horizon Years": null
+    }
+  },
+  "Investment Case": {
+    "Narrative": "The investment case contains both positive and negative signals. The strongest supporting evidence should be weighed against the identified areas of uncertainty.",
+    "Strengths": [
+      {
+        "Category": "Expected Return",
+        "Factor": "Factor Model",
+        "Score": null,
+        "Explanation": "The factor model forecasts approximately 25.0% total return over 252 days."
+      }
+    ],
+    "Concerns": []
+  },
+  "Research Dossier": {
+    "Ticker": "NVDA",
+    "Company": "NVIDIA Corporation",
+    "Sector": "Technology",
+    "Industry": "Semiconductors",
+    "Generated At": "2026-08-08T20:39:57.423838+00:00",
+    "Decision": {
+      "Committee Score": 79.26,
+      "Factor Score": 80.69,
+      "Expected Return Score": 74.97,
+      "Expected Return": 24.97,
+      "Expected Return Confidence": 80.0,
+      "Expected Return Analysis": {
+        "Expected Return": 24.97,
+        "Confidence": 80.0,
+        "Horizon Days": 252,
+        "Factor Signal": 0.583,
+        "Growth Signal": 1.5408,
+        "Valuation Signal": 0.15,
+        "Momentum Signal": 0.2219,
+        "Risk Signal": -0.04
+      },
+      "Recommendation": "BUY",
+      "Confidence": 78.2,
+      "Adaptive Weights": {
+        "Business Quality": 0.142857,
+        "Financial Strength": 0.142857,
+        "Valuation": 0.095238,
+        "Growth": 0.142857,
+        "Profitability": 0.142857,
+        "Momentum": 0.142857,
+        "Risk": 0.095238,
+        "Size": 0.02381,
+        "Balance Sheet": 0.071429,
+        "Dividend": 0.0
+      },
+      "Factor Scores": {
+        "Business Quality": 78.0,
+        "Financial Strength": 86.0,
+        "Valuation": 65.0,
+        "Growth": 88.0,
+        "Profitability": 90.0,
+        "Momentum": 90.0,
+        "Risk": 48.0,
+        "Size": 90.0,
+        "Balance Sheet": 85.0,
+        "Dividend": 50.0
+      },
+      "Specialist Scores": {
+        "Business Quality": 78.0,
+        "Financial Strength": 86.0,
+        "Valuation": 65.0,
+        "Growth": 88.0,
+        "Profitability": 90.0,
+        "Momentum": 90.0,
+        "Risk": 48.0,
+        "Size": 90.0,
+        "Balance Sheet": 85.0,
+        "Dividend": 50.0
+      },
+      "Learning Enabled": false,
+      "Strengths": [
+        "Business Quality is supportive.",
+        "Financial Strength is very strong.",
+        "Growth is very strong.",
+        "Profitability is very strong.",
+        "Momentum is very strong.",
+        "Size is very strong.",
+        "Balance Sheet is very strong.",
+        "Expected return is strongly positive at 25.0%."
+      ],
+      "Concerns": [
+        "Risk requires caution."
+      ],
+      "Summary": "The Investment Committee assigns 79.26/100 and recommends BUY. Expected return is 25.0% over 252 days. Confidence is 78.2%."
+    },
+    "Fundamental Research": {
+      "Ticker": "NVDA",
+      "Company": "NVIDIA Corporation",
+      "Sector": "Technology",
+      "Industry": "Semiconductors",
+      "Overall Score": 80.69,
+      "Factor Scores": {
+        "Business Quality": 78,
+        "Financial Strength": 86,
+        "Valuation": 65,
+        "Growth": 88,
+        "Profitability": 90,
+        "Momentum": 90,
+        "Risk": 48,
+        "Size": 90,
+        "Balance Sheet": 85,
+        "Dividend": 50
+      },
+      "Weights": {
+        "Business Quality": 0.142857,
+        "Financial Strength": 0.142857,
+        "Valuation": 0.095238,
+        "Growth": 0.142857,
+        "Profitability": 0.142857,
+        "Momentum": 0.142857,
+        "Risk": 0.095238,
+        "Size": 0.02381,
+        "Balance Sheet": 0.071429,
+        "Dividend": 0.0
+      },
+      "Expected Return": 24.97,
+      "Expected Return Confidence": 80.0,
+      "Expected Return Analysis": {
+        "Expected Return": 24.97,
+        "Confidence": 80.0,
+        "Horizon Days": 252,
+        "Factor Signal": 0.583,
+        "Growth Signal": 1.5408,
+        "Valuation Signal": 0.15,
+        "Momentum Signal": 0.2219,
+        "Risk Signal": -0.04
+      },
+      "Market Cap": 5424535306240,
+      "Forward PE": 17.37413,
+      "Revenue Growth": 0.852,
+      "Earnings Growth": 2.145,
+      "ROE": 1.14288,
+      "Debt To Equity": 6.555
+    },
+    "Catalyst Research": {
+      "Ticker": "NVDA",
+      "Catalyst Score": 70.3,
+      "Catalyst Count": 16,
+      "Source Count": 2,
+      "Sources": [
+        "News",
+        "Yahoo"
+      ],
+      "Upcoming Catalysts": [
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-08-26",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Reason": "Upcoming earnings announcement.",
+          "URL": null,
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 85,
+          "Catalyst Score": 84.25
+        }
+      ],
+      "Recent Catalysts": [
+        {
+          "Source": "Seeking Alpha",
+          "Date": "2026-08-05",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Nvidia Stock Is A Steal Ahead Of Q2 Earnings (NASDAQ:NVDA) - Seeking Alpha",
+          "URL": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOUEE0N2M2ZU1LZ2ZIRFc5RDU1VFAzS2E1MDhLY2FnLVEtdnpoUHFJZjZJWG9UbVF6Umtwd2FwWk1YcW81M19PWlplUk05V3V3d3lWX3liVmpxVE5jRzFObFBUcUlHZmxneklZZG44aEVzZXNseTYzMVJ1VDdTa1VEYWZDdWk2RG5UVWpqX2RR?oc=5",
+          "News Title": "Nvidia Stock Is A Steal Ahead Of Q2 Earnings (NASDAQ:NVDA) - Seeking Alpha",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "Seeking Alpha",
+          "Date": "2026-08-05",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Nvidia Earnings: AMD's Results Point To Massive AI Demand (Preview) (NASDAQ:NVDA) - Seeking Alpha",
+          "URL": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOV0FGMTlxZXFybGdGb0ZBX3NGWFJIcURKUUFjQkREakZWcmxKSHhPVXZwazdyLTVub0IwcUJ2ZkduX1QtNmpMOGZTLXlzNktlNXljRjZWUlV2Wm50V3I1SVp5ZDRKOWEwT2ZiM3BnOU1YYks1RUhsNmVVU19EQTBTZnpwdE1rVU0zVlVfRUoyNGt6WWVjSG0tTUVhN08zSFVkWVgyaEo4WQ?oc=5",
+          "News Title": "Nvidia Earnings: AMD's Results Point To Massive AI Demand (Preview) (NASDAQ:NVDA) - Seeking Alpha",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "Barchart.com",
+          "Date": "2026-07-23",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Why Nvidia (NVDA) Stock Faces Sell-the-News Risk Following Its Q2 Earnings Report - Barchart.com",
+          "URL": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxOZVFIVHFXTEZqWWhFNFFfcDdsSWdIdnVjVmFZMmdYamlnRzZORkxDQ0ppcWIyc3BTMDRpdWh3cHg5WW9HUy1WVml0bjNWWk9McURINFVQWjUtSDlxa0JzN2RtYVV0Ulk3b2dhcjk0dGxfbjY2TmxyUkgtTE5XVlYzTTdGQ2tRRlRWU3lINWY1NWstQkR4bnRzWkl1bzlPWUQ3OVZISzU0ejNEVTVlQjFnbnN0NEdGWlV3RG94c3NjRVk?oc=5",
+          "News Title": "Why Nvidia (NVDA) Stock Faces Sell-the-News Risk Following Its Q2 Earnings Report - Barchart.com",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "Quiver Quantitative",
+          "Date": "2026-08-02",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Nvidia Stock (NVDA) Opinions on AI Spending and Earnings Outlook - Quiver Quantitative",
+          "URL": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQbVcxSDY0WWVEYUo0QzF2SGFVSWZHSXVDcjRTbHM1WnRZOHZHLWZpWjBBQmV3a3NCeWVoM05fSS1ZNjdqWE5ZWjNySnVyRjUyVmp2ZUxsYVNsMmhteVNYUDFYWkxlaWlQcjFoRnZvbWQzQ19RSFlKSWRVZzBaWUI4MWlndzZkcmVoMWZfUHNLWkFZTjBNUHZkeQ?oc=5",
+          "News Title": "Nvidia Stock (NVDA) Opinions on AI Spending and Earnings Outlook - Quiver Quantitative",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "GuruFocus",
+          "Date": "2026-08-04",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Nvidia (NVDA) Stock Rises 2.9% Amid Uncertainty Over Earnings Re - GuruFocus",
+          "URL": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOWmVkNkgzU3IxS3lvem1zRnBIVWZpLWp5OVg0M1dhXzUtWkNfZHRwcm1sOGtnXzd6VDZ0elBOSXk3QlFjcmlFVVNJVXdjb2E4UHF1WkhaMjliWnlHd2Z0ZHRxY09EOV9XUlctZEt0R3dnSE5GNm9meDRLZUI4cHhjZDJDNkxSSWxRUy1EQ003eTNKQjc0R2lOZE9ubGUtMWo2Vmo4Q1Z3?oc=5",
+          "News Title": "Nvidia (NVDA) Stock Rises 2.9% Amid Uncertainty Over Earnings Re - GuruFocus",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-08-07",
+          "Type": "Guidance",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "forecast",
+          "Reason": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - Yahoo Finance",
+          "URL": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNSC1QRGhEVzNoTkMxXzAtdkNzNmF4TzU4ZnBMNzBMaDFuMUY5NlpWR0hRc01UV1hXM1U2MzgzUEdKQ3RzRTRxUVJidF9teGlzenE4c0lNeTNEVFdTWGVKUFJxOGN3S01lQk0xdGdoUVVfTnl0ZU1aazA2a1c0dzcwU19OZmVDLWRzMURRRjU1RS1jRVY4NnBpcV9qZlBZMzFu?oc=5",
+          "News Title": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - Yahoo Finance",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "TradingKey",
+          "Date": "2026-08-08",
+          "Type": "Clinical / FDA",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "fda",
+          "Reason": "NVDA Stock Price Drop\u2014the Time to Buy Nvidia or Diversify Across the AI Datacenter Supply Chain? - TradingKey",
+          "URL": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOQlAwNnB4N3RpV3B1elhmaHlOUXpnQUFnMkFKdGRaY29aMWFzVDlpb1ItbVJneEQ3SUk1cjNVZHVpc0ZfbldDbUxJOVBwRWJ4Umg5Rk1FWnJwZFdaTWNKSkduaTExWHBMcnEtbHhVRFBhcUtOQ2k2ZkhBTUZldE1vWnZVUE1hNVFyUmF6QlJ6Q041c0h6R2U0SjRNQXJaOUkxR3V2b0JiRjJKbUZyT19rMEJxVGV0b3EteV91SVAwdUhUTTFBSmFFeg?oc=5",
+          "News Title": "NVDA Stock Price Drop\u2014the Time to Buy Nvidia or Diversify Across the AI Datacenter Supply Chain? - TradingKey",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "BeInCrypto",
+          "Date": "2026-08-07",
+          "Type": "Guidance",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "forecast",
+          "Reason": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - BeInCrypto",
+          "URL": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5aZGVxakM1b2hiemY1R20yMURsTDUxRnltX2dVWTVDU3FNVHhtaGZmaGQtVDZPcnRNX0l5ZFM3MlBuOWhOSm1qY0F1ZW5BX25MeWtKLUM4c0cwczR6bTc1MkNHRV96MUp4U0tz?oc=5",
+          "News Title": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - BeInCrypto",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "MarketBeat",
+          "Date": "2026-08-08",
+          "Type": "M&A",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "acquire",
+          "Reason": "SummitTX Capital L.P. Acquires 10,072 Shares of NVIDIA Corporation $NVDA - MarketBeat",
+          "URL": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPbVhRSUNVUVpyOHhKRmZpQldOaG1POW56TFNwNEQ4MWRoQmFLdGRMOGx6TDlKdWo4VUwxd0I1SlkxSzk5OHR3OUF6b2R2bXZoWGFrdFJ3NTdpYlpmcXJxaDJXOHdRQ0ZOVjhuNVY4ckZHS1FGSGxqRkxReDhad1NOdEpLZ3JwTUFvUTlYX25SRFlPaXdqVHF4Q1FwZUpEMlhsbzhBWTdlenJhM1lQTmMtbGlITW9maWVHY19vd0xkdXE2cEdMSFEteg?oc=5",
+          "News Title": "SummitTX Capital L.P. Acquires 10,072 Shares of NVIDIA Corporation $NVDA - MarketBeat",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "Yahoo! Finance Canada",
+          "Date": "2026-08-07",
+          "Type": "M&A",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "acquire",
+          "Reason": "Nvidia Stock Jumps After AMD Acquires AI Startup Taalas - Yahoo! Finance Canada",
+          "URL": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNZ2daSVY1WXNtM1RKZjVSWV82TkZYTHpCcDZBancyZ21HLXlqTnF0TDlZWGhuSE5UY1JYZHhyTmxMTkxVcVpyc09NdGw1OUJ5ZHQ1RnV4STdFczNaUkJKTnFZMlZ4QUYtVlNNUjdYeUdZZzhhNmdidndfTER2eDNrX0RiaTQ4WGs?oc=5",
+          "News Title": "Nvidia Stock Jumps After AMD Acquires AI Startup Taalas - Yahoo! Finance Canada",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "MarketBeat",
+          "Date": "2026-08-07",
+          "Type": "M&A",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "acquire",
+          "Reason": "NVIDIA Corporation $NVDA Shares Acquired by Gateway Wealth Partners LLC - MarketBeat",
+          "URL": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOSTBKQVZZYndzN2hQSVV4SFlxQVR5YUcwZUdFOEg1Y05aa21tOTVlb2ktcjVTczRwZ29uRUtoUDhTWDNvaDloSjlqbUgyNUVXUVc4NmZveWNZQTZZLTZRQTY1MHpBaWRsUWtTM3MxRlVtTWh3VXhLc2d6ZVVOaVYybElIY0luVzl6dEhaMk56Y01QZjI3MmE2eU9NYjhnTUFDZ3dIVkRNTGx4WEpZeWxLTXdxZEpSUGxDR05WdlgyVHNKcU5nNk94dmF3Yw?oc=5",
+          "News Title": "NVIDIA Corporation $NVDA Shares Acquired by Gateway Wealth Partners LLC - MarketBeat",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "MarketBeat",
+          "Date": "2026-08-07",
+          "Type": "M&A",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "acquire",
+          "Reason": "NVIDIA Corporation $NVDA Shares Acquired by OMERS ADMINISTRATION Corp - MarketBeat",
+          "URL": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQZFBqNGJDT01rTmpFdHM3MGNRQVA3SjN3T1RKTjdHdXhOdXFGZWFpcWdzdHhGQXNYVElEZFZuYWNDMlJPQlAzbjRvLTJsY0tUdi0tLUZZTEx0ZVF4Z3dOZm9vaTlNeTJnbzV2c2FIT28ya0p2OU14cHdpdjR5SGRtQnM2eS1vYTMwZzN3Rk1sbjI5Y05XcmFRTkl5aVdvdjMtYzNBbnpJSXU5Mm5GUFEyQ3ROLUo2WTBTc29UQzkyekhWNFhOVEVQSQ?oc=5",
+          "News Title": "NVIDIA Corporation $NVDA Shares Acquired by OMERS ADMINISTRATION Corp - MarketBeat",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "Zacks Investment Research",
+          "Date": "2026-08-07",
+          "Type": "Major Contract",
+          "Impact": "HIGH",
+          "Matched Keyword": "partnership",
+          "Reason": "Time to Buy Nvidia or SpaceX Stock After Their AI Partnership? - Zacks Investment Research",
+          "URL": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTkxnSEFCVmdtSl9JNWplZEstX2FrN1RpOEpoVnVSUjR3UWFCRm13M2RmSVZKWlFubGhQbWwtNDZuaDIyU0ZsZE1JQTNDakRMQ3lBZzZheTNaME1mMFU0ejNJaVJVb3h3S0otSWtyV3A3bl9FSU1qRkd4ZE9IWm5oZzRPeXh6LU4yeUNFNDlDOXdlTXhZTTVNSDlQSnRwM09VNGxyeQ?oc=5",
+          "News Title": "Time to Buy Nvidia or SpaceX Stock After Their AI Partnership? - Zacks Investment Research",
+          "Probability": 50.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 53.5
+        },
+        {
+          "Source": "FXLeaders",
+          "Date": "2026-08-06",
+          "Type": "Major Contract",
+          "Impact": "HIGH",
+          "Matched Keyword": "deal",
+          "Reason": "Elon Musk Announces SpaceX Deal with Nvidia, Sending NVDA Stock to $220 but the Competition Threatens Rally - FXLeaders",
+          "URL": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxOSE94eUs2VFk5ZHpjODc4TXNRRXlzOTRBQmkxZmEtZU11VUJIQWNSY0JCMWVRTlpFRWFxTnFicnVMM0xzZk1zYUR4cFdWOVhRVV9RQ1dkSGprSW1jNzQ4WlJPTjVjaUNHVHN0ZUVJZXIzTmZZYjdjQ1FtMEhHdm5mRF8walZWTnZxZHFHanc2QXItNl9wdjBKVUM1NEU1c1hCblJwd3M1Ny01Z3Z1RXpmSTYwQ1RCUVhQQXJPeTlnTXdtVlhPTk9xTlVPVzd0d0hIbkFTSjY1eTdKaFBDbmlpMHF3?oc=5",
+          "News Title": "Elon Musk Announces SpaceX Deal with Nvidia, Sending NVDA Stock to $220 but the Competition Threatens Rally - FXLeaders",
+          "Probability": 50.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 53.5
+        },
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-07-16",
+          "Type": "Product Launch",
+          "Impact": "HIGH",
+          "Matched Keyword": "launches",
+          "Reason": "NVDA Stock Alert: What to Know as Nvidia Launches New AI Model - Yahoo Finance",
+          "URL": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPMDVEQXlhQkNOQ2x1eUdDeExEMXVlVVZSZGxTeWFoRGh6dGRiWlFaUzlvT2IzN25XbjJkYzA5S3czSE4zTkhlZ040R3VURHY3VkJsWW83aVNVcm8zbVpkVVRzSjJuVGJjRkphbHU0XzlCeE1obWJtMHVHbWdvcVhXR0d5Q0M1bWczNmpiSkZGaDIxU3RiWnFF?oc=5",
+          "News Title": "NVDA Stock Alert: What to Know as Nvidia Launches New AI Model - Yahoo Finance",
+          "Probability": 50.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 53.5
+        }
+      ],
+      "All Catalysts": [
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-08-26",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Reason": "Upcoming earnings announcement.",
+          "URL": null,
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 85,
+          "Catalyst Score": 84.25
+        },
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-08-07",
+          "Type": "Guidance",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "forecast",
+          "Reason": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - Yahoo Finance",
+          "URL": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNSC1QRGhEVzNoTkMxXzAtdkNzNmF4TzU4ZnBMNzBMaDFuMUY5NlpWR0hRc01UV1hXM1U2MzgzUEdKQ3RzRTRxUVJidF9teGlzenE4c0lNeTNEVFdTWGVKUFJxOGN3S01lQk0xdGdoUVVfTnl0ZU1aazA2a1c0dzcwU19OZmVDLWRzMURRRjU1RS1jRVY4NnBpcV9qZlBZMzFu?oc=5",
+          "News Title": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - Yahoo Finance",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "Zacks Investment Research",
+          "Date": "2026-08-07",
+          "Type": "Major Contract",
+          "Impact": "HIGH",
+          "Matched Keyword": "partnership",
+          "Reason": "Time to Buy Nvidia or SpaceX Stock After Their AI Partnership? - Zacks Investment Research",
+          "URL": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTkxnSEFCVmdtSl9JNWplZEstX2FrN1RpOEpoVnVSUjR3UWFCRm13M2RmSVZKWlFubGhQbWwtNDZuaDIyU0ZsZE1JQTNDakRMQ3lBZzZheTNaME1mMFU0ejNJaVJVb3h3S0otSWtyV3A3bl9FSU1qRkd4ZE9IWm5oZzRPeXh6LU4yeUNFNDlDOXdlTXhZTTVNSDlQSnRwM09VNGxyeQ?oc=5",
+          "News Title": "Time to Buy Nvidia or SpaceX Stock After Their AI Partnership? - Zacks Investment Research",
+          "Probability": 50.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 53.5
+        },
+        {
+          "Source": "TradingKey",
+          "Date": "2026-08-08",
+          "Type": "Clinical / FDA",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "fda",
+          "Reason": "NVDA Stock Price Drop\u2014the Time to Buy Nvidia or Diversify Across the AI Datacenter Supply Chain? - TradingKey",
+          "URL": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOQlAwNnB4N3RpV3B1elhmaHlOUXpnQUFnMkFKdGRaY29aMWFzVDlpb1ItbVJneEQ3SUk1cjNVZHVpc0ZfbldDbUxJOVBwRWJ4Umg5Rk1FWnJwZFdaTWNKSkduaTExWHBMcnEtbHhVRFBhcUtOQ2k2ZkhBTUZldE1vWnZVUE1hNVFyUmF6QlJ6Q041c0h6R2U0SjRNQXJaOUkxR3V2b0JiRjJKbUZyT19rMEJxVGV0b3EteV91SVAwdUhUTTFBSmFFeg?oc=5",
+          "News Title": "NVDA Stock Price Drop\u2014the Time to Buy Nvidia or Diversify Across the AI Datacenter Supply Chain? - TradingKey",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "BeInCrypto",
+          "Date": "2026-08-07",
+          "Type": "Guidance",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "forecast",
+          "Reason": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - BeInCrypto",
+          "URL": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5aZGVxakM1b2hiemY1R20yMURsTDUxRnltX2dVWTVDU3FNVHhtaGZmaGQtVDZPcnRNX0l5ZFM3MlBuOWhOSm1qY0F1ZW5BX25MeWtKLUM4c0cwczR6bTc1MkNHRV96MUp4U0tz?oc=5",
+          "News Title": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - BeInCrypto",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "MarketBeat",
+          "Date": "2026-08-08",
+          "Type": "M&A",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "acquire",
+          "Reason": "SummitTX Capital L.P. Acquires 10,072 Shares of NVIDIA Corporation $NVDA - MarketBeat",
+          "URL": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPbVhRSUNVUVpyOHhKRmZpQldOaG1POW56TFNwNEQ4MWRoQmFLdGRMOGx6TDlKdWo4VUwxd0I1SlkxSzk5OHR3OUF6b2R2bXZoWGFrdFJ3NTdpYlpmcXJxaDJXOHdRQ0ZOVjhuNVY4ckZHS1FGSGxqRkxReDhad1NOdEpLZ3JwTUFvUTlYX25SRFlPaXdqVHF4Q1FwZUpEMlhsbzhBWTdlenJhM1lQTmMtbGlITW9maWVHY19vd0xkdXE2cEdMSFEteg?oc=5",
+          "News Title": "SummitTX Capital L.P. Acquires 10,072 Shares of NVIDIA Corporation $NVDA - MarketBeat",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "Seeking Alpha",
+          "Date": "2026-08-05",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Nvidia Stock Is A Steal Ahead Of Q2 Earnings (NASDAQ:NVDA) - Seeking Alpha",
+          "URL": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOUEE0N2M2ZU1LZ2ZIRFc5RDU1VFAzS2E1MDhLY2FnLVEtdnpoUHFJZjZJWG9UbVF6Umtwd2FwWk1YcW81M19PWlplUk05V3V3d3lWX3liVmpxVE5jRzFObFBUcUlHZmxneklZZG44aEVzZXNseTYzMVJ1VDdTa1VEYWZDdWk2RG5UVWpqX2RR?oc=5",
+          "News Title": "Nvidia Stock Is A Steal Ahead Of Q2 Earnings (NASDAQ:NVDA) - Seeking Alpha",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "Yahoo! Finance Canada",
+          "Date": "2026-08-07",
+          "Type": "M&A",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "acquire",
+          "Reason": "Nvidia Stock Jumps After AMD Acquires AI Startup Taalas - Yahoo! Finance Canada",
+          "URL": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNZ2daSVY1WXNtM1RKZjVSWV82TkZYTHpCcDZBancyZ21HLXlqTnF0TDlZWGhuSE5UY1JYZHhyTmxMTkxVcVpyc09NdGw1OUJ5ZHQ1RnV4STdFczNaUkJKTnFZMlZ4QUYtVlNNUjdYeUdZZzhhNmdidndfTER2eDNrX0RiaTQ4WGs?oc=5",
+          "News Title": "Nvidia Stock Jumps After AMD Acquires AI Startup Taalas - Yahoo! Finance Canada",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "Seeking Alpha",
+          "Date": "2026-08-05",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Nvidia Earnings: AMD's Results Point To Massive AI Demand (Preview) (NASDAQ:NVDA) - Seeking Alpha",
+          "URL": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOV0FGMTlxZXFybGdGb0ZBX3NGWFJIcURKUUFjQkREakZWcmxKSHhPVXZwazdyLTVub0IwcUJ2ZkduX1QtNmpMOGZTLXlzNktlNXljRjZWUlV2Wm50V3I1SVp5ZDRKOWEwT2ZiM3BnOU1YYks1RUhsNmVVU19EQTBTZnpwdE1rVU0zVlVfRUoyNGt6WWVjSG0tTUVhN08zSFVkWVgyaEo4WQ?oc=5",
+          "News Title": "Nvidia Earnings: AMD's Results Point To Massive AI Demand (Preview) (NASDAQ:NVDA) - Seeking Alpha",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "MarketBeat",
+          "Date": "2026-08-07",
+          "Type": "M&A",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "acquire",
+          "Reason": "NVIDIA Corporation $NVDA Shares Acquired by Gateway Wealth Partners LLC - MarketBeat",
+          "URL": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOSTBKQVZZYndzN2hQSVV4SFlxQVR5YUcwZUdFOEg1Y05aa21tOTVlb2ktcjVTczRwZ29uRUtoUDhTWDNvaDloSjlqbUgyNUVXUVc4NmZveWNZQTZZLTZRQTY1MHpBaWRsUWtTM3MxRlVtTWh3VXhLc2d6ZVVOaVYybElIY0luVzl6dEhaMk56Y01QZjI3MmE2eU9NYjhnTUFDZ3dIVkRNTGx4WEpZeWxLTXdxZEpSUGxDR05WdlgyVHNKcU5nNk94dmF3Yw?oc=5",
+          "News Title": "NVIDIA Corporation $NVDA Shares Acquired by Gateway Wealth Partners LLC - MarketBeat",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "MarketBeat",
+          "Date": "2026-08-07",
+          "Type": "M&A",
+          "Impact": "VERY HIGH",
+          "Matched Keyword": "acquire",
+          "Reason": "NVIDIA Corporation $NVDA Shares Acquired by OMERS ADMINISTRATION Corp - MarketBeat",
+          "URL": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQZFBqNGJDT01rTmpFdHM3MGNRQVA3SjN3T1RKTjdHdXhOdXFGZWFpcWdzdHhGQXNYVElEZFZuYWNDMlJPQlAzbjRvLTJsY0tUdi0tLUZZTEx0ZVF4Z3dOZm9vaTlNeTJnbzV2c2FIT28ya0p2OU14cHdpdjR5SGRtQnM2eS1vYTMwZzN3Rk1sbjI5Y05XcmFRTkl5aVdvdjMtYzNBbnpJSXU5Mm5GUFEyQ3ROLUo2WTBTc29UQzkyekhWNFhOVEVQSQ?oc=5",
+          "News Title": "NVIDIA Corporation $NVDA Shares Acquired by OMERS ADMINISTRATION Corp - MarketBeat",
+          "Probability": 55.0,
+          "Impact Score": 100,
+          "Timing Score": 10,
+          "Catalyst Score": 64.0
+        },
+        {
+          "Source": "Barchart.com",
+          "Date": "2026-07-23",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Why Nvidia (NVDA) Stock Faces Sell-the-News Risk Following Its Q2 Earnings Report - Barchart.com",
+          "URL": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxOZVFIVHFXTEZqWWhFNFFfcDdsSWdIdnVjVmFZMmdYamlnRzZORkxDQ0ppcWIyc3BTMDRpdWh3cHg5WW9HUy1WVml0bjNWWk9McURINFVQWjUtSDlxa0JzN2RtYVV0Ulk3b2dhcjk0dGxfbjY2TmxyUkgtTE5XVlYzTTdGQ2tRRlRWU3lINWY1NWstQkR4bnRzWkl1bzlPWUQ3OVZISzU0ejNEVTVlQjFnbnN0NEdGWlV3RG94c3NjRVk?oc=5",
+          "News Title": "Why Nvidia (NVDA) Stock Faces Sell-the-News Risk Following Its Q2 Earnings Report - Barchart.com",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "Quiver Quantitative",
+          "Date": "2026-08-02",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Nvidia Stock (NVDA) Opinions on AI Spending and Earnings Outlook - Quiver Quantitative",
+          "URL": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQbVcxSDY0WWVEYUo0QzF2SGFVSWZHSXVDcjRTbHM1WnRZOHZHLWZpWjBBQmV3a3NCeWVoM05fSS1ZNjdqWE5ZWjNySnVyRjUyVmp2ZUxsYVNsMmhteVNYUDFYWkxlaWlQcjFoRnZvbWQzQ19RSFlKSWRVZzBaWUI4MWlndzZkcmVoMWZfUHNLWkFZTjBNUHZkeQ?oc=5",
+          "News Title": "Nvidia Stock (NVDA) Opinions on AI Spending and Earnings Outlook - Quiver Quantitative",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "GuruFocus",
+          "Date": "2026-08-04",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Matched Keyword": "earnings",
+          "Reason": "Nvidia (NVDA) Stock Rises 2.9% Amid Uncertainty Over Earnings Re - GuruFocus",
+          "URL": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOWmVkNkgzU3IxS3lvem1zRnBIVWZpLWp5OVg0M1dhXzUtWkNfZHRwcm1sOGtnXzd6VDZ0elBOSXk3QlFjcmlFVVNJVXdjb2E4UHF1WkhaMjliWnlHd2Z0ZHRxY09EOV9XUlctZEt0R3dnSE5GNm9meDRLZUI4cHhjZDJDNkxSSWxRUy1EQ003eTNKQjc0R2lOZE9ubGUtMWo2Vmo4Q1Z3?oc=5",
+          "News Title": "Nvidia (NVDA) Stock Rises 2.9% Amid Uncertainty Over Earnings Re - GuruFocus",
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 65.5
+        },
+        {
+          "Source": "FXLeaders",
+          "Date": "2026-08-06",
+          "Type": "Major Contract",
+          "Impact": "HIGH",
+          "Matched Keyword": "deal",
+          "Reason": "Elon Musk Announces SpaceX Deal with Nvidia, Sending NVDA Stock to $220 but the Competition Threatens Rally - FXLeaders",
+          "URL": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxOSE94eUs2VFk5ZHpjODc4TXNRRXlzOTRBQmkxZmEtZU11VUJIQWNSY0JCMWVRTlpFRWFxTnFicnVMM0xzZk1zYUR4cFdWOVhRVV9RQ1dkSGprSW1jNzQ4WlJPTjVjaUNHVHN0ZUVJZXIzTmZZYjdjQ1FtMEhHdm5mRF8walZWTnZxZHFHanc2QXItNl9wdjBKVUM1NEU1c1hCblJwd3M1Ny01Z3Z1RXpmSTYwQ1RCUVhQQXJPeTlnTXdtVlhPTk9xTlVPVzd0d0hIbkFTSjY1eTdKaFBDbmlpMHF3?oc=5",
+          "News Title": "Elon Musk Announces SpaceX Deal with Nvidia, Sending NVDA Stock to $220 but the Competition Threatens Rally - FXLeaders",
+          "Probability": 50.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 53.5
+        },
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-07-16",
+          "Type": "Product Launch",
+          "Impact": "HIGH",
+          "Matched Keyword": "launches",
+          "Reason": "NVDA Stock Alert: What to Know as Nvidia Launches New AI Model - Yahoo Finance",
+          "URL": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPMDVEQXlhQkNOQ2x1eUdDeExEMXVlVVZSZGxTeWFoRGh6dGRiWlFaUzlvT2IzN25XbjJkYzA5S3czSE4zTkhlZ040R3VURHY3VkJsWW83aVNVcm8zbVpkVVRzSjJuVGJjRkphbHU0XzlCeE1obWJtMHVHbWdvcVhXR0d5Q0M1bWczNmpiSkZGaDIxU3RiWnFF?oc=5",
+          "News Title": "NVDA Stock Alert: What to Know as Nvidia Launches New AI Model - Yahoo Finance",
+          "Probability": 50.0,
+          "Impact Score": 80,
+          "Timing Score": 10,
+          "Catalyst Score": 53.5
+        }
+      ],
+      "Analysed At": "2026-08-08T20:39:57.423791+00:00"
+    },
+    "Valuation Research": {},
+    "Expected Returns": {
+      "Factor Model": {
+        "Expected Return": 24.97,
+        "Horizon Days": 252,
+        "Confidence": 80.0,
+        "Analysis": {
+          "Expected Return": 24.97,
+          "Confidence": 80.0,
+          "Horizon Days": 252,
+          "Factor Signal": 0.583,
+          "Growth Signal": 1.5408,
+          "Valuation Signal": 0.15,
+          "Momentum Signal": 0.2219,
+          "Risk Signal": -0.04
+        }
+      },
+      "Intrinsic Value Model": {}
+    },
+    "Research Sources": {
+      "Fundamental Model": "Multi-Factor Engine",
+      "Catalysts": "Catalyst Engine",
+      "Market Data": "Yahoo Finance"
+    }
+  }
+}

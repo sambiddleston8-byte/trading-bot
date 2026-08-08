@@ -1,0 +1,271 @@
+{
+  "Ticker": "NVDA",
+  "Company": "NVIDIA Corporation",
+  "Status": "OK",
+  "Current Price": 223.96,
+  "Revenue": 215938000000.0,
+  "Free Cash Flow": 96676000000.0,
+  "Net Debt": 435000000.0,
+  "Shares Outstanding": 24221000000.0,
+  "Base Growth Assumption": 30.0,
+  "Base FCF Margin": 44.77,
+  "Valuation Range": {
+    "Low": 88.63,
+    "High": 240.6
+  },
+  "Scenarios": {
+    "Bear": {
+      "Scenario": "Bear",
+      "Intrinsic Value": 88.63,
+      "Upside": -60.42,
+      "Expected Return": -60.42,
+      "Annualised Return": -16.92,
+      "Horizon Years": 5,
+      "Growth": 0.26,
+      "FCF Margin": 0.4177,
+      "Discount Rate": 0.12,
+      "Terminal Growth": 0.02,
+      "Projected FCF": [
+        {
+          "Year": 1,
+          "Growth": 0.26,
+          "FCF": 121811760000.0
+        },
+        {
+          "Year": 2,
+          "Growth": 0.23920000000000002,
+          "FCF": 150949132992.0
+        },
+        {
+          "Year": 3,
+          "Growth": 0.2184,
+          "FCF": 183916423637.4528
+        },
+        {
+          "Year": 4,
+          "Growth": 0.1976,
+          "FCF": 220258308948.21347
+        },
+        {
+          "Year": 5,
+          "Growth": 0.17679999999999998,
+          "FCF": 259199977970.25763
+        }
+      ],
+      "Enterprise Value": 2147245158714.27,
+      "Equity Value": 2146810158714.27
+    },
+    "Base": {
+      "Scenario": "Base",
+      "Intrinsic Value": 142.94,
+      "Upside": -36.18,
+      "Expected Return": -36.18,
+      "Annualised Return": -8.59,
+      "Horizon Years": 5,
+      "Growth": 0.3,
+      "FCF Margin": 0.4477,
+      "Discount Rate": 0.1,
+      "Terminal Growth": 0.03,
+      "Projected FCF": [
+        {
+          "Year": 1,
+          "Growth": 0.3,
+          "FCF": 125678800000.0
+        },
+        {
+          "Year": 2,
+          "Growth": 0.276,
+          "FCF": 160366148800.0
+        },
+        {
+          "Year": 3,
+          "Growth": 0.252,
+          "FCF": 200778418297.6
+        },
+        {
+          "Year": 4,
+          "Growth": 0.22799999999999998,
+          "FCF": 246555897669.4528
+        },
+        {
+          "Year": 5,
+          "Growth": 0.204,
+          "FCF": 296853300794.0211
+        }
+      ],
+      "Enterprise Value": 3462533379249.64,
+      "Equity Value": 3462098379249.64
+    },
+    "Bull": {
+      "Scenario": "Bull",
+      "Intrinsic Value": 240.6,
+      "Upside": 7.43,
+      "Expected Return": 7.43,
+      "Annualised Return": 1.44,
+      "Horizon Years": 5,
+      "Growth": 0.34,
+      "FCF Margin": 0.4777,
+      "Discount Rate": 0.085,
+      "Terminal Growth": 0.04,
+      "Projected FCF": [
+        {
+          "Year": 1,
+          "Growth": 0.3,
+          "FCF": 125678800000.0
+        },
+        {
+          "Year": 2,
+          "Growth": 0.3,
+          "FCF": 163382440000.0
+        },
+        {
+          "Year": 3,
+          "Growth": 0.28559999999999997,
+          "FCF": 210044464864.0
+        },
+        {
+          "Year": 4,
+          "Growth": 0.25839999999999996,
+          "FCF": 264319954584.8576
+        },
+        {
+          "Year": 5,
+          "Growth": 0.23119999999999996,
+          "FCF": 325430728084.87665
+        }
+      ],
+      "Enterprise Value": 5828067616253.74,
+      "Equity Value": 5827632616253.74
+    }
+  },
+  "Horizon Returns": {
+    "1 Year": {
+      "Years": 1,
+      "Total Return": -36.18,
+      "Annualised Return": -36.18
+    },
+    "3 Years": {
+      "Years": 3,
+      "Total Return": -36.18,
+      "Annualised Return": -13.9
+    },
+    "5 Years": {
+      "Years": 5,
+      "Total Return": -36.18,
+      "Annualised Return": -8.59
+    }
+  },
+  "Sensitivity": {
+    "8%": {
+      "-2%": {
+        "Intrinsic Value": 65.62,
+        "Upside": -70.7
+      },
+      "0%": {
+        "Intrinsic Value": 71.88,
+        "Upside": -67.91
+      },
+      "2%": {
+        "Intrinsic Value": 78.63,
+        "Upside": -64.89
+      },
+      "4%": {
+        "Intrinsic Value": 85.91,
+        "Upside": -61.64
+      },
+      "6%": {
+        "Intrinsic Value": 93.74,
+        "Upside": -58.14
+      }
+    },
+    "9%": {
+      "-2%": {
+        "Intrinsic Value": 54.91,
+        "Upside": -75.48
+      },
+      "0%": {
+        "Intrinsic Value": 60.04,
+        "Upside": -73.19
+      },
+      "2%": {
+        "Intrinsic Value": 65.58,
+        "Upside": -70.72
+      },
+      "4%": {
+        "Intrinsic Value": 71.54,
+        "Upside": -68.06
+      },
+      "6%": {
+        "Intrinsic Value": 77.95,
+        "Upside": -65.2
+      }
+    },
+    "10%": {
+      "-2%": {
+        "Intrinsic Value": 47.25,
+        "Upside": -78.9
+      },
+      "0%": {
+        "Intrinsic Value": 51.58,
+        "Upside": -76.97
+      },
+      "2%": {
+        "Intrinsic Value": 56.25,
+        "Upside": -74.89
+      },
+      "4%": {
+        "Intrinsic Value": 61.27,
+        "Upside": -72.64
+      },
+      "6%": {
+        "Intrinsic Value": 66.67,
+        "Upside": -70.23
+      }
+    },
+    "11%": {
+      "-2%": {
+        "Intrinsic Value": 41.5,
+        "Upside": -81.47
+      },
+      "0%": {
+        "Intrinsic Value": 45.23,
+        "Upside": -79.8
+      },
+      "2%": {
+        "Intrinsic Value": 49.25,
+        "Upside": -78.01
+      },
+      "4%": {
+        "Intrinsic Value": 53.57,
+        "Upside": -76.08
+      },
+      "6%": {
+        "Intrinsic Value": 58.21,
+        "Upside": -74.01
+      }
+    },
+    "12%": {
+      "-2%": {
+        "Intrinsic Value": 37.02,
+        "Upside": -83.47
+      },
+      "0%": {
+        "Intrinsic Value": 40.29,
+        "Upside": -82.01
+      },
+      "2%": {
+        "Intrinsic Value": 43.81,
+        "Upside": -80.44
+      },
+      "4%": {
+        "Intrinsic Value": 47.58,
+        "Upside": -78.75
+      },
+      "6%": {
+        "Intrinsic Value": 51.64,
+        "Upside": -76.94
+      }
+    }
+  },
+  "Method": "Five-year DCF"
+}

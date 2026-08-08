@@ -1,0 +1,80 @@
+{
+  "Timestamp": "2026-08-08T20:33:06.280144",
+  "Learning Source": "data/factor_learning.json",
+  "Minimum Observations": 50,
+  "Maximum Adjustment": 0.25,
+  "Weights": {
+    "Business Quality": 0.142857,
+    "Financial Strength": 0.142857,
+    "Valuation": 0.095238,
+    "Growth": 0.142857,
+    "Profitability": 0.142857,
+    "Momentum": 0.142857,
+    "Risk": 0.095238,
+    "Size": 0.02381,
+    "Balance Sheet": 0.071429,
+    "Dividend": 0.0
+  },
+  "Changes": {
+    "Business Quality": {
+      "Base Weight": 0.15,
+      "Adjustment": 0,
+      "New Weight": 0.15,
+      "Reason": "No factor learning data."
+    },
+    "Financial Strength": {
+      "Base Weight": 0.15,
+      "Adjustment": 0,
+      "New Weight": 0.15,
+      "Reason": "No factor learning data."
+    },
+    "Valuation": {
+      "Base Weight": 0.1,
+      "Adjustment": 0,
+      "New Weight": 0.1,
+      "Reason": "No factor learning data."
+    },
+    "Growth": {
+      "Base Weight": 0.15,
+      "Adjustment": 0,
+      "New Weight": 0.15,
+      "Reason": "No factor learning data."
+    },
+    "Profitability": {
+      "Base Weight": 0.15,
+      "Adjustment": 0,
+      "New Weight": 0.15,
+      "Reason": "No factor learning data."
+    },
+    "Momentum": {
+      "Base Weight": 0.15,
+      "Adjustment": 0,
+      "New Weight": 0.15,
+      "Reason": "No factor learning data."
+    },
+    "Risk": {
+      "Base Weight": 0.1,
+      "Adjustment": 0,
+      "New Weight": 0.1,
+      "Reason": "No factor learning data."
+    },
+    "Size": {
+      "Base Weight": 0.025,
+      "Adjustment": 0,
+      "New Weight": 0.025,
+      "Reason": "No factor learning data."
+    },
+    "Balance Sheet": {
+      "Base Weight": 0.075,
+      "Adjustment": 0,
+      "New Weight": 0.075,
+      "Reason": "No factor learning data."
+    },
+    "Dividend": {
+      "Base Weight": 0.0,
+      "Adjustment": 0,
+      "New Weight": 0.0,
+      "Reason": "No factor learning data."
+    }
+  }
+}

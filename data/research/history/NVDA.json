@@ -1,0 +1,170 @@
+[
+  {
+    "Snapshot ID": "NVDA_20260808203859",
+    "Ticker": "NVDA",
+    "Company": "NVIDIA Corporation",
+    "Sector": "Technology",
+    "Industry": "Semiconductors",
+    "Timestamp": "2026-08-08T20:38:59.006920+00:00",
+    "Market": {
+      "Current Price": null
+    },
+    "Decision": {
+      "Committee Score": 79.26,
+      "Recommendation": "BUY",
+      "Confidence": 78.2
+    },
+    "Fundamentals": {
+      "Overall Score": 80.69,
+      "Factor Scores": {
+        "Business Quality": 78,
+        "Financial Strength": 86,
+        "Valuation": 65,
+        "Growth": 88,
+        "Profitability": 90,
+        "Momentum": 90,
+        "Risk": 48,
+        "Size": 90,
+        "Balance Sheet": 85,
+        "Dividend": 50
+      },
+      "Weights": {
+        "Business Quality": 0.142857,
+        "Financial Strength": 0.142857,
+        "Valuation": 0.095238,
+        "Growth": 0.142857,
+        "Profitability": 0.142857,
+        "Momentum": 0.142857,
+        "Risk": 0.095238,
+        "Size": 0.02381,
+        "Balance Sheet": 0.071429,
+        "Dividend": 0.0
+      }
+    },
+    "Valuation": {
+      "Current Price": null,
+      "Bear Value": null,
+      "Base Value": null,
+      "Bull Value": null,
+      "Base Return": null,
+      "Base Annualised Return": null,
+      "Horizon Years": null,
+      "Growth Assumption": null,
+      "FCF Margin": null
+    },
+    "Catalysts": {
+      "Catalyst Score": 70.3,
+      "Catalyst Count": 16,
+      "Upcoming": [
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-08-26",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Reason": "Upcoming earnings announcement.",
+          "URL": null,
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 85,
+          "Catalyst Score": 84.25
+        }
+      ]
+    },
+    "Expected Returns": {
+      "Factor Model": {
+        "Expected Return": 24.97,
+        "Horizon Days": 252,
+        "Confidence": 80.0
+      },
+      "Intrinsic Value Model": {
+        "Expected Return": null,
+        "Annualised Return": null,
+        "Horizon Years": null
+      }
+    }
+  },
+  {
+    "Snapshot ID": "NVDA_20260808203957",
+    "Ticker": "NVDA",
+    "Company": "NVIDIA Corporation",
+    "Sector": "Technology",
+    "Industry": "Semiconductors",
+    "Timestamp": "2026-08-08T20:39:57.426295+00:00",
+    "Market": {
+      "Current Price": null
+    },
+    "Decision": {
+      "Committee Score": 79.26,
+      "Recommendation": "BUY",
+      "Confidence": 78.2
+    },
+    "Fundamentals": {
+      "Overall Score": 80.69,
+      "Factor Scores": {
+        "Business Quality": 78,
+        "Financial Strength": 86,
+        "Valuation": 65,
+        "Growth": 88,
+        "Profitability": 90,
+        "Momentum": 90,
+        "Risk": 48,
+        "Size": 90,
+        "Balance Sheet": 85,
+        "Dividend": 50
+      },
+      "Weights": {
+        "Business Quality": 0.142857,
+        "Financial Strength": 0.142857,
+        "Valuation": 0.095238,
+        "Growth": 0.142857,
+        "Profitability": 0.142857,
+        "Momentum": 0.142857,
+        "Risk": 0.095238,
+        "Size": 0.02381,
+        "Balance Sheet": 0.071429,
+        "Dividend": 0.0
+      }
+    },
+    "Valuation": {
+      "Current Price": null,
+      "Bear Value": null,
+      "Base Value": null,
+      "Bull Value": null,
+      "Base Return": null,
+      "Base Annualised Return": null,
+      "Horizon Years": null,
+      "Growth Assumption": null,
+      "FCF Margin": null
+    },
+    "Catalysts": {
+      "Catalyst Score": 70.3,
+      "Catalyst Count": 16,
+      "Upcoming": [
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-08-26",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Reason": "Upcoming earnings announcement.",
+          "URL": null,
+          "Probability": 90.0,
+          "Impact Score": 80,
+          "Timing Score": 85,
+          "Catalyst Score": 84.25
+        }
+      ]
+    },
+    "Expected Returns": {
+      "Factor Model": {
+        "Expected Return": 24.97,
+        "Horizon Days": 252,
+        "Confidence": 80.0
+      },
+      "Intrinsic Value Model": {
+        "Expected Return": null,
+        "Annualised Return": null,
+        "Horizon Years": null
+      }
+    }
+  }
+]

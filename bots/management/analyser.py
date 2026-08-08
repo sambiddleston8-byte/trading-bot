@@ -1,48 +1,91 @@
-import yfinance as yf
+from core.company_context import CompanyContext
 
 
 class ManagementAnalyser:
 
-    def analyse(self, symbol):
+    def analyse(self, context: CompanyContext):
 
-        info = yf.Ticker(symbol).info
+        info = context.info
 
         score = 50
 
         strengths = []
         weaknesses = []
 
-        employees = info.get("fullTimeEmployees")
+        # --------------------------------
+        # Insider Ownership
+        # --------------------------------
+
         insider = info.get("heldPercentInsiders")
-        institutions = info.get("heldPercentInstitutions")
 
-        if insider:
+        if insider is not None:
 
-            if insider > 0.10:
-                score += 15
-                strengths.append("High insider ownership")
+            if insider >= 0.10:
+                score += 20
+                strengths.append(
+                    "High insider ownership"
+                )
+
+            elif insider >= 0.05:
+                score += 10
+                strengths.append(
+                    "Meaningful insider ownership"
+                )
 
             elif insider < 0.02:
                 score -= 10
-                weaknesses.append("Very low insider ownership")
+                weaknesses.append(
+                    "Very low insider ownership"
+                )
 
-        if institutions:
+        # --------------------------------
+        # Institutional Ownership
+        # --------------------------------
 
-            if institutions > 0.60:
+        institutions = info.get(
+            "heldPercentInstitutions"
+        )
+
+        if institutions is not None:
+
+            if institutions >= 0.60:
                 score += 10
-                strengths.append("Strong institutional ownership")
+                strengths.append(
+                    "Strong institutional ownership"
+                )
 
-        if employees:
+            elif institutions < 0.30:
+                score -= 5
+                weaknesses.append(
+                    "Low institutional ownership"
+                )
 
-            if employees > 10000:
-                score += 5
+        # --------------------------------
+        # Company Size / Workforce
+        # --------------------------------
 
-        score = max(0, min(score, 100))
+        employees = info.get(
+            "fullTimeEmployees"
+        )
+
+        if employees is not None and employees > 10000:
+
+            score += 5
+
+        # --------------------------------
+        # Management Score
+        # --------------------------------
+
+        score = max(
+            0,
+            min(score, 100)
+        )
 
         if score >= 80:
 
             summary = (
-                "Management appears strongly aligned with shareholders."
+                "Management appears strongly aligned "
+                "with shareholders."
             )
 
         elif score >= 60:

@@ -1,54 +1,104 @@
-from core.history import HistoryEngine
+from core.company_context import CompanyContext
 
 
 class TechnicalAnalyser:
 
-    def __init__(self):
-        self.history = HistoryEngine()
+    def analyse(self, context: CompanyContext):
 
-    def moving_average_score(self, symbol):
+        history = context.history
 
-        data = self.history.get_history(symbol)
+        if history is None or history.empty:
 
-        close = data["Close"]
+            return {
+                "Momentum": 50,
+                "Moving Average": 50,
+                "Technical Score": 50,
+            }
 
-        ma50 = close.rolling(50).mean().iloc[-1]
-        ma200 = close.rolling(200).mean().iloc[-1]
+        close = history["Close"].dropna()
 
-        if ma50 > ma200:
-            return 100
+        if len(close) < 50:
+
+            return {
+                "Momentum": 50,
+                "Moving Average": 50,
+                "Technical Score": 50,
+            }
+
+        # --------------------------------
+        # Momentum
+        # --------------------------------
+
+        momentum_score = 50
+
+        if len(close) >= 60:
+
+            price_now = close.iloc[-1]
+            price_previous = close.iloc[-60]
+
+            momentum = (
+                (price_now / price_previous) - 1
+            ) * 100
+
+            if momentum >= 20:
+                momentum_score = 100
+
+            elif momentum >= 10:
+                momentum_score = 80
+
+            elif momentum >= 0:
+                momentum_score = 60
+
+            elif momentum >= -10:
+                momentum_score = 40
+
+            else:
+                momentum_score = 20
+
+        # --------------------------------
+        # Moving Average
+        # --------------------------------
+
+        moving_average_score = 50
+
+        current_price = close.iloc[-1]
+
+        ma_50 = close.tail(50).mean()
+
+        if current_price > ma_50 * 1.05:
+
+            moving_average_score = 100
+
+        elif current_price > ma_50:
+
+            moving_average_score = 80
+
+        elif current_price > ma_50 * 0.95:
+
+            moving_average_score = 50
+
         else:
-            return 0
 
-    def momentum_score(self, symbol):
+            moving_average_score = 25
 
-        data = self.history.get_history(symbol)
+        # --------------------------------
+        # Overall Technical Score
+        # --------------------------------
 
-        start_price = data["Close"].iloc[0]
-        end_price = data["Close"].iloc[-1]
-
-        change = (end_price - start_price) / start_price
-
-        if change >= 0.50:
-            return 100
-        elif change >= 0.30:
-            return 80
-        elif change >= 0.15:
-            return 60
-        elif change >= 0:
-            return 40
-        else:
-            return 0
-
-    def analyse(self, symbol):
-
-        moving_average = self.moving_average_score(symbol)
-        momentum = self.momentum_score(symbol)
-
-        technical_score = round((moving_average + momentum) / 2, 1)
+        technical_score = round(
+            (
+                momentum_score
+                + moving_average_score
+            ) / 2,
+            1,
+        )
 
         return {
-            "Moving Average": moving_average,
-            "Momentum": momentum,
-            "Technical Score": technical_score
+
+            "Momentum": momentum_score,
+
+            "Moving Average": moving_average_score,
+
+            "Technical Score": technical_score,
+
         }

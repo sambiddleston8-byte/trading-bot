@@ -1,0 +1,524 @@
+{
+    "Ticker": "NVDA",
+    "Profile": {
+        "Ticker": "NVDA",
+        "Company Name": "NVIDIA Corporation",
+        "Short Name": "NVIDIA Corporation",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "City": "Santa Clara",
+        "Website": "https://www.nvidia.com",
+        "Employees": 42000,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Jen-Hsun  Huang",
+                "age": 62,
+                "title": "Co-Founder, CEO & Director",
+                "yearBorn": 1963,
+                "fiscalYear": 2026,
+                "totalPay": 11543318,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Colette M. Kress",
+                "age": 58,
+                "title": "Executive VP & CFO",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1514979,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Debora  Shoquist",
+                "age": 70,
+                "title": "Executive Vice President of Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 1382223,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Timothy S. Teter J.D.",
+                "age": 58,
+                "title": "Executive VP, General Counsel & Secretary",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1363896,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Ajay K. Puri",
+                "age": 70,
+                "title": "Executive Vice President of Worldwide Field Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 2298337,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Chris A. Malachowsky",
+                "title": "Co-Founder",
+                "fiscalYear": 2026,
+                "totalPay": 320000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Scott C. Gawel",
+                "age": 54,
+                "title": "Chief Accounting Officer",
+                "yearBorn": 1971,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Prof. William J. Dally Ph.D.",
+                "age": 64,
+                "title": "Chief Scientist & Senior VP of Research",
+                "yearBorn": 1961,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Toshiya  Hari",
+                "title": "Vice President of Investor Relations & Strategic Finance",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Mylene  Mangalindan",
+                "title": "Vice President of Corporate Communications",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "NVIDIA Corporation operates as a data center scale AI infrastructure company in the United States, Taiwan, China, Hong Kong, Europe, and internationally. It operates through Compute & Networking, and Graphics segments. The Compute & Networking segment provides data center accelerated computing and networking platforms and artificial intelligence solutions and software, and automotive platforms and autonomous and electric vehicle solutions, including software. The Graphics segment offers GeForce GPUs for gaming and PCs; Quadro/NVIDIA RTX GPUs for enterprise workstation graphics. The company's products are used in gaming, professional visualization, data center, and automotive markets. It sells its products to original equipment manufacturers, original device manufacturers, system integrators and distributors, independent software vendors, cloud service providers, add-in board manufacturers, distributors, automotive manufacturers and tier-1 automotive suppliers, and other ecosystem participants. NVIDIA Corporation was incorporated in 1993 and is headquartered in Santa Clara, California.",
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "NVIDIA Corporation",
+        "Symbol": "NVDA",
+        "Exchange": "NMS",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 42000,
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Revenue": 253491003392,
+        "Net Income": 159612993536,
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.6,
+        "Price to Book": 27.75217,
+        "Price to Sales": 21.39932,
+        "Dividend Yield": 0.45,
+        "Beta": 2.215,
+        "52 Week High": 236.54,
+        "52 Week Low": 164.07,
+        "Current Price": 223.96,
+        "Previous Close": 218.99
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 90,
+        "Revenue History": {
+            "2026-01-31 00:00:00": 215938000000.0,
+            "2025-01-31 00:00:00": 130497000000.0,
+            "2024-01-31 00:00:00": 60922000000.0,
+            "2023-01-31 00:00:00": 26974000000.0
+        },
+        "Revenue CAGR": 100.04509499443964,
+        "Net Income History": {
+            "2026-01-31 00:00:00": 120067000000.0,
+            "2025-01-31 00:00:00": 72880000000.0,
+            "2024-01-31 00:00:00": 29760000000.0,
+            "2023-01-31 00:00:00": 4368000000.0
+        },
+        "Earnings CAGR": 201.79613706779188,
+        "Operating Cash Flow": {
+            "2026-01-31 00:00:00": 102718000000.0,
+            "2025-01-31 00:00:00": 64089000000.0,
+            "2024-01-31 00:00:00": 28090000000.0,
+            "2023-01-31 00:00:00": 5641000000.0
+        },
+        "Free Cash Flow": {
+            "2026-01-31 00:00:00": 96676000000.0,
+            "2025-01-31 00:00:00": 60853000000.0,
+            "2024-01-31 00:00:00": 27021000000.0,
+            "2023-01-31 00:00:00": 3808000000.0
+        },
+        "Profit Margin": 0.62966,
+        "Operating Margin": 0.65596,
+        "ROIC": null,
+        "Total Debt": 11040000000.0,
+        "Cash": 10605000000.0,
+        "Net Debt": 435000000.0,
+        "Strengths": [
+            "Strong multi-year revenue growth.",
+            "Strong multi-year earnings growth.",
+            "The company generates positive operating cash flow.",
+            "The company generates positive free cash flow.",
+            "Strong net profit margin.",
+            "Strong operating margin."
+        ],
+        "Weaknesses": [
+            "The company has net debt."
+        ],
+        "Summary": "Financial fundamentals are exceptionally strong."
+    },
+    "Moat Analysis": {
+        "Moat Score": 85,
+        "Classification": "WIDE MOAT",
+        "Gross Margin": 0.74144995,
+        "Operating Margin": 0.65596,
+        "ROE": 1.14288,
+        "ROIC": null,
+        "Strengths": [
+            "Very strong gross margins suggest significant pricing power or intellectual-property advantages.",
+            "Strong operating margins indicate attractive economics.",
+            "High return on equity.",
+            "Very large scale can provide meaningful competitive advantages."
+        ],
+        "Weaknesses": [],
+        "Summary": "The available financial evidence suggests a strong and potentially durable competitive advantage."
+    },
+    "Industry Analysis": {
+        "Industry Score": 95,
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Assessment": "EXCELLENT",
+        "Strengths": [
+            "Sector: Technology",
+            "Industry: Semiconductors",
+            "The company has exceptional scale within its market.",
+            "Revenue growth is strong.",
+            "Operating profitability is strong.",
+            "High gross margins suggest strong economics."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company operates in the Semiconductors industry within the Technology sector. The current industry/competitive assessment is EXCELLENT."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 90,
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Peers": [
+            {
+                "Ticker": "AMD",
+                "Company": "Advanced Micro Devices, Inc.",
+                "Market Cap": 789073100800,
+                "PE": 123.306114,
+                "Forward PE": 31.265461,
+                "Revenue Growth": 0.501,
+                "Profit Margin": 0.15577,
+                "Operating Margin": 0.1725,
+                "ROE": 0.10196,
+                "ROIC": null
+            },
+            {
+                "Ticker": "AVGO",
+                "Company": "Broadcom Inc.",
+                "Market Cap": 2035102646272,
+                "PE": 71.41236,
+                "Forward PE": 21.94546,
+                "Revenue Growth": 0.479,
+                "Profit Margin": 0.38848,
+                "Operating Margin": 0.48988,
+                "ROE": 0.37280998,
+                "ROIC": null
+            },
+            {
+                "Ticker": "QCOM",
+                "Company": "QUALCOMM Incorporated",
+                "Market Cap": 176252993536,
+                "PE": 19.184,
+                "Forward PE": 16.35283,
+                "Revenue Growth": -0.04,
+                "Profit Margin": 0.21013,
+                "Operating Margin": 0.18528,
+                "ROE": 0.33754003,
+                "ROIC": null
+            },
+            {
+                "Ticker": "INTC",
+                "Company": "Intel Corporation",
+                "Market Cap": 512722567168,
+                "PE": null,
+                "Forward PE": 49.354008,
+                "Revenue Growth": 0.254,
+                "Profit Margin": -0.19794,
+                "Operating Margin": 0.12189999,
+                "ROE": -0.10715,
+                "ROIC": null
+            },
+            {
+                "Ticker": "MU",
+                "Company": "Micron Technology, Inc.",
+                "Market Cap": 991121571840,
+                "PE": 19.841059,
+                "Forward PE": 5.659457,
+                "Revenue Growth": 3.457,
+                "Profit Margin": 0.55906,
+                "Operating Margin": 0.80370003,
+                "ROE": 0.66638,
+                "ROIC": null
+            }
+        ],
+        "Subject Company": {
+            "Ticker": "NVDA",
+            "Company": "NVIDIA Corporation",
+            "Market Cap": 5424535306240,
+            "PE": 34.244648,
+            "Forward PE": 17.37413,
+            "Revenue Growth": 0.852,
+            "Profit Margin": 0.62966,
+            "Operating Margin": 0.65596,
+            "ROE": 1.14288,
+            "ROIC": null
+        },
+        "Valuation Rank": 3,
+        "Growth Rank": 2,
+        "Profitability Rank": 1,
+        "Assessment": "The company compares favourably with its selected peers."
+    },
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Business Quality": 86.7,
+    "Valuation": 50,
+    "Technical": 70.0,
+    "Risk": 55,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 100,
+        "Profitability": 100,
+        "Balance Sheet": 60,
+        "Business Quality": 86.7,
+        "Confidence": 85,
+        "Strengths": [
+            "Excellent long-term revenue growth",
+            "High profitability"
+        ],
+        "Weaknesses": [],
+        "Summary": "The business demonstrates exceptional financial quality with strong growth, profitability and balance sheet metrics."
+    },
+    "Valuation Analysis": {
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.6,
+        "Price to Sales": 21.39932,
+        "Price to Book": 27.75217,
+        "Valuation Score": 50,
+        "Confidence": 80,
+        "Strengths": [
+            "Attractive forward earnings valuation",
+            "PEG indicates attractive growth valuation"
+        ],
+        "Weaknesses": [
+            "Very expensive relative to revenue",
+            "High Price/Book multiple"
+        ],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Momentum": 40,
+        "Moving Average": 100,
+        "Technical Score": 70.0
+    },
+    "Risk Analysis": {
+        "Risk Score": 55,
+        "Beta": 2.215
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+            "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+            "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+            "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+            "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+            "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+            "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+            "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?"
+        ],
+        "Catalysts": [
+            "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+            "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+            "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+            "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+            "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+            "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+            "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+            "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?"
+        ],
+        "Events": [
+            {
+                "headline": "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 65,
+        "Confidence": 75,
+        "Strengths": [
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [],
+        "Summary": "Management quality appears satisfactory.",
+        "Insider Ownership": 0.03991,
+        "Institutional Ownership": 0.65789,
+        "Employees": 42000
+    },
+    "Strengths": [
+        "Excellent business quality",
+        "Positive recent news"
+    ],
+    "Weaknesses": [
+        "Elevated investment risk"
+    ],
+    "Summary": "The company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.",
+    "Report": "============================================================\nInvestment Report: NVDA\n============================================================\n\nOverall Rating : \u2605\u2605\u2605\u2606\u2606  HOLD\nOverall Score  : 67.8\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nThe company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 86.7\nValuation        : 50\nTechnical        : 70.0\nRisk             : 55\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 My Top Dividend Stock to Buy in August (and It's Not Even Close)\n\u2022 Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?\n\u2022 Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?\n\u2022 VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling\n\u2022 Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise\n\n============================================================",
+    "Catalysts": [
+        "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+        "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+        "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+        "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+        "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+        "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+        "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+        "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?"
+    ],
+    "Headlines": [
+        "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+        "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+        "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+        "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+        "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+        "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+        "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+        "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?"
+    ],
+    "Investment Committee": {
+        "Committee Score": 76.1,
+        "Recommendation": "BUY",
+        "Confidence": 76.5,
+        "Specialist Scores": {
+            "Business Quality": 86.7,
+            "Financial Intelligence": 90,
+            "Moat": 85,
+            "Industry": 95,
+            "Competitors": 90,
+            "Valuation": 50,
+            "Management": 65,
+            "Risk": 55,
+            "Technical": 70.0,
+            "News": 70
+        },
+        "Strengths": [
+            "Strong underlying business quality.",
+            "Strong financial fundamentals.",
+            "Evidence of a durable competitive advantage.",
+            "Industry position appears favourable.",
+            "Company compares favourably with selected peers."
+        ],
+        "Concerns": [],
+        "Summary": "The Investment Committee assigns 76.1/100 and recommends BUY. Confidence is 76.5%."
+    },
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": []
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "Timestamp": "2026-08-08T20:22:02.547045",
+  "Stocks Analysed": 1,
+  "Results": [
+    {
+      "Ticker": "NVDA",
+      "Catalyst Score": 82.0,
+      "Catalyst Count": 1,
+      "Upcoming Catalysts": [
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-08-26",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Reason": "Upcoming earnings announcement."
+        }
+      ],
+      "Recent Catalysts": [
+        {
+          "Source": "Yahoo Finance",
+          "Date": "2026-08-26",
+          "Type": "Earnings",
+          "Impact": "HIGH",
+          "Reason": "Upcoming earnings announcement."
+        }
+      ],
+      "Analysed At": "2026-08-08T20:22:02.546890"
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+    "Ticker": "NVDA",
+    "Metrics": {
+        "Company": "NVIDIA Corporation",
+        "Symbol": "NVDA",
+        "Exchange": "NMS",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 42000,
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Revenue": 253491003392,
+        "Net Income": 159612993536,
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.6,
+        "Price to Book": 27.75217,
+        "Price to Sales": 21.39932,
+        "Dividend Yield": 0.45,
+        "Beta": 2.215,
+        "52 Week High": 236.54,
+        "52 Week Low": 164.07,
+        "Current Price": 223.96,
+        "Previous Close": 218.99
+    },
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Business Quality": 86.7,
+    "Valuation": 50,
+    "Technical": 70.0,
+    "Risk": 55,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 100,
+        "Profitability": 100,
+        "Balance Sheet": 60,
+        "Business Quality": 86.7,
+        "Confidence": 85,
+        "Strengths": [
+            "Excellent long-term revenue growth",
+            "High profitability"
+        ],
+        "Weaknesses": [],
+        "Summary": "The business demonstrates exceptional financial quality with strong growth, profitability and balance sheet metrics."
+    },
+    "Valuation Analysis": {
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.6,
+        "Price to Sales": 21.39932,
+        "Price to Book": 27.75217,
+        "Valuation Score": 50,
+        "Confidence": 80,
+        "Strengths": [
+            "Attractive forward earnings valuation",
+            "PEG indicates attractive growth valuation"
+        ],
+        "Weaknesses": [
+            "Very expensive relative to revenue",
+            "High Price/Book multiple"
+        ],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Momentum": 40,
+        "Moving Average": 100,
+        "Technical Score": 70.0
+    },
+    "Risk Analysis": {
+        "Risk Score": 55,
+        "Beta": 2.215
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+            "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+            "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+            "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+            "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+            "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+            "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)",
+            "What Sent Sandisk Shares Tumbling Nearly 20% Last Month",
+            "Is AMD Stock a Buy on the Dip as AI Revenue Surges?"
+        ],
+        "Catalysts": [
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+            "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+            "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+            "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+            "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+            "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+            "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)",
+            "What Sent Sandisk Shares Tumbling Nearly 20% Last Month",
+            "Is AMD Stock a Buy on the Dip as AI Revenue Surges?"
+        ],
+        "Events": [
+            {
+                "headline": "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "What Sent Sandisk Shares Tumbling Nearly 20% Last Month",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Is AMD Stock a Buy on the Dip as AI Revenue Surges?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 65,
+        "Confidence": 75,
+        "Strengths": [
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [],
+        "Summary": "Management quality appears satisfactory.",
+        "Insider Ownership": 0.03991,
+        "Institutional Ownership": 0.65789,
+        "Employees": 42000
+    },
+    "Strengths": [
+        "Excellent business quality",
+        "Positive recent news"
+    ],
+    "Weaknesses": [
+        "Elevated investment risk"
+    ],
+    "Summary": "The company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.",
+    "Report": "============================================================\nInvestment Report: NVDA\n============================================================\n\nOverall Rating : \u2605\u2605\u2605\u2606\u2606  HOLD\nOverall Score  : 67.8\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nThe company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 86.7\nValuation        : 50\nTechnical        : 70.0\nRisk             : 55\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling\n\u2022 Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise\n\u2022 Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech\n\u2022 Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.\n\u2022 One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb\n\n============================================================",
+    "Catalysts": [
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+        "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+        "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+        "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+        "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+        "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+        "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)",
+        "What Sent Sandisk Shares Tumbling Nearly 20% Last Month",
+        "Is AMD Stock a Buy on the Dip as AI Revenue Surges?"
+    ],
+    "Headlines": [
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+        "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+        "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+        "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+        "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+        "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+        "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)",
+        "What Sent Sandisk Shares Tumbling Nearly 20% Last Month",
+        "Is AMD Stock a Buy on the Dip as AI Revenue Surges?"
+    ],
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": []
+    }
+}

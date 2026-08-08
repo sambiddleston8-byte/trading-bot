@@ -1,0 +1,354 @@
+{
+    "Ticker": "NVDA",
+    "Profile": {
+        "Ticker": "NVDA",
+        "Company Name": "NVIDIA Corporation",
+        "Short Name": "NVIDIA Corporation",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "City": "Santa Clara",
+        "Website": "https://www.nvidia.com",
+        "Employees": 42000,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Jen-Hsun  Huang",
+                "age": 62,
+                "title": "Co-Founder, CEO & Director",
+                "yearBorn": 1963,
+                "fiscalYear": 2026,
+                "totalPay": 11543318,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Colette M. Kress",
+                "age": 58,
+                "title": "Executive VP & CFO",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1514979,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Debora  Shoquist",
+                "age": 70,
+                "title": "Executive Vice President of Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 1382223,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Timothy S. Teter J.D.",
+                "age": 58,
+                "title": "Executive VP, General Counsel & Secretary",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1363896,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Ajay K. Puri",
+                "age": 70,
+                "title": "Executive Vice President of Worldwide Field Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 2298337,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Chris A. Malachowsky",
+                "title": "Co-Founder",
+                "fiscalYear": 2026,
+                "totalPay": 320000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Scott C. Gawel",
+                "age": 54,
+                "title": "Chief Accounting Officer",
+                "yearBorn": 1971,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Prof. William J. Dally Ph.D.",
+                "age": 64,
+                "title": "Chief Scientist & Senior VP of Research",
+                "yearBorn": 1961,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Toshiya  Hari",
+                "title": "Vice President of Investor Relations & Strategic Finance",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Mylene  Mangalindan",
+                "title": "Vice President of Corporate Communications",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "NVIDIA Corporation operates as a data center scale AI infrastructure company in the United States, Taiwan, China, Hong Kong, Europe, and internationally. It operates through Compute & Networking, and Graphics segments. The Compute & Networking segment provides data center accelerated computing and networking platforms and artificial intelligence solutions and software, and automotive platforms and autonomous and electric vehicle solutions, including software. The Graphics segment offers GeForce GPUs for gaming and PCs; Quadro/NVIDIA RTX GPUs for enterprise workstation graphics. The company's products are used in gaming, professional visualization, data center, and automotive markets. It sells its products to original equipment manufacturers, original device manufacturers, system integrators and distributors, independent software vendors, cloud service providers, add-in board manufacturers, distributors, automotive manufacturers and tier-1 automotive suppliers, and other ecosystem participants. NVIDIA Corporation was incorporated in 1993 and is headquartered in Santa Clara, California.",
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "NVIDIA Corporation",
+        "Symbol": "NVDA",
+        "Exchange": "NMS",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 42000,
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Revenue": 253491003392,
+        "Net Income": 159612993536,
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.6,
+        "Price to Book": 27.75217,
+        "Price to Sales": 21.39932,
+        "Dividend Yield": 0.45,
+        "Beta": 2.215,
+        "52 Week High": 236.54,
+        "52 Week Low": 164.07,
+        "Current Price": 223.96,
+        "Previous Close": 218.99
+    },
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Business Quality": 86.7,
+    "Valuation": 50,
+    "Technical": 70.0,
+    "Risk": 55,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 100,
+        "Profitability": 100,
+        "Balance Sheet": 60,
+        "Business Quality": 86.7,
+        "Confidence": 85,
+        "Strengths": [
+            "Excellent long-term revenue growth",
+            "High profitability"
+        ],
+        "Weaknesses": [],
+        "Summary": "The business demonstrates exceptional financial quality with strong growth, profitability and balance sheet metrics."
+    },
+    "Valuation Analysis": {
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.6,
+        "Price to Sales": 21.39932,
+        "Price to Book": 27.75217,
+        "Valuation Score": 50,
+        "Confidence": 80,
+        "Strengths": [
+            "Attractive forward earnings valuation",
+            "PEG indicates attractive growth valuation"
+        ],
+        "Weaknesses": [
+            "Very expensive relative to revenue",
+            "High Price/Book multiple"
+        ],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Momentum": 40,
+        "Moving Average": 100,
+        "Technical Score": 70.0
+    },
+    "Risk Analysis": {
+        "Risk Score": 55,
+        "Beta": 2.215
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+            "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+            "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+            "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+            "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+            "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+            "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+            "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)"
+        ],
+        "Catalysts": [
+            "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+            "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+            "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+            "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+            "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+            "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+            "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+            "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)"
+        ],
+        "Events": [
+            {
+                "headline": "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 65,
+        "Confidence": 75,
+        "Strengths": [
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [],
+        "Summary": "Management quality appears satisfactory.",
+        "Insider Ownership": 0.03991,
+        "Institutional Ownership": 0.65789,
+        "Employees": 42000
+    },
+    "Strengths": [
+        "Excellent business quality",
+        "Positive recent news"
+    ],
+    "Weaknesses": [
+        "Elevated investment risk"
+    ],
+    "Summary": "The company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.",
+    "Report": "============================================================\nInvestment Report: NVDA\n============================================================\n\nOverall Rating : \u2605\u2605\u2605\u2606\u2606  HOLD\nOverall Score  : 67.8\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nThe company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 86.7\nValuation        : 50\nTechnical        : 70.0\nRisk             : 55\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?\n\u2022 Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?\n\u2022 VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling\n\u2022 Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise\n\u2022 Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech\n\n============================================================",
+    "Catalysts": [
+        "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+        "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+        "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+        "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+        "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+        "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+        "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+        "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)"
+    ],
+    "Headlines": [
+        "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+        "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+        "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+        "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+        "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+        "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+        "Nebius Stock Plunged 31% Last Month. Is It Time to Buy?",
+        "Prediction: This Will Be the Cryptocurrency XRP's Price by Late 2027 (Hint: It's a Big Move)"
+    ],
+    "Investment Committee": {
+        "Committee Score": 66.1,
+        "Recommendation": "HOLD",
+        "Confidence": 71.7,
+        "Specialist Scores": {
+            "Business Quality": 86.7,
+            "Valuation": 50,
+            "Technical": 70.0,
+            "Risk": 55,
+            "News": 70,
+            "Management": 65
+        },
+        "Strengths": [
+            "Business quality is strong."
+        ],
+        "Concerns": [],
+        "Summary": "The Investment Committee assigns a score of 66.1/100 with a HOLD recommendation and 71.7% confidence."
+    },
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": []
+    }
+}

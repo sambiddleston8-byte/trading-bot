@@ -1,0 +1,124 @@
+{
+    "Ticker": "NVDA",
+    "Profile": {
+        "Ticker": "NVDA",
+        "Company Name": "NVIDIA Corporation",
+        "Short Name": "NVIDIA Corporation",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "City": "Santa Clara",
+        "Website": "https://www.nvidia.com",
+        "Employees": 42000,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Jen-Hsun  Huang",
+                "age": 62,
+                "title": "Co-Founder, CEO & Director",
+                "yearBorn": 1963,
+                "fiscalYear": 2026,
+                "totalPay": 11543318,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Colette M. Kress",
+                "age": 58,
+                "title": "Executive VP & CFO",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1514979,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Debora  Shoquist",
+                "age": 70,
+                "title": "Executive Vice President of Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 1382223,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Timothy S. Teter J.D.",
+                "age": 58,
+                "title": "Executive VP, General Counsel & Secretary",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1363896,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Ajay K. Puri",
+                "age": 70,
+                "title": "Executive Vice President of Worldwide Field Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 2298337,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Chris A. Malachowsky",
+                "title": "Co-Founder",
+                "fiscalYear": 2026,
+                "totalPay": 320000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Scott C. Gawel",
+                "age": 54,
+                "title": "Chief Accounting Officer",
+                "yearBorn": 1971,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Prof. William J. Dally Ph.D.",
+                "age": 64,
+                "title": "Chief Scientist & Senior VP of Research",
+                "yearBorn": 1961,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Toshiya  Hari",
+                "title": "Vice President of Investor Relations & Strategic Finance",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Mylene  Mangalindan",
+                "title": "Vice President of Corporate Communications",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "NVIDIA Corporation operates as a data center scale AI infrastructure company in the United States, Taiwan, China, Hong Kong, Europe, and internationally. It operates through Compute & Networking, and Graphics segments. The Compute & Networking segment provides data center accelerated computing and networking platforms and artificial intelligence solutions and software, and automotive platforms and autonomous and electric vehicle solutions, including software. The Graphics segment offers GeForce GPUs for gaming and PCs; Quadro/NVIDIA RTX GPUs for enterprise workstation graphics. The company's products are used in gaming, professional visualization, data center, and automotive markets. It sells its products to original equipment manufacturers, original device manufacturers, system integrators and distributors, independent software vendors, cloud service providers, add-in board manufacturers, distributors, automotive manufacturers and tier-1 automotive suppliers, and other ecosystem participants. NVIDIA Corporation was incorporated in 1993 and is headquartered in Santa Clara, California.",
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Currency": "USD"
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 90,
+        "Revenue History": {

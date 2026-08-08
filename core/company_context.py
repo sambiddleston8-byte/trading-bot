@@ -14,6 +14,6 @@ class CompanyContext:
 
     cashflow: object
 
-    history: object | None = None
+    history: object
 
     news: list | None = None

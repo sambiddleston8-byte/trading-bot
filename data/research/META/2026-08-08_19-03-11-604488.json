@@ -1,0 +1,1222 @@
+{
+    "Ticker": "META",
+    "Research": {
+        "Ticker": "META",
+        "Timestamp": "2026-08-08T19:03:09.664749",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "Meta misses earnings forecasts after Zuckerberg media push to promote AI - theguardian.com",
+                "Link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOZzhoelpiZ2lRWlVXMEFEZUZfTUgtcWMtVU1Ea3ZTRkxpM2VudHY0dDhLbmZ2VkNwRlpVOHV3MUhKX3JwT1JZTHktaHZsdGM5S2Nxb21CX0IyZER2Vl9yZ01UbXNRVjhpMy04Ni1kQld6TGFLQlhoaTBVS3RWRzI3dHZIaUhRUFU?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Meta shares tumble as Mark Zuckerberg tries to sell his vision for AI \u2018agents\u2019 - Financial Times",
+                "Link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNNzhHZUtDMDlEN1BSd1l2WGFacWxSQ3lnNjBTcElhSVY5YmNjeGJEQnNqOUVMeXJlRkxvZVM2VWd4OXpzYlRPM25uZFVYc0tWNjBNZE5RbGk2bWxsNDBvSEtuN2JtRGJOeEhYUGR1ZkhPbGFDYmFlc1dfY2ZJQUJHQzBvRFI?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "These 7 Stocks Are Analyst Favorites For Magnificent Earnings Growth; Arista Beats Views - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQd2FkMG42Rmh3aXFzM0xLX2hESGVCcnR6NW1MWjhiaFZjNGtST2pXOGY4dzVnUzFnQy13dHY5OGh0QzlnRjlxcmZrbEhEcGFtc00xWjY3S2g2NGZzTllfMzNMaGdWTmNfUEgyTEVRekF6aWZNLTRUOGNzcTRQVjdBb2M1c0Fia21VUTM1QWw2UXRodw?oc=5",
+                "Published": "Sat, 08 Aug 2026 12:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Ahead of Earnings, Is Meta Stock a Buy, a Sell, or Fairly Valued? - Morningstar",
+                "Link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxON2lub1N5OUlRTFJ4ZmR4ZzBJVjNBamlDR1dNX2NZMTdXek0xU3JYb1NOMWVNNmpadEVaV080UnhHa1E0NGxxVnp5Q1FXQWFuVmxIVVQ0SXFRV0VzYUF2b3V5VGRJWmFRdlZaeURWODQ1REZ5RDJWM0NMRXNjMDRDZ0ZNbjNLWmdSRFY5Yml4UG5Iak90SjFkUEp6ODFuUEk?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Meta stock sinks on earnings miss, 'barely passable' quarterly results - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOTG9SaEV6dWROcFJJYm45WTgwNld0M1Qtbm5vV3BIYlRRVVV6ZjBrSGVjNkh2dzBjRzJNbE1fdEctSjFSYVgzazYyTnpjT1UyaTFqYmtKSks1UFRYQkg4YlB1Rm5ydVFvbGU1TEU5eV84WU1yQ2laUXN0b3RyYVZ2NEZxcmgzcEhTNWZpXzJBN0N3cGNSc3Q2Yjk3X3pjMFVMVTNMYWR4MW0tbkVZWU1VTldUVnNLenpWYzBnTnBKSXlRZw?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Meta's stock drops on disappointing guidance, dwindling free cash flow - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBpV01kYzlERkIwM0ZfUXBQTTQyS2FmaFZHRFpoUGFwMHpidjQxX1JzTmRpa3o5bUViMFM2eGk4UldVUE5NcGZ5TGZXRUlCX1JyVmc4bF8xY3haNkpnaG1xRDhhRUNHOEdGY0REUUY2UUVFN03SAXhBVV95cUxPUGJIU0dqamJ2M1gxbW9yQXFhOG9tQV9VTmdMbUxub1RvLUR0MGJGdlMzWUtaTWMzOWtVdFZZcS16azhZY21Gb01zXzlZZ2IteFhjNFpLSWFBS2IwS0ltQWt4VEstckItdUg3SF9LM0YyVGRndjdaWHM?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Meta Stock Drops 10% on Steeper AI Costs, Missed Forecast - WSJ",
+                "Link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE50ZmttOTNyTEl1LXZjY0d0d085WlJwQTl6M2ZqMUpRV2tsYTJXcWZSSzBDUXN5THFfTDE5cm5mX21pMEp3NWM2cF9HUmw1bmt1c1hJc1MyZHJyRTNrMUUxa2hSQUhyZVdWam5qSk1pQzZRSXhfLU42OFgySQ?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "META Stock Falls On Tepid Q3 Forecast: CEO Mark Zuckerberg Tempers Expectations For AI Cloud Opportunity - Stocktwits",
+                "Link": "https://news.google.com/rss/articles/CBMi-wFBVV95cUxNbjRNY2RyUnpnUDFfUHBUb1liN2U4UEhDdmlMMUFMejZna1VVVUE5QTZWMVd3QzNhZGVnQi1lOGdrV0xrNVhUOERZbldEcTRUdDFjaFE4b3dFNy1xcXJ1Tktod21yUnNSbEwwVVBDLUtFLXU0RnZDZ0VTdnE5ZEdVdEVJSDFZZHFjSXN1SGk0aXpJdHNYcTZvQXUwVzVxR0t0UjU3MkZDNU9ZWnFwWUQ3d01seE9aNWtZemI5aVJIcG0wZjZHTXFvd0JneXlLcm1jbHY4Sk01QnNiSmhqNHV6YzhGWHhYQjhmMld2QXNnTmFFZmdBekhGbzZEOA?oc=5",
+                "Published": "Sat, 08 Aug 2026 09:20:21 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Meta\u2019s shares drop as AI spending hits profits - Investors' Chronicle",
+                "Link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNU0NsajFFbE5KLUhURmt5RjkwT3VLcHVKMEc0RWVKb21xa2hDckQxZEhxSkc1ZmdTRU5qS1hJYmtaZFdZUzFnMnhWVTl1X3RfbWVlTFEyRldNQ0dvMFdKZXNvNzVRbDlJS3R6TEpsckQzaFFpQ2w3dVN2X2JEUGtqdjBZX181VjNj?oc=5",
+                "Published": "Thu, 30 Jul 2026 09:44:09 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "28% Revenue Growth Ignored: Why Panic-Selling Meta Stock Over Infrastructure Spend Is a Mistake - 24/7 Wall St.",
+                "Link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNalNHMnNsbW1Eb2hwSWVPbDFKRmJZQUVUcU05ZVl2X0l3OXppSGI4OFYzUUllbHBSWm9iNUgyUm53MjNnN3pTSUd4ZzlKZzllOXFlNmZjdzA5ZzBfRVdFeUhabkN5Mk1lZFY2YUY3SVI4VlJ1eTdyVDdIUGc0aFhtZ1RadjIxeW5fV3c2eTJTTnc5LUk2TmI0STNGUy1YRXVxbHM5SXg1T0lnczZ3VWtER09pcmNTRFBBSDBCSW5SYTNLYzRKTFBLSmFWRE9tZlJWVDNN?oc=5",
+                "Published": "Tue, 04 Aug 2026 15:22:49 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Meta Reports Second Quarter 2026 Results - PR Newswire",
+                "Link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPQURLRXRNY0F0YS1VWHpBa3NOUVRjbmVGVklHbkdLUXRRUUVlUmItVFEyaEhUQzlScV82QVBlbXNTbXgwXzdxN3BndHRLc01SN2h6TkxxbXVQTHNJQzZIdUptRS1ISF9fZThjWFV5aWhGTE9UajFRSWNUNFF4d3pMN3pFV1VKQW1fUEQ2S1BjOUhTYUg3WDFPdW5kMzg?oc=5",
+                "Published": "Wed, 29 Jul 2026 20:01:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Patrick Moorhead Says Meta's Q2 Earnings Miss Was 'Mostly Self-Inflicted' \u2014 META Stock Heads For 11th Straight Decline - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMihAJBVV95cUxOeXBsS2pIZlF6emp4ektZYUs0a1ZGQjRzNUJBak9heVZ4d0ptU0JQMmdIOXVDc2ZCd2t5RjZXaWZIdEZfWEh1dDRoeERBc3RWZFRVa0J5UTgzcTdmRXJaS3BlNmtVOXlOMW1zcTUyZHU4Y0V5STJQOHNHR2hCRG90VEszZG0zUGxMbXhuR3lmZ1FiWWhldHZ3VTJVNUlBWG53RjF6dEVQYzllYm1OTDdPVzNDb3lJcWRRemU0ZDBxa3lhNFdkRi1NOHRXWjBaZ1BYd2RMUURIdEFCXzN6VkxEbjJjc0xiR3FUcDZSblNLSUdVWkd1T29HbE1JaXczSkZya2VWUw?oc=5",
+                "Published": "Thu, 30 Jul 2026 11:12:52 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Meta Stock Extends Historic Losing Streak After Weak Earnings Report - Barron's",
+                "Link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPQXdKRmhyaTZVRVAwb1lwUEdzNXBmb3VzWVo1Q2JDUmFkUEh4X3E1M2lKeE03NUxETlVnT29saDJfTTRtUHFsbUY1LThZUnFCMkpfbGkwbjJmaGFkRVdmZnlfSm0zdkFiRlJkSUtCM1VTMHdUdmZUejg1TnEwTUhoYzUzdw?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Why Meta Stock Is Tumbling - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNX3hUYjVIUm9uZWxvSlR1YnY4M0hJOEhxUTMwV2VaY3dBTmkyZkhleldwclp1WV9lamlRbVVSS3lCUmVfN20wc0tQR1J4QXlYd2YwTGkwQUhFRG43aFYxYUlCeG5vTVROcnRMUGVZV2VlcHZpX0FNckFOOTZqSjJpanhmSmRyU2hp?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "The ceiling for shares of Meta is lower after its earnings report, analysts say - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPN3F5M0xCQXBOSWkzY2EzaFNOSTNlT3UwXzhWaVZkbDM2MkgtekZVdE00eXctWHVBVFRWQjVOcHdUZGpsZGpTbzczZTlaNGdBX1F5QzIzVHZGMENUd0ROTEQ3eWR5STVkVWU2dU9KTjViWmlSNDFvRDFHZTIzaTdjemQ3S000YTRQenBqWVFQeU5xdF9zUGRrS1hFNmpQcDliTmZnX0oxak5uY3pubnNnZnJvTGhVUQ?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Palantir CEO drops 11-word bombshell for stock market investors",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/palantir-ceo-drops-11-word-160300224.html",
+                "Published": "2026-08-07T16:03:00Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Xanadu Accelerates Chip Production as Investors Await Next Catalyst in Race to Scalable Quantum Computing \u2013 Quarterly Update Report",
+                "Link": "https://finance.yahoo.com/technology/ai/articles/xanadu-accelerates-chip-production-investors-164143794.html",
+                "Published": "2026-08-08T16:41:43Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Why Aurora Cannabis Looks Cheaper Than Its International Growth Suggests \u2013 Quarterly Update Report",
+                "Link": "https://finance.yahoo.com/healthcare/articles/why-aurora-cannabis-looks-cheaper-163923801.html",
+                "Published": "2026-08-08T16:39:23Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Performance raises are back for 2027, but increases will be modest",
+                "Link": "https://finance.yahoo.com/economy/article/performance-raises-are-back-for-2027-but-increases-will-be-modest-163535548.html",
+                "Published": "2026-08-08T16:35:35Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Google's AI claimed Flock cameras hold $650 in gold and 23 pounds of copper \u2014 It was duped by meme",
+                "Link": "https://finance.yahoo.com/technology/ai/articles/googles-ai-claimed-flock-cameras-150000005.html",
+                "Published": "2026-08-08T15:00:00Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Badger Meter VP-Engineering Callahan Buys 751 Shares for $101,573 Amid Stock's 26% Pullback",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/badger-meter-vp-engineering-callahan-174817956.html",
+                "Published": "2026-08-08T17:48:17Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Berkshire Hathaway Beats Earnings Views, Ends 14 Quarters Of Selling Equities",
+                "Link": "https://www.investors.com/news/berkshire-hathaway-earnings-buybacks-cash-hoard-warren-buffett/?src=A00220&yptr=yahoo",
+                "Published": "2026-08-08T14:52:35Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Stock Market Week Ahead: Bullish Signals Amid 'Dirty' Volume",
+                "Link": "https://www.investors.com/research/investing-action-plan/stock-market-week-ahead-bullish-signals-amid-dirty-volume/?src=A00220&yptr=yahoo",
+                "Published": "2026-08-08T14:20:55Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "What is a regional bank?",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/regional-bank-171021816.html",
+                "Published": "2024-08-16T17:10:21Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "How to open a checking account for a minor",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/how-to-open-a-checking-account-for-a-minor-213416031.html",
+                "Published": "2026-08-07T21:34:16Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Savers Value Village's U.S. Sales Rose 6.6%. Its CEO Just Sold $2.4 Million in Stock",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/savers-value-villages-u-sales-174639083.html",
+                "Published": "2026-08-08T17:46:39Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "What is universal life insurance?",
+                "Link": "https://finance.yahoo.com/personal-finance/insurance/article/what-is-universal-life-insurance-185454508.html",
+                "Published": "2023-12-15T22:16:42Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Call options explained: From opening trade to expiration",
+                "Link": "https://finance.yahoo.com/personal-finance/investing/article/call-options-165604768.html",
+                "Published": "2026-08-07T16:56:04Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "The best CD rates for August 2026: Earn up to 4.25% APY",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/best-cd-rates-201308688.html",
+                "Published": "2025-03-26T20:13:08Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "How a CD can help you prepare for \u2014 and survive \u2014 a layoff",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/how-to-prepare-for-a-layoff-cd-133034274.html",
+                "Published": "2025-05-19T13:30:34Z"
+            }
+        ],
+        "Financial Data": {
+            "Company": "Meta Platforms, Inc.",
+            "Sector": "Communication Services",
+            "Industry": "Internet Content & Information",
+            "Market Cap": 1508378279936,
+            "Revenue Growth": 0.28,
+            "Earnings Growth": -0.134,
+            "Profit Margin": 0.29834998,
+            "Operating Margin": 0.34827,
+            "Forward PE": 16.851542,
+            "Trailing PE": 22.318129,
+            "PEG": 0.88,
+            "Price To Book": 6.166873,
+            "ROE": 0.29848,
+            "ROIC": null,
+            "Beta": 1.243,
+            "Dividend Yield": 0.35
+        },
+        "SEC Filings": {
+            "Ticker": "META",
+            "Timestamp": "2026-08-08T19:03:10.799737",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-07-30",
+                    "Report Date": "2026-06-30",
+                    "Accession Number": "0001628280-26-050705",
+                    "Document": "meta-20260630.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/meta-20260630.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-29",
+                    "Report Date": "2026-07-29",
+                    "Accession Number": "0001628280-26-050596",
+                    "Document": "meta-20260729.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050596/meta-20260729.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-29",
+                    "Report Date": "2026-05-27",
+                    "Accession Number": "0001628280-26-039193",
+                    "Document": "meta-20260527.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026039193/meta-20260527.htm",
+                    "Type": "Current Report"
+                }
+            ],
+            "Filing Count": 3
+        }
+    },
+    "Evidence": {
+        "Timestamp": "2026-08-08T19:03:10.800624",
+        "Evidence": [
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Meta misses earnings forecasts after Zuckerberg media push to promote AI - theguardian.com",
+                "Link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOZzhoelpiZ2lRWlVXMEFEZUZfTUgtcWMtVU1Ea3ZTRkxpM2VudHY0dDhLbmZ2VkNwRlpVOHV3MUhKX3JwT1JZTHktaHZsdGM5S2Nxb21CX0IyZER2Vl9yZ01UbXNRVjhpMy04Ni1kQld6TGFLQlhoaTBVS3RWRzI3dHZIaUhRUFU?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Bearish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Meta shares tumble as Mark Zuckerberg tries to sell his vision for AI \u2018agents\u2019 - Financial Times",
+                "Link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNNzhHZUtDMDlEN1BSd1l2WGFacWxSQ3lnNjBTcElhSVY5YmNjeGJEQnNqOUVMeXJlRkxvZVM2VWd4OXpzYlRPM25uZFVYc0tWNjBNZE5RbGk2bWxsNDBvSEtuN2JtRGJOeEhYUGR1ZkhPbGFDYmFlc1dfY2ZJQUJHQzBvRFI?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Bearish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "These 7 Stocks Are Analyst Favorites For Magnificent Earnings Growth; Arista Beats Views - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQd2FkMG42Rmh3aXFzM0xLX2hESGVCcnR6NW1MWjhiaFZjNGtST2pXOGY4dzVnUzFnQy13dHY5OGh0QzlnRjlxcmZrbEhEcGFtc00xWjY3S2g2NGZzTllfMzNMaGdWTmNfUEgyTEVRekF6aWZNLTRUOGNzcTRQVjdBb2M1c0Fia21VUTM1QWw2UXRodw?oc=5",
+                "Published": "Sat, 08 Aug 2026 12:00:00 GMT",
+                "Sentiment": "Bullish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Ahead of Earnings, Is Meta Stock a Buy, a Sell, or Fairly Valued? - Morningstar",
+                "Link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxON2lub1N5OUlRTFJ4ZmR4ZzBJVjNBamlDR1dNX2NZMTdXek0xU3JYb1NOMWVNNmpadEVaV080UnhHa1E0NGxxVnp5Q1FXQWFuVmxIVVQ0SXFRV0VzYUF2b3V5VGRJWmFRdlZaeURWODQ1REZ5RDJWM0NMRXNjMDRDZ0ZNbjNLWmdSRFY5Yml4UG5Iak90SjFkUEp6ODFuUEk?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Meta stock sinks on earnings miss, 'barely passable' quarterly results - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOTG9SaEV6dWROcFJJYm45WTgwNld0M1Qtbm5vV3BIYlRRVVV6ZjBrSGVjNkh2dzBjRzJNbE1fdEctSjFSYVgzazYyTnpjT1UyaTFqYmtKSks1UFRYQkg4YlB1Rm5ydVFvbGU1TEU5eV84WU1yQ2laUXN0b3RyYVZ2NEZxcmgzcEhTNWZpXzJBN0N3cGNSc3Q2Yjk3X3pjMFVMVTNMYWR4MW0tbkVZWU1VTldUVnNLenpWYzBnTnBKSXlRZw?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Bearish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Meta's stock drops on disappointing guidance, dwindling free cash flow - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBpV01kYzlERkIwM0ZfUXBQTTQyS2FmaFZHRFpoUGFwMHpidjQxX1JzTmRpa3o5bUViMFM2eGk4UldVUE5NcGZ5TGZXRUlCX1JyVmc4bF8xY3haNkpnaG1xRDhhRUNHOEdGY0REUUY2UUVFN03SAXhBVV95cUxPUGJIU0dqamJ2M1gxbW9yQXFhOG9tQV9VTmdMbUxub1RvLUR0MGJGdlMzWUtaTWMzOWtVdFZZcS16azhZY21Gb01zXzlZZ2IteFhjNFpLSWFBS2IwS0ltQWt4VEstckItdUg3SF9LM0YyVGRndjdaWHM?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Meta Stock Drops 10% on Steeper AI Costs, Missed Forecast - WSJ",
+                "Link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE50ZmttOTNyTEl1LXZjY0d0d085WlJwQTl6M2ZqMUpRV2tsYTJXcWZSSzBDUXN5THFfTDE5cm5mX21pMEp3NWM2cF9HUmw1bmt1c1hJc1MyZHJyRTNrMUUxa2hSQUhyZVdWam5qSk1pQzZRSXhfLU42OFgySQ?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Bearish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "META Stock Falls On Tepid Q3 Forecast: CEO Mark Zuckerberg Tempers Expectations For AI Cloud Opportunity - Stocktwits",
+                "Link": "https://news.google.com/rss/articles/CBMi-wFBVV95cUxNbjRNY2RyUnpnUDFfUHBUb1liN2U4UEhDdmlMMUFMejZna1VVVUE5QTZWMVd3QzNhZGVnQi1lOGdrV0xrNVhUOERZbldEcTRUdDFjaFE4b3dFNy1xcXJ1Tktod21yUnNSbEwwVVBDLUtFLXU0RnZDZ0VTdnE5ZEdVdEVJSDFZZHFjSXN1SGk0aXpJdHNYcTZvQXUwVzVxR0t0UjU3MkZDNU9ZWnFwWUQ3d01seE9aNWtZemI5aVJIcG0wZjZHTXFvd0JneXlLcm1jbHY4Sk01QnNiSmhqNHV6YzhGWHhYQjhmMld2QXNnTmFFZmdBekhGbzZEOA?oc=5",
+                "Published": "Sat, 08 Aug 2026 09:20:21 GMT",
+                "Sentiment": "Bearish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Meta\u2019s shares drop as AI spending hits profits - Investors' Chronicle",
+                "Link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNU0NsajFFbE5KLUhURmt5RjkwT3VLcHVKMEc0RWVKb21xa2hDckQxZEhxSkc1ZmdTRU5qS1hJYmtaZFdZUzFnMnhWVTl1X3RfbWVlTFEyRldNQ0dvMFdKZXNvNzVRbDlJS3R6TEpsckQzaFFpQ2w3dVN2X2JEUGtqdjBZX181VjNj?oc=5",
+                "Published": "Thu, 30 Jul 2026 09:44:09 GMT",
+                "Sentiment": "Bullish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "28% Revenue Growth Ignored: Why Panic-Selling Meta Stock Over Infrastructure Spend Is a Mistake - 24/7 Wall St.",
+                "Link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNalNHMnNsbW1Eb2hwSWVPbDFKRmJZQUVUcU05ZVl2X0l3OXppSGI4OFYzUUllbHBSWm9iNUgyUm53MjNnN3pTSUd4ZzlKZzllOXFlNmZjdzA5ZzBfRVdFeUhabkN5Mk1lZFY2YUY3SVI4VlJ1eTdyVDdIUGc0aFhtZ1RadjIxeW5fV3c2eTJTTnc5LUk2TmI0STNGUy1YRXVxbHM5SXg1T0lnczZ3VWtER09pcmNTRFBBSDBCSW5SYTNLYzRKTFBLSmFWRE9tZlJWVDNN?oc=5",
+                "Published": "Tue, 04 Aug 2026 15:22:49 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Meta Reports Second Quarter 2026 Results - PR Newswire",
+                "Link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPQURLRXRNY0F0YS1VWHpBa3NOUVRjbmVGVklHbkdLUXRRUUVlUmItVFEyaEhUQzlScV82QVBlbXNTbXgwXzdxN3BndHRLc01SN2h6TkxxbXVQTHNJQzZIdUptRS1ISF9fZThjWFV5aWhGTE9UajFRSWNUNFF4d3pMN3pFV1VKQW1fUEQ2S1BjOUhTYUg3WDFPdW5kMzg?oc=5",
+                "Published": "Wed, 29 Jul 2026 20:01:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Patrick Moorhead Says Meta's Q2 Earnings Miss Was 'Mostly Self-Inflicted' \u2014 META Stock Heads For 11th Straight Decline - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMihAJBVV95cUxOeXBsS2pIZlF6emp4ektZYUs0a1ZGQjRzNUJBak9heVZ4d0ptU0JQMmdIOXVDc2ZCd2t5RjZXaWZIdEZfWEh1dDRoeERBc3RWZFRVa0J5UTgzcTdmRXJaS3BlNmtVOXlOMW1zcTUyZHU4Y0V5STJQOHNHR2hCRG90VEszZG0zUGxMbXhuR3lmZ1FiWWhldHZ3VTJVNUlBWG53RjF6dEVQYzllYm1OTDdPVzNDb3lJcWRRemU0ZDBxa3lhNFdkRi1NOHRXWjBaZ1BYd2RMUURIdEFCXzN6VkxEbjJjc0xiR3FUcDZSblNLSUdVWkd1T29HbE1JaXczSkZya2VWUw?oc=5",
+                "Published": "Thu, 30 Jul 2026 11:12:52 GMT",
+                "Sentiment": "Bearish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Meta Stock Extends Historic Losing Streak After Weak Earnings Report - Barron's",
+                "Link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPQXdKRmhyaTZVRVAwb1lwUEdzNXBmb3VzWVo1Q2JDUmFkUEh4X3E1M2lKeE03NUxETlVnT29saDJfTTRtUHFsbUY1LThZUnFCMkpfbGkwbjJmaGFkRVdmZnlfSm0zdkFiRlJkSUtCM1VTMHdUdmZUejg1TnEwTUhoYzUzdw?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Bearish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Why Meta Stock Is Tumbling - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNX3hUYjVIUm9uZWxvSlR1YnY4M0hJOEhxUTMwV2VaY3dBTmkyZkhleldwclp1WV9lamlRbVVSS3lCUmVfN20wc0tQR1J4QXlYd2YwTGkwQUhFRG43aFYxYUlCeG5vTVROcnRMUGVZV2VlcHZpX0FNckFOOTZqSjJpanhmSmRyU2hp?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "The ceiling for shares of Meta is lower after its earnings report, analysts say - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPN3F5M0xCQXBOSWkzY2EzaFNOSTNlT3UwXzhWaVZkbDM2MkgtekZVdE00eXctWHVBVFRWQjVOcHdUZGpsZGpTbzczZTlaNGdBX1F5QzIzVHZGMENUd0ROTEQ3eWR5STVkVWU2dU9KTjViWmlSNDFvRDFHZTIzaTdjemQ3S000YTRQenBqWVFQeU5xdF9zUGRrS1hFNmpQcDliTmZnX0oxak5uY3pubnNnZnJvTGhVUQ?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Palantir CEO drops 11-word bombshell for stock market investors",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/palantir-ceo-drops-11-word-160300224.html",
+                "Published": "2026-08-07T16:03:00Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Xanadu Accelerates Chip Production as Investors Await Next Catalyst in Race to Scalable Quantum Computing \u2013 Quarterly Update Report",
+                "Link": "https://finance.yahoo.com/technology/ai/articles/xanadu-accelerates-chip-production-investors-164143794.html",
+                "Published": "2026-08-08T16:41:43Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Why Aurora Cannabis Looks Cheaper Than Its International Growth Suggests \u2013 Quarterly Update Report",
+                "Link": "https://finance.yahoo.com/healthcare/articles/why-aurora-cannabis-looks-cheaper-163923801.html",
+                "Published": "2026-08-08T16:39:23Z",
+                "Sentiment": "Bullish",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Performance raises are back for 2027, but increases will be modest",
+                "Link": "https://finance.yahoo.com/economy/article/performance-raises-are-back-for-2027-but-increases-will-be-modest-163535548.html",
+                "Published": "2026-08-08T16:35:35Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Google's AI claimed Flock cameras hold $650 in gold and 23 pounds of copper \u2014 It was duped by meme",
+                "Link": "https://finance.yahoo.com/technology/ai/articles/googles-ai-claimed-flock-cameras-150000005.html",
+                "Published": "2026-08-08T15:00:00Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Badger Meter VP-Engineering Callahan Buys 751 Shares for $101,573 Amid Stock's 26% Pullback",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/badger-meter-vp-engineering-callahan-174817956.html",
+                "Published": "2026-08-08T17:48:17Z",
+                "Sentiment": "Bullish",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Berkshire Hathaway Beats Earnings Views, Ends 14 Quarters Of Selling Equities",
+                "Link": "https://www.investors.com/news/berkshire-hathaway-earnings-buybacks-cash-hoard-warren-buffett/?src=A00220&yptr=yahoo",
+                "Published": "2026-08-08T14:52:35Z",
+                "Sentiment": "Bullish",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Stock Market Week Ahead: Bullish Signals Amid 'Dirty' Volume",
+                "Link": "https://www.investors.com/research/investing-action-plan/stock-market-week-ahead-bullish-signals-amid-dirty-volume/?src=A00220&yptr=yahoo",
+                "Published": "2026-08-08T14:20:55Z",
+                "Sentiment": "Bullish",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "What is a regional bank?",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/regional-bank-171021816.html",
+                "Published": "2024-08-16T17:10:21Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "How to open a checking account for a minor",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/how-to-open-a-checking-account-for-a-minor-213416031.html",
+                "Published": "2026-08-07T21:34:16Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Savers Value Village's U.S. Sales Rose 6.6%. Its CEO Just Sold $2.4 Million in Stock",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/savers-value-villages-u-sales-174639083.html",
+                "Published": "2026-08-08T17:46:39Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "What is universal life insurance?",
+                "Link": "https://finance.yahoo.com/personal-finance/insurance/article/what-is-universal-life-insurance-185454508.html",
+                "Published": "2023-12-15T22:16:42Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Call options explained: From opening trade to expiration",
+                "Link": "https://finance.yahoo.com/personal-finance/investing/article/call-options-165604768.html",
+                "Published": "2026-08-07T16:56:04Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "The best CD rates for August 2026: Earn up to 4.25% APY",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/best-cd-rates-201308688.html",
+                "Published": "2025-03-26T20:13:08Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "How a CD can help you prepare for \u2014 and survive \u2014 a layoff",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/how-to-prepare-for-a-layoff-cd-133034274.html",
+                "Published": "2025-05-19T13:30:34Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "10-Q",
+                "Filing Type": "Quarterly Report",
+                "Filing Date": "2026-07-30",
+                "Report Date": "2026-06-30",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/meta-20260630.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "8-K",
+                "Filing Type": "Current Report",
+                "Filing Date": "2026-07-29",
+                "Report Date": "2026-07-29",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050596/meta-20260729.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "8-K",
+                "Filing Type": "Current Report",
+                "Filing Date": "2026-05-29",
+                "Report Date": "2026-05-27",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026039193/meta-20260527.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Company",
+                "Value": "Meta Platforms, Inc.",
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Sector",
+                "Value": "Communication Services",
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Industry",
+                "Value": "Internet Content & Information",
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Market Cap",
+                "Value": 1508378279936,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Revenue Growth",
+                "Value": 0.28,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Earnings Growth",
+                "Value": -0.134,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Profit Margin",
+                "Value": 0.29834998,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Operating Margin",
+                "Value": 0.34827,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Forward PE",
+                "Value": 16.851542,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Trailing PE",
+                "Value": 22.318129,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "PEG",
+                "Value": 0.88,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Price To Book",
+                "Value": 6.166873,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "ROE",
+                "Value": 0.29848,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Beta",
+                "Value": 1.243,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Dividend Yield",
+                "Value": 0.35,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            }
+        ],
+        "Evidence Count": 48,
+        "Bullish Evidence": 6,
+        "Bearish Evidence": 7,
+        "Neutral Evidence": 35,
+        "Source Count": 3,
+        "Sources": [
+            "Google News",
+            "SEC",
+            "Yahoo Finance"
+        ],
+        "Evidence Quality": 81.1
+    },
+    "Profile": {
+        "Ticker": "META",
+        "Company Name": "Meta Platforms, Inc.",
+        "Short Name": "Meta Platforms, Inc.",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Communication Services",
+        "Industry": "Internet Content & Information",
+        "Country": "United States",
+        "City": "Menlo Park",
+        "Website": "https://www.meta.com",
+        "Employees": 75472,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Mark Elliot Zuckerberg",
+                "age": 41,
+                "title": "Founder, Chairman & CEO",
+                "yearBorn": 1984,
+                "fiscalYear": 2025,
+                "totalPay": 25125904,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Dina  Powell McCormick",
+                "age": 51,
+                "title": "President & Vice Chairman",
+                "yearBorn": 1974,
+                "fiscalYear": 2025,
+                "totalPay": 51243,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Susan J. S. Li",
+                "age": 39,
+                "title": "Chief Financial Officer",
+                "yearBorn": 1986,
+                "fiscalYear": 2025,
+                "totalPay": 3351064,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Javier  Olivan",
+                "age": 48,
+                "title": "Chief Operating Officer",
+                "yearBorn": 1977,
+                "fiscalYear": 2025,
+                "totalPay": 6137729,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Andrew  Bosworth",
+                "age": 43,
+                "title": "Chief Technology Officer",
+                "yearBorn": 1982,
+                "fiscalYear": 2025,
+                "totalPay": 3572302,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Christopher K. Cox",
+                "age": 42,
+                "title": "Chief Product Officer",
+                "yearBorn": 1983,
+                "fiscalYear": 2025,
+                "totalPay": 3308578,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Dana  White",
+                "age": 55,
+                "title": "Independent Director",
+                "yearBorn": 1970,
+                "fiscalYear": 2025,
+                "totalPay": 68105,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Aaron A. Anderson",
+                "title": "Chief Accounting Officer",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Atish  Banerjea",
+                "age": 59,
+                "title": "Chief Information Officer",
+                "yearBorn": 1966,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Henry T. A. Moniz",
+                "age": 60,
+                "title": "Chief Compliance Officer",
+                "yearBorn": 1965,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "Meta Platforms, Inc. engages in the development of products that enable people to connect and share with friends and family through mobile devices, personal computers, virtual reality (VR) headsets, and AI glasses in the United States, Canada, Europe, Asia-Pacific, and internationally. It operates through two segments, Family of Apps (FoA) and Reality Labs (RL). The FoA segment offers Facebook, which enables people to build community through feed, reels, stories, groups, marketplace, and other; Instagram that brings people closer through Instagram feed, stories, reels, live, and messaging; Messenger, a messaging application for people to connect with friends, family, communities, and businesses across platforms and devices through text, audio, and video calls; Meta AI, an assistant that's available across apps, as a stand-alone app, on AI glasses, and on the web; Threads, an application for text-based updates and public conversations; and WhatsApp, a messaging application that is used by people and businesses to communicate and transact. The RL segment provides virtual and augmented reality products, including consumer hardware, software, and content that help people feel connected, as well as Meta Quest devices that enable social experiences across gaming, fitness, entertainment, and more. The segment also includes wearables such as AI glasses like Ray Ban Meta and Oakley Meta glasses; and the Meta Ray Ban Display, which combines AI glasses with an integrated lens display and the Meta Neural Band, a wrist worn device using electromyography that lets people control their AI glasses through neuromuscular signals. Meta Platforms, Inc. has a collaboration with Microsoft Corporation, NVIDIA Corporation, Advanced Micro Devices, Inc., Broadcom Inc., and OpenAI, L.L.C. The company was formerly known as Facebook, Inc. and changed its name to Meta Platforms, Inc. in October 2021. The company was incorporated in 2004 and is headquartered in Menlo Park, California.",
+        "Market Cap": 1508378279936,
+        "Enterprise Value": 1530436386816,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "Meta Platforms, Inc.",
+        "Symbol": "META",
+        "Exchange": "NMS",
+        "Sector": "Communication Services",
+        "Industry": "Internet Content & Information",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 75472,
+        "Market Cap": 1508378279936,
+        "Enterprise Value": 1530436386816,
+        "Revenue": 228246994944,
+        "Net Income": 68097998848,
+        "PE": 22.318129,
+        "Forward PE": 16.851542,
+        "PEG": 0.88,
+        "Price to Book": 6.166873,
+        "Price to Sales": 6.6085353,
+        "Dividend Yield": 0.35,
+        "Beta": 1.243,
+        "52 Week High": 796.25,
+        "52 Week Low": 520.26,
+        "Current Price": 592.1,
+        "Previous Close": 589.9
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 85,
+        "Revenue History": {
+            "2025-12-31 00:00:00": 200966000000.0,
+            "2024-12-31 00:00:00": 164501000000.0,
+            "2023-12-31 00:00:00": 134902000000.0,
+            "2022-12-31 00:00:00": 116609000000.0
+        },
+        "Revenue CAGR": 19.89383144293926,
+        "Net Income History": {
+            "2025-12-31 00:00:00": 60458000000.0,
+            "2024-12-31 00:00:00": 62360000000.0,
+            "2023-12-31 00:00:00": 39098000000.0,
+            "2022-12-31 00:00:00": 23200000000.0
+        },
+        "Earnings CAGR": 37.61166951953074,
+        "Operating Cash Flow": {
+            "2025-12-31 00:00:00": 115800000000.0,
+            "2024-12-31 00:00:00": 91328000000.0,
+            "2023-12-31 00:00:00": 71113000000.0,
+            "2022-12-31 00:00:00": 50475000000.0
+        },
+        "Free Cash Flow": {
+            "2025-12-31 00:00:00": 46109000000.0,
+            "2024-12-31 00:00:00": 54072000000.0,
+            "2023-12-31 00:00:00": 44068000000.0,
+            "2022-12-31 00:00:00": 19289000000.0
+        },
+        "Profit Margin": 0.29834998,
+        "Operating Margin": 0.34827,
+        "ROIC": null,
+        "Total Debt": 83897000000.0,
+        "Cash": 35873000000.0,
+        "Net Debt": 48024000000.0,
+        "Strengths": [
+            "Strong multi-year revenue growth.",
+            "Strong multi-year earnings growth.",
+            "The company generates positive operating cash flow.",
+            "The company generates positive free cash flow.",
+            "Strong net profit margin.",
+            "Strong operating margin."
+        ],
+        "Weaknesses": [
+            "The company has net debt."
+        ],
+        "Summary": "Financial fundamentals are exceptionally strong."
+    },
+    "Moat Analysis": {
+        "Moat Score": 85,
+        "Classification": "WIDE MOAT",
+        "Gross Margin": 0.81747,
+        "Operating Margin": 0.34827,
+        "ROE": 0.29848,
+        "ROIC": null,
+        "Strengths": [
+            "Very strong gross margins suggest significant pricing power or intellectual-property advantages.",
+            "Strong operating margins indicate attractive economics.",
+            "High return on equity.",
+            "Very large scale can provide meaningful competitive advantages.",
+            "Large organisational scale may support significant operational advantages."
+        ],
+        "Weaknesses": [],
+        "Summary": "The available financial evidence suggests a strong and potentially durable competitive advantage."
+    },
+    "Industry Analysis": {
+        "Industry Score": 95,
+        "Sector": "Communication Services",
+        "Industry": "Internet Content & Information",
+        "Assessment": "EXCELLENT",
+        "Strengths": [
+            "Sector: Communication Services",
+            "Industry: Internet Content & Information",
+            "The company has exceptional scale within its market.",
+            "Revenue growth is strong.",
+            "Operating profitability is strong.",
+            "High gross margins suggest strong economics."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company operates in the Internet Content & Information industry within the Communication Services sector. The current industry/competitive assessment is EXCELLENT."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 50,
+        "Sector": "Communication Services",
+        "Industry": "Internet Content & Information",
+        "Peers": [],
+        "Subject Company": {
+            "Ticker": "META",
+            "Company": "Meta Platforms, Inc.",
+            "Market Cap": 1508378279936,
+            "PE": 22.318129,
+            "Forward PE": 16.851542,
+            "Revenue Growth": 0.28,
+            "Profit Margin": 0.29834998,
+            "Operating Margin": 0.34827,
+            "ROE": 0.29848,
+            "ROIC": null
+        },
+        "Valuation Rank": null,
+        "Growth Rank": null,
+        "Profitability Rank": null,
+        "Assessment": "The company does not currently stand out strongly against its peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 55,
+        "Assessment": "NEUTRAL",
+        "Earnings Date": "None",
+        "Positive Surprises": 0,
+        "Negative Surprises": 0,
+        "Trailing PE": 22.318129,
+        "Forward PE": 16.851542,
+        "Revenue Growth": 0.28,
+        "Earnings Growth": -0.134,
+        "Strengths": [
+            "Forward valuation is below trailing valuation, suggesting expected earnings growth."
+        ],
+        "Weaknesses": [],
+        "Catalysts": [
+            "Strong revenue growth provides support for future earnings expansion."
+        ],
+        "Risks": [
+            "Declining earnings create downside risk."
+        ],
+        "Summary": "Earnings intelligence is currently neutral. The system identified 0 recent positive earnings surprises and 0 negative surprises."
+    },
+    "Overall Score": 59.0,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Business Quality": 51.5,
+    "Valuation": 70,
+    "Technical": 45.0,
+    "Risk": 65,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 80,
+        "Profitability": 44.4,
+        "Balance Sheet": 30,
+        "Business Quality": 51.5,
+        "Confidence": 85,
+        "Strengths": [
+            "Strong long-term revenue growth"
+        ],
+        "Weaknesses": [
+            "Weak profitability",
+            "High debt relative to cash"
+        ],
+        "Summary": "The business demonstrates relatively weak financial quality."
+    },
+    "Valuation Analysis": {
+        "PE": 22.318129,
+        "Forward PE": 16.851542,
+        "PEG": 0.88,
+        "Price to Sales": 6.6085353,
+        "Price to Book": 6.166873,
+        "Valuation Score": 70,
+        "Confidence": 80,
+        "Strengths": [
+            "Attractive forward earnings valuation",
+            "PEG indicates attractive growth valuation"
+        ],
+        "Weaknesses": [],
+        "Summary": "Valuation appears broadly reasonable with a balanced mix of attractive and expensive metrics."
+    },
+    "Technical Analysis": {
+        "Momentum": 40,
+        "Moving Average": 50,
+        "Technical Score": 45.0
+    },
+    "Risk Analysis": {
+        "Risk Score": 65,
+        "Beta": 1.243
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "Meta (META) Q2 2026 Earnings Call Transcript",
+            "META Stock Returns To Familiar Ground",
+            "Meta Faces New Risk After Major Court Ruling",
+            "Meta Stock Rises 1.2% Despite $942 Million Child-Safety Judgment",
+            "Explainer-How could New Mexico's $567 million ruling change Meta?",
+            "Meta ordered to pay $567 million in New Mexico case",
+            "Jim Cramer Believes Meta Platforms, Inc. (NASDAQ:META) Can Do Better",
+            "What Does Meta (META) Have To Change After The $942 Million Teen Safety Ruling?",
+            "Mark Zuckerberg Says Buyers Are Offering Meta a 'Significant Premium' for Its Compute \u2014 But He Turned Them Down, Calls Selling 'Foolish'",
+            "Meta was just slapped with a $942-million bill for harming kids \u2014 it makes that back in roughly five days"
+        ],
+        "Catalysts": [
+            "Meta (META) Q2 2026 Earnings Call Transcript",
+            "META Stock Returns To Familiar Ground",
+            "Meta Faces New Risk After Major Court Ruling",
+            "Meta Stock Rises 1.2% Despite $942 Million Child-Safety Judgment",
+            "Explainer-How could New Mexico's $567 million ruling change Meta?",
+            "Meta ordered to pay $567 million in New Mexico case",
+            "Jim Cramer Believes Meta Platforms, Inc. (NASDAQ:META) Can Do Better",
+            "What Does Meta (META) Have To Change After The $942 Million Teen Safety Ruling?",
+            "Mark Zuckerberg Says Buyers Are Offering Meta a 'Significant Premium' for Its Compute \u2014 But He Turned Them Down, Calls Selling 'Foolish'",
+            "Meta was just slapped with a $942-million bill for harming kids \u2014 it makes that back in roughly five days"
+        ],
+        "Events": [
+            {
+                "headline": "Meta (META) Q2 2026 Earnings Call Transcript",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "META Stock Returns To Familiar Ground",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Meta Faces New Risk After Major Court Ruling",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Meta Stock Rises 1.2% Despite $942 Million Child-Safety Judgment",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Explainer-How could New Mexico's $567 million ruling change Meta?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Meta ordered to pay $567 million in New Mexico case",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Jim Cramer Believes Meta Platforms, Inc. (NASDAQ:META) Can Do Better",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "What Does Meta (META) Have To Change After The $942 Million Teen Safety Ruling?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Mark Zuckerberg Says Buyers Are Offering Meta a 'Significant Premium' for Its Compute \u2014 But He Turned Them Down, Calls Selling 'Foolish'",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Meta was just slapped with a $942-million bill for harming kids \u2014 it makes that back in roughly five days",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 55,
+        "Confidence": 75,
+        "Strengths": [
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [
+            "Very low insider ownership"
+        ],
+        "Summary": "Management quality raises some concerns.",
+        "Insider Ownership": 0.00145,
+        "Institutional Ownership": 0.79004997,
+        "Employees": 75472
+    },
+    "Strengths": [
+        "Positive recent news"
+    ],
+    "Weaknesses": [],
+    "Summary": "Recent news flow has been supportive.",
+    "Report": "============================================================\nInvestment Report: META\n============================================================\n\nOverall Rating : \u2605\u2605\u2606\u2606\u2606  WEAK\nOverall Score  : 59.0\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nRecent news flow has been supportive.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 51.5\nValuation        : 70\nTechnical        : 45.0\nRisk             : 65\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 Meta (META) Q2 2026 Earnings Call Transcript\n\u2022 META Stock Returns To Familiar Ground\n\u2022 Meta Faces New Risk After Major Court Ruling\n\u2022 Meta Stock Rises 1.2% Despite $942 Million Child-Safety Judgment\n\u2022 Explainer-How could New Mexico's $567 million ruling change Meta?\n\n============================================================",
+    "Catalysts": [
+        "Meta (META) Q2 2026 Earnings Call Transcript",
+        "META Stock Returns To Familiar Ground",
+        "Meta Faces New Risk After Major Court Ruling",
+        "Meta Stock Rises 1.2% Despite $942 Million Child-Safety Judgment",
+        "Explainer-How could New Mexico's $567 million ruling change Meta?",
+        "Meta ordered to pay $567 million in New Mexico case",
+        "Jim Cramer Believes Meta Platforms, Inc. (NASDAQ:META) Can Do Better",
+        "What Does Meta (META) Have To Change After The $942 Million Teen Safety Ruling?",
+        "Mark Zuckerberg Says Buyers Are Offering Meta a 'Significant Premium' for Its Compute \u2014 But He Turned Them Down, Calls Selling 'Foolish'",
+        "Meta was just slapped with a $942-million bill for harming kids \u2014 it makes that back in roughly five days"
+    ],
+    "Headlines": [
+        "Meta (META) Q2 2026 Earnings Call Transcript",
+        "META Stock Returns To Familiar Ground",
+        "Meta Faces New Risk After Major Court Ruling",
+        "Meta Stock Rises 1.2% Despite $942 Million Child-Safety Judgment",
+        "Explainer-How could New Mexico's $567 million ruling change Meta?",
+        "Meta ordered to pay $567 million in New Mexico case",
+        "Jim Cramer Believes Meta Platforms, Inc. (NASDAQ:META) Can Do Better",
+        "What Does Meta (META) Have To Change After The $942 Million Teen Safety Ruling?",
+        "Mark Zuckerberg Says Buyers Are Offering Meta a 'Significant Premium' for Its Compute \u2014 But He Turned Them Down, Calls Selling 'Foolish'",
+        "Meta was just slapped with a $942-million bill for harming kids \u2014 it makes that back in roughly five days"
+    ],
+    "Investment Committee": {
+        "Committee Score": 69.2,
+        "Recommendation": "HOLD / WATCH",
+        "Confidence": 75.0,
+        "Adaptive Weights": {
+            "Business Quality": 0.15,
+            "Financial Intelligence": 0.15,
+            "Moat": 0.13,
+            "Industry": 0.08,
+            "Competitors": 0.08,
+            "Valuation": 0.17,
+            "Management": 0.08,
+            "Risk": 0.08,
+            "Technical": 0.04,
+            "News": 0.04
+        },
+        "Learning Enabled": false,
+        "Specialist Scores": {
+            "Business Quality": 51.5,
+            "Financial Intelligence": 85,
+            "Moat": 85,
+            "Industry": 95,
+            "Competitors": 50,
+            "Valuation": 70,
+            "Management": 55,
+            "Risk": 65,
+            "Technical": 45.0,
+            "News": 70
+        },
+        "Strengths": [
+            "Strong financial fundamentals.",
+            "Evidence of a durable competitive advantage.",
+            "Industry position appears favourable."
+        ],
+        "Concerns": [
+            "Technical momentum is weak."
+        ],
+        "Summary": "The Investment Committee assigns 69.2/100 and recommends HOLD / WATCH. Confidence is 75.0%."
+    },
+    "Position Sizing": {
+        "Allocation": 0.015,
+        "Allocation %": 1.5,
+        "Max Position %": 10.0,
+        "Min Position %": 1.0,
+        "Max Sector %": 25.0
+    },
+    "Research Comparison": {
+        "Has Previous": false,
+        "Changes": []
+    }
+}

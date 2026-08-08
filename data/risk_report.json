@@ -1,0 +1,110 @@
+{
+  "Pass": false,
+  "Position Checks": [
+    {
+      "Ticker": "EOG",
+      "Weight": 0.1867,
+      "Flags": [
+        "Position exceeds maximum weight."
+      ],
+      "Pass": false
+    },
+    {
+      "Ticker": "CVX",
+      "Weight": 0.17980000000000002,
+      "Flags": [
+        "Position exceeds maximum weight."
+      ],
+      "Pass": false
+    },
+    {
+      "Ticker": "OXY",
+      "Weight": 0.16829999999999998,
+      "Flags": [
+        "Position exceeds maximum weight."
+      ],
+      "Pass": false
+    },
+    {
+      "Ticker": "COP",
+      "Weight": 0.1592,
+      "Flags": [
+        "Position exceeds maximum weight."
+      ],
+      "Pass": false
+    },
+    {
+      "Ticker": "GOOGL",
+      "Weight": 0.12869999999999998,
+      "Flags": [
+        "Position exceeds maximum weight."
+      ],
+      "Pass": false
+    },
+    {
+      "Ticker": "NVDA",
+      "Weight": 0.1117,
+      "Flags": [
+        "Position exceeds maximum weight."
+      ],
+      "Pass": false
+    },
+    {
+      "Ticker": "MU",
+      "Weight": 0.0655,
+      "Flags": [],
+      "Pass": true
+    }
+  ],
+  "Sector Check": {
+    "Sector Exposure": {
+      "Energy": 69.4,
+      "Communication Services": 12.87,
+      "Technology": 17.72
+    },
+    "Flags": [
+      {
+        "Sector": "Energy",
+        "Weight": 69.4,
+        "Limit": 30.0
+      }
+    ],
+    "Pass": false
+  },
+  "Cash Check": {
+    "Cash Weight": 0.0,
+    "Minimum Required": 5.0,
+    "Pass": false,
+    "Flag": "Cash reserve below minimum."
+  },
+  "Risk Check": {
+    "Flags": [],
+    "Pass": true
+  },
+  "Concentration": {
+    "HHI": 0.1542,
+    "Effective Positions": 6.49
+  },
+  "Portfolio Volatility": null,
+  "Portfolio Volatility Limit": 25.0,
+  "Drawdown Check": {
+    "Current Drawdown %": 0.0,
+    "Maximum Allowed %": 20.0,
+    "Pass": true,
+    "Flag": null
+  },
+  "Flags": [
+    "Position exceeds maximum weight.",
+    "Position exceeds maximum weight.",
+    "Position exceeds maximum weight.",
+    "Position exceeds maximum weight.",
+    "Position exceeds maximum weight.",
+    "Position exceeds maximum weight.",
+    {
+      "Sector": "Energy",
+      "Weight": 69.4,
+      "Limit": 30.0
+    },
+    "Cash reserve below minimum."
+  ]
+}

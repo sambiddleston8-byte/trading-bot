@@ -1,0 +1,1391 @@
+{
+    "Ticker": "NVDA",
+    "Research": {
+        "Ticker": "NVDA",
+        "Timestamp": "2026-08-08T18:59:16.453410",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "NVDA Stock Price Drop\u2014the Time to Buy Nvidia or Diversify Across the AI Datacenter Supply Chain? - TradingKey",
+                "Link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOQlAwNnB4N3RpV3B1elhmaHlOUXpnQUFnMkFKdGRaY29aMWFzVDlpb1ItbVJneEQ3SUk1cjNVZHVpc0ZfbldDbUxJOVBwRWJ4Umg5Rk1FWnJwZFdaTWNKSkduaTExWHBMcnEtbHhVRFBhcUtOQ2k2ZkhBTUZldE1vWnZVUE1hNVFyUmF6QlJ6Q041c0h6R2U0SjRNQXJaOUkxR3V2b0JiRjJKbUZyT19rMEJxVGV0b3EteV91SVAwdUhUTTFBSmFFeg?oc=5",
+                "Published": "Sat, 08 Aug 2026 08:49:35 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia Heads For Weekly Pop After Big Tech Reports; Is Nvidia A Buy Now? - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1rYXhicnZWRldIUE9nVmZUeTZ0Qnpiclo0elV6YXNpRGw1TFVuOFpJdk11VTFKNmh2ZlI4Mkp2dERNNWxoTEh6Y2w2cVRfNGlXNXQxVmpSSG9VSHViQVpiMkFwOGFGSXBYZjl6OHhKLUdwNGNOdWdTejJZSDZsZw?oc=5",
+                "Published": "Fri, 07 Aug 2026 17:47:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "This 1 Number Will Be NVIDIA\u2019s Catalyst Before It Reports Earnings in August - 24/7 Wall St.",
+                "Link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNQ05mbEExazFRd3NrMVQwZnQtS2Nabl96aG5XTGVaUkVUcWdkUFo4UThfZ2lrZzNLUjNTU3ZCSUZNRE04TVM1WV9EcGxlRXB5ekRxcVBBcFZnVFRxajVjSm1HTlBKTnJHMExNemh3WnBJOHVha1RsSWc0cDJOc2pmSEI1ZXFOelpheW8weUk4VDkzQnRSS2xCNmdEckhhZkwzdkdWU1R4V3F1emk4VklZdmdxak1kWjktSTFHT0dXeThGZmRRSjVKdGtRMU5GMWlUaEFMVmdJVQ?oc=5",
+                "Published": "Tue, 04 Aug 2026 13:00:34 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "History Says This Is What Will Happen to Nvidia Stock After Aug. 26 - The Motley Fool",
+                "Link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOZVp5bDdiakxvVkhXcGRUTXNzb2hGS3JpNjhpMnBQa3VfdUxnRjNYcUNMeXh4U295ZkMzM3E1VDF3YzhIR3pWTEtBanlPVU1mU0ZSVGttbkQ2X2Q2Uy1vTzRrWms0VVA1TlFENThscFNiNGVMSXZOU3hXU3E0cWgzampWdWJ6MmZBRXJwSHkxRjhINEdFUkVMaQ?oc=5",
+                "Published": "Fri, 07 Aug 2026 13:54:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia's latest record earnings fail to impress investors - BBC",
+                "Link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9acnFWSVR0WTRLWV9oVUQzRVdzM3JEMUdadXlSeUZIMkRiemdFWUlMRktCTmwtYXNWVml5YnI5dFlHOHQ0VDZvRkJPZkhCMTgzQ3NfT002bGJ2UQ?oc=5",
+                "Published": "Thu, 21 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia Stock Is A Steal Ahead Of Q2 Earnings (NASDAQ:NVDA) - Seeking Alpha",
+                "Link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOUEE0N2M2ZU1LZ2ZIRFc5RDU1VFAzS2E1MDhLY2FnLVEtdnpoUHFJZjZJWG9UbVF6Umtwd2FwWk1YcW81M19PWlplUk05V3V3d3lWX3liVmpxVE5jRzFObFBUcUlHZmxneklZZG44aEVzZXNseTYzMVJ1VDdTa1VEYWZDdWk2RG5UVWpqX2RR?oc=5",
+                "Published": "Wed, 05 Aug 2026 19:23:22 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "AMD Shares Fall 8% as Elon Musk Commits to Nvidia Chips for SpaceX - WSJ",
+                "Link": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBFaGtxOHFMdFctcDd6TTgzZndpV0U1QUFGRV9nbFdxcVZDemlTTW80ZmZTOWxXT0N1ZUJYM3ByQ3Z1ZGF3d1E5S2FjRlp3dzBicVRtaGNBMUV5V1BEWUFfZ2lwaE9kck1xYlNYTENuTnFlMEFkcHlwRGpxYlY1UQ?oc=5",
+                "Published": "Tue, 04 Aug 2026 22:24:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "NVIDIA Corporation $NVDA Stock Holdings Reduced by Aristotle Atlantic Partners LLC - MarketBeat",
+                "Link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQMWtxQTZUdVI4eWtub1ZUSEpiU2x0NVlMcEluU0x3cnhIREZtOWZGNHAwdEx5SmtOQTRGNDZNTktDRHlPWUlJSWhfUENoTTJ3NThqdVBISzl2MGRqeHBqQ2pfalJRTGRtb0w2aVpfOFZ0VWFsczNudTlkMDk5Q2s1eXdVeFUyNWp3QXdSR0E0bTJ6cl94WTNSSDhDM2NzYmpWTVNib2xsVGs5XzZKZGZIVVhpdUY4bjFpMUtEbGZVUTZQTmpDa0IxdlRrcWNyNHFPV09QODNfTDRHQQ?oc=5",
+                "Published": "Thu, 06 Aug 2026 07:23:52 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia stock\u2019s been getting cheaper. Time to buy? - Yahoo Finance UK",
+                "Link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxONllRWUNORVFyUWJ0R0YtYlFsWkU5RFoySkpYUjN5SlVEV21Jdi14aDZ4RUUwLWdvSHRlbndoX1FpYklMU2pZT2ZGcUs2V0ctX1RQN3Ixd21HQVEwTHMwOU03cG1PRGZuTGxzZmFHckktMWtGODR0ZTNKUjRiU1Z3Y0xmNGpVVDZtSXc?oc=5",
+                "Published": "Mon, 15 Jun 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "NVIDIA Announces Financial Results for First Quarter Fiscal 2027 - NVIDIA Newsroom",
+                "Link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPdC1rUGZycU5DWDhBdkJvNTYyeGl1d0lyV2J2VFlRRkdNZno4d0dWRE1QbHNGc2JOQ1NqUkNQZXA2XzMtTUp6d1hwOVc1RXhsY0p5WnpPX3NCcTFYYjNYS0dOeUlnYXNwWTlBQkNhT016MUZIeUx6b2d5VUJYLTFOSnBIRFY1U2Q2X3hBTmdlY2VwNUlHYlJ1eDJZSFZOZ1RJ?oc=5",
+                "Published": "Wed, 20 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Lisa Su brushes off Musk's Nvidia commitment as AMD stock sinks after earnings - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9sSTl3aGxwYWRDZUtoUElIb1h3SkgwWEJwTFA1ZzVQY3RRaTVfdEU1eHAzTk9URTJQYmN5Q1hhd0I4OG4xVGhGVVRPRW00bzBGMzNESndXY0xyVlpkTEF6ekNyMzRibU8tYTA5ZW5QczJMd9IBd0FVX3lxTE5RNWlETDdZZWNZNVFrM3RrOFBXMlIzMHFzVzZXVlhqVUtQVGFmOUlaaE1uT1FKZDJYSWdKUWFLMGd2WGdieFlVb0NQYThkRkZIUkNPRkJSMFRDS1pZYkdYZ2lLNG0wSTBLU3p0T1N6SUFiNTB2cWZz?oc=5",
+                "Published": "Wed, 05 Aug 2026 09:16:15 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "NVDA Stock Looks 'Remarkably Cheap', Says Wall Street After Beat-And-Raise Q1 \u2014 Analyst Sees Nvidia Market Cap Soaring Past $10 Trillion - Stocktwits",
+                "Link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNa0FheVlBTThLMGlhbGNzdGdUSnQtSEY5cmh0U1JQa01DbTlscWx4eTJUWWxqd0hMejlpOEtiU2o3OGdZa2lta3FZN19BZFk0TnlZOFFFbWUwNXRzMUd5OUNWalZmVnMzQUlfWmI3UUtLYV83WlI3VTFQUC1LUEVtUDVHX08xRmljRHJJLUM5b1pPbUp2bzdsa05HN0FKY1JaSWFpOVFFZ21JaVVhOUdZLTNaV1BFejAzZlRzTGRkbHU2NUtUMUtOWUNyTjktaTZoUXc?oc=5",
+                "Published": "Fri, 07 Aug 2026 10:53:07 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia fails to dazzle investors despite lifting dividends - Financial Times",
+                "Link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOM21vdkhJd05LRTlKc2JHcFhHdm5fSldfc18zSmUtZXAzRXE0UW1DYXlib1pJckhhdWtPY0JKNG9KdmNFOEJSQ0RYZ09BbktPSGNFdzNKQnJyLWU1aDdfS1VmdG5lNW1Vdm54REdLVjNHODJ1V3VWbDhzcTRpSURBRm5mSnk?oc=5",
+                "Published": "Thu, 21 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia earnings preview: Will Nvidia become the first $6 trillion company? - XTB.com",
+                "Link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9xWm9VRF9rdHNJRE5pU00zZVV5dFp4V0VhYmNqWFcwR2J3aWEwS2tJM3BublIzX2I0cDV4Vms5dG1GWTczcnA1Ym5TNV80aF85emE4OWRDSGlpZXJjY0NSaWFnRy1OY3ItM0lJdkpJay15UQ?oc=5",
+                "Published": "Wed, 20 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "NVDA Stock: Where Compounding Could Take The Price - Trefis",
+                "Link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOZDNVcmVyM09pWHBZcjgxZzVpdkgtUHVwNGhJRGN0aEpjdmpxZ2EwY1VoVUlVNkNjVkg2aHA5RDEyT3ctMzJ6aUwyaldXNUsyZkxMMW1TTlJ6MkpIVGpVX0ZPdHItblJJWVdFTUttMWZUSHFSREVwYW9pZVRneVJDLUQ1OHdwZEhsd0JpT19MSGwxclRzeUVDWHVFbHQ0MDI2TGpaRzZhU3BuYmNBdTlN?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Palantir CEO drops 11-word bombshell for stock market investors",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/palantir-ceo-drops-11-word-160300224.html",
+                "Published": "2026-08-07T16:03:00Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Xanadu Accelerates Chip Production as Investors Await Next Catalyst in Race to Scalable Quantum Computing \u2013 Quarterly Update Report",
+                "Link": "https://finance.yahoo.com/technology/ai/articles/xanadu-accelerates-chip-production-investors-164143794.html",
+                "Published": "2026-08-08T16:41:43Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Why Aurora Cannabis Looks Cheaper Than Its International Growth Suggests \u2013 Quarterly Update Report",
+                "Link": "https://finance.yahoo.com/healthcare/articles/why-aurora-cannabis-looks-cheaper-163923801.html",
+                "Published": "2026-08-08T16:39:23Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Performance raises are back for 2027, but increases will be modest",
+                "Link": "https://finance.yahoo.com/economy/article/performance-raises-are-back-for-2027-but-increases-will-be-modest-163535548.html",
+                "Published": "2026-08-08T16:35:35Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Google's AI claimed Flock cameras hold $650 in gold and 23 pounds of copper \u2014 It was duped by meme",
+                "Link": "https://finance.yahoo.com/technology/ai/articles/googles-ai-claimed-flock-cameras-150000005.html",
+                "Published": "2026-08-08T15:00:00Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Badger Meter VP-Engineering Callahan Buys 751 Shares for $101,573 Amid Stock's 26% Pullback",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/badger-meter-vp-engineering-callahan-174817956.html",
+                "Published": "2026-08-08T17:48:17Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Berkshire Hathaway Beats Earnings Views, Ends 14 Quarters Of Selling Equities",
+                "Link": "https://www.investors.com/news/berkshire-hathaway-earnings-buybacks-cash-hoard-warren-buffett/?src=A00220&yptr=yahoo",
+                "Published": "2026-08-08T14:52:35Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Stock Market Week Ahead: Bullish Signals Amid 'Dirty' Volume",
+                "Link": "https://www.investors.com/research/investing-action-plan/stock-market-week-ahead-bullish-signals-amid-dirty-volume/?src=A00220&yptr=yahoo",
+                "Published": "2026-08-08T14:20:55Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "What is a regional bank?",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/regional-bank-171021816.html",
+                "Published": "2024-08-16T17:10:21Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "How to open a checking account for a minor",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/how-to-open-a-checking-account-for-a-minor-213416031.html",
+                "Published": "2026-08-07T21:34:16Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Savers Value Village's U.S. Sales Rose 6.6%. Its CEO Just Sold $2.4 Million in Stock",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/savers-value-villages-u-sales-174639083.html",
+                "Published": "2026-08-08T17:46:39Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "What is universal life insurance?",
+                "Link": "https://finance.yahoo.com/personal-finance/insurance/article/what-is-universal-life-insurance-185454508.html",
+                "Published": "2023-12-15T22:16:42Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Call options explained: From opening trade to expiration",
+                "Link": "https://finance.yahoo.com/personal-finance/investing/article/call-options-165604768.html",
+                "Published": "2026-08-07T16:56:04Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "The best CD rates for August 2026: Earn up to 4.25% APY",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/best-cd-rates-201308688.html",
+                "Published": "2025-03-26T20:13:08Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "How a CD can help you prepare for \u2014 and survive \u2014 a layoff",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/how-to-prepare-for-a-layoff-cd-133034274.html",
+                "Published": "2025-05-19T13:30:34Z"
+            }
+        ],
+        "Financial Data": {
+            "Company": "NVIDIA Corporation",
+            "Sector": "Technology",
+            "Industry": "Semiconductors",
+            "Market Cap": 5424535306240,
+            "Revenue Growth": 0.852,
+            "Earnings Growth": 2.145,
+            "Profit Margin": 0.62966,
+            "Operating Margin": 0.65596,
+            "Forward PE": 17.37413,
+            "Trailing PE": 34.244648,
+            "PEG": 0.6,
+            "Price To Book": 27.75217,
+            "ROE": 1.14288,
+            "ROIC": null,
+            "Beta": 2.215,
+            "Dividend Yield": 0.45
+        },
+        "SEC Filings": {
+            "Ticker": "NVDA",
+            "Timestamp": "2026-08-08T18:59:17.966039",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-02",
+                    "Report Date": "2026-06-28",
+                    "Accession Number": "0001045810-26-000060",
+                    "Document": "nvda-20260628.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000060/nvda-20260628.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-30",
+                    "Report Date": "2026-06-24",
+                    "Accession Number": "0001045810-26-000056",
+                    "Document": "nvda-20260624.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000056/nvda-20260624.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-18",
+                    "Report Date": "2026-06-15",
+                    "Accession Number": "0001193125-26-275783",
+                    "Document": "d48176d8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000119312526275783/d48176d8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-05-20",
+                    "Report Date": "2026-04-26",
+                    "Accession Number": "0001045810-26-000052",
+                    "Document": "nvda-20260426.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000052/nvda-20260426.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-20",
+                    "Report Date": "2026-05-20",
+                    "Accession Number": "0001045810-26-000051",
+                    "Document": "nvda-20260520.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000051/nvda-20260520.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "13F-HR",
+                    "Filing Date": "2026-05-15",
+                    "Report Date": "2026-03-31",
+                    "Accession Number": "0001045810-26-000042",
+                    "Document": "xslForm13F_X02/primary_doc.xml",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000042/xslForm13F_X02/primary_doc.xml",
+                    "Type": "Institutional Holdings"
+                },
+                {
+                    "Form": "DEF 14A",
+                    "Filing Date": "2026-05-12",
+                    "Report Date": "2026-06-24",
+                    "Accession Number": "0001045810-26-000036",
+                    "Document": "nvda-20260512.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000036/nvda-20260512.htm",
+                    "Type": "Proxy Statement"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-08",
+                    "Report Date": "2026-05-07",
+                    "Accession Number": "0001045810-26-000028",
+                    "Document": "nvda-20260507.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000028/nvda-20260507.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-04-27",
+                    "Report Date": "2026-04-24",
+                    "Accession Number": "0001045810-26-000026",
+                    "Document": "nvda-20260424.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000026/nvda-20260424.htm",
+                    "Type": "Current Report"
+                }
+            ],
+            "Filing Count": 9
+        }
+    },
+    "Evidence": {
+        "Timestamp": "2026-08-08T18:59:17.966929",
+        "Evidence": [
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "NVDA Stock Price Drop\u2014the Time to Buy Nvidia or Diversify Across the AI Datacenter Supply Chain? - TradingKey",
+                "Link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOQlAwNnB4N3RpV3B1elhmaHlOUXpnQUFnMkFKdGRaY29aMWFzVDlpb1ItbVJneEQ3SUk1cjNVZHVpc0ZfbldDbUxJOVBwRWJ4Umg5Rk1FWnJwZFdaTWNKSkduaTExWHBMcnEtbHhVRFBhcUtOQ2k2ZkhBTUZldE1vWnZVUE1hNVFyUmF6QlJ6Q041c0h6R2U0SjRNQXJaOUkxR3V2b0JiRjJKbUZyT19rMEJxVGV0b3EteV91SVAwdUhUTTFBSmFFeg?oc=5",
+                "Published": "Sat, 08 Aug 2026 08:49:35 GMT",
+                "Sentiment": "Bullish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Nvidia Heads For Weekly Pop After Big Tech Reports; Is Nvidia A Buy Now? - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1rYXhicnZWRldIUE9nVmZUeTZ0Qnpiclo0elV6YXNpRGw1TFVuOFpJdk11VTFKNmh2ZlI4Mkp2dERNNWxoTEh6Y2w2cVRfNGlXNXQxVmpSSG9VSHViQVpiMkFwOGFGSXBYZjl6OHhKLUdwNGNOdWdTejJZSDZsZw?oc=5",
+                "Published": "Fri, 07 Aug 2026 17:47:00 GMT",
+                "Sentiment": "Bullish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "This 1 Number Will Be NVIDIA\u2019s Catalyst Before It Reports Earnings in August - 24/7 Wall St.",
+                "Link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNQ05mbEExazFRd3NrMVQwZnQtS2Nabl96aG5XTGVaUkVUcWdkUFo4UThfZ2lrZzNLUjNTU3ZCSUZNRE04TVM1WV9EcGxlRXB5ekRxcVBBcFZnVFRxajVjSm1HTlBKTnJHMExNemh3WnBJOHVha1RsSWc0cDJOc2pmSEI1ZXFOelpheW8weUk4VDkzQnRSS2xCNmdEckhhZkwzdkdWU1R4V3F1emk4VklZdmdxak1kWjktSTFHT0dXeThGZmRRSjVKdGtRMU5GMWlUaEFMVmdJVQ?oc=5",
+                "Published": "Tue, 04 Aug 2026 13:00:34 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "History Says This Is What Will Happen to Nvidia Stock After Aug. 26 - The Motley Fool",
+                "Link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOZVp5bDdiakxvVkhXcGRUTXNzb2hGS3JpNjhpMnBQa3VfdUxnRjNYcUNMeXh4U295ZkMzM3E1VDF3YzhIR3pWTEtBanlPVU1mU0ZSVGttbkQ2X2Q2Uy1vTzRrWms0VVA1TlFENThscFNiNGVMSXZOU3hXU3E0cWgzampWdWJ6MmZBRXJwSHkxRjhINEdFUkVMaQ?oc=5",
+                "Published": "Fri, 07 Aug 2026 13:54:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Nvidia's latest record earnings fail to impress investors - BBC",
+                "Link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9acnFWSVR0WTRLWV9oVUQzRVdzM3JEMUdadXlSeUZIMkRiemdFWUlMRktCTmwtYXNWVml5YnI5dFlHOHQ0VDZvRkJPZkhCMTgzQ3NfT002bGJ2UQ?oc=5",
+                "Published": "Thu, 21 May 2026 07:00:00 GMT",
+                "Sentiment": "Bullish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Nvidia Stock Is A Steal Ahead Of Q2 Earnings (NASDAQ:NVDA) - Seeking Alpha",
+                "Link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOUEE0N2M2ZU1LZ2ZIRFc5RDU1VFAzS2E1MDhLY2FnLVEtdnpoUHFJZjZJWG9UbVF6Umtwd2FwWk1YcW81M19PWlplUk05V3V3d3lWX3liVmpxVE5jRzFObFBUcUlHZmxneklZZG44aEVzZXNseTYzMVJ1VDdTa1VEYWZDdWk2RG5UVWpqX2RR?oc=5",
+                "Published": "Wed, 05 Aug 2026 19:23:22 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "AMD Shares Fall 8% as Elon Musk Commits to Nvidia Chips for SpaceX - WSJ",
+                "Link": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBFaGtxOHFMdFctcDd6TTgzZndpV0U1QUFGRV9nbFdxcVZDemlTTW80ZmZTOWxXT0N1ZUJYM3ByQ3Z1ZGF3d1E5S2FjRlp3dzBicVRtaGNBMUV5V1BEWUFfZ2lwaE9kck1xYlNYTENuTnFlMEFkcHlwRGpxYlY1UQ?oc=5",
+                "Published": "Tue, 04 Aug 2026 22:24:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "NVIDIA Corporation $NVDA Stock Holdings Reduced by Aristotle Atlantic Partners LLC - MarketBeat",
+                "Link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQMWtxQTZUdVI4eWtub1ZUSEpiU2x0NVlMcEluU0x3cnhIREZtOWZGNHAwdEx5SmtOQTRGNDZNTktDRHlPWUlJSWhfUENoTTJ3NThqdVBISzl2MGRqeHBqQ2pfalJRTGRtb0w2aVpfOFZ0VWFsczNudTlkMDk5Q2s1eXdVeFUyNWp3QXdSR0E0bTJ6cl94WTNSSDhDM2NzYmpWTVNib2xsVGs5XzZKZGZIVVhpdUY4bjFpMUtEbGZVUTZQTmpDa0IxdlRrcWNyNHFPV09QODNfTDRHQQ?oc=5",
+                "Published": "Thu, 06 Aug 2026 07:23:52 GMT",
+                "Sentiment": "Bullish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Nvidia stock\u2019s been getting cheaper. Time to buy? - Yahoo Finance UK",
+                "Link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxONllRWUNORVFyUWJ0R0YtYlFsWkU5RFoySkpYUjN5SlVEV21Jdi14aDZ4RUUwLWdvSHRlbndoX1FpYklMU2pZT2ZGcUs2V0ctX1RQN3Ixd21HQVEwTHMwOU03cG1PRGZuTGxzZmFHckktMWtGODR0ZTNKUjRiU1Z3Y0xmNGpVVDZtSXc?oc=5",
+                "Published": "Mon, 15 Jun 2026 07:00:00 GMT",
+                "Sentiment": "Bullish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "NVIDIA Announces Financial Results for First Quarter Fiscal 2027 - NVIDIA Newsroom",
+                "Link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPdC1rUGZycU5DWDhBdkJvNTYyeGl1d0lyV2J2VFlRRkdNZno4d0dWRE1QbHNGc2JOQ1NqUkNQZXA2XzMtTUp6d1hwOVc1RXhsY0p5WnpPX3NCcTFYYjNYS0dOeUlnYXNwWTlBQkNhT016MUZIeUx6b2d5VUJYLTFOSnBIRFY1U2Q2X3hBTmdlY2VwNUlHYlJ1eDJZSFZOZ1RJ?oc=5",
+                "Published": "Wed, 20 May 2026 07:00:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Lisa Su brushes off Musk's Nvidia commitment as AMD stock sinks after earnings - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9sSTl3aGxwYWRDZUtoUElIb1h3SkgwWEJwTFA1ZzVQY3RRaTVfdEU1eHAzTk9URTJQYmN5Q1hhd0I4OG4xVGhGVVRPRW00bzBGMzNESndXY0xyVlpkTEF6ekNyMzRibU8tYTA5ZW5QczJMd9IBd0FVX3lxTE5RNWlETDdZZWNZNVFrM3RrOFBXMlIzMHFzVzZXVlhqVUtQVGFmOUlaaE1uT1FKZDJYSWdKUWFLMGd2WGdieFlVb0NQYThkRkZIUkNPRkJSMFRDS1pZYkdYZ2lLNG0wSTBLU3p0T1N6SUFiNTB2cWZz?oc=5",
+                "Published": "Wed, 05 Aug 2026 09:16:15 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "NVDA Stock Looks 'Remarkably Cheap', Says Wall Street After Beat-And-Raise Q1 \u2014 Analyst Sees Nvidia Market Cap Soaring Past $10 Trillion - Stocktwits",
+                "Link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNa0FheVlBTThLMGlhbGNzdGdUSnQtSEY5cmh0U1JQa01DbTlscWx4eTJUWWxqd0hMejlpOEtiU2o3OGdZa2lta3FZN19BZFk0TnlZOFFFbWUwNXRzMUd5OUNWalZmVnMzQUlfWmI3UUtLYV83WlI3VTFQUC1LUEVtUDVHX08xRmljRHJJLUM5b1pPbUp2bzdsa05HN0FKY1JaSWFpOVFFZ21JaVVhOUdZLTNaV1BFejAzZlRzTGRkbHU2NUtUMUtOWUNyTjktaTZoUXc?oc=5",
+                "Published": "Fri, 07 Aug 2026 10:53:07 GMT",
+                "Sentiment": "Bullish",
+                "Reliability": 0.7,
+                "Confidence": 0.7
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Nvidia fails to dazzle investors despite lifting dividends - Financial Times",
+                "Link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOM21vdkhJd05LRTlKc2JHcFhHdm5fSldfc18zSmUtZXAzRXE0UW1DYXlib1pJckhhdWtPY0JKNG9KdmNFOEJSQ0RYZ09BbktPSGNFdzNKQnJyLWU1aDdfS1VmdG5lNW1Vdm54REdLVjNHODJ1V3VWbDhzcTRpSURBRm5mSnk?oc=5",
+                "Published": "Thu, 21 May 2026 07:00:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "Nvidia earnings preview: Will Nvidia become the first $6 trillion company? - XTB.com",
+                "Link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9xWm9VRF9rdHNJRE5pU00zZVV5dFp4V0VhYmNqWFcwR2J3aWEwS2tJM3BublIzX2I0cDV4Vms5dG1GWTczcnA1Ym5TNV80aF85emE4OWRDSGlpZXJjY0NSaWFnRy1OY3ItM0lJdkpJay15UQ?oc=5",
+                "Published": "Wed, 20 May 2026 07:00:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Google News",
+                "Title": "NVDA Stock: Where Compounding Could Take The Price - Trefis",
+                "Link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOZDNVcmVyM09pWHBZcjgxZzVpdkgtUHVwNGhJRGN0aEpjdmpxZ2EwY1VoVUlVNkNjVkg2aHA5RDEyT3ctMzJ6aUwyaldXNUsyZkxMMW1TTlJ6MkpIVGpVX0ZPdHItblJJWVdFTUttMWZUSHFSREVwYW9pZVRneVJDLUQ1OHdwZEhsd0JpT19MSGwxclRzeUVDWHVFbHQ0MDI2TGpaRzZhU3BuYmNBdTlN?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT",
+                "Sentiment": "Neutral",
+                "Reliability": 0.7,
+                "Confidence": 0.52
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Palantir CEO drops 11-word bombshell for stock market investors",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/palantir-ceo-drops-11-word-160300224.html",
+                "Published": "2026-08-07T16:03:00Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Xanadu Accelerates Chip Production as Investors Await Next Catalyst in Race to Scalable Quantum Computing \u2013 Quarterly Update Report",
+                "Link": "https://finance.yahoo.com/technology/ai/articles/xanadu-accelerates-chip-production-investors-164143794.html",
+                "Published": "2026-08-08T16:41:43Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Why Aurora Cannabis Looks Cheaper Than Its International Growth Suggests \u2013 Quarterly Update Report",
+                "Link": "https://finance.yahoo.com/healthcare/articles/why-aurora-cannabis-looks-cheaper-163923801.html",
+                "Published": "2026-08-08T16:39:23Z",
+                "Sentiment": "Bullish",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Performance raises are back for 2027, but increases will be modest",
+                "Link": "https://finance.yahoo.com/economy/article/performance-raises-are-back-for-2027-but-increases-will-be-modest-163535548.html",
+                "Published": "2026-08-08T16:35:35Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Google's AI claimed Flock cameras hold $650 in gold and 23 pounds of copper \u2014 It was duped by meme",
+                "Link": "https://finance.yahoo.com/technology/ai/articles/googles-ai-claimed-flock-cameras-150000005.html",
+                "Published": "2026-08-08T15:00:00Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Badger Meter VP-Engineering Callahan Buys 751 Shares for $101,573 Amid Stock's 26% Pullback",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/badger-meter-vp-engineering-callahan-174817956.html",
+                "Published": "2026-08-08T17:48:17Z",
+                "Sentiment": "Bullish",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Berkshire Hathaway Beats Earnings Views, Ends 14 Quarters Of Selling Equities",
+                "Link": "https://www.investors.com/news/berkshire-hathaway-earnings-buybacks-cash-hoard-warren-buffett/?src=A00220&yptr=yahoo",
+                "Published": "2026-08-08T14:52:35Z",
+                "Sentiment": "Bullish",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Stock Market Week Ahead: Bullish Signals Amid 'Dirty' Volume",
+                "Link": "https://www.investors.com/research/investing-action-plan/stock-market-week-ahead-bullish-signals-amid-dirty-volume/?src=A00220&yptr=yahoo",
+                "Published": "2026-08-08T14:20:55Z",
+                "Sentiment": "Bullish",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "What is a regional bank?",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/regional-bank-171021816.html",
+                "Published": "2024-08-16T17:10:21Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "How to open a checking account for a minor",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/how-to-open-a-checking-account-for-a-minor-213416031.html",
+                "Published": "2026-08-07T21:34:16Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Savers Value Village's U.S. Sales Rose 6.6%. Its CEO Just Sold $2.4 Million in Stock",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/savers-value-villages-u-sales-174639083.html",
+                "Published": "2026-08-08T17:46:39Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "What is universal life insurance?",
+                "Link": "https://finance.yahoo.com/personal-finance/insurance/article/what-is-universal-life-insurance-185454508.html",
+                "Published": "2023-12-15T22:16:42Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "Call options explained: From opening trade to expiration",
+                "Link": "https://finance.yahoo.com/personal-finance/investing/article/call-options-165604768.html",
+                "Published": "2026-08-07T16:56:04Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "The best CD rates for August 2026: Earn up to 4.25% APY",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/best-cd-rates-201308688.html",
+                "Published": "2025-03-26T20:13:08Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "News",
+                "Source": "Yahoo Finance",
+                "Title": "How a CD can help you prepare for \u2014 and survive \u2014 a layoff",
+                "Link": "https://finance.yahoo.com/personal-finance/banking/article/how-to-prepare-for-a-layoff-cd-133034274.html",
+                "Published": "2025-05-19T13:30:34Z",
+                "Sentiment": "Neutral",
+                "Reliability": 0.85,
+                "Confidence": 0.64
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "8-K",
+                "Filing Type": "Current Report",
+                "Filing Date": "2026-07-02",
+                "Report Date": "2026-06-28",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000060/nvda-20260628.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "8-K",
+                "Filing Type": "Current Report",
+                "Filing Date": "2026-06-30",
+                "Report Date": "2026-06-24",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000056/nvda-20260624.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "8-K",
+                "Filing Type": "Current Report",
+                "Filing Date": "2026-06-18",
+                "Report Date": "2026-06-15",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000119312526275783/d48176d8k.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "10-Q",
+                "Filing Type": "Quarterly Report",
+                "Filing Date": "2026-05-20",
+                "Report Date": "2026-04-26",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000052/nvda-20260426.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "8-K",
+                "Filing Type": "Current Report",
+                "Filing Date": "2026-05-20",
+                "Report Date": "2026-05-20",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000051/nvda-20260520.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "13F-HR",
+                "Filing Type": "Institutional Holdings",
+                "Filing Date": "2026-05-15",
+                "Report Date": "2026-03-31",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000042/xslForm13F_X02/primary_doc.xml",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "DEF 14A",
+                "Filing Type": "Proxy Statement",
+                "Filing Date": "2026-05-12",
+                "Report Date": "2026-06-24",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000036/nvda-20260512.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "8-K",
+                "Filing Type": "Current Report",
+                "Filing Date": "2026-05-08",
+                "Report Date": "2026-05-07",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000028/nvda-20260507.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "SEC Filing",
+                "Source": "SEC",
+                "Form": "8-K",
+                "Filing Type": "Current Report",
+                "Filing Date": "2026-04-27",
+                "Report Date": "2026-04-24",
+                "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000026/nvda-20260424.htm",
+                "Reliability": 0.98,
+                "Confidence": 0.98
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Company",
+                "Value": "NVIDIA Corporation",
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Sector",
+                "Value": "Technology",
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Industry",
+                "Value": "Semiconductors",
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Market Cap",
+                "Value": 5424535306240,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Revenue Growth",
+                "Value": 0.852,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Earnings Growth",
+                "Value": 2.145,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Profit Margin",
+                "Value": 0.62966,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Operating Margin",
+                "Value": 0.65596,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Forward PE",
+                "Value": 17.37413,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Trailing PE",
+                "Value": 34.244648,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "PEG",
+                "Value": 0.6,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Price To Book",
+                "Value": 27.75217,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "ROE",
+                "Value": 1.14288,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Beta",
+                "Value": 2.215,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            },
+            {
+                "Type": "Financial",
+                "Metric": "Dividend Yield",
+                "Value": 0.45,
+                "Source": "Yahoo Finance",
+                "Reliability": 0.85,
+                "Confidence": 0.85
+            }
+        ],
+        "Evidence Count": 54,
+        "Bullish Evidence": 10,
+        "Bearish Evidence": 0,
+        "Neutral Evidence": 44,
+        "Source Count": 3,
+        "Sources": [
+            "Google News",
+            "SEC",
+            "Yahoo Finance"
+        ],
+        "Evidence Quality": 83.0
+    },
+    "Profile": {
+        "Ticker": "NVDA",
+        "Company Name": "NVIDIA Corporation",
+        "Short Name": "NVIDIA Corporation",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "City": "Santa Clara",
+        "Website": "https://www.nvidia.com",
+        "Employees": 42000,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Jen-Hsun  Huang",
+                "age": 62,
+                "title": "Co-Founder, CEO & Director",
+                "yearBorn": 1963,
+                "fiscalYear": 2026,
+                "totalPay": 11543318,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Colette M. Kress",
+                "age": 58,
+                "title": "Executive VP & CFO",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1514979,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Debora  Shoquist",
+                "age": 70,
+                "title": "Executive Vice President of Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 1382223,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Timothy S. Teter J.D.",
+                "age": 58,
+                "title": "Executive VP, General Counsel & Secretary",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1363896,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Ajay K. Puri",
+                "age": 70,
+                "title": "Executive Vice President of Worldwide Field Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 2298337,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Chris A. Malachowsky",
+                "title": "Co-Founder",
+                "fiscalYear": 2026,
+                "totalPay": 320000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Scott C. Gawel",
+                "age": 54,
+                "title": "Chief Accounting Officer",
+                "yearBorn": 1971,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Prof. William J. Dally Ph.D.",
+                "age": 64,
+                "title": "Chief Scientist & Senior VP of Research",
+                "yearBorn": 1961,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Toshiya  Hari",
+                "title": "Vice President of Investor Relations & Strategic Finance",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Mylene  Mangalindan",
+                "title": "Vice President of Corporate Communications",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "NVIDIA Corporation operates as a data center scale AI infrastructure company in the United States, Taiwan, China, Hong Kong, Europe, and internationally. It operates through Compute & Networking, and Graphics segments. The Compute & Networking segment provides data center accelerated computing and networking platforms and artificial intelligence solutions and software, and automotive platforms and autonomous and electric vehicle solutions, including software. The Graphics segment offers GeForce GPUs for gaming and PCs; Quadro/NVIDIA RTX GPUs for enterprise workstation graphics. The company's products are used in gaming, professional visualization, data center, and automotive markets. It sells its products to original equipment manufacturers, original device manufacturers, system integrators and distributors, independent software vendors, cloud service providers, add-in board manufacturers, distributors, automotive manufacturers and tier-1 automotive suppliers, and other ecosystem participants. NVIDIA Corporation was incorporated in 1993 and is headquartered in Santa Clara, California.",
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "NVIDIA Corporation",
+        "Symbol": "NVDA",
+        "Exchange": "NMS",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 42000,
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Revenue": 253491003392,
+        "Net Income": 159612993536,
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.6,
+        "Price to Book": 27.75217,
+        "Price to Sales": 21.39932,
+        "Dividend Yield": 0.45,
+        "Beta": 2.215,
+        "52 Week High": 236.54,
+        "52 Week Low": 164.07,
+        "Current Price": 223.96,
+        "Previous Close": 218.99
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 90,
+        "Revenue History": {
+            "2026-01-31 00:00:00": 215938000000.0,
+            "2025-01-31 00:00:00": 130497000000.0,
+            "2024-01-31 00:00:00": 60922000000.0,
+            "2023-01-31 00:00:00": 26974000000.0
+        },
+        "Revenue CAGR": 100.04509499443964,
+        "Net Income History": {
+            "2026-01-31 00:00:00": 120067000000.0,
+            "2025-01-31 00:00:00": 72880000000.0,
+            "2024-01-31 00:00:00": 29760000000.0,
+            "2023-01-31 00:00:00": 4368000000.0
+        },
+        "Earnings CAGR": 201.79613706779188,
+        "Operating Cash Flow": {
+            "2026-01-31 00:00:00": 102718000000.0,
+            "2025-01-31 00:00:00": 64089000000.0,
+            "2024-01-31 00:00:00": 28090000000.0,
+            "2023-01-31 00:00:00": 5641000000.0
+        },
+        "Free Cash Flow": {
+            "2026-01-31 00:00:00": 96676000000.0,
+            "2025-01-31 00:00:00": 60853000000.0,
+            "2024-01-31 00:00:00": 27021000000.0,
+            "2023-01-31 00:00:00": 3808000000.0
+        },
+        "Profit Margin": 0.62966,
+        "Operating Margin": 0.65596,
+        "ROIC": null,
+        "Total Debt": 11040000000.0,
+        "Cash": 10605000000.0,
+        "Net Debt": 435000000.0,
+        "Strengths": [
+            "Strong multi-year revenue growth.",
+            "Strong multi-year earnings growth.",
+            "The company generates positive operating cash flow.",
+            "The company generates positive free cash flow.",
+            "Strong net profit margin.",
+            "Strong operating margin."
+        ],
+        "Weaknesses": [
+            "The company has net debt."
+        ],
+        "Summary": "Financial fundamentals are exceptionally strong."
+    },
+    "Moat Analysis": {
+        "Moat Score": 85,
+        "Classification": "WIDE MOAT",
+        "Gross Margin": 0.74144995,
+        "Operating Margin": 0.65596,
+        "ROE": 1.14288,
+        "ROIC": null,
+        "Strengths": [
+            "Very strong gross margins suggest significant pricing power or intellectual-property advantages.",
+            "Strong operating margins indicate attractive economics.",
+            "High return on equity.",
+            "Very large scale can provide meaningful competitive advantages."
+        ],
+        "Weaknesses": [],
+        "Summary": "The available financial evidence suggests a strong and potentially durable competitive advantage."
+    },
+    "Industry Analysis": {
+        "Industry Score": 95,
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Assessment": "EXCELLENT",
+        "Strengths": [
+            "Sector: Technology",
+            "Industry: Semiconductors",
+            "The company has exceptional scale within its market.",
+            "Revenue growth is strong.",
+            "Operating profitability is strong.",
+            "High gross margins suggest strong economics."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company operates in the Semiconductors industry within the Technology sector. The current industry/competitive assessment is EXCELLENT."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 90,
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Peers": [
+            {
+                "Ticker": "AMD",
+                "Company": "Advanced Micro Devices, Inc.",
+                "Market Cap": 789073100800,
+                "PE": 123.306114,
+                "Forward PE": 31.265461,
+                "Revenue Growth": 0.501,
+                "Profit Margin": 0.15577,
+                "Operating Margin": 0.1725,
+                "ROE": 0.10196,
+                "ROIC": null
+            },
+            {
+                "Ticker": "AVGO",
+                "Company": "Broadcom Inc.",
+                "Market Cap": 2035102646272,
+                "PE": 71.41236,
+                "Forward PE": 21.94546,
+                "Revenue Growth": 0.479,
+                "Profit Margin": 0.38848,
+                "Operating Margin": 0.48988,
+                "ROE": 0.37280998,
+                "ROIC": null
+            },
+            {
+                "Ticker": "QCOM",
+                "Company": "QUALCOMM Incorporated",
+                "Market Cap": 176252993536,
+                "PE": 19.184,
+                "Forward PE": 16.35283,
+                "Revenue Growth": -0.04,
+                "Profit Margin": 0.21013,
+                "Operating Margin": 0.18528,
+                "ROE": 0.33754003,
+                "ROIC": null
+            },
+            {
+                "Ticker": "INTC",
+                "Company": "Intel Corporation",
+                "Market Cap": 512722567168,
+                "PE": null,
+                "Forward PE": 49.354008,
+                "Revenue Growth": 0.254,
+                "Profit Margin": -0.19794,
+                "Operating Margin": 0.12189999,
+                "ROE": -0.10715,
+                "ROIC": null
+            },
+            {
+                "Ticker": "MU",
+                "Company": "Micron Technology, Inc.",
+                "Market Cap": 991121571840,
+                "PE": 19.841059,
+                "Forward PE": 5.659457,
+                "Revenue Growth": 3.457,
+                "Profit Margin": 0.55906,
+                "Operating Margin": 0.80370003,
+                "ROE": 0.66638,
+                "ROIC": null
+            }
+        ],
+        "Subject Company": {
+            "Ticker": "NVDA",
+            "Company": "NVIDIA Corporation",
+            "Market Cap": 5424535306240,
+            "PE": 34.244648,
+            "Forward PE": 17.37413,
+            "Revenue Growth": 0.852,
+            "Profit Margin": 0.62966,
+            "Operating Margin": 0.65596,
+            "ROE": 1.14288,
+            "ROIC": null
+        },
+        "Valuation Rank": 3,
+        "Growth Rank": 2,
+        "Profitability Rank": 1,
+        "Assessment": "The company compares favourably with its selected peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 75,
+        "Assessment": "POSITIVE",
+        "Earnings Date": "None",
+        "Positive Surprises": 0,
+        "Negative Surprises": 0,
+        "Trailing PE": 34.244648,
+        "Forward PE": 17.37413,
+        "Revenue Growth": 0.852,
+        "Earnings Growth": 2.145,
+        "Strengths": [
+            "Forward valuation is below trailing valuation, suggesting expected earnings growth."
+        ],
+        "Weaknesses": [],
+        "Catalysts": [
+            "Strong revenue growth provides support for future earnings expansion.",
+            "Strong earnings growth is a positive fundamental catalyst."
+        ],
+        "Risks": [],
+        "Summary": "Earnings intelligence is currently positive. The system identified 0 recent positive earnings surprises and 0 negative surprises."
+    },
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Business Quality": 86.7,
+    "Valuation": 50,
+    "Technical": 70.0,
+    "Risk": 55,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 100,
+        "Profitability": 100,
+        "Balance Sheet": 60,
+        "Business Quality": 86.7,
+        "Confidence": 85,
+        "Strengths": [
+            "Excellent long-term revenue growth",
+            "High profitability"
+        ],
+        "Weaknesses": [],
+        "Summary": "The business demonstrates exceptional financial quality with strong growth, profitability and balance sheet metrics."
+    },
+    "Valuation Analysis": {
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.6,
+        "Price to Sales": 21.39932,
+        "Price to Book": 27.75217,
+        "Valuation Score": 50,
+        "Confidence": 80,
+        "Strengths": [
+            "Attractive forward earnings valuation",
+            "PEG indicates attractive growth valuation"
+        ],
+        "Weaknesses": [
+            "Very expensive relative to revenue",
+            "High Price/Book multiple"
+        ],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Momentum": 40,
+        "Moving Average": 100,
+        "Technical Score": 70.0
+    },
+    "Risk Analysis": {
+        "Risk Score": 55,
+        "Beta": 2.215
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "Nvidia, Micron or Broadcom: What Would Raymond Dalio Do?",
+            "Why Doximity Stock Skyrocketed on Friday",
+            "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+            "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+            "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+            "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+            "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+            "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb"
+        ],
+        "Catalysts": [
+            "Nvidia, Micron or Broadcom: What Would Raymond Dalio Do?",
+            "Why Doximity Stock Skyrocketed on Friday",
+            "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+            "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+            "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+            "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+            "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+            "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb"
+        ],
+        "Events": [
+            {
+                "headline": "Nvidia, Micron or Broadcom: What Would Raymond Dalio Do?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Doximity Stock Skyrocketed on Friday",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 65,
+        "Confidence": 75,
+        "Strengths": [
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [],
+        "Summary": "Management quality appears satisfactory.",
+        "Insider Ownership": 0.03991,
+        "Institutional Ownership": 0.65789,
+        "Employees": 42000
+    },
+    "Strengths": [
+        "Excellent business quality",
+        "Positive recent news"
+    ],
+    "Weaknesses": [
+        "Elevated investment risk"
+    ],
+    "Summary": "The company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.",
+    "Report": "============================================================\nInvestment Report: NVDA\n============================================================\n\nOverall Rating : \u2605\u2605\u2605\u2606\u2606  HOLD\nOverall Score  : 67.8\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nThe company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 86.7\nValuation        : 50\nTechnical        : 70.0\nRisk             : 55\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 Nvidia, Micron or Broadcom: What Would Raymond Dalio Do?\n\u2022 Why Doximity Stock Skyrocketed on Friday\n\u2022 My Top Dividend Stock to Buy in August (and It's Not Even Close)\n\u2022 Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?\n\u2022 Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?\n\n============================================================",
+    "Catalysts": [
+        "Nvidia, Micron or Broadcom: What Would Raymond Dalio Do?",
+        "Why Doximity Stock Skyrocketed on Friday",
+        "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+        "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+        "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+        "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+        "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+        "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb"
+    ],
+    "Headlines": [
+        "Nvidia, Micron or Broadcom: What Would Raymond Dalio Do?",
+        "Why Doximity Stock Skyrocketed on Friday",
+        "My Top Dividend Stock to Buy in August (and It's Not Even Close)",
+        "Nebius Is Worth 55 Times Its Revenue. What Does That Price Assume?",
+        "Warren Buffett's Successor, Greg Abel, Just Ended Berkshire Hathaway's 14-Quarter Selling Streak. Is This the Screaming Buy Signal Investors Have Been Waiting For?",
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Why Cameco's Ugly Earnings Miss Might Be Good News in Disguise",
+        "Competition Is Heating Up, but Here's Why Intuitive Surgical Might Still Be the Smartest Bet in MedTech",
+        "Got $1,000? Here Are My Favorite Nuclear Stocks to Invest in Right Now.",
+        "One of the Best Values in the Market, Pinterest Stock Is a Buy on Its Latest Dip as Revenue Continues to Climb"
+    ],
+    "Investment Committee": {
+        "Committee Score": 76.1,
+        "Recommendation": "BUY",
+        "Confidence": 76.5,
+        "Adaptive Weights": {
+            "Business Quality": 0.15,
+            "Financial Intelligence": 0.15,
+            "Moat": 0.13,
+            "Industry": 0.08,
+            "Competitors": 0.08,
+            "Valuation": 0.17,
+            "Management": 0.08,
+            "Risk": 0.08,
+            "Technical": 0.04,
+            "News": 0.04
+        },
+        "Learning Enabled": false,
+        "Specialist Scores": {
+            "Business Quality": 86.7,
+            "Financial Intelligence": 90,
+            "Moat": 85,
+            "Industry": 95,
+            "Competitors": 90,
+            "Valuation": 50,
+            "Management": 65,
+            "Risk": 55,
+            "Technical": 70.0,
+            "News": 70
+        },
+        "Strengths": [
+            "Strong underlying business quality.",
+            "Strong financial fundamentals.",
+            "Evidence of a durable competitive advantage.",
+            "Industry position appears favourable.",
+            "Company compares favourably with selected peers."
+        ],
+        "Concerns": [],
+        "Summary": "The Investment Committee assigns 76.1/100 and recommends BUY. Confidence is 76.5%."
+    },
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": []
+    }
+}

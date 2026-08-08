@@ -1,0 +1,285 @@
+{
+  "Ticker": "NVDA",
+  "Company": "NVIDIA Corporation",
+  "Generated At": "2026-08-08T20:39:57.425238+00:00",
+  "Status": "COMPLETE",
+  "Summary": {
+    "Total Evidence Items": 28,
+    "Quantitative Evidence": 11,
+    "Market Evidence": 0,
+    "External Event Evidence": 16,
+    "Model Evidence": 10
+  },
+  "Evidence": {
+    "Fundamentals": [
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Business Quality",
+        "Score": 78.0,
+        "Weight": 0.142857,
+        "Conclusion": "Positive supporting signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Financial Strength",
+        "Score": 86.0,
+        "Weight": 0.142857,
+        "Conclusion": "Strong positive signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Valuation",
+        "Score": 65.0,
+        "Weight": 0.095238,
+        "Conclusion": "Neutral or mixed signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Growth",
+        "Score": 88.0,
+        "Weight": 0.142857,
+        "Conclusion": "Strong positive signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Profitability",
+        "Score": 90.0,
+        "Weight": 0.142857,
+        "Conclusion": "Strong positive signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Momentum",
+        "Score": 90.0,
+        "Weight": 0.142857,
+        "Conclusion": "Strong positive signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Risk",
+        "Score": 48.0,
+        "Weight": 0.095238,
+        "Conclusion": "Negative signal requiring caution.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Size",
+        "Score": 90.0,
+        "Weight": 0.02381,
+        "Conclusion": "Strong positive signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Balance Sheet",
+        "Score": 85.0,
+        "Weight": 0.071429,
+        "Conclusion": "Strong positive signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      },
+      {
+        "Type": "Factor Analysis",
+        "Factor": "Dividend",
+        "Score": 50.0,
+        "Weight": 0.0,
+        "Conclusion": "Neutral or mixed signal.",
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Model"
+      }
+    ],
+    "Valuation": [],
+    "Expected Returns": [
+      {
+        "Type": "Expected Return Forecast",
+        "Model": "Multi-Factor",
+        "Expected Return": 24.97,
+        "Horizon Days": 252,
+        "Confidence": 80.0,
+        "Source": "Multi-Factor Engine",
+        "Source Type": "Quantitative Forecast"
+      }
+    ],
+    "Catalysts": [
+      {
+        "Type": "Catalyst Score",
+        "Score": 70.3,
+        "Source": "Catalyst Engine",
+        "Source Type": "Event Analysis"
+      },
+      {
+        "Type": "Upcoming Catalyst",
+        "Date": "2026-08-26",
+        "Catalyst Type": "Earnings",
+        "Impact": "HIGH",
+        "Reason": "Upcoming earnings announcement.",
+        "Source": "Yahoo Finance",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-05",
+        "Catalyst Type": "Earnings",
+        "Impact": "HIGH",
+        "Reason": "Nvidia Stock Is A Steal Ahead Of Q2 Earnings (NASDAQ:NVDA) - Seeking Alpha",
+        "Source": "Seeking Alpha",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-05",
+        "Catalyst Type": "Earnings",
+        "Impact": "HIGH",
+        "Reason": "Nvidia Earnings: AMD's Results Point To Massive AI Demand (Preview) (NASDAQ:NVDA) - Seeking Alpha",
+        "Source": "Seeking Alpha",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-07-23",
+        "Catalyst Type": "Earnings",
+        "Impact": "HIGH",
+        "Reason": "Why Nvidia (NVDA) Stock Faces Sell-the-News Risk Following Its Q2 Earnings Report - Barchart.com",
+        "Source": "Barchart.com",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-02",
+        "Catalyst Type": "Earnings",
+        "Impact": "HIGH",
+        "Reason": "Nvidia Stock (NVDA) Opinions on AI Spending and Earnings Outlook - Quiver Quantitative",
+        "Source": "Quiver Quantitative",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-04",
+        "Catalyst Type": "Earnings",
+        "Impact": "HIGH",
+        "Reason": "Nvidia (NVDA) Stock Rises 2.9% Amid Uncertainty Over Earnings Re - GuruFocus",
+        "Source": "GuruFocus",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-07",
+        "Catalyst Type": "Guidance",
+        "Impact": "VERY HIGH",
+        "Reason": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - Yahoo Finance",
+        "Source": "Yahoo Finance",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-08",
+        "Catalyst Type": "Clinical / FDA",
+        "Impact": "VERY HIGH",
+        "Reason": "NVDA Stock Price Drop\u2014the Time to Buy Nvidia or Diversify Across the AI Datacenter Supply Chain? - TradingKey",
+        "Source": "TradingKey",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-07",
+        "Catalyst Type": "Guidance",
+        "Impact": "VERY HIGH",
+        "Reason": "Nvidia Stock Forecast: NVDA Targets Record-High After New $2 Billion AI Deal - BeInCrypto",
+        "Source": "BeInCrypto",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-08",
+        "Catalyst Type": "M&A",
+        "Impact": "VERY HIGH",
+        "Reason": "SummitTX Capital L.P. Acquires 10,072 Shares of NVIDIA Corporation $NVDA - MarketBeat",
+        "Source": "MarketBeat",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-07",
+        "Catalyst Type": "M&A",
+        "Impact": "VERY HIGH",
+        "Reason": "Nvidia Stock Jumps After AMD Acquires AI Startup Taalas - Yahoo! Finance Canada",
+        "Source": "Yahoo! Finance Canada",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-07",
+        "Catalyst Type": "M&A",
+        "Impact": "VERY HIGH",
+        "Reason": "NVIDIA Corporation $NVDA Shares Acquired by Gateway Wealth Partners LLC - MarketBeat",
+        "Source": "MarketBeat",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-07",
+        "Catalyst Type": "M&A",
+        "Impact": "VERY HIGH",
+        "Reason": "NVIDIA Corporation $NVDA Shares Acquired by OMERS ADMINISTRATION Corp - MarketBeat",
+        "Source": "MarketBeat",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-07",
+        "Catalyst Type": "Major Contract",
+        "Impact": "HIGH",
+        "Reason": "Time to Buy Nvidia or SpaceX Stock After Their AI Partnership? - Zacks Investment Research",
+        "Source": "Zacks Investment Research",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-08-06",
+        "Catalyst Type": "Major Contract",
+        "Impact": "HIGH",
+        "Reason": "Elon Musk Announces SpaceX Deal with Nvidia, Sending NVDA Stock to $220 but the Competition Threatens Rally - FXLeaders",
+        "Source": "FXLeaders",
+        "Source Type": "External Event"
+      },
+      {
+        "Type": "Recent Catalyst",
+        "Date": "2026-07-16",
+        "Catalyst Type": "Product Launch",
+        "Impact": "HIGH",
+        "Reason": "NVDA Stock Alert: What to Know as Nvidia Launches New AI Model - Yahoo Finance",
+        "Source": "Yahoo Finance",
+        "Source Type": "External Event"
+      }
+    ]
+  },
+  "Sources": [
+    {
+      "Category": "Fundamental Model",
+      "Source": "Multi-Factor Engine"
+    },
+    {
+      "Category": "Catalysts",
+      "Source": "Catalyst Engine"
+    },
+    {
+      "Category": "Market Data",
+      "Source": "Yahoo Finance"
+    }
+  ]
+}

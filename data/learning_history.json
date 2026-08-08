@@ -1,0 +1,707 @@
+[
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T18:45:28.963416",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {}
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T18:47:29.552135",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {}
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T18:49:40.997654",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {}
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T18:51:41.450407",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {}
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T18:53:05.809131",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T18:55:19.341729",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T18:56:23.552066",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T18:59:20.334027",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:00:03.074097",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:00:43.163961",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:01:27.879644",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:01:35.951146",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:02:19.208401",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:02:59.916301",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "MSFT",
+    "Date": "2026-08-08T19:03:02.777580",
+    "Price At Decision": null,
+    "Overall Score": 63.6,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 67.6,
+    "Recommendation": "HOLD / WATCH",
+    "Confidence": 75.0,
+    "Specialist Scores": {
+      "Business Quality": 52.7,
+      "Financial Intelligence": 85,
+      "Moat": 85,
+      "Industry": 88,
+      "Competitors": 50,
+      "Valuation": 50,
+      "Management": 55,
+      "Risk": 65,
+      "Technical": 100.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "GOOGL",
+    "Date": "2026-08-08T19:03:05.566837",
+    "Price At Decision": null,
+    "Overall Score": 63.7,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 72.0,
+    "Recommendation": "HOLD / WATCH",
+    "Confidence": 72.0,
+    "Specialist Scores": {
+      "Business Quality": 67.2,
+      "Financial Intelligence": 85,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 50,
+      "Valuation": 70,
+      "Management": 55,
+      "Risk": 75,
+      "Technical": 35.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "AMZN",
+    "Date": "2026-08-08T19:03:08.912349",
+    "Price At Decision": null,
+    "Overall Score": 68.0,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 68.8,
+    "Recommendation": "HOLD / WATCH",
+    "Confidence": 83.7,
+    "Specialist Scores": {
+      "Business Quality": 59.0,
+      "Financial Intelligence": 60,
+      "Moat": 68,
+      "Industry": 78,
+      "Competitors": 75,
+      "Valuation": 70,
+      "Management": 75,
+      "Risk": 75,
+      "Technical": 80.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "META",
+    "Date": "2026-08-08T19:03:11.607325",
+    "Price At Decision": null,
+    "Overall Score": 59.0,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 69.2,
+    "Recommendation": "HOLD / WATCH",
+    "Confidence": 75.0,
+    "Specialist Scores": {
+      "Business Quality": 51.5,
+      "Financial Intelligence": 85,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 50,
+      "Valuation": 70,
+      "Management": 55,
+      "Risk": 65,
+      "Technical": 45.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "AAPL",
+    "Date": "2026-08-08T19:03:14.265923",
+    "Price At Decision": null,
+    "Overall Score": 57.0,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 56.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 74.1,
+    "Specialist Scores": {
+      "Business Quality": 56.7,
+      "Financial Intelligence": 40,
+      "Moat": 78,
+      "Industry": 83,
+      "Competitors": 50,
+      "Valuation": 30,
+      "Management": 55,
+      "Risk": 70,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:03:26.026708",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:04:13.591606",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:05:05.495370",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:05:44.705317",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:06:30.760540",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-08T19:08:44.929483",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 76.1,
+    "Recommendation": "BUY",
+    "Confidence": 76.5,
+    "Specialist Scores": {
+      "Business Quality": 86.7,
+      "Financial Intelligence": 90,
+      "Moat": 85,
+      "Industry": 95,
+      "Competitors": 90,
+      "Valuation": 50,
+      "Management": 65,
+      "Risk": 55,
+      "Technical": 70.0,
+      "News": 70
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  }
+]

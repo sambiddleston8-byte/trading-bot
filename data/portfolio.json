@@ -1,0 +1,71 @@
+{
+  "Capital": 100000,
+  "Positions": 7,
+  "Cash Weight %": 0,
+  "Invested Weight %": 100,
+  "Holdings": [
+    {
+      "Ticker": "EOG",
+      "Weight %": 18.67,
+      "Capital": 18672.93,
+      "Committee Score": 76.9,
+      "Recommendation": "BUY",
+      "Confidence": 79.0,
+      "Sector": "Energy"
+    },
+    {
+      "Ticker": "CVX",
+      "Weight %": 17.98,
+      "Capital": 17984.43,
+      "Committee Score": 76.04,
+      "Recommendation": "BUY",
+      "Confidence": 78.6,
+      "Sector": "Energy"
+    },
+    {
+      "Ticker": "OXY",
+      "Weight %": 16.83,
+      "Capital": 16827.21,
+      "Committee Score": 77.41,
+      "Recommendation": "BUY",
+      "Confidence": 78.6,
+      "Sector": "Energy"
+    },
+    {
+      "Ticker": "COP",
+      "Weight %": 15.92,
+      "Capital": 15918.63,
+      "Committee Score": 75.93,
+      "Recommendation": "BUY",
+      "Confidence": 78.6,
+      "Sector": "Energy"
+    },
+    {
+      "Ticker": "GOOGL",
+      "Weight %": 12.87,
+      "Capital": 12874.03,
+      "Committee Score": 75.81,
+      "Recommendation": "BUY",
+      "Confidence": 78.6,
+      "Sector": "Communication Services"
+    },
+    {
+      "Ticker": "NVDA",
+      "Weight %": 11.17,
+      "Capital": 11169.71,
+      "Committee Score": 79.26,
+      "Recommendation": "BUY",
+      "Confidence": 78.2,
+      "Sector": "Technology"
+    },
+    {
+      "Ticker": "MU",
+      "Weight %": 6.55,
+      "Capital": 6553.06,
+      "Committee Score": 79.4,
+      "Recommendation": "BUY",
+      "Confidence": 76.1,
+      "Sector": "Technology"
+    }
+  ]
+}

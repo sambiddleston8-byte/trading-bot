@@ -1,21 +1,17 @@
-from core.financial_data import FinancialDataEngine
+from core.company_context import CompanyContext
 
 
 class MetricsAnalyser:
 
-    def __init__(self):
+    def analyse(self, context: CompanyContext):
 
-        self.engine = FinancialDataEngine()
-
-    def analyse(self, symbol):
-
-        info = self.engine.get_company_info(symbol)
+        info = context.info
 
         return {
 
             "Company": info.get("longName"),
 
-            "Symbol": symbol,
+            "Symbol": context.symbol,
 
             "Exchange": info.get("exchange"),
 
@@ -45,7 +41,9 @@ class MetricsAnalyser:
 
             "Price to Book": info.get("priceToBook"),
 
-            "Price to Sales": info.get("priceToSalesTrailing12Months"),
+            "Price to Sales": info.get(
+                "priceToSalesTrailing12Months"
+            ),
 
             "Dividend Yield": info.get("dividendYield"),
 
