@@ -178,6 +178,28 @@ class SECSource:
             ],
         )
 
+        net_income = self.latest_annual_flow(
+            facts,
+            [
+                "NetIncomeLoss",
+                "ProfitLoss",
+            ],
+        )
+
+        operating_income = self.latest_annual_flow(
+            facts,
+            [
+                "OperatingIncomeLoss",
+            ],
+        )
+
+        gross_profit = self.latest_annual_flow(
+            facts,
+            [
+                "GrossProfit",
+            ],
+        )
+
         operating_cash_flow = self.latest_annual_flow(
             facts,
             [
@@ -197,6 +219,14 @@ class SECSource:
             facts,
             [
                 "CashAndCashEquivalentsAtCarryingValue",
+            ],
+        )
+
+        equity = self.latest_balance_value(
+            facts,
+            [
+                "StockholdersEquity",
+                "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
             ],
         )
 
@@ -288,6 +318,15 @@ class SECSource:
 
                 "revenue": revenue,
 
+                "net_income":
+                    net_income,
+
+                "operating_income":
+                    operating_income,
+
+                "gross_profit":
+                    gross_profit,
+
                 "operating_cash_flow":
                     operating_cash_flow,
 
@@ -318,6 +357,8 @@ class SECSource:
             "balance_sheet": {
 
                 "cash_and_equivalents": cash,
+
+                "equity": equity,
 
                 "current_debt": current_debt,
 

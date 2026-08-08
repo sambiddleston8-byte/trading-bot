@@ -522,42 +522,27 @@ class FundamentalAnalysisEngine:
         # OTHER FUNDAMENTALS
         # ----------------------------------------------------
 
-        net_income = (
-            self.latest_value(
-                income_statement,
-                [
-                    "Net Income",
-                    "Net Income Common Stockholders",
-                ],
+        net_income = self.safe_float(
+            selected.get(
+                "net_income"
             )
         )
 
-        operating_income = (
-            self.latest_value(
-                income_statement,
-                [
-                    "Operating Income",
-                    "Operating Income Loss",
-                ],
+        operating_income = self.safe_float(
+            selected.get(
+                "operating_income"
             )
         )
 
-        gross_profit = (
-            self.latest_value(
-                income_statement,
-                [
-                    "Gross Profit",
-                ],
+        gross_profit = self.safe_float(
+            selected.get(
+                "gross_profit"
             )
         )
 
-        equity = (
-            self.latest_value(
-                balance_sheet,
-                [
-                    "Stockholders Equity",
-                    "Total Stockholder Equity",
-                ],
+        equity = self.safe_float(
+            selected.get(
+                "equity"
             )
         )
 

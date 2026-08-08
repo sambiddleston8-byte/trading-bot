@@ -2,20 +2,24 @@
     "Ticker": "NVDA",
     "Company": "NVIDIA Corporation",
     "Status": "COMPLETE",
-    "Analysed At": "2026-08-08T22:01:25.440987+00:00",
+    "Analysed At": "2026-08-08T23:03:14.103247+00:00",
     "Current Price": 223.96,
     "Market Capitalisation": 5424535306240.0,
     "Financial Data Validation": {
         "Overall Confidence": "HIGH",
         "Summary": {
-            "metrics_checked": 6,
+            "metrics_checked": 10,
             "agreements": 5,
             "definition_differences": 1,
             "discrepancies": 0,
-            "insufficient_data": 0,
+            "insufficient_data": 4,
             "overall_confidence": "HIGH"
         },
         "Selected Financials": {
+            "net_income": 120067000000.0,
+            "operating_income": 130387000000.0,
+            "gross_profit": 153463000000.0,
+            "equity": 157293000000.0,
             "revenue": 215938000000.0,
             "operating_cash_flow": 102718000000.0,
             "free_cash_flow": 96676000000.0,

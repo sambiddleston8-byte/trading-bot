@@ -1,5 +1,8 @@
 from datetime import datetime, timezone
 
+from core.data_quality.conflict_detector import ConflictDetector
+from core.data_quality.freshness_checker import FreshnessChecker
+
 
 class ValidatedFinancialData:
 
@@ -98,6 +101,13 @@ class ValidatedFinancialData:
         balance = self.sec.get("balance_sheet", {})
 
         revenue = financials.get("revenue") or {}
+        net_income = financials.get("net_income") or {}
+        operating_income = (
+            financials.get("operating_income") or {}
+        )
+        gross_profit = (
+            financials.get("gross_profit") or {}
+        )
         operating_cash_flow = (
             financials.get("operating_cash_flow") or {}
         )
@@ -105,12 +115,22 @@ class ValidatedFinancialData:
             financials.get("free_cash_flow") or {}
         )
         cash = balance.get("cash_and_equivalents") or {}
+        equity = balance.get("equity") or {}
         debt = balance.get("total_debt") or {}
         shares = balance.get("shares_outstanding") or {}
 
         return {
             "revenue": self._number(
                 revenue.get("value")
+            ),
+            "net_income": self._number(
+                net_income.get("value")
+            ),
+            "operating_income": self._number(
+                operating_income.get("value")
+            ),
+            "gross_profit": self._number(
+                gross_profit.get("value")
             ),
             "operating_cash_flow": self._number(
                 operating_cash_flow.get("value")
@@ -120,6 +140,9 @@ class ValidatedFinancialData:
             ),
             "cash_and_equivalents": self._number(
                 cash.get("value")
+            ),
+            "equity": self._number(
+                equity.get("value")
             ),
             "total_debt": self._number(
                 debt.get("value")
@@ -382,6 +405,213 @@ class ValidatedFinancialData:
     # BUILD VALIDATED DATASET
     # ============================================================
 
+    def _data_quality(
+        self,
+    ):
+
+        yahoo_retrieved_at = (
+            self.yahoo.get(
+                "_retrieved_at"
+            )
+        )
+
+        sec_retrieved_at = (
+            self.sec.get(
+                "_retrieved_at"
+            )
+        )
+
+        freshness = (
+            FreshnessChecker.validate(
+                [
+                    {
+                        "source": "YAHOO",
+                        "retrieved_at":
+                            yahoo_retrieved_at,
+                    },
+                    {
+                        "source": "SEC",
+                        "retrieved_at":
+                            sec_retrieved_at,
+                    },
+                ]
+            )
+        )
+
+        yahoo = self._yahoo_latest()
+        sec = self._sec_latest()
+
+        fields = {
+            "revenue": (
+                yahoo.get("revenue"),
+                sec.get("revenue"),
+            ),
+
+            "operating_cash_flow": (
+                yahoo.get("operating_cash_flow"),
+                sec.get("operating_cash_flow"),
+            ),
+
+            "free_cash_flow": (
+                yahoo.get("free_cash_flow"),
+                sec.get("free_cash_flow"),
+            ),
+
+            "cash_and_equivalents": (
+                yahoo.get("cash_and_equivalents"),
+                sec.get("cash_and_equivalents"),
+            ),
+
+            "shares_outstanding": (
+                yahoo.get("shares_outstanding"),
+                sec.get("shares_outstanding"),
+            ),
+        }
+
+        conflicts = {}
+
+        # --------------------------------------------------------
+        # STANDARD SOURCE COMPARISONS
+        # --------------------------------------------------------
+
+        for field, values in fields.items():
+
+            conflicts[field] = (
+                ConflictDetector.compare(
+                    field=field,
+                    first_source="Yahoo Finance",
+                    first_value=values[0],
+                    second_source="SEC EDGAR",
+                    second_value=values[1],
+                )
+            )
+
+        # --------------------------------------------------------
+        # DEBT RECONCILIATION
+        #
+        # Do NOT simply report the raw Yahoo vs SEC difference.
+        # Run the specialised debt reconciliation first.
+        # --------------------------------------------------------
+
+        debt_reconciliation = (
+            self._debt_comparison(
+                yahoo,
+                sec,
+            )
+        )
+
+        conflicts["total_debt"] = {
+            "field": "total_debt",
+
+            "first": {
+                "source": "Yahoo Finance",
+                "value": yahoo.get(
+                    "total_debt"
+                ),
+            },
+
+            "second": {
+                "source": "SEC EDGAR",
+                "value": sec.get(
+                    "total_debt"
+                ),
+            },
+
+            "difference_percent":
+                self._percent_difference(
+                    yahoo.get(
+                        "total_debt"
+                    ),
+                    sec.get(
+                        "total_debt"
+                    ),
+                ),
+
+            "status":
+                debt_reconciliation.get(
+                    "status"
+                ),
+
+            "selected":
+                debt_reconciliation.get(
+                    "selected"
+                ),
+
+            "selected_source":
+                debt_reconciliation.get(
+                    "selected_source"
+                ),
+
+            "confidence":
+                debt_reconciliation.get(
+                    "confidence"
+                ),
+
+            "reconciliation":
+                debt_reconciliation,
+        }
+
+        # --------------------------------------------------------
+        # CONFIDENCE
+        #
+        # A resolved definition difference is NOT treated as an
+        # unresolved discrepancy.
+        # --------------------------------------------------------
+
+        unresolved_discrepancies = sum(
+            1
+            for item in conflicts.values()
+            if item.get("status")
+            == "DISCREPANCY"
+        )
+
+        definition_differences = sum(
+            1
+            for item in conflicts.values()
+            if item.get("status")
+            in {
+                "DEFINITION_DIFFERENCE",
+                "DEFINITION_OR_TIMING_DIFFERENCE",
+            }
+        )
+
+        if unresolved_discrepancies == 0:
+            conflict_confidence = "HIGH"
+
+        elif unresolved_discrepancies == 1:
+            conflict_confidence = "MEDIUM"
+
+        else:
+            conflict_confidence = "LOW"
+
+        return {
+            "freshness": freshness,
+
+            "source_conflicts": conflicts,
+
+            "conflict_confidence":
+                conflict_confidence,
+
+            "reconciliation": {
+                "total_debt":
+                    debt_reconciliation,
+            },
+
+            "resolved_definition_differences":
+                definition_differences,
+
+            "unresolved_discrepancies":
+                unresolved_discrepancies,
+
+            "retrieved_at": {
+                "yahoo":
+                    yahoo_retrieved_at,
+
+                "sec":
+                    sec_retrieved_at,
+            },
+        }
+
     def build(self, symbol):
         yahoo = self._yahoo_latest()
         sec = self._sec_latest()
@@ -391,6 +621,26 @@ class ValidatedFinancialData:
                 "Revenue",
                 yahoo["revenue"],
                 sec["revenue"],
+            ),
+            self._compare(
+                "Net Income",
+                yahoo.get("net_income"),
+                sec.get("net_income"),
+            ),
+            self._compare(
+                "Operating Income",
+                yahoo.get("operating_income"),
+                sec.get("operating_income"),
+            ),
+            self._compare(
+                "Gross Profit",
+                yahoo.get("gross_profit"),
+                sec.get("gross_profit"),
+            ),
+            self._compare(
+                "Equity",
+                yahoo.get("equity"),
+                sec.get("equity"),
             ),
             self._compare(
                 "Operating Cash Flow",
@@ -481,9 +731,16 @@ class ValidatedFinancialData:
                 - selected_cash
             )
 
+        data_quality = (
+            self._data_quality()
+        )
+
         return {
             "ticker": symbol.upper(),
             "validation_version": self.VERSION,
+
+            "data_quality":
+                data_quality,
             "validated_at":
                 datetime.now(
                     timezone.utc
@@ -503,6 +760,27 @@ class ValidatedFinancialData:
                 comparisons,
 
             "selected_financials": {
+
+                "net_income":
+                    sec["net_income"]
+                    if sec["net_income"] is not None
+                    else yahoo.get("net_income"),
+
+                "operating_income":
+                    sec["operating_income"]
+                    if sec["operating_income"] is not None
+                    else yahoo.get("operating_income"),
+
+                "gross_profit":
+                    sec["gross_profit"]
+                    if sec["gross_profit"] is not None
+                    else yahoo.get("gross_profit"),
+
+                "equity":
+                    sec["equity"]
+                    if sec["equity"] is not None
+                    else yahoo.get("equity"),
+
                 "revenue":
                     sec["revenue"]
                     if sec["revenue"] is not None

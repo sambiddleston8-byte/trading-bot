@@ -1,0 +1,4556 @@
+{
+  "ticker": "NVDA",
+  "status": "COMPLETE",
+  "pipeline_version": "1.0",
+  "started_at": "2026-08-08T23:02:40.978417+00:00",
+  "completed_at": "2026-08-08T23:02:45.202820+00:00",
+  "core": {
+    "fundamental": {
+      "ticker": "NVDA",
+      "validation": {
+        "overall_confidence": "HIGH",
+        "summary": {
+          "metrics_checked": 10,
+          "agreements": 5,
+          "definition_differences": 1,
+          "discrepancies": 0,
+          "insufficient_data": 4,
+          "overall_confidence": "HIGH"
+        }
+      },
+      "financials": {
+        "revenue": 215938000000.0,
+        "net_income": 120067000000.0,
+        "operating_income": 130387000000.0,
+        "gross_profit": 153463000000.0,
+        "equity": 157293000000.0,
+        "operating_cash_flow": 102718000000.0,
+        "free_cash_flow": 96676000000.0,
+        "cash": 10605000000.0,
+        "debt": 8468000000.0,
+        "net_debt": -2137000000.0,
+        "shares_outstanding": 24304000000.0
+      },
+      "profitability": {
+        "gross_margin": 0.7106808435754708,
+        "operating_margin": 0.6038168363141272,
+        "net_margin": 0.5560253406070261,
+        "fcf_margin": 0.44770258129648327,
+        "roe": 0.7633333969089534,
+        "roic": 0.8403606692619041
+      },
+      "growth": {
+        "historical_revenue_cagr": 1.0004509499443963,
+        "historical_fcf_cagr": 1.9390518269164572,
+        "historical_revenue": [
+          215938000000.0,
+          130497000000.0,
+          60922000000.0,
+          26974000000.0,
+          null
+        ],
+        "historical_fcf": [
+          96676000000.0,
+          60853000000.0,
+          27021000000.0,
+          3808000000.0
+        ],
+        "forward_revenue_growth": 0.4257,
+        "forward_eps_growth": 0.4329
+      },
+      "balance_sheet": {
+        "debt_to_fcf": 0.0875915428855145,
+        "net_debt_to_fcf": -0.022104762298812527
+      },
+      "analyst_consensus": {
+        "current_year_eps": 8.99574,
+        "next_year_eps": 12.89043,
+        "forward_revenue_growth": 0.4257,
+        "forward_eps_growth": 0.4329
+      },
+      "forecast_validation": {
+        "overall_confidence": "MEDIUM",
+        "periods_checked": 4,
+        "consistent_periods": 3,
+        "large_differences": 0,
+        "comparisons": [
+          {
+            "period": "0q",
+            "revenue_growth": 0.96489996,
+            "eps_growth": 0.9838,
+            "growth_difference": 0.018900040000000007,
+            "status": "CONSISTENT",
+            "revenue_analysts": 42.0,
+            "eps_analysts": 40.0
+          },
+          {
+            "period": "+1q",
+            "revenue_growth": 0.80910003,
+            "eps_growth": 0.8095,
+            "growth_difference": 0.00039997000000002725,
+            "status": "CONSISTENT",
+            "revenue_analysts": 40.0,
+            "eps_analysts": 40.0
+          },
+          {
+            "period": "0y",
+            "revenue_growth": 0.8239,
+            "eps_growth": 0.88589996,
+            "growth_difference": 0.061999960000000076,
+            "status": "MODERATE_DIFFERENCE",
+            "revenue_analysts": 53.0,
+            "eps_analysts": 50.0
+          },
+          {
+            "period": "+1y",
+            "revenue_growth": 0.4257,
+            "eps_growth": 0.4329,
+            "growth_difference": 0.007199999999999984,
+            "status": "CONSISTENT",
+            "revenue_analysts": 55.0,
+            "eps_analysts": 50.0
+          }
+        ]
+      },
+      "provenance": {
+        "Revenue": {
+          "value": 215938000000.0,
+          "provenance": {
+            "name": "SEC EDGAR",
+            "type": "SEC",
+            "retrieved_at": "2026-08-08T23:02:44.223474+00:00",
+            "period": "Latest validated period",
+            "field": "Revenue",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "SEC EDGAR",
+            "type": "PRIMARY",
+            "website": "https://www.sec.gov/edgar.shtml",
+            "description": "Primary regulatory filings and company financial data."
+          }
+        },
+        "Net Income": {
+          "value": 120067000000.0,
+          "provenance": {
+            "name": "SEC EDGAR",
+            "type": "SEC",
+            "retrieved_at": "2026-08-08T23:02:44.223502+00:00",
+            "period": "Latest reported period",
+            "field": "Net Income",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "SEC EDGAR",
+            "type": "PRIMARY",
+            "website": "https://www.sec.gov/edgar.shtml",
+            "description": "Primary regulatory filings and company financial data."
+          }
+        },
+        "Operating Income": {
+          "value": 130387000000.0,
+          "provenance": {
+            "name": "SEC EDGAR",
+            "type": "SEC",
+            "retrieved_at": "2026-08-08T23:02:44.223510+00:00",
+            "period": "Latest reported period",
+            "field": "Operating Income",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "SEC EDGAR",
+            "type": "PRIMARY",
+            "website": "https://www.sec.gov/edgar.shtml",
+            "description": "Primary regulatory filings and company financial data."
+          }
+        },
+        "Operating Cash Flow": {
+          "value": 102718000000.0,
+          "provenance": {
+            "name": "SEC EDGAR",
+            "type": "SEC",
+            "retrieved_at": "2026-08-08T23:02:44.223516+00:00",
+            "period": "Latest reported period",
+            "field": "Operating Cash Flow",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "SEC EDGAR",
+            "type": "PRIMARY",
+            "website": "https://www.sec.gov/edgar.shtml",
+            "description": "Primary regulatory filings and company financial data."
+          }
+        },
+        "Free Cash Flow": {
+          "value": 96676000000.0,
+          "provenance": {
+            "name": "SEC EDGAR",
+            "type": "SEC",
+            "retrieved_at": "2026-08-08T23:02:44.223521+00:00",
+            "period": "Latest reported period",
+            "field": "Operating Cash Flow - Capital Expenditure",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "SEC EDGAR",
+            "type": "PRIMARY",
+            "website": "https://www.sec.gov/edgar.shtml",
+            "description": "Primary regulatory filings and company financial data."
+          }
+        },
+        "Cash": {
+          "value": 10605000000.0,
+          "provenance": {
+            "name": "SEC EDGAR",
+            "type": "SEC",
+            "retrieved_at": "2026-08-08T23:02:44.223526+00:00",
+            "period": "Latest reported period",
+            "field": "Cash and Cash Equivalents",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "SEC EDGAR",
+            "type": "PRIMARY",
+            "website": "https://www.sec.gov/edgar.shtml",
+            "description": "Primary regulatory filings and company financial data."
+          }
+        },
+        "Debt": {
+          "value": 8468000000.0,
+          "provenance": {
+            "name": "SEC EDGAR",
+            "type": "SEC",
+            "retrieved_at": "2026-08-08T23:02:44.223531+00:00",
+            "period": "Latest reported period",
+            "field": "Debt",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "SEC EDGAR",
+            "type": "PRIMARY",
+            "website": "https://www.sec.gov/edgar.shtml",
+            "description": "Primary regulatory filings and company financial data."
+          }
+        },
+        "Net Debt": {
+          "value": -2137000000.0,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223537+00:00",
+            "period": "Latest validated period",
+            "field": "Debt - Cash",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "Gross Margin": {
+          "value": 0.7106808435754708,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223546+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Gross Profit / Revenue",
+            "inputs": {
+              "gross_profit": 153463000000.0,
+              "revenue": 215938000000.0
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "Operating Margin": {
+          "value": 0.6038168363141272,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223552+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Operating Income / Revenue",
+            "inputs": {
+              "operating_income": 130387000000.0,
+              "revenue": 215938000000.0
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "Net Margin": {
+          "value": 0.5560253406070261,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223557+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Net Income / Revenue",
+            "inputs": {
+              "net_income": 120067000000.0,
+              "revenue": 215938000000.0
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "FCF Margin": {
+          "value": 0.44770258129648327,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223562+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Free Cash Flow / Revenue",
+            "inputs": {
+              "free_cash_flow": 96676000000.0,
+              "revenue": 215938000000.0
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "ROE": {
+          "value": 0.7633333969089534,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223566+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Net Income / Equity",
+            "inputs": {
+              "net_income": 120067000000.0,
+              "equity": 157293000000.0
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "ROIC": {
+          "value": 0.8403606692619041,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223572+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Operating Income / (Equity + Debt - Cash)",
+            "inputs": {
+              "operating_income": 130387000000.0,
+              "equity": 157293000000.0,
+              "debt": 8468000000.0,
+              "cash": 10605000000.0
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "Historical Revenue CAGR": {
+          "value": 1.0004509499443963,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223576+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Compound annual growth rate of historical reported revenue",
+            "inputs": {
+              "historical_revenue": [
+                215938000000.0,
+                130497000000.0,
+                60922000000.0,
+                26974000000.0,
+                null
+              ]
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "Historical FCF CAGR": {
+          "value": 1.9390518269164572,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223580+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Compound annual growth rate of historical free cash flow",
+            "inputs": {
+              "historical_free_cash_flow": [
+                96676000000.0,
+                60853000000.0,
+                27021000000.0,
+                3808000000.0
+              ]
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "Debt / FCF": {
+          "value": 0.0875915428855145,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223585+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Debt / Free Cash Flow",
+            "inputs": {
+              "debt": 8468000000.0,
+              "free_cash_flow": 96676000000.0
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "Net Debt / FCF": {
+          "value": -0.022104762298812527,
+          "provenance": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "retrieved_at": "2026-08-08T23:02:44.223590+00:00",
+            "field": null,
+            "period": null
+          },
+          "calculation": {
+            "method": "Net Debt / Free Cash Flow",
+            "inputs": {
+              "net_debt": -2137000000.0,
+              "free_cash_flow": 96676000000.0
+            },
+            "sources": [
+              "SEC EDGAR"
+            ],
+            "source_registry": [
+              {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            ]
+          },
+          "status": "CALCULATED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Trading Bot",
+            "type": "CALCULATION",
+            "website": null,
+            "description": "Metric calculated by the investment analysis system."
+          }
+        },
+        "Forward Revenue Growth": {
+          "value": 0.4257,
+          "provenance": {
+            "name": "Yahoo Finance",
+            "type": "ANALYST_CONSENSUS",
+            "retrieved_at": "2026-08-08T23:02:44.223594+00:00",
+            "period": "Next fiscal year",
+            "field": "Revenue Growth",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Yahoo Finance",
+            "type": "SECONDARY",
+            "website": "https://finance.yahoo.com/",
+            "description": "Market data, financial statements and analyst consensus estimates."
+          }
+        },
+        "Forward EPS Growth": {
+          "value": 0.4329,
+          "provenance": {
+            "name": "Yahoo Finance",
+            "type": "ANALYST_CONSENSUS",
+            "retrieved_at": "2026-08-08T23:02:44.223599+00:00",
+            "period": "Next fiscal year",
+            "field": "EPS Growth",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Yahoo Finance",
+            "type": "SECONDARY",
+            "website": "https://finance.yahoo.com/",
+            "description": "Market data, financial statements and analyst consensus estimates."
+          }
+        },
+        "Current Year EPS": {
+          "value": 8.99574,
+          "provenance": {
+            "name": "Yahoo Finance",
+            "type": "ANALYST_CONSENSUS",
+            "retrieved_at": "2026-08-08T23:02:44.223604+00:00",
+            "period": "Current fiscal year",
+            "field": "EPS Estimate",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Yahoo Finance",
+            "type": "SECONDARY",
+            "website": "https://finance.yahoo.com/",
+            "description": "Market data, financial statements and analyst consensus estimates."
+          }
+        },
+        "Next Year EPS": {
+          "value": 12.89043,
+          "provenance": {
+            "name": "Yahoo Finance",
+            "type": "ANALYST_CONSENSUS",
+            "retrieved_at": "2026-08-08T23:02:44.223608+00:00",
+            "period": "Next fiscal year",
+            "field": "EPS Estimate",
+            "url": null
+          },
+          "calculation": null,
+          "status": "REPORTED",
+          "confidence": "HIGH",
+          "freshness": {
+            "status": "MISSING_TIMESTAMP",
+            "age_hours": null,
+            "source": "YAHOO"
+          },
+          "source": {
+            "name": "Yahoo Finance",
+            "type": "SECONDARY",
+            "website": "https://finance.yahoo.com/",
+            "description": "Market data, financial statements and analyst consensus estimates."
+          }
+        }
+      },
+      "fundamental_score": 98.0,
+      "fundamental_quality": "STRONG",
+      "key_drivers": [
+        "strong FCF margin",
+        "high ROIC",
+        "net cash position",
+        "strong forward revenue growth",
+        "strong forward EPS growth"
+      ]
+    },
+    "valuation": {
+      "Ticker": "NVDA",
+      "Company": "NVIDIA Corporation",
+      "Status": "COMPLETE",
+      "Analysed At": "2026-08-08T23:02:45.201628+00:00",
+      "Current Price": 223.96,
+      "Market Capitalisation": 5424535306240.0,
+      "Financial Data Validation": {
+        "Overall Confidence": "HIGH",
+        "Summary": {
+          "metrics_checked": 10,
+          "agreements": 5,
+          "definition_differences": 1,
+          "discrepancies": 0,
+          "insufficient_data": 4,
+          "overall_confidence": "HIGH"
+        },
+        "Selected Financials": {
+          "net_income": 120067000000.0,
+          "operating_income": 130387000000.0,
+          "gross_profit": 153463000000.0,
+          "equity": 157293000000.0,
+          "revenue": 215938000000.0,
+          "operating_cash_flow": 102718000000.0,
+          "free_cash_flow": 96676000000.0,
+          "cash_and_equivalents": 10605000000.0,
+          "total_debt": 8468000000.0,
+          "net_debt": -2137000000.0,
+          "shares_outstanding": 24304000000.0
+        }
+      },
+      "Current Revenue": 215938000000.0,
+      "Current Free Cash Flow": 96676000000.0,
+      "Current FCF Margin": 0.44770258129648327,
+      "Target FCF Margin": 0.4184942639216502,
+      "Historical Financials": [
+        {
+          "Period": "2026-01-31 00:00:00",
+          "Revenue": 215938000000.0,
+          "Operating Cash Flow": 102718000000.0,
+          "Capital Expenditure": -6042000000.0,
+          "Free Cash Flow": 96676000000.0
+        },
+        {
+          "Period": "2025-01-31 00:00:00",
+          "Revenue": 130497000000.0,
+          "Operating Cash Flow": 64089000000.0,
+          "Capital Expenditure": -3236000000.0,
+          "Free Cash Flow": 60853000000.0
+        },
+        {
+          "Period": "2024-01-31 00:00:00",
+          "Revenue": 60922000000.0,
+          "Operating Cash Flow": 28090000000.0,
+          "Capital Expenditure": -1069000000.0,
+          "Free Cash Flow": 27021000000.0
+        },
+        {
+          "Period": "2023-01-31 00:00:00",
+          "Revenue": 26974000000.0,
+          "Operating Cash Flow": 5641000000.0,
+          "Capital Expenditure": -1833000000.0,
+          "Free Cash Flow": 3808000000.0
+        }
+      ],
+      "Historical Revenue Growth": 1.0004509499443963,
+      "Historical FCF Growth": 1.9390518269164572,
+      "Revenue Growth Assumption": 0.6,
+      "Forecast Validation": {
+        "Overall Confidence": "MEDIUM",
+        "Periods Checked": 4,
+        "Consistent Periods": 3,
+        "Large Differences": 0,
+        "Comparisons": [
+          {
+            "period": "0q",
+            "revenue_growth": 0.96489996,
+            "eps_growth": 0.9838,
+            "growth_difference": 0.018900040000000007,
+            "status": "CONSISTENT",
+            "revenue_analysts": 42.0,
+            "eps_analysts": 40.0
+          },
+          {
+            "period": "+1q",
+            "revenue_growth": 0.80910003,
+            "eps_growth": 0.8095,
+            "growth_difference": 0.00039997000000002725,
+            "status": "CONSISTENT",
+            "revenue_analysts": 40.0,
+            "eps_analysts": 40.0
+          },
+          {
+            "period": "0y",
+            "revenue_growth": 0.8239,
+            "eps_growth": 0.88589996,
+            "growth_difference": 0.061999960000000076,
+            "status": "MODERATE_DIFFERENCE",
+            "revenue_analysts": 53.0,
+            "eps_analysts": 50.0
+          },
+          {
+            "period": "+1y",
+            "revenue_growth": 0.4257,
+            "eps_growth": 0.4329,
+            "growth_difference": 0.007199999999999984,
+            "status": "CONSISTENT",
+            "revenue_analysts": 55.0,
+            "eps_analysts": 50.0
+          }
+        ]
+      },
+      "Earnings Estimates": {
+        "Current Year EPS": 8.99574,
+        "Next Year EPS": 12.89043,
+        "Current Year EPS Growth": 0.88589996,
+        "Next Year EPS Growth": 0.4329,
+        "Current Year Analysts": 50.0,
+        "Next Year Analysts": 50.0
+      },
+      "Growth Assumption Sources": {
+        "Analyst Forward Revenue Growth": 0.4257,
+        "Analyst Current Year Revenue": 393852732100.0,
+        "Analyst Next Year Revenue": 561509439870.0,
+        "Analyst Current Year Count": 53.0,
+        "Analyst Next Year Count": 55.0,
+        "Yahoo Revenue Growth": 0.852,
+        "Historical Revenue CAGR": 1.0004509499443963,
+        "Method": "60% analyst forward growth + 25% Yahoo growth + 15% historical CAGR"
+      },
+      "WACC": 0.10999999999999999,
+      "Terminal Growth": 0.03,
+      "Forecast Years": 5,
+      "Shares Outstanding": 24304000000.0,
+      "Total Debt": 8468000000.0,
+      "Cash": 10605000000.0,
+      "Net Debt": -2137000000.0,
+      "Intrinsic Value": {
+        "Bear": 145.13221280557977,
+        "Base": 181.29555617947466,
+        "Bull": 224.1001232480977
+      },
+      "Scenarios": {
+        "Bear": {
+          "Status": "COMPLETE",
+          "Forecast Present Values": [
+            {
+              "Year": 1,
+              "Free Cash Flow": 163380861967.82715,
+              "Discount Factor": 0.900900900900901,
+              "Present Value": 147189965736.78125
+            },
+            {
+              "Year": 2,
+              "Free Cash Flow": 217592333274.79965,
+              "Discount Factor": 0.811622433244055,
+              "Present Value": 176602818987.74426
+            },
+            {
+              "Year": 3,
+              "Free Cash Flow": 271291327344.50586,
+              "Discount Factor": 0.7311913813009505,
+              "Present Value": 198365880375.99756
+            },
+            {
+              "Year": 4,
+              "Free Cash Flow": 315202391000.1108,
+              "Discount Factor": 0.6587309741450006,
+              "Present Value": 207633578076.33633
+            },
+            {
+              "Year": 5,
+              "Free Cash Flow": 339484756790.5172,
+              "Discount Factor": 0.5934513280585592,
+              "Present Value": 201467679772.9694
+            }
+          ],
+          "Terminal Value": 4370866243677.9097,
+          "Terminal Present Value": 2593896377076.9814,
+          "Forecast Cash Flow PV": 931259922949.8289,
+          "Enterprise Value": 3525156300026.8105,
+          "Net Debt": -2137000000.0,
+          "Equity Value": 3527293300026.8105,
+          "Shares Outstanding": 24304000000.0,
+          "Intrinsic Value Per Share": 145.13221280557977,
+          "Terminal Value % of Enterprise Value": 0.7358245014716804,
+          "Scenario": "Bear",
+          "Starting Growth": 0.52,
+          "Target FCF Margin": 0.3784942639216502,
+          "Growth Path": [
+            0.7439,
+            0.37570000000000003,
+            0.289275,
+            0.20285000000000003,
+            0.116425
+          ],
+          "Revenue Forecast": [
+            {
+              "Year": 1,
+              "Growth": 0.7439,
+              "Revenue": 376574278200.0
+            },
+            {
+              "Year": 2,
+              "Growth": 0.37570000000000003,
+              "Revenue": 518053234519.74005
+            },
+            {
+              "Year": 3,
+              "Growth": 0.289275,
+              "Revenue": 667913083935.4379
+            },
+            {
+              "Year": 4,
+              "Growth": 0.20285000000000003,
+              "Revenue": 803399253011.7415
+            },
+            {
+              "Year": 5,
+              "Growth": 0.116425,
+              "Revenue": 896935011043.6334
+            }
+          ],
+          "FCF Forecast": [
+            {
+              "Year": 1,
+              "FCF Margin": 0.43386091782151665,
+              "Free Cash Flow": 163380861967.82715
+            },
+            {
+              "Year": 2,
+              "FCF Margin": 0.4200192543465501,
+              "Free Cash Flow": 217592333274.79965
+            },
+            {
+              "Year": 3,
+              "FCF Margin": 0.40617759087158345,
+              "Free Cash Flow": 271291327344.50586
+            },
+            {
+              "Year": 4,
+              "FCF Margin": 0.3923359273966168,
+              "Free Cash Flow": 315202391000.1108
+            },
+            {
+              "Year": 5,
+              "FCF Margin": 0.3784942639216502,
+              "Free Cash Flow": 339484756790.5172
+            }
+          ],
+          "WACC": 0.10999999999999999,
+          "Terminal Growth": 0.03
+        },
+        "Base": {
+          "Status": "COMPLETE",
+          "Forecast Present Values": [
+            {
+              "Year": 1,
+              "Free Cash Flow": 174026621223.23056,
+              "Discount Factor": 0.900900900900901,
+              "Present Value": 156780739840.74826
+            },
+            {
+              "Year": 2,
+              "Free Cash Flow": 244829595736.4396,
+              "Discount Factor": 0.811622433244055,
+              "Present Value": 198709192221.76743
+            },
+            {
+              "Year": 3,
+              "Free Cash Flow": 320481755064.9992,
+              "Discount Factor": 0.7311913813009505,
+              "Present Value": 234333497167.72968
+            },
+            {
+              "Year": 4,
+              "Free Cash Flow": 388159880688.5635,
+              "Discount Factor": 0.6587309741450006,
+              "Present Value": 255692936329.98462
+            },
+            {
+              "Year": 5,
+              "Free Cash Flow": 432170821958.9393,
+              "Discount Factor": 0.5934513280585592,
+              "Present Value": 256472348239.69162
+            }
+          ],
+          "Terminal Value": 5564199332721.344,
+          "Terminal Present Value": 3302081483586.0303,
+          "Forecast Cash Flow PV": 1101988713799.9216,
+          "Enterprise Value": 4404070197385.952,
+          "Net Debt": -2137000000.0,
+          "Equity Value": 4406207197385.952,
+          "Shares Outstanding": 24304000000.0,
+          "Intrinsic Value Per Share": 181.29555617947466,
+          "Terminal Value % of Enterprise Value": 0.7497794847924971,
+          "Scenario": "Base",
+          "Starting Growth": 0.6,
+          "Target FCF Margin": 0.4184942639216502,
+          "Growth Path": [
+            0.8239,
+            0.4257,
+            0.32677500000000004,
+            0.22785,
+            0.128925
+          ],
+          "Revenue Forecast": [
+            {
+              "Year": 1,
+              "Growth": 0.8239,
+              "Revenue": 393849318200.0
+            },
+            {
+              "Year": 2,
+              "Growth": 0.4257,
+              "Revenue": 561510972957.74
+            },
+            {
+              "Year": 3,
+              "Growth": 0.32677500000000004,
+              "Revenue": 744998721146.0055
+            },
+            {
+              "Year": 4,
+              "Growth": 0.22785,
+              "Revenue": 914746679759.1229
+            },
+            {
+              "Year": 5,
+              "Growth": 0.128925,
+              "Revenue": 1032680395447.0677
+            }
+          ],
+          "FCF Forecast": [
+            {
+              "Year": 1,
+              "FCF Margin": 0.44186091782151665,
+              "Free Cash Flow": 174026621223.23056
+            },
+            {
+              "Year": 2,
+              "FCF Margin": 0.43601925434655003,
+              "Free Cash Flow": 244829595736.4396
+            },
+            {
+              "Year": 3,
+              "FCF Margin": 0.4301775908715834,
+              "Free Cash Flow": 320481755064.9992
+            },
+            {
+              "Year": 4,
+              "FCF Margin": 0.4243359273966168,
+              "Free Cash Flow": 388159880688.5635
+            },
+            {
+              "Year": 5,
+              "FCF Margin": 0.4184942639216502,
+              "Free Cash Flow": 432170821958.9393
+            }
+          ],
+          "WACC": 0.10999999999999999,
+          "Terminal Growth": 0.03
+        },
+        "Bull": {
+          "Status": "COMPLETE",
+          "Forecast Present Values": [
+            {
+              "Year": 1,
+              "Free Cash Flow": 184948781118.63397,
+              "Discount Factor": 0.900900900900901,
+              "Present Value": 166620523530.3009
+            },
+            {
+              "Year": 2,
+              "Free Cash Flow": 274238370898.0563,
+              "Discount Factor": 0.811622433244055,
+              "Present Value": 222578013877.1661
+            },
+            {
+              "Year": 3,
+              "Free Cash Flow": 375923009633.1181,
+              "Discount Factor": 0.7311913813009505,
+              "Present Value": 274871664676.45016
+            },
+            {
+              "Year": 4,
+              "Free Cash Flow": 473213304239.1697,
+              "Discount Factor": 0.6587309741450006,
+              "Present Value": 311720260879.8428
+            },
+            {
+              "Year": 5,
+              "Free Cash Flow": 542692189418.66516,
+              "Discount Factor": 0.5934513280585592,
+              "Present Value": 322061400537.514
+            }
+          ],
+          "Terminal Value": 6987161938765.314,
+          "Terminal Present Value": 4146540531920.4927,
+          "Forecast Cash Flow PV": 1297851863501.274,
+          "Enterprise Value": 5444392395421.767,
+          "Net Debt": -2137000000.0,
+          "Equity Value": 5446529395421.767,
+          "Shares Outstanding": 24304000000.0,
+          "Intrinsic Value Per Share": 224.1001232480977,
+          "Terminal Value % of Enterprise Value": 0.7616167665297879,
+          "Scenario": "Bull",
+          "Starting Growth": 0.6799999999999999,
+          "Target FCF Margin": 0.45849426392165016,
+          "Growth Path": [
+            0.9038999999999999,
+            0.4757,
+            0.364275,
+            0.25285,
+            0.141425
+          ],
+          "Revenue Forecast": [
+            {
+              "Year": 1,
+              "Growth": 0.9038999999999999,
+              "Revenue": 411124358200.0
+            },
+            {
+              "Year": 2,
+              "Growth": 0.4757,
+              "Revenue": 606696215395.74
+            },
+            {
+              "Year": 3,
+              "Growth": 0.364275,
+              "Revenue": 827700479259.0232
+            },
+            {
+              "Year": 4,
+              "Growth": 0.25285,
+              "Revenue": 1036984545439.6672
+            },
+            {
+              "Year": 5,
+              "Growth": 0.141425,
+              "Revenue": 1183640084778.4722
+            }
+          ],
+          "FCF Forecast": [
+            {
+              "Year": 1,
+              "FCF Margin": 0.44986091782151666,
+              "Free Cash Flow": 184948781118.63397
+            },
+            {
+              "Year": 2,
+              "FCF Margin": 0.45201925434655005,
+              "Free Cash Flow": 274238370898.0563
+            },
+            {
+              "Year": 3,
+              "FCF Margin": 0.4541775908715834,
+              "Free Cash Flow": 375923009633.1181
+            },
+            {
+              "Year": 4,
+              "FCF Margin": 0.4563359273966168,
+              "Free Cash Flow": 473213304239.1697
+            },
+            {
+              "Year": 5,
+              "FCF Margin": 0.45849426392165016,
+              "Free Cash Flow": 542692189418.66516
+            }
+          ],
+          "WACC": 0.10999999999999999,
+          "Terminal Growth": 0.03
+        }
+      },
+      "Expected Return": {
+        "Base": -0.190500284963946,
+        "Annualised": -0.04138694312840352,
+        "Horizon Years": 5
+      },
+      "Terminal Value Contribution": 0.7497794847924971
+    },
+    "decision": {
+      "ticker": "NVDA",
+      "status": "COMPLETE",
+      "analysed_at": "2026-08-08T23:02:45.202688+00:00",
+      "scores": {
+        "fundamental_quality": 98.0,
+        "valuation": 30,
+        "forward_expectations": 90.0,
+        "data_confidence": 100,
+        "overall": 72.8
+      },
+      "valuation": {
+        "current_price": 223.96,
+        "base_intrinsic_value": 181.29555617947466,
+        "expected_return": -0.190500284963946,
+        "status": "EXPENSIVE"
+      },
+      "expectations": {
+        "forward_revenue_growth": 0.4257,
+        "forward_eps_growth": 0.4329,
+        "forecast_confidence": "MEDIUM"
+      },
+      "confidence": {
+        "fundamental": "HIGH",
+        "forecast": "MEDIUM"
+      },
+      "decision": "WATCHLIST",
+      "weights": {
+        "fundamental_quality": 0.35,
+        "valuation": 0.35,
+        "forward_expectations": 0.2,
+        "data_confidence": 0.1
+      }
+    }
+  },
+  "research": {
+    "news": {
+      "status": "ERROR",
+      "error": "NewsResearchEngine does not expose analyse() or research()."
+    },
+    "catalysts": {
+      "status": "ERROR",
+      "error": "CatalystEngine does not expose analyse() or research().",
+      "catalysts": [],
+      "validated_catalysts": []
+    },
+    "thesis_challenge": {
+      "ticker": "NVDA",
+      "created_at": "2026-08-08T23:02:45.202735+00:00",
+      "status": "COMPLETE",
+      "positive_thesis": "Investment case supported by the fundamental analysis, valuation analysis and available research evidence.",
+      "fundamentals": {
+        "ticker": "NVDA",
+        "validation": {
+          "overall_confidence": "HIGH",
+          "summary": {
+            "metrics_checked": 10,
+            "agreements": 5,
+            "definition_differences": 1,
+            "discrepancies": 0,
+            "insufficient_data": 4,
+            "overall_confidence": "HIGH"
+          }
+        },
+        "financials": {
+          "revenue": 215938000000.0,
+          "net_income": 120067000000.0,
+          "operating_income": 130387000000.0,
+          "gross_profit": 153463000000.0,
+          "equity": 157293000000.0,
+          "operating_cash_flow": 102718000000.0,
+          "free_cash_flow": 96676000000.0,
+          "cash": 10605000000.0,
+          "debt": 8468000000.0,
+          "net_debt": -2137000000.0,
+          "shares_outstanding": 24304000000.0
+        },
+        "profitability": {
+          "gross_margin": 0.7106808435754708,
+          "operating_margin": 0.6038168363141272,
+          "net_margin": 0.5560253406070261,
+          "fcf_margin": 0.44770258129648327,
+          "roe": 0.7633333969089534,
+          "roic": 0.8403606692619041
+        },
+        "growth": {
+          "historical_revenue_cagr": 1.0004509499443963,
+          "historical_fcf_cagr": 1.9390518269164572,
+          "historical_revenue": [
+            215938000000.0,
+            130497000000.0,
+            60922000000.0,
+            26974000000.0,
+            null
+          ],
+          "historical_fcf": [
+            96676000000.0,
+            60853000000.0,
+            27021000000.0,
+            3808000000.0
+          ],
+          "forward_revenue_growth": 0.4257,
+          "forward_eps_growth": 0.4329
+        },
+        "balance_sheet": {
+          "debt_to_fcf": 0.0875915428855145,
+          "net_debt_to_fcf": -0.022104762298812527
+        },
+        "analyst_consensus": {
+          "current_year_eps": 8.99574,
+          "next_year_eps": 12.89043,
+          "forward_revenue_growth": 0.4257,
+          "forward_eps_growth": 0.4329
+        },
+        "forecast_validation": {
+          "overall_confidence": "MEDIUM",
+          "periods_checked": 4,
+          "consistent_periods": 3,
+          "large_differences": 0,
+          "comparisons": [
+            {
+              "period": "0q",
+              "revenue_growth": 0.96489996,
+              "eps_growth": 0.9838,
+              "growth_difference": 0.018900040000000007,
+              "status": "CONSISTENT",
+              "revenue_analysts": 42.0,
+              "eps_analysts": 40.0
+            },
+            {
+              "period": "+1q",
+              "revenue_growth": 0.80910003,
+              "eps_growth": 0.8095,
+              "growth_difference": 0.00039997000000002725,
+              "status": "CONSISTENT",
+              "revenue_analysts": 40.0,
+              "eps_analysts": 40.0
+            },
+            {
+              "period": "0y",
+              "revenue_growth": 0.8239,
+              "eps_growth": 0.88589996,
+              "growth_difference": 0.061999960000000076,
+              "status": "MODERATE_DIFFERENCE",
+              "revenue_analysts": 53.0,
+              "eps_analysts": 50.0
+            },
+            {
+              "period": "+1y",
+              "revenue_growth": 0.4257,
+              "eps_growth": 0.4329,
+              "growth_difference": 0.007199999999999984,
+              "status": "CONSISTENT",
+              "revenue_analysts": 55.0,
+              "eps_analysts": 50.0
+            }
+          ]
+        },
+        "provenance": {
+          "Revenue": {
+            "value": 215938000000.0,
+            "provenance": {
+              "name": "SEC EDGAR",
+              "type": "SEC",
+              "retrieved_at": "2026-08-08T23:02:44.223474+00:00",
+              "period": "Latest validated period",
+              "field": "Revenue",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "SEC EDGAR",
+              "type": "PRIMARY",
+              "website": "https://www.sec.gov/edgar.shtml",
+              "description": "Primary regulatory filings and company financial data."
+            }
+          },
+          "Net Income": {
+            "value": 120067000000.0,
+            "provenance": {
+              "name": "SEC EDGAR",
+              "type": "SEC",
+              "retrieved_at": "2026-08-08T23:02:44.223502+00:00",
+              "period": "Latest reported period",
+              "field": "Net Income",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "SEC EDGAR",
+              "type": "PRIMARY",
+              "website": "https://www.sec.gov/edgar.shtml",
+              "description": "Primary regulatory filings and company financial data."
+            }
+          },
+          "Operating Income": {
+            "value": 130387000000.0,
+            "provenance": {
+              "name": "SEC EDGAR",
+              "type": "SEC",
+              "retrieved_at": "2026-08-08T23:02:44.223510+00:00",
+              "period": "Latest reported period",
+              "field": "Operating Income",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "SEC EDGAR",
+              "type": "PRIMARY",
+              "website": "https://www.sec.gov/edgar.shtml",
+              "description": "Primary regulatory filings and company financial data."
+            }
+          },
+          "Operating Cash Flow": {
+            "value": 102718000000.0,
+            "provenance": {
+              "name": "SEC EDGAR",
+              "type": "SEC",
+              "retrieved_at": "2026-08-08T23:02:44.223516+00:00",
+              "period": "Latest reported period",
+              "field": "Operating Cash Flow",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "SEC EDGAR",
+              "type": "PRIMARY",
+              "website": "https://www.sec.gov/edgar.shtml",
+              "description": "Primary regulatory filings and company financial data."
+            }
+          },
+          "Free Cash Flow": {
+            "value": 96676000000.0,
+            "provenance": {
+              "name": "SEC EDGAR",
+              "type": "SEC",
+              "retrieved_at": "2026-08-08T23:02:44.223521+00:00",
+              "period": "Latest reported period",
+              "field": "Operating Cash Flow - Capital Expenditure",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "SEC EDGAR",
+              "type": "PRIMARY",
+              "website": "https://www.sec.gov/edgar.shtml",
+              "description": "Primary regulatory filings and company financial data."
+            }
+          },
+          "Cash": {
+            "value": 10605000000.0,
+            "provenance": {
+              "name": "SEC EDGAR",
+              "type": "SEC",
+              "retrieved_at": "2026-08-08T23:02:44.223526+00:00",
+              "period": "Latest reported period",
+              "field": "Cash and Cash Equivalents",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "SEC EDGAR",
+              "type": "PRIMARY",
+              "website": "https://www.sec.gov/edgar.shtml",
+              "description": "Primary regulatory filings and company financial data."
+            }
+          },
+          "Debt": {
+            "value": 8468000000.0,
+            "provenance": {
+              "name": "SEC EDGAR",
+              "type": "SEC",
+              "retrieved_at": "2026-08-08T23:02:44.223531+00:00",
+              "period": "Latest reported period",
+              "field": "Debt",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "SEC EDGAR",
+              "type": "PRIMARY",
+              "website": "https://www.sec.gov/edgar.shtml",
+              "description": "Primary regulatory filings and company financial data."
+            }
+          },
+          "Net Debt": {
+            "value": -2137000000.0,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223537+00:00",
+              "period": "Latest validated period",
+              "field": "Debt - Cash",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "Gross Margin": {
+            "value": 0.7106808435754708,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223546+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Gross Profit / Revenue",
+              "inputs": {
+                "gross_profit": 153463000000.0,
+                "revenue": 215938000000.0
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "Operating Margin": {
+            "value": 0.6038168363141272,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223552+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Operating Income / Revenue",
+              "inputs": {
+                "operating_income": 130387000000.0,
+                "revenue": 215938000000.0
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "Net Margin": {
+            "value": 0.5560253406070261,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223557+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Net Income / Revenue",
+              "inputs": {
+                "net_income": 120067000000.0,
+                "revenue": 215938000000.0
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "FCF Margin": {
+            "value": 0.44770258129648327,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223562+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Free Cash Flow / Revenue",
+              "inputs": {
+                "free_cash_flow": 96676000000.0,
+                "revenue": 215938000000.0
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "ROE": {
+            "value": 0.7633333969089534,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223566+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Net Income / Equity",
+              "inputs": {
+                "net_income": 120067000000.0,
+                "equity": 157293000000.0
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "ROIC": {
+            "value": 0.8403606692619041,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223572+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Operating Income / (Equity + Debt - Cash)",
+              "inputs": {
+                "operating_income": 130387000000.0,
+                "equity": 157293000000.0,
+                "debt": 8468000000.0,
+                "cash": 10605000000.0
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "Historical Revenue CAGR": {
+            "value": 1.0004509499443963,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223576+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Compound annual growth rate of historical reported revenue",
+              "inputs": {
+                "historical_revenue": [
+                  215938000000.0,
+                  130497000000.0,
+                  60922000000.0,
+                  26974000000.0,
+                  null
+                ]
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "Historical FCF CAGR": {
+            "value": 1.9390518269164572,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223580+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Compound annual growth rate of historical free cash flow",
+              "inputs": {
+                "historical_free_cash_flow": [
+                  96676000000.0,
+                  60853000000.0,
+                  27021000000.0,
+                  3808000000.0
+                ]
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "Debt / FCF": {
+            "value": 0.0875915428855145,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223585+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Debt / Free Cash Flow",
+              "inputs": {
+                "debt": 8468000000.0,
+                "free_cash_flow": 96676000000.0
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "Net Debt / FCF": {
+            "value": -0.022104762298812527,
+            "provenance": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "retrieved_at": "2026-08-08T23:02:44.223590+00:00",
+              "field": null,
+              "period": null
+            },
+            "calculation": {
+              "method": "Net Debt / Free Cash Flow",
+              "inputs": {
+                "net_debt": -2137000000.0,
+                "free_cash_flow": 96676000000.0
+              },
+              "sources": [
+                "SEC EDGAR"
+              ],
+              "source_registry": [
+                {
+                  "name": "SEC EDGAR",
+                  "type": "PRIMARY",
+                  "website": "https://www.sec.gov/edgar.shtml",
+                  "description": "Primary regulatory filings and company financial data."
+                }
+              ]
+            },
+            "status": "CALCULATED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Trading Bot",
+              "type": "CALCULATION",
+              "website": null,
+              "description": "Metric calculated by the investment analysis system."
+            }
+          },
+          "Forward Revenue Growth": {
+            "value": 0.4257,
+            "provenance": {
+              "name": "Yahoo Finance",
+              "type": "ANALYST_CONSENSUS",
+              "retrieved_at": "2026-08-08T23:02:44.223594+00:00",
+              "period": "Next fiscal year",
+              "field": "Revenue Growth",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Yahoo Finance",
+              "type": "SECONDARY",
+              "website": "https://finance.yahoo.com/",
+              "description": "Market data, financial statements and analyst consensus estimates."
+            }
+          },
+          "Forward EPS Growth": {
+            "value": 0.4329,
+            "provenance": {
+              "name": "Yahoo Finance",
+              "type": "ANALYST_CONSENSUS",
+              "retrieved_at": "2026-08-08T23:02:44.223599+00:00",
+              "period": "Next fiscal year",
+              "field": "EPS Growth",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Yahoo Finance",
+              "type": "SECONDARY",
+              "website": "https://finance.yahoo.com/",
+              "description": "Market data, financial statements and analyst consensus estimates."
+            }
+          },
+          "Current Year EPS": {
+            "value": 8.99574,
+            "provenance": {
+              "name": "Yahoo Finance",
+              "type": "ANALYST_CONSENSUS",
+              "retrieved_at": "2026-08-08T23:02:44.223604+00:00",
+              "period": "Current fiscal year",
+              "field": "EPS Estimate",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Yahoo Finance",
+              "type": "SECONDARY",
+              "website": "https://finance.yahoo.com/",
+              "description": "Market data, financial statements and analyst consensus estimates."
+            }
+          },
+          "Next Year EPS": {
+            "value": 12.89043,
+            "provenance": {
+              "name": "Yahoo Finance",
+              "type": "ANALYST_CONSENSUS",
+              "retrieved_at": "2026-08-08T23:02:44.223608+00:00",
+              "period": "Next fiscal year",
+              "field": "EPS Estimate",
+              "url": null
+            },
+            "calculation": null,
+            "status": "REPORTED",
+            "confidence": "HIGH",
+            "freshness": {
+              "status": "MISSING_TIMESTAMP",
+              "age_hours": null,
+              "source": "YAHOO"
+            },
+            "source": {
+              "name": "Yahoo Finance",
+              "type": "SECONDARY",
+              "website": "https://finance.yahoo.com/",
+              "description": "Market data, financial statements and analyst consensus estimates."
+            }
+          }
+        },
+        "fundamental_score": 98.0,
+        "fundamental_quality": "STRONG",
+        "key_drivers": [
+          "strong FCF margin",
+          "high ROIC",
+          "net cash position",
+          "strong forward revenue growth",
+          "strong forward EPS growth"
+        ]
+      },
+      "valuation": {
+        "Ticker": "NVDA",
+        "Company": "NVIDIA Corporation",
+        "Status": "COMPLETE",
+        "Analysed At": "2026-08-08T23:02:45.201628+00:00",
+        "Current Price": 223.96,
+        "Market Capitalisation": 5424535306240.0,
+        "Financial Data Validation": {
+          "Overall Confidence": "HIGH",
+          "Summary": {
+            "metrics_checked": 10,
+            "agreements": 5,
+            "definition_differences": 1,
+            "discrepancies": 0,
+            "insufficient_data": 4,
+            "overall_confidence": "HIGH"
+          },
+          "Selected Financials": {
+            "net_income": 120067000000.0,
+            "operating_income": 130387000000.0,
+            "gross_profit": 153463000000.0,
+            "equity": 157293000000.0,
+            "revenue": 215938000000.0,
+            "operating_cash_flow": 102718000000.0,
+            "free_cash_flow": 96676000000.0,
+            "cash_and_equivalents": 10605000000.0,
+            "total_debt": 8468000000.0,
+            "net_debt": -2137000000.0,
+            "shares_outstanding": 24304000000.0
+          }
+        },
+        "Current Revenue": 215938000000.0,
+        "Current Free Cash Flow": 96676000000.0,
+        "Current FCF Margin": 0.44770258129648327,
+        "Target FCF Margin": 0.4184942639216502,
+        "Historical Financials": [
+          {
+            "Period": "2026-01-31 00:00:00",
+            "Revenue": 215938000000.0,
+            "Operating Cash Flow": 102718000000.0,
+            "Capital Expenditure": -6042000000.0,
+            "Free Cash Flow": 96676000000.0
+          },
+          {
+            "Period": "2025-01-31 00:00:00",
+            "Revenue": 130497000000.0,
+            "Operating Cash Flow": 64089000000.0,
+            "Capital Expenditure": -3236000000.0,
+            "Free Cash Flow": 60853000000.0
+          },
+          {
+            "Period": "2024-01-31 00:00:00",
+            "Revenue": 60922000000.0,
+            "Operating Cash Flow": 28090000000.0,
+            "Capital Expenditure": -1069000000.0,
+            "Free Cash Flow": 27021000000.0
+          },
+          {
+            "Period": "2023-01-31 00:00:00",
+            "Revenue": 26974000000.0,
+            "Operating Cash Flow": 5641000000.0,
+            "Capital Expenditure": -1833000000.0,
+            "Free Cash Flow": 3808000000.0
+          }
+        ],
+        "Historical Revenue Growth": 1.0004509499443963,
+        "Historical FCF Growth": 1.9390518269164572,
+        "Revenue Growth Assumption": 0.6,
+        "Forecast Validation": {
+          "Overall Confidence": "MEDIUM",
+          "Periods Checked": 4,
+          "Consistent Periods": 3,
+          "Large Differences": 0,
+          "Comparisons": [
+            {
+              "period": "0q",
+              "revenue_growth": 0.96489996,
+              "eps_growth": 0.9838,
+              "growth_difference": 0.018900040000000007,
+              "status": "CONSISTENT",
+              "revenue_analysts": 42.0,
+              "eps_analysts": 40.0
+            },
+            {
+              "period": "+1q",
+              "revenue_growth": 0.80910003,
+              "eps_growth": 0.8095,
+              "growth_difference": 0.00039997000000002725,
+              "status": "CONSISTENT",
+              "revenue_analysts": 40.0,
+              "eps_analysts": 40.0
+            },
+            {
+              "period": "0y",
+              "revenue_growth": 0.8239,
+              "eps_growth": 0.88589996,
+              "growth_difference": 0.061999960000000076,
+              "status": "MODERATE_DIFFERENCE",
+              "revenue_analysts": 53.0,
+              "eps_analysts": 50.0
+            },
+            {
+              "period": "+1y",
+              "revenue_growth": 0.4257,
+              "eps_growth": 0.4329,
+              "growth_difference": 0.007199999999999984,
+              "status": "CONSISTENT",
+              "revenue_analysts": 55.0,
+              "eps_analysts": 50.0
+            }
+          ]
+        },
+        "Earnings Estimates": {
+          "Current Year EPS": 8.99574,
+          "Next Year EPS": 12.89043,
+          "Current Year EPS Growth": 0.88589996,
+          "Next Year EPS Growth": 0.4329,
+          "Current Year Analysts": 50.0,
+          "Next Year Analysts": 50.0
+        },
+        "Growth Assumption Sources": {
+          "Analyst Forward Revenue Growth": 0.4257,
+          "Analyst Current Year Revenue": 393852732100.0,
+          "Analyst Next Year Revenue": 561509439870.0,
+          "Analyst Current Year Count": 53.0,
+          "Analyst Next Year Count": 55.0,
+          "Yahoo Revenue Growth": 0.852,
+          "Historical Revenue CAGR": 1.0004509499443963,
+          "Method": "60% analyst forward growth + 25% Yahoo growth + 15% historical CAGR"
+        },
+        "WACC": 0.10999999999999999,
+        "Terminal Growth": 0.03,
+        "Forecast Years": 5,
+        "Shares Outstanding": 24304000000.0,
+        "Total Debt": 8468000000.0,
+        "Cash": 10605000000.0,
+        "Net Debt": -2137000000.0,
+        "Intrinsic Value": {
+          "Bear": 145.13221280557977,
+          "Base": 181.29555617947466,
+          "Bull": 224.1001232480977
+        },
+        "Scenarios": {
+          "Bear": {
+            "Status": "COMPLETE",
+            "Forecast Present Values": [
+              {
+                "Year": 1,
+                "Free Cash Flow": 163380861967.82715,
+                "Discount Factor": 0.900900900900901,
+                "Present Value": 147189965736.78125
+              },
+              {
+                "Year": 2,
+                "Free Cash Flow": 217592333274.79965,
+                "Discount Factor": 0.811622433244055,
+                "Present Value": 176602818987.74426
+              },
+              {
+                "Year": 3,
+                "Free Cash Flow": 271291327344.50586,
+                "Discount Factor": 0.7311913813009505,
+                "Present Value": 198365880375.99756
+              },
+              {
+                "Year": 4,
+                "Free Cash Flow": 315202391000.1108,
+                "Discount Factor": 0.6587309741450006,
+                "Present Value": 207633578076.33633
+              },
+              {
+                "Year": 5,
+                "Free Cash Flow": 339484756790.5172,
+                "Discount Factor": 0.5934513280585592,
+                "Present Value": 201467679772.9694
+              }
+            ],
+            "Terminal Value": 4370866243677.9097,
+            "Terminal Present Value": 2593896377076.9814,
+            "Forecast Cash Flow PV": 931259922949.8289,
+            "Enterprise Value": 3525156300026.8105,
+            "Net Debt": -2137000000.0,
+            "Equity Value": 3527293300026.8105,
+            "Shares Outstanding": 24304000000.0,
+            "Intrinsic Value Per Share": 145.13221280557977,
+            "Terminal Value % of Enterprise Value": 0.7358245014716804,
+            "Scenario": "Bear",
+            "Starting Growth": 0.52,
+            "Target FCF Margin": 0.3784942639216502,
+            "Growth Path": [
+              0.7439,
+              0.37570000000000003,
+              0.289275,
+              0.20285000000000003,
+              0.116425
+            ],
+            "Revenue Forecast": [
+              {
+                "Year": 1,
+                "Growth": 0.7439,
+                "Revenue": 376574278200.0
+              },
+              {
+                "Year": 2,
+                "Growth": 0.37570000000000003,
+                "Revenue": 518053234519.74005
+              },
+              {
+                "Year": 3,
+                "Growth": 0.289275,
+                "Revenue": 667913083935.4379
+              },
+              {
+                "Year": 4,
+                "Growth": 0.20285000000000003,
+                "Revenue": 803399253011.7415
+              },
+              {
+                "Year": 5,
+                "Growth": 0.116425,
+                "Revenue": 896935011043.6334
+              }
+            ],
+            "FCF Forecast": [
+              {
+                "Year": 1,
+                "FCF Margin": 0.43386091782151665,
+                "Free Cash Flow": 163380861967.82715
+              },
+              {
+                "Year": 2,
+                "FCF Margin": 0.4200192543465501,
+                "Free Cash Flow": 217592333274.79965
+              },
+              {
+                "Year": 3,
+                "FCF Margin": 0.40617759087158345,
+                "Free Cash Flow": 271291327344.50586
+              },
+              {
+                "Year": 4,
+                "FCF Margin": 0.3923359273966168,
+                "Free Cash Flow": 315202391000.1108
+              },
+              {
+                "Year": 5,
+                "FCF Margin": 0.3784942639216502,
+                "Free Cash Flow": 339484756790.5172
+              }
+            ],
+            "WACC": 0.10999999999999999,
+            "Terminal Growth": 0.03
+          },
+          "Base": {
+            "Status": "COMPLETE",
+            "Forecast Present Values": [
+              {
+                "Year": 1,
+                "Free Cash Flow": 174026621223.23056,
+                "Discount Factor": 0.900900900900901,
+                "Present Value": 156780739840.74826
+              },
+              {
+                "Year": 2,
+                "Free Cash Flow": 244829595736.4396,
+                "Discount Factor": 0.811622433244055,
+                "Present Value": 198709192221.76743
+              },
+              {
+                "Year": 3,
+                "Free Cash Flow": 320481755064.9992,
+                "Discount Factor": 0.7311913813009505,
+                "Present Value": 234333497167.72968
+              },
+              {
+                "Year": 4,
+                "Free Cash Flow": 388159880688.5635,
+                "Discount Factor": 0.6587309741450006,
+                "Present Value": 255692936329.98462
+              },
+              {
+                "Year": 5,
+                "Free Cash Flow": 432170821958.9393,
+                "Discount Factor": 0.5934513280585592,
+                "Present Value": 256472348239.69162
+              }
+            ],
+            "Terminal Value": 5564199332721.344,
+            "Terminal Present Value": 3302081483586.0303,
+            "Forecast Cash Flow PV": 1101988713799.9216,
+            "Enterprise Value": 4404070197385.952,
+            "Net Debt": -2137000000.0,
+            "Equity Value": 4406207197385.952,
+            "Shares Outstanding": 24304000000.0,
+            "Intrinsic Value Per Share": 181.29555617947466,
+            "Terminal Value % of Enterprise Value": 0.7497794847924971,
+            "Scenario": "Base",
+            "Starting Growth": 0.6,
+            "Target FCF Margin": 0.4184942639216502,
+            "Growth Path": [
+              0.8239,
+              0.4257,
+              0.32677500000000004,
+              0.22785,
+              0.128925
+            ],
+            "Revenue Forecast": [
+              {
+                "Year": 1,
+                "Growth": 0.8239,
+                "Revenue": 393849318200.0
+              },
+              {
+                "Year": 2,
+                "Growth": 0.4257,
+                "Revenue": 561510972957.74
+              },
+              {
+                "Year": 3,
+                "Growth": 0.32677500000000004,
+                "Revenue": 744998721146.0055
+              },
+              {
+                "Year": 4,
+                "Growth": 0.22785,
+                "Revenue": 914746679759.1229
+              },
+              {
+                "Year": 5,
+                "Growth": 0.128925,
+                "Revenue": 1032680395447.0677
+              }
+            ],
+            "FCF Forecast": [
+              {
+                "Year": 1,
+                "FCF Margin": 0.44186091782151665,
+                "Free Cash Flow": 174026621223.23056
+              },
+              {
+                "Year": 2,
+                "FCF Margin": 0.43601925434655003,
+                "Free Cash Flow": 244829595736.4396
+              },
+              {
+                "Year": 3,
+                "FCF Margin": 0.4301775908715834,
+                "Free Cash Flow": 320481755064.9992
+              },
+              {
+                "Year": 4,
+                "FCF Margin": 0.4243359273966168,
+                "Free Cash Flow": 388159880688.5635
+              },
+              {
+                "Year": 5,
+                "FCF Margin": 0.4184942639216502,
+                "Free Cash Flow": 432170821958.9393
+              }
+            ],
+            "WACC": 0.10999999999999999,
+            "Terminal Growth": 0.03
+          },
+          "Bull": {
+            "Status": "COMPLETE",
+            "Forecast Present Values": [
+              {
+                "Year": 1,
+                "Free Cash Flow": 184948781118.63397,
+                "Discount Factor": 0.900900900900901,
+                "Present Value": 166620523530.3009
+              },
+              {
+                "Year": 2,
+                "Free Cash Flow": 274238370898.0563,
+                "Discount Factor": 0.811622433244055,
+                "Present Value": 222578013877.1661
+              },
+              {
+                "Year": 3,
+                "Free Cash Flow": 375923009633.1181,
+                "Discount Factor": 0.7311913813009505,
+                "Present Value": 274871664676.45016
+              },
+              {
+                "Year": 4,
+                "Free Cash Flow": 473213304239.1697,
+                "Discount Factor": 0.6587309741450006,
+                "Present Value": 311720260879.8428
+              },
+              {
+                "Year": 5,
+                "Free Cash Flow": 542692189418.66516,
+                "Discount Factor": 0.5934513280585592,
+                "Present Value": 322061400537.514
+              }
+            ],
+            "Terminal Value": 6987161938765.314,
+            "Terminal Present Value": 4146540531920.4927,
+            "Forecast Cash Flow PV": 1297851863501.274,
+            "Enterprise Value": 5444392395421.767,
+            "Net Debt": -2137000000.0,
+            "Equity Value": 5446529395421.767,
+            "Shares Outstanding": 24304000000.0,
+            "Intrinsic Value Per Share": 224.1001232480977,
+            "Terminal Value % of Enterprise Value": 0.7616167665297879,
+            "Scenario": "Bull",
+            "Starting Growth": 0.6799999999999999,
+            "Target FCF Margin": 0.45849426392165016,
+            "Growth Path": [
+              0.9038999999999999,
+              0.4757,
+              0.364275,
+              0.25285,
+              0.141425
+            ],
+            "Revenue Forecast": [
+              {
+                "Year": 1,
+                "Growth": 0.9038999999999999,
+                "Revenue": 411124358200.0
+              },
+              {
+                "Year": 2,
+                "Growth": 0.4757,
+                "Revenue": 606696215395.74
+              },
+              {
+                "Year": 3,
+                "Growth": 0.364275,
+                "Revenue": 827700479259.0232
+              },
+              {
+                "Year": 4,
+                "Growth": 0.25285,
+                "Revenue": 1036984545439.6672
+              },
+              {
+                "Year": 5,
+                "Growth": 0.141425,
+                "Revenue": 1183640084778.4722
+              }
+            ],
+            "FCF Forecast": [
+              {
+                "Year": 1,
+                "FCF Margin": 0.44986091782151666,
+                "Free Cash Flow": 184948781118.63397
+              },
+              {
+                "Year": 2,
+                "FCF Margin": 0.45201925434655005,
+                "Free Cash Flow": 274238370898.0563
+              },
+              {
+                "Year": 3,
+                "FCF Margin": 0.4541775908715834,
+                "Free Cash Flow": 375923009633.1181
+              },
+              {
+                "Year": 4,
+                "FCF Margin": 0.4563359273966168,
+                "Free Cash Flow": 473213304239.1697
+              },
+              {
+                "Year": 5,
+                "FCF Margin": 0.45849426392165016,
+                "Free Cash Flow": 542692189418.66516
+              }
+            ],
+            "WACC": 0.10999999999999999,
+            "Terminal Growth": 0.03
+          }
+        },
+        "Expected Return": {
+          "Base": -0.190500284963946,
+          "Annualised": -0.04138694312840352,
+          "Horizon Years": 5
+        },
+        "Terminal Value Contribution": 0.7497794847924971
+      },
+      "expectations": {
+        "forward_revenue_growth": null,
+        "forward_eps_growth": null,
+        "forecast_confidence": "HIGH"
+      },
+      "challenges": [
+        {
+          "area": "growth",
+          "question": "What could cause future growth to disappoint?",
+          "severity": "HIGH",
+          "status": "TESTED",
+          "evidence": [],
+          "findings": [
+            {
+              "finding": "Forward growth assumptions do not appear exceptionally aggressive.",
+              "impact": "POSITIVE",
+              "confidence": "MEDIUM",
+              "evidence": [],
+              "recorded_at": "2026-08-08T23:02:45.202747+00:00"
+            }
+          ],
+          "thesis_impact": "POSITIVE",
+          "confidence": "MEDIUM"
+        },
+        {
+          "area": "earnings",
+          "question": "What could cause earnings to miss expectations?",
+          "severity": "HIGH",
+          "status": "TESTED",
+          "evidence": [],
+          "findings": [
+            {
+              "finding": "Forecast evidence has sufficient confidence.",
+              "impact": "POSITIVE",
+              "confidence": "MEDIUM",
+              "evidence": [],
+              "recorded_at": "2026-08-08T23:02:45.202751+00:00"
+            }
+          ],
+          "thesis_impact": "POSITIVE",
+          "confidence": "MEDIUM"
+        },
+        {
+          "area": "valuation",
+          "question": "What assumptions are required to justify the valuation?",
+          "severity": "HIGH",
+          "status": "TESTED",
+          "evidence": [],
+          "findings": [
+            {
+              "finding": "Current valuation does not present a material negative expected return.",
+              "impact": "POSITIVE",
+              "confidence": "MEDIUM",
+              "evidence": [],
+              "recorded_at": "2026-08-08T23:02:45.202743+00:00"
+            }
+          ],
+          "thesis_impact": "POSITIVE",
+          "confidence": "MEDIUM"
+        },
+        {
+          "area": "competition",
+          "question": "Could competitors or substitutes weaken the company's position?",
+          "severity": "HIGH",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "margins",
+          "question": "What could cause margins to deteriorate?",
+          "severity": "HIGH",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "capital_allocation",
+          "question": "Could management allocate capital poorly?",
+          "severity": "MEDIUM",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "balance_sheet",
+          "question": "Could balance-sheet risks become material?",
+          "severity": "MEDIUM",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "management",
+          "question": "What management or execution failures could invalidate the thesis?",
+          "severity": "MEDIUM",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "regulation",
+          "question": "Could regulation or legal action impair the thesis?",
+          "severity": "HIGH",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "macro",
+          "question": "Which macro variables could materially affect the investment?",
+          "severity": "MEDIUM",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "industry",
+          "question": "Could structural industry changes weaken the investment case?",
+          "severity": "HIGH",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "geopolitical",
+          "question": "Could geopolitical developments materially affect the company?",
+          "severity": "HIGH",
+          "status": "UNTESTED",
+          "evidence": [],
+          "findings": [],
+          "thesis_impact": null,
+          "confidence": null
+        },
+        {
+          "area": "execution",
+          "question": "What operational failures could cause the thesis to fail?",
+          "severity": "HIGH",
+          "status": "TESTED",
+          "evidence": [],
+          "findings": [
+            {
+              "finding": "No unresolved financial-data discrepancies remain.",
+              "impact": "POSITIVE",
+              "confidence": "HIGH",
+              "evidence": [],
+              "recorded_at": "2026-08-08T23:02:45.202757+00:00"
+            }
+          ],
+          "thesis_impact": "POSITIVE",
+          "confidence": "HIGH"
+        },
+        {
+          "area": "catalyst_failure",
+          "question": "Which expected catalysts could fail, be delayed, or already be priced in?",
+          "severity": "HIGH",
+          "status": "TESTED",
+          "evidence": [],
+          "findings": [
+            {
+              "finding": "Positive catalysts are at least as significant as identified negative catalysts.",
+              "impact": "POSITIVE",
+              "confidence": "MEDIUM",
+              "evidence": [],
+              "recorded_at": "2026-08-08T23:02:45.202754+00:00"
+            }
+          ],
+          "thesis_impact": "POSITIVE",
+          "confidence": "MEDIUM"
+        },
+        {
+          "area": "consensus",
+          "question": "What is the market consensus assuming that could prove incorrect?",
+          "severity": "HIGH",
+          "status": "TESTED",
+          "evidence": [],
+          "findings": [
+            {
+              "finding": "The thesis does not currently depend on exceptionally high consensus earnings growth.",
+              "impact": "POSITIVE",
+              "confidence": "LOW",
+              "evidence": [],
+              "recorded_at": "2026-08-08T23:02:45.202759+00:00"
+            },
+            {
+              "finding": "News evidence remains limited and should not be heavily relied upon.",
+              "impact": "MATERIAL_NEGATIVE",
+              "confidence": "LOW",
+              "evidence": [],
+              "recorded_at": "2026-08-08T23:02:45.202763+00:00"
+            }
+          ],
+          "thesis_impact": "MATERIAL_NEGATIVE",
+          "confidence": "LOW"
+        }
+      ],
+      "overall_challenge_result": "THESIS_WEAKENED",
+      "thesis_survives": false,
+      "catalysts": {
+        "status": "ERROR",
+        "error": "CatalystEngine does not expose analyse() or research().",
+        "catalysts": [],
+        "validated_catalysts": []
+      },
+      "news": {
+        "status": "ERROR",
+        "error": "NewsResearchEngine does not expose analyse() or research()."
+      },
+      "data_quality": {},
+      "completed_at": "2026-08-08T23:02:45.202768+00:00",
+      "summary": {
+        "ticker": "NVDA",
+        "status": "COMPLETE",
+        "challenge_count": 15,
+        "tested": 6,
+        "material_negative": 1,
+        "result": "THESIS_WEAKENED",
+        "thesis_survives": false
+      },
+      "investigation": {
+        "ticker": "NVDA",
+        "created_at": "2026-08-08T23:02:45.202735+00:00",
+        "status": "COMPLETE",
+        "positive_thesis": "Investment case supported by the fundamental analysis, valuation analysis and available research evidence.",
+        "fundamentals": {
+          "ticker": "NVDA",
+          "validation": {
+            "overall_confidence": "HIGH",
+            "summary": {
+              "metrics_checked": 10,
+              "agreements": 5,
+              "definition_differences": 1,
+              "discrepancies": 0,
+              "insufficient_data": 4,
+              "overall_confidence": "HIGH"
+            }
+          },
+          "financials": {
+            "revenue": 215938000000.0,
+            "net_income": 120067000000.0,
+            "operating_income": 130387000000.0,
+            "gross_profit": 153463000000.0,
+            "equity": 157293000000.0,
+            "operating_cash_flow": 102718000000.0,
+            "free_cash_flow": 96676000000.0,
+            "cash": 10605000000.0,
+            "debt": 8468000000.0,
+            "net_debt": -2137000000.0,
+            "shares_outstanding": 24304000000.0
+          },
+          "profitability": {
+            "gross_margin": 0.7106808435754708,
+            "operating_margin": 0.6038168363141272,
+            "net_margin": 0.5560253406070261,
+            "fcf_margin": 0.44770258129648327,
+            "roe": 0.7633333969089534,
+            "roic": 0.8403606692619041
+          },
+          "growth": {
+            "historical_revenue_cagr": 1.0004509499443963,
+            "historical_fcf_cagr": 1.9390518269164572,
+            "historical_revenue": [
+              215938000000.0,
+              130497000000.0,
+              60922000000.0,
+              26974000000.0,
+              null
+            ],
+            "historical_fcf": [
+              96676000000.0,
+              60853000000.0,
+              27021000000.0,
+              3808000000.0
+            ],
+            "forward_revenue_growth": 0.4257,
+            "forward_eps_growth": 0.4329
+          },
+          "balance_sheet": {
+            "debt_to_fcf": 0.0875915428855145,
+            "net_debt_to_fcf": -0.022104762298812527
+          },
+          "analyst_consensus": {
+            "current_year_eps": 8.99574,
+            "next_year_eps": 12.89043,
+            "forward_revenue_growth": 0.4257,
+            "forward_eps_growth": 0.4329
+          },
+          "forecast_validation": {
+            "overall_confidence": "MEDIUM",
+            "periods_checked": 4,
+            "consistent_periods": 3,
+            "large_differences": 0,
+            "comparisons": [
+              {
+                "period": "0q",
+                "revenue_growth": 0.96489996,
+                "eps_growth": 0.9838,
+                "growth_difference": 0.018900040000000007,
+                "status": "CONSISTENT",
+                "revenue_analysts": 42.0,
+                "eps_analysts": 40.0
+              },
+              {
+                "period": "+1q",
+                "revenue_growth": 0.80910003,
+                "eps_growth": 0.8095,
+                "growth_difference": 0.00039997000000002725,
+                "status": "CONSISTENT",
+                "revenue_analysts": 40.0,
+                "eps_analysts": 40.0
+              },
+              {
+                "period": "0y",
+                "revenue_growth": 0.8239,
+                "eps_growth": 0.88589996,
+                "growth_difference": 0.061999960000000076,
+                "status": "MODERATE_DIFFERENCE",
+                "revenue_analysts": 53.0,
+                "eps_analysts": 50.0
+              },
+              {
+                "period": "+1y",
+                "revenue_growth": 0.4257,
+                "eps_growth": 0.4329,
+                "growth_difference": 0.007199999999999984,
+                "status": "CONSISTENT",
+                "revenue_analysts": 55.0,
+                "eps_analysts": 50.0
+              }
+            ]
+          },
+          "provenance": {
+            "Revenue": {
+              "value": 215938000000.0,
+              "provenance": {
+                "name": "SEC EDGAR",
+                "type": "SEC",
+                "retrieved_at": "2026-08-08T23:02:44.223474+00:00",
+                "period": "Latest validated period",
+                "field": "Revenue",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            },
+            "Net Income": {
+              "value": 120067000000.0,
+              "provenance": {
+                "name": "SEC EDGAR",
+                "type": "SEC",
+                "retrieved_at": "2026-08-08T23:02:44.223502+00:00",
+                "period": "Latest reported period",
+                "field": "Net Income",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            },
+            "Operating Income": {
+              "value": 130387000000.0,
+              "provenance": {
+                "name": "SEC EDGAR",
+                "type": "SEC",
+                "retrieved_at": "2026-08-08T23:02:44.223510+00:00",
+                "period": "Latest reported period",
+                "field": "Operating Income",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            },
+            "Operating Cash Flow": {
+              "value": 102718000000.0,
+              "provenance": {
+                "name": "SEC EDGAR",
+                "type": "SEC",
+                "retrieved_at": "2026-08-08T23:02:44.223516+00:00",
+                "period": "Latest reported period",
+                "field": "Operating Cash Flow",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            },
+            "Free Cash Flow": {
+              "value": 96676000000.0,
+              "provenance": {
+                "name": "SEC EDGAR",
+                "type": "SEC",
+                "retrieved_at": "2026-08-08T23:02:44.223521+00:00",
+                "period": "Latest reported period",
+                "field": "Operating Cash Flow - Capital Expenditure",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            },
+            "Cash": {
+              "value": 10605000000.0,
+              "provenance": {
+                "name": "SEC EDGAR",
+                "type": "SEC",
+                "retrieved_at": "2026-08-08T23:02:44.223526+00:00",
+                "period": "Latest reported period",
+                "field": "Cash and Cash Equivalents",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            },
+            "Debt": {
+              "value": 8468000000.0,
+              "provenance": {
+                "name": "SEC EDGAR",
+                "type": "SEC",
+                "retrieved_at": "2026-08-08T23:02:44.223531+00:00",
+                "period": "Latest reported period",
+                "field": "Debt",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "SEC EDGAR",
+                "type": "PRIMARY",
+                "website": "https://www.sec.gov/edgar.shtml",
+                "description": "Primary regulatory filings and company financial data."
+              }
+            },
+            "Net Debt": {
+              "value": -2137000000.0,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223537+00:00",
+                "period": "Latest validated period",
+                "field": "Debt - Cash",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "Gross Margin": {
+              "value": 0.7106808435754708,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223546+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Gross Profit / Revenue",
+                "inputs": {
+                  "gross_profit": 153463000000.0,
+                  "revenue": 215938000000.0
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "Operating Margin": {
+              "value": 0.6038168363141272,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223552+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Operating Income / Revenue",
+                "inputs": {
+                  "operating_income": 130387000000.0,
+                  "revenue": 215938000000.0
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "Net Margin": {
+              "value": 0.5560253406070261,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223557+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Net Income / Revenue",
+                "inputs": {
+                  "net_income": 120067000000.0,
+                  "revenue": 215938000000.0
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "FCF Margin": {
+              "value": 0.44770258129648327,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223562+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Free Cash Flow / Revenue",
+                "inputs": {
+                  "free_cash_flow": 96676000000.0,
+                  "revenue": 215938000000.0
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "ROE": {
+              "value": 0.7633333969089534,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223566+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Net Income / Equity",
+                "inputs": {
+                  "net_income": 120067000000.0,
+                  "equity": 157293000000.0
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "ROIC": {
+              "value": 0.8403606692619041,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223572+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Operating Income / (Equity + Debt - Cash)",
+                "inputs": {
+                  "operating_income": 130387000000.0,
+                  "equity": 157293000000.0,
+                  "debt": 8468000000.0,
+                  "cash": 10605000000.0
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "Historical Revenue CAGR": {
+              "value": 1.0004509499443963,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223576+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Compound annual growth rate of historical reported revenue",
+                "inputs": {
+                  "historical_revenue": [
+                    215938000000.0,
+                    130497000000.0,
+                    60922000000.0,
+                    26974000000.0,
+                    null
+                  ]
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "Historical FCF CAGR": {
+              "value": 1.9390518269164572,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223580+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Compound annual growth rate of historical free cash flow",
+                "inputs": {
+                  "historical_free_cash_flow": [
+                    96676000000.0,
+                    60853000000.0,
+                    27021000000.0,
+                    3808000000.0
+                  ]
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "Debt / FCF": {
+              "value": 0.0875915428855145,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223585+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Debt / Free Cash Flow",
+                "inputs": {
+                  "debt": 8468000000.0,
+                  "free_cash_flow": 96676000000.0
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "Net Debt / FCF": {
+              "value": -0.022104762298812527,
+              "provenance": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "retrieved_at": "2026-08-08T23:02:44.223590+00:00",
+                "field": null,
+                "period": null
+              },
+              "calculation": {
+                "method": "Net Debt / Free Cash Flow",
+                "inputs": {
+                  "net_debt": -2137000000.0,
+                  "free_cash_flow": 96676000000.0
+                },
+                "sources": [
+                  "SEC EDGAR"
+                ],
+                "source_registry": [
+                  {
+                    "name": "SEC EDGAR",
+                    "type": "PRIMARY",
+                    "website": "https://www.sec.gov/edgar.shtml",
+                    "description": "Primary regulatory filings and company financial data."
+                  }
+                ]
+              },
+              "status": "CALCULATED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Trading Bot",
+                "type": "CALCULATION",
+                "website": null,
+                "description": "Metric calculated by the investment analysis system."
+              }
+            },
+            "Forward Revenue Growth": {
+              "value": 0.4257,
+              "provenance": {
+                "name": "Yahoo Finance",
+                "type": "ANALYST_CONSENSUS",
+                "retrieved_at": "2026-08-08T23:02:44.223594+00:00",
+                "period": "Next fiscal year",
+                "field": "Revenue Growth",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Yahoo Finance",
+                "type": "SECONDARY",
+                "website": "https://finance.yahoo.com/",
+                "description": "Market data, financial statements and analyst consensus estimates."
+              }
+            },
+            "Forward EPS Growth": {
+              "value": 0.4329,
+              "provenance": {
+                "name": "Yahoo Finance",
+                "type": "ANALYST_CONSENSUS",
+                "retrieved_at": "2026-08-08T23:02:44.223599+00:00",
+                "period": "Next fiscal year",
+                "field": "EPS Growth",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Yahoo Finance",
+                "type": "SECONDARY",
+                "website": "https://finance.yahoo.com/",
+                "description": "Market data, financial statements and analyst consensus estimates."
+              }
+            },
+            "Current Year EPS": {
+              "value": 8.99574,
+              "provenance": {
+                "name": "Yahoo Finance",
+                "type": "ANALYST_CONSENSUS",
+                "retrieved_at": "2026-08-08T23:02:44.223604+00:00",
+                "period": "Current fiscal year",
+                "field": "EPS Estimate",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Yahoo Finance",
+                "type": "SECONDARY",
+                "website": "https://finance.yahoo.com/",
+                "description": "Market data, financial statements and analyst consensus estimates."
+              }
+            },
+            "Next Year EPS": {
+              "value": 12.89043,
+              "provenance": {
+                "name": "Yahoo Finance",
+                "type": "ANALYST_CONSENSUS",
+                "retrieved_at": "2026-08-08T23:02:44.223608+00:00",
+                "period": "Next fiscal year",
+                "field": "EPS Estimate",
+                "url": null
+              },
+              "calculation": null,
+              "status": "REPORTED",
+              "confidence": "HIGH",
+              "freshness": {
+                "status": "MISSING_TIMESTAMP",
+                "age_hours": null,
+                "source": "YAHOO"
+              },
+              "source": {
+                "name": "Yahoo Finance",
+                "type": "SECONDARY",
+                "website": "https://finance.yahoo.com/",
+                "description": "Market data, financial statements and analyst consensus estimates."
+              }
+            }
+          },
+          "fundamental_score": 98.0,
+          "fundamental_quality": "STRONG",
+          "key_drivers": [
+            "strong FCF margin",
+            "high ROIC",
+            "net cash position",
+            "strong forward revenue growth",
+            "strong forward EPS growth"
+          ]
+        },
+        "valuation": {
+          "Ticker": "NVDA",
+          "Company": "NVIDIA Corporation",
+          "Status": "COMPLETE",
+          "Analysed At": "2026-08-08T23:02:45.201628+00:00",
+          "Current Price": 223.96,
+          "Market Capitalisation": 5424535306240.0,
+          "Financial Data Validation": {
+            "Overall Confidence": "HIGH",
+            "Summary": {
+              "metrics_checked": 10,
+              "agreements": 5,
+              "definition_differences": 1,
+              "discrepancies": 0,
+              "insufficient_data": 4,
+              "overall_confidence": "HIGH"
+            },
+            "Selected Financials": {
+              "net_income": 120067000000.0,
+              "operating_income": 130387000000.0,
+              "gross_profit": 153463000000.0,
+              "equity": 157293000000.0,
+              "revenue": 215938000000.0,
+              "operating_cash_flow": 102718000000.0,
+              "free_cash_flow": 96676000000.0,
+              "cash_and_equivalents": 10605000000.0,
+              "total_debt": 8468000000.0,
+              "net_debt": -2137000000.0,
+              "shares_outstanding": 24304000000.0
+            }
+          },
+          "Current Revenue": 215938000000.0,
+          "Current Free Cash Flow": 96676000000.0,
+          "Current FCF Margin": 0.44770258129648327,
+          "Target FCF Margin": 0.4184942639216502,
+          "Historical Financials": [
+            {
+              "Period": "2026-01-31 00:00:00",
+              "Revenue": 215938000000.0,
+              "Operating Cash Flow": 102718000000.0,
+              "Capital Expenditure": -6042000000.0,
+              "Free Cash Flow": 96676000000.0
+            },
+            {
+              "Period": "2025-01-31 00:00:00",
+              "Revenue": 130497000000.0,
+              "Operating Cash Flow": 64089000000.0,
+              "Capital Expenditure": -3236000000.0,
+              "Free Cash Flow": 60853000000.0
+            },
+            {
+              "Period": "2024-01-31 00:00:00",
+              "Revenue": 60922000000.0,
+              "Operating Cash Flow": 28090000000.0,
+              "Capital Expenditure": -1069000000.0,
+              "Free Cash Flow": 27021000000.0
+            },
+            {
+              "Period": "2023-01-31 00:00:00",
+              "Revenue": 26974000000.0,
+              "Operating Cash Flow": 5641000000.0,
+              "Capital Expenditure": -1833000000.0,
+              "Free Cash Flow": 3808000000.0
+            }
+          ],
+          "Historical Revenue Growth": 1.0004509499443963,
+          "Historical FCF Growth": 1.9390518269164572,
+          "Revenue Growth Assumption": 0.6,
+          "Forecast Validation": {
+            "Overall Confidence": "MEDIUM",
+            "Periods Checked": 4,
+            "Consistent Periods": 3,
+            "Large Differences": 0,
+            "Comparisons": [
+              {
+                "period": "0q",
+                "revenue_growth": 0.96489996,
+                "eps_growth": 0.9838,
+                "growth_difference": 0.018900040000000007,
+                "status": "CONSISTENT",
+                "revenue_analysts": 42.0,
+                "eps_analysts": 40.0
+              },
+              {
+                "period": "+1q",
+                "revenue_growth": 0.80910003,
+                "eps_growth": 0.8095,
+                "growth_difference": 0.00039997000000002725,
+                "status": "CONSISTENT",
+                "revenue_analysts": 40.0,
+                "eps_analysts": 40.0
+              },
+              {
+                "period": "0y",
+                "revenue_growth": 0.8239,
+                "eps_growth": 0.88589996,
+                "growth_difference": 0.061999960000000076,
+                "status": "MODERATE_DIFFERENCE",
+                "revenue_analysts": 53.0,
+                "eps_analysts": 50.0
+              },
+              {
+                "period": "+1y",
+                "revenue_growth": 0.4257,
+                "eps_growth": 0.4329,
+                "growth_difference": 0.007199999999999984,
+                "status": "CONSISTENT",
+                "revenue_analysts": 55.0,
+                "eps_analysts": 50.0
+              }
+            ]
+          },
+          "Earnings Estimates": {
+            "Current Year EPS": 8.99574,
+            "Next Year EPS": 12.89043,
+            "Current Year EPS Growth": 0.88589996,
+            "Next Year EPS Growth": 0.4329,
+            "Current Year Analysts": 50.0,
+            "Next Year Analysts": 50.0
+          },
+          "Growth Assumption Sources": {
+            "Analyst Forward Revenue Growth": 0.4257,
+            "Analyst Current Year Revenue": 393852732100.0,
+            "Analyst Next Year Revenue": 561509439870.0,
+            "Analyst Current Year Count": 53.0,
+            "Analyst Next Year Count": 55.0,
+            "Yahoo Revenue Growth": 0.852,
+            "Historical Revenue CAGR": 1.0004509499443963,
+            "Method": "60% analyst forward growth + 25% Yahoo growth + 15% historical CAGR"
+          },
+          "WACC": 0.10999999999999999,
+          "Terminal Growth": 0.03,
+          "Forecast Years": 5,
+          "Shares Outstanding": 24304000000.0,
+          "Total Debt": 8468000000.0,
+          "Cash": 10605000000.0,
+          "Net Debt": -2137000000.0,
+          "Intrinsic Value": {
+            "Bear": 145.13221280557977,
+            "Base": 181.29555617947466,
+            "Bull": 224.1001232480977
+          },
+          "Scenarios": {
+            "Bear": {
+              "Status": "COMPLETE",
+              "Forecast Present Values": [
+                {
+                  "Year": 1,
+                  "Free Cash Flow": 163380861967.82715,
+                  "Discount Factor": 0.900900900900901,
+                  "Present Value": 147189965736.78125
+                },
+                {
+                  "Year": 2,
+                  "Free Cash Flow": 217592333274.79965,
+                  "Discount Factor": 0.811622433244055,
+                  "Present Value": 176602818987.74426
+                },
+                {
+                  "Year": 3,
+                  "Free Cash Flow": 271291327344.50586,
+                  "Discount Factor": 0.7311913813009505,
+                  "Present Value": 198365880375.99756
+                },
+                {
+                  "Year": 4,
+                  "Free Cash Flow": 315202391000.1108,
+                  "Discount Factor": 0.6587309741450006,
+                  "Present Value": 207633578076.33633
+                },
+                {
+                  "Year": 5,
+                  "Free Cash Flow": 339484756790.5172,
+                  "Discount Factor": 0.5934513280585592,
+                  "Present Value": 201467679772.9694
+                }
+              ],
+              "Terminal Value": 4370866243677.9097,
+              "Terminal Present Value": 2593896377076.9814,
+              "Forecast Cash Flow PV": 931259922949.8289,
+              "Enterprise Value": 3525156300026.8105,
+              "Net Debt": -2137000000.0,
+              "Equity Value": 3527293300026.8105,
+              "Shares Outstanding": 24304000000.0,
+              "Intrinsic Value Per Share": 145.13221280557977,
+              "Terminal Value % of Enterprise Value": 0.7358245014716804,
+              "Scenario": "Bear",
+              "Starting Growth": 0.52,
+              "Target FCF Margin": 0.3784942639216502,
+              "Growth Path": [
+                0.7439,
+                0.37570000000000003,
+                0.289275,
+                0.20285000000000003,
+                0.116425
+              ],
+              "Revenue Forecast": [
+                {
+                  "Year": 1,
+                  "Growth": 0.7439,
+                  "Revenue": 376574278200.0
+                },
+                {
+                  "Year": 2,
+                  "Growth": 0.37570000000000003,
+                  "Revenue": 518053234519.74005
+                },
+                {
+                  "Year": 3,
+                  "Growth": 0.289275,
+                  "Revenue": 667913083935.4379
+                },
+                {
+                  "Year": 4,
+                  "Growth": 0.20285000000000003,
+                  "Revenue": 803399253011.7415
+                },
+                {
+                  "Year": 5,
+                  "Growth": 0.116425,
+                  "Revenue": 896935011043.6334
+                }
+              ],
+              "FCF Forecast": [
+                {
+                  "Year": 1,
+                  "FCF Margin": 0.43386091782151665,
+                  "Free Cash Flow": 163380861967.82715
+                },
+                {
+                  "Year": 2,
+                  "FCF Margin": 0.4200192543465501,
+                  "Free Cash Flow": 217592333274.79965
+                },
+                {
+                  "Year": 3,
+                  "FCF Margin": 0.40617759087158345,
+                  "Free Cash Flow": 271291327344.50586
+                },
+                {
+                  "Year": 4,
+                  "FCF Margin": 0.3923359273966168,
+                  "Free Cash Flow": 315202391000.1108
+                },
+                {
+                  "Year": 5,
+                  "FCF Margin": 0.3784942639216502,
+                  "Free Cash Flow": 339484756790.5172
+                }
+              ],
+              "WACC": 0.10999999999999999,
+              "Terminal Growth": 0.03
+            },
+            "Base": {
+              "Status": "COMPLETE",
+              "Forecast Present Values": [
+                {
+                  "Year": 1,
+                  "Free Cash Flow": 174026621223.23056,
+                  "Discount Factor": 0.900900900900901,
+                  "Present Value": 156780739840.74826
+                },
+                {
+                  "Year": 2,
+                  "Free Cash Flow": 244829595736.4396,
+                  "Discount Factor": 0.811622433244055,
+                  "Present Value": 198709192221.76743
+                },
+                {
+                  "Year": 3,
+                  "Free Cash Flow": 320481755064.9992,
+                  "Discount Factor": 0.7311913813009505,
+                  "Present Value": 234333497167.72968
+                },
+                {
+                  "Year": 4,
+                  "Free Cash Flow": 388159880688.5635,
+                  "Discount Factor": 0.6587309741450006,
+                  "Present Value": 255692936329.98462
+                },
+                {
+                  "Year": 5,
+                  "Free Cash Flow": 432170821958.9393,
+                  "Discount Factor": 0.5934513280585592,
+                  "Present Value": 256472348239.69162
+                }
+              ],
+              "Terminal Value": 5564199332721.344,
+              "Terminal Present Value": 3302081483586.0303,
+              "Forecast Cash Flow PV": 1101988713799.9216,
+              "Enterprise Value": 4404070197385.952,
+              "Net Debt": -2137000000.0,
+              "Equity Value": 4406207197385.952,
+              "Shares Outstanding": 24304000000.0,
+              "Intrinsic Value Per Share": 181.29555617947466,
+              "Terminal Value % of Enterprise Value": 0.7497794847924971,
+              "Scenario": "Base",
+              "Starting Growth": 0.6,
+              "Target FCF Margin": 0.4184942639216502,
+              "Growth Path": [
+                0.8239,
+                0.4257,
+                0.32677500000000004,
+                0.22785,
+                0.128925
+              ],
+              "Revenue Forecast": [
+                {
+                  "Year": 1,
+                  "Growth": 0.8239,
+                  "Revenue": 393849318200.0
+                },
+                {
+                  "Year": 2,
+                  "Growth": 0.4257,
+                  "Revenue": 561510972957.74
+                },
+                {
+                  "Year": 3,
+                  "Growth": 0.32677500000000004,
+                  "Revenue": 744998721146.0055
+                },
+                {
+                  "Year": 4,
+                  "Growth": 0.22785,
+                  "Revenue": 914746679759.1229
+                },
+                {
+                  "Year": 5,
+                  "Growth": 0.128925,
+                  "Revenue": 1032680395447.0677
+                }
+              ],
+              "FCF Forecast": [
+                {
+                  "Year": 1,
+                  "FCF Margin": 0.44186091782151665,
+                  "Free Cash Flow": 174026621223.23056
+                },
+                {
+                  "Year": 2,
+                  "FCF Margin": 0.43601925434655003,
+                  "Free Cash Flow": 244829595736.4396
+                },
+                {
+                  "Year": 3,
+                  "FCF Margin": 0.4301775908715834,
+                  "Free Cash Flow": 320481755064.9992
+                },
+                {
+                  "Year": 4,
+                  "FCF Margin": 0.4243359273966168,
+                  "Free Cash Flow": 388159880688.5635
+                },
+                {
+                  "Year": 5,
+                  "FCF Margin": 0.4184942639216502,
+                  "Free Cash Flow": 432170821958.9393
+                }
+              ],
+              "WACC": 0.10999999999999999,
+              "Terminal Growth": 0.03
+            },
+            "Bull": {
+              "Status": "COMPLETE",
+              "Forecast Present Values": [
+                {
+                  "Year": 1,
+                  "Free Cash Flow": 184948781118.63397,
+                  "Discount Factor": 0.900900900900901,
+                  "Present Value": 166620523530.3009
+                },
+                {
+                  "Year": 2,
+                  "Free Cash Flow": 274238370898.0563,
+                  "Discount Factor": 0.811622433244055,
+                  "Present Value": 222578013877.1661
+                },
+                {
+                  "Year": 3,
+                  "Free Cash Flow": 375923009633.1181,
+                  "Discount Factor": 0.7311913813009505,
+                  "Present Value": 274871664676.45016
+                },
+                {
+                  "Year": 4,
+                  "Free Cash Flow": 473213304239.1697,
+                  "Discount Factor": 0.6587309741450006,
+                  "Present Value": 311720260879.8428
+                },
+                {
+                  "Year": 5,
+                  "Free Cash Flow": 542692189418.66516,
+                  "Discount Factor": 0.5934513280585592,
+                  "Present Value": 322061400537.514
+                }
+              ],
+              "Terminal Value": 6987161938765.314,
+              "Terminal Present Value": 4146540531920.4927,
+              "Forecast Cash Flow PV": 1297851863501.274,
+              "Enterprise Value": 5444392395421.767,
+              "Net Debt": -2137000000.0,
+              "Equity Value": 5446529395421.767,
+              "Shares Outstanding": 24304000000.0,
+              "Intrinsic Value Per Share": 224.1001232480977,
+              "Terminal Value % of Enterprise Value": 0.7616167665297879,
+              "Scenario": "Bull",
+              "Starting Growth": 0.6799999999999999,
+              "Target FCF Margin": 0.45849426392165016,
+              "Growth Path": [
+                0.9038999999999999,
+                0.4757,
+                0.364275,
+                0.25285,
+                0.141425
+              ],
+              "Revenue Forecast": [
+                {
+                  "Year": 1,
+                  "Growth": 0.9038999999999999,
+                  "Revenue": 411124358200.0
+                },
+                {
+                  "Year": 2,
+                  "Growth": 0.4757,
+                  "Revenue": 606696215395.74
+                },
+                {
+                  "Year": 3,
+                  "Growth": 0.364275,
+                  "Revenue": 827700479259.0232
+                },
+                {
+                  "Year": 4,
+                  "Growth": 0.25285,
+                  "Revenue": 1036984545439.6672
+                },
+                {
+                  "Year": 5,
+                  "Growth": 0.141425,
+                  "Revenue": 1183640084778.4722
+                }
+              ],
+              "FCF Forecast": [
+                {
+                  "Year": 1,
+                  "FCF Margin": 0.44986091782151666,
+                  "Free Cash Flow": 184948781118.63397
+                },
+                {
+                  "Year": 2,
+                  "FCF Margin": 0.45201925434655005,
+                  "Free Cash Flow": 274238370898.0563
+                },
+                {
+                  "Year": 3,
+                  "FCF Margin": 0.4541775908715834,
+                  "Free Cash Flow": 375923009633.1181
+                },
+                {
+                  "Year": 4,
+                  "FCF Margin": 0.4563359273966168,
+                  "Free Cash Flow": 473213304239.1697
+                },
+                {
+                  "Year": 5,
+                  "FCF Margin": 0.45849426392165016,
+                  "Free Cash Flow": 542692189418.66516
+                }
+              ],
+              "WACC": 0.10999999999999999,
+              "Terminal Growth": 0.03
+            }
+          },
+          "Expected Return": {
+            "Base": -0.190500284963946,
+            "Annualised": -0.04138694312840352,
+            "Horizon Years": 5
+          },
+          "Terminal Value Contribution": 0.7497794847924971
+        },
+        "expectations": {
+          "forward_revenue_growth": null,
+          "forward_eps_growth": null,
+          "forecast_confidence": "HIGH"
+        },
+        "challenges": [
+          {
+            "area": "growth",
+            "question": "What could cause future growth to disappoint?",
+            "severity": "HIGH",
+            "status": "TESTED",
+            "evidence": [],
+            "findings": [
+              {
+                "finding": "Forward growth assumptions do not appear exceptionally aggressive.",
+                "impact": "POSITIVE",
+                "confidence": "MEDIUM",
+                "evidence": [],
+                "recorded_at": "2026-08-08T23:02:45.202747+00:00"
+              }
+            ],
+            "thesis_impact": "POSITIVE",
+            "confidence": "MEDIUM"
+          },
+          {
+            "area": "earnings",
+            "question": "What could cause earnings to miss expectations?",
+            "severity": "HIGH",
+            "status": "TESTED",
+            "evidence": [],
+            "findings": [
+              {
+                "finding": "Forecast evidence has sufficient confidence.",
+                "impact": "POSITIVE",
+                "confidence": "MEDIUM",
+                "evidence": [],
+                "recorded_at": "2026-08-08T23:02:45.202751+00:00"
+              }
+            ],
+            "thesis_impact": "POSITIVE",
+            "confidence": "MEDIUM"
+          },
+          {
+            "area": "valuation",
+            "question": "What assumptions are required to justify the valuation?",
+            "severity": "HIGH",
+            "status": "TESTED",
+            "evidence": [],
+            "findings": [
+              {
+                "finding": "Current valuation does not present a material negative expected return.",
+                "impact": "POSITIVE",
+                "confidence": "MEDIUM",
+                "evidence": [],
+                "recorded_at": "2026-08-08T23:02:45.202743+00:00"
+              }
+            ],
+            "thesis_impact": "POSITIVE",
+            "confidence": "MEDIUM"
+          },
+          {
+            "area": "competition",
+            "question": "Could competitors or substitutes weaken the company's position?",
+            "severity": "HIGH",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "margins",
+            "question": "What could cause margins to deteriorate?",
+            "severity": "HIGH",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "capital_allocation",
+            "question": "Could management allocate capital poorly?",
+            "severity": "MEDIUM",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "balance_sheet",
+            "question": "Could balance-sheet risks become material?",
+            "severity": "MEDIUM",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "management",
+            "question": "What management or execution failures could invalidate the thesis?",
+            "severity": "MEDIUM",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "regulation",
+            "question": "Could regulation or legal action impair the thesis?",
+            "severity": "HIGH",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "macro",
+            "question": "Which macro variables could materially affect the investment?",
+            "severity": "MEDIUM",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "industry",
+            "question": "Could structural industry changes weaken the investment case?",
+            "severity": "HIGH",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "geopolitical",
+            "question": "Could geopolitical developments materially affect the company?",
+            "severity": "HIGH",
+            "status": "UNTESTED",
+            "evidence": [],
+            "findings": [],
+            "thesis_impact": null,
+            "confidence": null
+          },
+          {
+            "area": "execution",
+            "question": "What operational failures could cause the thesis to fail?",
+            "severity": "HIGH",
+            "status": "TESTED",
+            "evidence": [],
+            "findings": [
+              {
+                "finding": "No unresolved financial-data discrepancies remain.",
+                "impact": "POSITIVE",
+                "confidence": "HIGH",
+                "evidence": [],
+                "recorded_at": "2026-08-08T23:02:45.202757+00:00"
+              }
+            ],
+            "thesis_impact": "POSITIVE",
+            "confidence": "HIGH"
+          },
+          {
+            "area": "catalyst_failure",
+            "question": "Which expected catalysts could fail, be delayed, or already be priced in?",
+            "severity": "HIGH",
+            "status": "TESTED",
+            "evidence": [],
+            "findings": [
+              {
+                "finding": "Positive catalysts are at least as significant as identified negative catalysts.",
+                "impact": "POSITIVE",
+                "confidence": "MEDIUM",
+                "evidence": [],
+                "recorded_at": "2026-08-08T23:02:45.202754+00:00"
+              }
+            ],
+            "thesis_impact": "POSITIVE",
+            "confidence": "MEDIUM"
+          },
+          {
+            "area": "consensus",
+            "question": "What is the market consensus assuming that could prove incorrect?",
+            "severity": "HIGH",
+            "status": "TESTED",
+            "evidence": [],
+            "findings": [
+              {
+                "finding": "The thesis does not currently depend on exceptionally high consensus earnings growth.",
+                "impact": "POSITIVE",
+                "confidence": "LOW",
+                "evidence": [],
+                "recorded_at": "2026-08-08T23:02:45.202759+00:00"
+              },
+              {
+                "finding": "News evidence remains limited and should not be heavily relied upon.",
+                "impact": "MATERIAL_NEGATIVE",
+                "confidence": "LOW",
+                "evidence": [],
+                "recorded_at": "2026-08-08T23:02:45.202763+00:00"
+              }
+            ],
+            "thesis_impact": "MATERIAL_NEGATIVE",
+            "confidence": "LOW"
+          }
+        ],
+        "overall_challenge_result": "THESIS_WEAKENED",
+        "thesis_survives": false,
+        "catalysts": {
+          "status": "ERROR",
+          "error": "CatalystEngine does not expose analyse() or research().",
+          "catalysts": [],
+          "validated_catalysts": []
+        },
+        "news": {
+          "status": "ERROR",
+          "error": "NewsResearchEngine does not expose analyse() or research()."
+        },
+        "data_quality": {},
+        "completed_at": "2026-08-08T23:02:45.202768+00:00"
+      }
+    }
+  },
+  "synthesis": {
+    "ticker": "NVDA",
+    "status": "COMPLETE",
+    "created_at": "2026-08-08T23:02:45.202800+00:00",
+    "investment_case_score": 45.0,
+    "conclusion": "REQUIRES_REVIEW",
+    "fundamental": {
+      "score": 98.0,
+      "conclusion": "Exceptional fundamental quality.",
+      "drivers": []
+    },
+    "valuation": {
+      "score": 30.0,
+      "expected_return": -0.190500284963946,
+      "status": "EXPENSIVE",
+      "conclusion": "Valuation appears materially expensive."
+    },
+    "catalysts": {
+      "positive_score": 0.0,
+      "negative_score": 0.0,
+      "net_score": 0.0,
+      "conclusion": "Catalyst balance is mixed."
+    },
+    "thesis_challenge": {
+      "result": "THESIS_WEAKENED",
+      "score": 20,
+      "challenge_count": 15.0,
+      "material_negative": 1.0,
+      "conclusion": "The investment thesis is materially weakened by adversarial review."
+    },
+    "data_quality": {
+      "confidence": "HIGH",
+      "score": 85,
+      "unresolved_discrepancies": 0.0,
+      "conclusion": "Data quality is strong."
+    },
+    "bull_case": [
+      "Exceptional fundamental quality."
+    ],
+    "bear_case": [
+      "Valuation appears materially expensive.",
+      "The investment thesis is materially weakened by adversarial review."
+    ],
+    "what_would_change_our_mind": [
+      "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+      "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+      "Additional material negative findings from adversarial research would weaken the thesis."
+    ]
+  },
+  "audit": {
+    "status": "REVIEW",
+    "audited_at": "2026-08-08T23:02:45.202817+00:00",
+    "finding_count": 1,
+    "critical": 0,
+    "high": 1,
+    "medium": 0,
+    "findings": [
+      {
+        "severity": "HIGH",
+        "type": "MISSING_DATA_QUALITY",
+        "field": "data_quality",
+        "message": "No data-quality assessment exists."
+      }
+    ]
+  }
+}

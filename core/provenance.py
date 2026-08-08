@@ -9,7 +9,6 @@ class Provenance:
 
     @staticmethod
     def add_freshness(
-        self,
         provenance,
     ):
 
@@ -278,4 +277,11 @@ class ProvenanceBuilder:
 
     def build(self):
 
-        return self.fields
+        return {
+            name:
+                Provenance.add_freshness(
+                    metric
+                )
+            for name, metric
+            in self.fields.items()
+        }

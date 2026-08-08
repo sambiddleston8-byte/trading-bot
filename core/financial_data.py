@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import yfinance as yf
 
 from core.company_context import CompanyContext
@@ -169,6 +170,12 @@ class FinancialDataEngine:
 
             sec_source = SECSource()
 
+            retrieval_time = (
+                datetime.now(
+                    timezone.utc
+                ).isoformat()
+            )
+
             yahoo_data = yahoo_source.fetch(
                 symbol
             )
@@ -176,6 +183,22 @@ class FinancialDataEngine:
             sec_data = sec_source.fetch_for_symbol(
                 symbol
             )
+
+            if isinstance(
+                yahoo_data,
+                dict,
+            ):
+                yahoo_data[
+                    "_retrieved_at"
+                ] = retrieval_time
+
+            if isinstance(
+                sec_data,
+                dict,
+            ):
+                sec_data[
+                    "_retrieved_at"
+                ] = retrieval_time
 
             validated_financial_data = (
                 ValidatedFinancialData(
