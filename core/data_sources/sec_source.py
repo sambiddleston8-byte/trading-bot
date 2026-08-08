@@ -338,6 +338,44 @@ class SECSource:
             },
         }
 
+    def resolve_cik(self, symbol):
+
+        symbol = symbol.upper().strip()
+
+        url = "https://www.sec.gov/files/company_tickers.json"
+
+        response = requests.get(
+            url,
+            headers=self.headers,
+            timeout=30,
+        )
+
+        response.raise_for_status()
+
+        companies = response.json()
+
+        for item in companies.values():
+
+            ticker = str(
+                item.get("ticker", "")
+            ).upper().strip()
+
+            if ticker == symbol:
+
+                return str(
+                    item["cik_str"]
+                ).zfill(10)
+
+        raise ValueError(
+            f"Could not resolve SEC CIK for {symbol}"
+        )
+
+    def fetch_for_symbol(self, symbol):
+
+        cik = self.resolve_cik(symbol)
+
+        return self.fetch(cik)
+
     def fetch(self, cik):
 
         company_facts = self.fetch_company_facts(

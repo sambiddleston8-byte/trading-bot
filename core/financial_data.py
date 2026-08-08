@@ -1,6 +1,9 @@
 import yfinance as yf
 
 from core.company_context import CompanyContext
+from core.data_sources.yahoo_source import YahooSource
+from core.data_sources.sec_source import SECSource
+from core.validation.validated_financial_data import ValidatedFinancialData
 
 
 class FinancialDataEngine:
@@ -156,6 +159,41 @@ class FinancialDataEngine:
         symbol,
     ):
 
+        symbol = symbol.upper().strip()
+
+        validated_financial_data = None
+
+        try:
+
+            yahoo_source = YahooSource()
+
+            sec_source = SECSource()
+
+            yahoo_data = yahoo_source.fetch(
+                symbol
+            )
+
+            sec_data = sec_source.fetch_for_symbol(
+                symbol
+            )
+
+            validated_financial_data = (
+                ValidatedFinancialData(
+                    yahoo_data,
+                    sec_data,
+                ).build(
+                    symbol
+                )
+            )
+
+        except Exception as error:
+
+            validated_financial_data = {
+                "ticker": symbol,
+                "status": "VALIDATION_ERROR",
+                "error": str(error),
+            }
+
         return CompanyContext(
 
             symbol=symbol,
@@ -180,11 +218,10 @@ class FinancialDataEngine:
                 symbol
             ),
 
-        )
+            validated_financial_data=
+                validated_financial_data,
 
-    # ============================================================
-    # BUSINESS QUALITY
-    # ============================================================
+        )
 
     def get_revenue(
         self,

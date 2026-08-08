@@ -17,3 +17,5 @@ class CompanyContext:
     history: object
 
     news: list | None = None
+
+    validated_financial_data: dict | None = None

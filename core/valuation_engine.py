@@ -5,6 +5,11 @@ from datetime import datetime, timezone
 
 import yfinance as yf
 
+from core.financial_data import FinancialDataEngine
+from core.data_sources.analyst_source import AnalystSource
+from core.data_sources.earnings_source import EarningsSource
+from core.validation.forecast_validator import ForecastValidator
+
 
 class ValuationEngine:
 
@@ -26,9 +31,9 @@ class ValuationEngine:
             exist_ok=True,
         )
 
-    # ============================================================
+    # ========================================================
     # TIME
-    # ============================================================
+    # ========================================================
 
     def utc_now(self):
 
@@ -36,9 +41,9 @@ class ValuationEngine:
             timezone.utc
         ).isoformat()
 
-    # ============================================================
+    # ========================================================
     # SAFE FLOAT
-    # ============================================================
+    # ========================================================
 
     def safe_float(
         self,
@@ -68,9 +73,9 @@ class ValuationEngine:
 
             return default
 
-    # ============================================================
+    # ========================================================
     # COMPANY DATA
-    # ============================================================
+    # ========================================================
 
     def get_ticker(
         self,
@@ -81,10 +86,6 @@ class ValuationEngine:
             symbol
         )
 
-    # ============================================================
-    # COMPANY INFO
-    # ============================================================
-
     def get_info(
         self,
         symbol,
@@ -92,11 +93,9 @@ class ValuationEngine:
 
         try:
 
-            ticker = self.get_ticker(
+            return self.get_ticker(
                 symbol
-            )
-
-            return ticker.info
+            ).info
 
         except Exception as error:
 
@@ -106,9 +105,9 @@ class ValuationEngine:
 
             return {}
 
-    # ============================================================
-    # FINANCIAL STATEMENTS
-    # ============================================================
+    # ========================================================
+    # HISTORICAL YAHOO DATA
+    # ========================================================
 
     def get_income_statement(
         self,
@@ -117,16 +116,13 @@ class ValuationEngine:
 
         try:
 
-            ticker = self.get_ticker(
-                symbol
+            statement = (
+                self.get_ticker(
+                    symbol
+                ).income_stmt
             )
 
-            statement = ticker.income_stmt
-
-            if statement is None:
-                return None
-
-            if statement.empty:
+            if statement is None or statement.empty:
                 return None
 
             return statement
@@ -139,8 +135,6 @@ class ValuationEngine:
 
             return None
 
-    # ============================================================
-
     def get_cash_flow(
         self,
         symbol,
@@ -148,16 +142,13 @@ class ValuationEngine:
 
         try:
 
-            ticker = self.get_ticker(
-                symbol
+            cash_flow = (
+                self.get_ticker(
+                    symbol
+                ).cashflow
             )
 
-            cash_flow = ticker.cashflow
-
-            if cash_flow is None:
-                return None
-
-            if cash_flow.empty:
+            if cash_flow is None or cash_flow.empty:
                 return None
 
             return cash_flow
@@ -170,9 +161,9 @@ class ValuationEngine:
 
             return None
 
-    # ============================================================
+    # ========================================================
     # FIND FINANCIAL LINE
-    # ============================================================
+    # ========================================================
 
     def find_line(
         self,
@@ -186,14 +177,13 @@ class ValuationEngine:
         for name in names:
 
             if name in statement.index:
-
                 return statement.loc[name]
 
         return None
 
-    # ============================================================
-    # EXTRACT ANNUAL FINANCIAL DATA
-    # ============================================================
+    # ========================================================
+    # ANNUAL YAHOO FINANCIAL DATA
+    # ========================================================
 
     def get_annual_financials(
         self,
@@ -266,8 +256,6 @@ class ValuationEngine:
                 and capex is not None
             ):
 
-                # Yahoo generally reports capital expenditure
-                # as a negative cash flow.
                 fcf = (
                     operating_cash
                     + capex
@@ -294,9 +282,9 @@ class ValuationEngine:
 
         return periods
 
-    # ============================================================
-    # HISTORICAL REVENUE GROWTH
-    # ============================================================
+    # ========================================================
+    # GROWTH
+    # ========================================================
 
     def calculate_revenue_growth(
         self,
@@ -304,16 +292,12 @@ class ValuationEngine:
     ):
 
         usable = [
-
             item
-
             for item in historical_financials
-
             if (
                 item.get("Revenue") is not None
                 and item.get("Revenue") > 0
             )
-
         ]
 
         if len(usable) < 2:
@@ -327,36 +311,20 @@ class ValuationEngine:
 
         first = usable[0]["Revenue"]
         last = usable[-1]["Revenue"]
-
         years = len(usable) - 1
 
-        if (
-            first <= 0
-            or last <= 0
-            or years <= 0
-        ):
-
+        if first <= 0 or last <= 0 or years <= 0:
             return None
 
-        try:
-
-            return (
-                (
-                    last / first
-                )
-                ** (
-                    1 / years
-                )
-                - 1
+        return (
+            (
+                last / first
             )
-
-        except Exception:
-
-            return None
-
-    # ============================================================
-    # HISTORICAL FCF GROWTH
-    # ============================================================
+            ** (
+                1 / years
+            )
+            - 1
+        )
 
     def calculate_fcf_growth(
         self,
@@ -364,16 +332,12 @@ class ValuationEngine:
     ):
 
         usable = [
-
             item
-
             for item in historical_financials
-
             if (
                 item.get("Free Cash Flow") is not None
                 and item.get("Free Cash Flow") > 0
             )
-
         ]
 
         if len(usable) < 2:
@@ -387,89 +351,122 @@ class ValuationEngine:
 
         first = usable[0]["Free Cash Flow"]
         last = usable[-1]["Free Cash Flow"]
-
         years = len(usable) - 1
 
-        if (
-            first <= 0
-            or last <= 0
-            or years <= 0
-        ):
-
+        if first <= 0 or last <= 0 or years <= 0:
             return None
+
+        return (
+            (
+                last / first
+            )
+            ** (
+                1 / years
+            )
+            - 1
+        )
+
+    # ========================================================
+    # ASSUMPTIONS
+    # ========================================================
+
+    def get_analyst_revenue_growth(
+        self,
+        symbol,
+    ):
 
         try:
 
-            return (
-                (
-                    last / first
+            data = (
+                AnalystSource()
+                .fetch(symbol)
+            )
+
+            estimates = (
+                data.get(
+                    "revenue_estimates",
+                    {},
                 )
-                ** (
-                    1 / years
+            )
+
+            current_year = estimates.get(
+                "0y",
+                {},
+            )
+
+            next_year = estimates.get(
+                "+1y",
+                {},
+            )
+
+            current_growth = self.safe_float(
+                current_year.get(
+                    "growth"
                 )
-                - 1
             )
 
-        except Exception:
-
-            return None
-
-    # ============================================================
-    # LATEST FINANCIAL PERIOD
-    # ============================================================
-
-    def get_latest_financial_period(
-        self,
-        historical_financials,
-    ):
-
-        usable = [
-
-            item
-
-            for item in historical_financials
-
-            if item.get("Revenue") is not None
-
-        ]
-
-        if not usable:
-            return None
-
-        return usable[0]
-
-    # ============================================================
-    # CURRENT FCF
-    # ============================================================
-
-    def get_current_fcf(
-        self,
-        historical_financials,
-    ):
-
-        latest = (
-            self.get_latest_financial_period(
-                historical_financials
+            next_growth = self.safe_float(
+                next_year.get(
+                    "growth"
+                )
             )
-        )
 
-        if latest is None:
-            return None
+            return {
 
-        return self.safe_float(
-            latest.get(
-                "Free Cash Flow"
+                "revenue_estimates":
+                    estimates,
+
+                "current_year": current_growth,
+
+                "next_year": next_growth,
+
+                "current_year_revenue":
+                    self.safe_float(
+                        current_year.get(
+                            "avg"
+                        )
+                    ),
+
+                "next_year_revenue":
+                    self.safe_float(
+                        next_year.get(
+                            "avg"
+                        )
+                    ),
+
+                "current_year_analysts":
+                    self.safe_float(
+                        current_year.get(
+                            "numberOfAnalysts"
+                        )
+                    ),
+
+                "next_year_analysts":
+                    self.safe_float(
+                        next_year.get(
+                            "numberOfAnalysts"
+                        )
+                    ),
+
+            }
+
+        except Exception as error:
+
+            print(
+                f"{symbol} analyst estimates failed: {error}"
             )
-        )
 
-    # ============================================================
+            return {}
+
+    # ========================================================
     # REVENUE GROWTH ASSUMPTION
-    # ============================================================
+    # ========================================================
 
     def determine_revenue_growth(
         self,
         info,
         historical_revenue_growth,
+        analyst_growth=None,
     ):
 
         yahoo_growth = self.safe_float(
@@ -478,7 +475,16 @@ class ValuationEngine:
             )
         )
 
+        analyst_growth = self.safe_float(
+            analyst_growth
+        )
+
         candidates = []
+
+        if analyst_growth is not None:
+            candidates.append(
+                analyst_growth
+            )
 
         if yahoo_growth is not None:
             candidates.append(
@@ -493,39 +499,61 @@ class ValuationEngine:
         if not candidates:
             return 0.08
 
-        # --------------------------------------------------------
-        # We no longer silently force growth to exactly 40%.
-        #
-        # Instead, use a blended forward/historical estimate and
-        # apply broad sanity limits.
-        # --------------------------------------------------------
-
+        # Analyst consensus receives the greatest weight,
+        # because it represents explicit forward estimates.
         if (
-            yahoo_growth is not None
+            analyst_growth is not None
+            and yahoo_growth is not None
             and historical_revenue_growth is not None
         ):
 
             growth = (
-                yahoo_growth * 0.70
+                analyst_growth * 0.60
                 +
-                historical_revenue_growth * 0.30
+                yahoo_growth * 0.25
+                +
+                historical_revenue_growth * 0.15
             )
+
+        elif analyst_growth is not None:
+
+            if historical_revenue_growth is not None:
+
+                growth = (
+                    analyst_growth * 0.70
+                    +
+                    historical_revenue_growth * 0.30
+                )
+
+            else:
+
+                growth = analyst_growth
+
+        elif yahoo_growth is not None:
+
+            if historical_revenue_growth is not None:
+
+                growth = (
+                    yahoo_growth * 0.70
+                    +
+                    historical_revenue_growth * 0.30
+                )
+
+            else:
+
+                growth = yahoo_growth
 
         else:
 
-            growth = candidates[0]
+            growth = historical_revenue_growth
 
         return max(
             -0.20,
             min(
                 growth,
-                0.80,
+                0.60,
             ),
         )
-
-    # ============================================================
-    # FCF MARGIN
-    # ============================================================
 
     def determine_fcf_margin(
         self,
@@ -555,10 +583,6 @@ class ValuationEngine:
             ),
         )
 
-    # ============================================================
-    # TARGET FCF MARGIN
-    # ============================================================
-
     def determine_target_margin(
         self,
         historical_financials,
@@ -570,15 +594,11 @@ class ValuationEngine:
         for item in historical_financials:
 
             revenue = self.safe_float(
-                item.get(
-                    "Revenue"
-                )
+                item.get("Revenue")
             )
 
             fcf = self.safe_float(
-                item.get(
-                    "Free Cash Flow"
-                )
+                item.get("Free Cash Flow")
             )
 
             if (
@@ -588,12 +608,8 @@ class ValuationEngine:
                 and fcf > 0
             ):
 
-                margin = (
-                    fcf / revenue
-                )
-
                 margins.append(
-                    margin
+                    fcf / revenue
                 )
 
         if not margins:
@@ -603,16 +619,6 @@ class ValuationEngine:
             sum(margins)
             / len(margins)
         )
-
-        # --------------------------------------------------------
-        # Target margin is based on a blend of:
-        #
-        # 1. Current FCF margin
-        # 2. Historical average FCF margin
-        #
-        # This is much more defensible than simply subtracting
-        # an arbitrary five percentage points.
-        # --------------------------------------------------------
 
         target_margin = (
             current_margin * 0.60
@@ -628,25 +634,17 @@ class ValuationEngine:
             ),
         )
 
-    # ============================================================
-    # WACC
-    # ============================================================
-
     def determine_wacc(
         self,
         info,
     ):
 
         beta = self.safe_float(
-            info.get(
-                "beta"
-            )
+            info.get("beta")
         )
 
         debt_to_equity = self.safe_float(
-            info.get(
-                "debtToEquity"
-            )
+            info.get("debtToEquity")
         )
 
         wacc = self.default_wacc
@@ -684,10 +682,6 @@ class ValuationEngine:
             ),
         )
 
-    # ============================================================
-    # TERMINAL GROWTH
-    # ============================================================
-
     def determine_terminal_growth(
         self,
     ):
@@ -700,17 +694,75 @@ class ValuationEngine:
             ),
         )
 
-    # ============================================================
-    # GROWTH PATH
-    # ============================================================
+    # ========================================================
+    # FORECAST
+    # ========================================================
 
     def build_growth_path(
         self,
         starting_growth,
         terminal_growth,
+        analyst_current_growth=None,
+        analyst_next_growth=None,
     ):
 
         path = []
+
+        # ----------------------------------------------------
+        # If analyst consensus is available, explicitly use
+        # the near-term forecast before fading toward mature
+        # long-term growth.
+        # ----------------------------------------------------
+
+        if (
+            analyst_current_growth is not None
+            and analyst_next_growth is not None
+        ):
+
+            path.append(
+                analyst_current_growth
+            )
+
+            if self.forecast_years >= 2:
+
+                path.append(
+                    analyst_next_growth
+                )
+
+            remaining_years = max(
+                0,
+                self.forecast_years - 2,
+            )
+
+            if remaining_years > 0:
+
+                for index in range(
+                    remaining_years
+                ):
+
+                    fade = (
+                        index + 1
+                    ) / (
+                        remaining_years + 1
+                    )
+
+                    growth = (
+                        analyst_next_growth
+                        * (1 - fade)
+                        +
+                        terminal_growth
+                        * fade
+                    )
+
+                    path.append(
+                        growth
+                    )
+
+            return path
+
+        # ----------------------------------------------------
+        # Fallback when analyst estimates are unavailable.
+        # ----------------------------------------------------
 
         for year in range(
             1,
@@ -727,9 +779,7 @@ class ValuationEngine:
 
             growth = (
                 starting_growth
-                * (
-                    1 - fade
-                )
+                * (1 - fade)
                 +
                 terminal_growth
                 * fade
@@ -740,10 +790,6 @@ class ValuationEngine:
             )
 
         return path
-
-    # ============================================================
-    # MARGIN PATH
-    # ============================================================
 
     def build_margin_path(
         self,
@@ -765,9 +811,7 @@ class ValuationEngine:
 
             margin = (
                 current_margin
-                * (
-                    1 - fade
-                )
+                * (1 - fade)
                 +
                 target_margin
                 * fade
@@ -778,10 +822,6 @@ class ValuationEngine:
             )
 
         return path
-
-    # ============================================================
-    # FORECAST
-    # ============================================================
 
     def forecast(
         self,
@@ -801,7 +841,6 @@ class ValuationEngine:
         current_revenue = revenue
 
         revenue_forecast = []
-
         fcf_forecast = []
 
         for index in range(
@@ -809,20 +848,12 @@ class ValuationEngine:
         ):
 
             year = index + 1
-
-            growth = (
-                growth_path[index]
-            )
-
-            margin = (
-                margin_path[index]
-            )
+            growth = growth_path[index]
+            margin = margin_path[index]
 
             current_revenue = (
                 current_revenue
-                * (
-                    1 + growth
-                )
+                * (1 + growth)
             )
 
             fcf = (
@@ -832,27 +863,17 @@ class ValuationEngine:
 
             revenue_forecast.append({
 
-                "Year":
-                    year,
-
-                "Growth":
-                    growth,
-
-                "Revenue":
-                    current_revenue,
+                "Year": year,
+                "Growth": growth,
+                "Revenue": current_revenue,
 
             })
 
             fcf_forecast.append({
 
-                "Year":
-                    year,
-
-                "FCF Margin":
-                    margin,
-
-                "Free Cash Flow":
-                    fcf,
+                "Year": year,
+                "FCF Margin": margin,
+                "Free Cash Flow": fcf,
 
             })
 
@@ -861,9 +882,9 @@ class ValuationEngine:
             fcf_forecast,
         )
 
-    # ============================================================
+    # ========================================================
     # DCF
-    # ============================================================
+    # ========================================================
 
     def calculate_dcf(
         self,
@@ -880,33 +901,21 @@ class ValuationEngine:
         ):
 
             return {
-
-                "Status":
-                    "FAILED",
-
-                "Reason":
-                    "Invalid DCF assumptions.",
-
+                "Status": "FAILED",
+                "Reason": "Invalid DCF assumptions.",
             }
 
         present_values = []
 
         for item in fcf_forecast:
 
-            year = item[
-                "Year"
-            ]
-
-            fcf = item[
-                "Free Cash Flow"
-            ]
+            year = item["Year"]
+            fcf = item["Free Cash Flow"]
 
             discount_factor = (
                 1
                 / (
-                    (
-                        1 + wacc
-                    )
+                    (1 + wacc)
                     ** year
                 )
             )
@@ -918,44 +927,27 @@ class ValuationEngine:
 
             present_values.append({
 
-                "Year":
-                    year,
-
-                "Free Cash Flow":
-                    fcf,
-
-                "Discount Factor":
-                    discount_factor,
-
-                "Present Value":
-                    present_value,
+                "Year": year,
+                "Free Cash Flow": fcf,
+                "Discount Factor": discount_factor,
+                "Present Value": present_value,
 
             })
 
-        final_fcf = (
-            fcf_forecast[-1][
-                "Free Cash Flow"
-            ]
-        )
+        final_fcf = fcf_forecast[-1][
+            "Free Cash Flow"
+        ]
 
         terminal_value = (
             final_fcf
-            * (
-                1
-                + terminal_growth
-            )
-            / (
-                wacc
-                - terminal_growth
-            )
+            * (1 + terminal_growth)
+            / (wacc - terminal_growth)
         )
 
         terminal_discount_factor = (
             1
             / (
-                (
-                    1 + wacc
-                )
+                (1 + wacc)
                 ** self.forecast_years
             )
         )
@@ -966,9 +958,7 @@ class ValuationEngine:
         )
 
         forecast_pv = sum(
-            item[
-                "Present Value"
-            ]
+            item["Present Value"]
             for item in present_values
         )
 
@@ -1005,8 +995,7 @@ class ValuationEngine:
 
         return {
 
-            "Status":
-                "COMPLETE",
+            "Status": "COMPLETE",
 
             "Forecast Present Values":
                 present_values,
@@ -1040,9 +1029,9 @@ class ValuationEngine:
 
         }
 
-    # ============================================================
+    # ========================================================
     # SCENARIO
-    # ============================================================
+    # ========================================================
 
     def run_scenario(
         self,
@@ -1055,41 +1044,34 @@ class ValuationEngine:
         wacc,
         shares_outstanding,
         net_debt,
+        analyst_current_growth=None,
+        analyst_next_growth=None,
     ):
 
         if name == "Bear":
 
             scenario_growth = (
-                starting_growth
-                - 0.08
+                starting_growth - 0.08
             )
 
             scenario_target_margin = (
-                target_margin
-                - 0.04
+                target_margin - 0.04
             )
 
         elif name == "Bull":
 
             scenario_growth = (
-                starting_growth
-                + 0.08
+                starting_growth + 0.08
             )
 
             scenario_target_margin = (
-                target_margin
-                + 0.04
+                target_margin + 0.04
             )
 
         else:
 
-            scenario_growth = (
-                starting_growth
-            )
-
-            scenario_target_margin = (
-                target_margin
-            )
+            scenario_growth = starting_growth
+            scenario_target_margin = target_margin
 
         scenario_growth = max(
             -0.20,
@@ -1107,10 +1089,36 @@ class ValuationEngine:
             ),
         )
 
+        scenario_current_growth = (
+            analyst_current_growth
+        )
+
+        scenario_next_growth = (
+            analyst_next_growth
+        )
+
+        if name == "Bear":
+
+            if scenario_current_growth is not None:
+                scenario_current_growth -= 0.08
+
+            if scenario_next_growth is not None:
+                scenario_next_growth -= 0.05
+
+        elif name == "Bull":
+
+            if scenario_current_growth is not None:
+                scenario_current_growth += 0.08
+
+            if scenario_next_growth is not None:
+                scenario_next_growth += 0.05
+
         growth_path = (
             self.build_growth_path(
                 scenario_growth,
                 terminal_growth,
+                scenario_current_growth,
+                scenario_next_growth,
             )
         )
 
@@ -1134,172 +1142,20 @@ class ValuationEngine:
             )
         )
 
-        dcf[
-            "Scenario"
-        ] = name
-
-        dcf[
-            "Starting Growth"
-        ] = scenario_growth
-
-        dcf[
-            "Target FCF Margin"
-        ] = scenario_target_margin
-
-        dcf[
-            "Growth Path"
-        ] = growth_path
-
-        dcf[
-            "Revenue Forecast"
-        ] = revenue_forecast
-
-        dcf[
-            "FCF Forecast"
-        ] = fcf_forecast
-
-        dcf[
-            "WACC"
-        ] = wacc
-
-        dcf[
-            "Terminal Growth"
-        ] = terminal_growth
+        dcf["Scenario"] = name
+        dcf["Starting Growth"] = scenario_growth
+        dcf["Target FCF Margin"] = scenario_target_margin
+        dcf["Growth Path"] = growth_path
+        dcf["Revenue Forecast"] = revenue_forecast
+        dcf["FCF Forecast"] = fcf_forecast
+        dcf["WACC"] = wacc
+        dcf["Terminal Growth"] = terminal_growth
 
         return dcf
 
-    # ============================================================
-    # SENSITIVITY
-    # ============================================================
-
-    def sensitivity(
-        self,
-        revenue,
-        current_margin,
-        target_margin,
-        starting_growth,
-        shares_outstanding,
-        net_debt,
-    ):
-
-        wacc_values = [
-
-            0.07,
-            0.08,
-            0.09,
-            0.10,
-            0.11,
-            0.12,
-
-        ]
-
-        growth_values = [
-
-            max(
-                -0.05,
-                starting_growth - 0.10,
-            ),
-
-            max(
-                -0.05,
-                starting_growth - 0.05,
-            ),
-
-            starting_growth,
-
-            min(
-                0.50,
-                starting_growth + 0.05,
-            ),
-
-            min(
-                0.50,
-                starting_growth + 0.10,
-            ),
-
-        ]
-
-        matrix = []
-
-        for growth in growth_values:
-
-            row = {
-
-                "Growth":
-                    growth,
-
-                "Values":
-                    {},
-
-            }
-
-            for wacc in wacc_values:
-
-                terminal_growth = min(
-                    self.default_terminal_growth,
-                    wacc - 0.01,
-                )
-
-                terminal_growth = max(
-                    0.01,
-                    terminal_growth,
-                )
-
-                growth_path = (
-                    self.build_growth_path(
-                        growth,
-                        terminal_growth,
-                    )
-                )
-
-                (
-                    _,
-                    fcf_forecast,
-                ) = self.forecast(
-                    revenue,
-                    current_margin,
-                    target_margin,
-                    growth_path,
-                )
-
-                dcf = (
-                    self.calculate_dcf(
-                        fcf_forecast,
-                        wacc,
-                        terminal_growth,
-                        shares_outstanding,
-                        net_debt,
-                    )
-                )
-
-                row[
-                    "Values"
-                ][
-                    f"{wacc:.2%}"
-                ] = dcf.get(
-                    "Intrinsic Value Per Share"
-                )
-
-            matrix.append(
-                row
-            )
-
-        return {
-
-            "WACC":
-                wacc_values,
-
-            "Growth":
-                growth_values,
-
-            "Matrix":
-                matrix,
-
-        }
-
-    # ============================================================
-    # FULL ANALYSIS
-    # ============================================================
+    # ========================================================
+    # ANALYSIS
+    # ========================================================
 
     def analyse(
         self,
@@ -1307,11 +1163,7 @@ class ValuationEngine:
         info=None,
     ):
 
-        symbol = (
-            symbol
-            .upper()
-            .strip()
-        )
+        symbol = symbol.upper().strip()
 
         print()
         print("=" * 80)
@@ -1321,27 +1173,55 @@ class ValuationEngine:
         print("=" * 80)
 
         if info is None:
-
-            info = (
-                self.get_info(
-                    symbol
-                )
-            )
+            info = self.get_info(symbol)
 
         if not info:
 
             return {
-
-                "Ticker":
-                    symbol,
-
-                "Status":
-                    "FAILED",
-
-                "Reason":
-                    "No company data available.",
-
+                "Ticker": symbol,
+                "Status": "FAILED",
+                "Reason": "No company data available.",
             }
+
+        # ----------------------------------------------------
+        # VALIDATED FINANCIAL DATA
+        # ----------------------------------------------------
+
+        context = (
+            FinancialDataEngine()
+            .build_context(
+                symbol
+            )
+        )
+
+        validation = (
+            context.validated_financial_data
+        )
+
+        selected = {}
+
+        validation_confidence = None
+
+        if isinstance(
+            validation,
+            dict,
+        ):
+
+            selected = validation.get(
+                "selected_financials",
+                {},
+            )
+
+            validation_confidence = (
+                validation
+                .get("summary", {})
+                .get("overall_confidence")
+            )
+
+        # ----------------------------------------------------
+        # Yahoo historical data remains available for
+        # historical growth calculations.
+        # ----------------------------------------------------
 
         income_statement = (
             self.get_income_statement(
@@ -1365,75 +1245,68 @@ class ValuationEngine:
         if not historical_financials:
 
             return {
-
-                "Ticker":
-                    symbol,
-
-                "Status":
-                    "FAILED",
-
-                "Reason":
-                    "Annual financial data unavailable.",
-
+                "Ticker": symbol,
+                "Status": "FAILED",
+                "Reason": "Annual financial data unavailable.",
             }
 
         latest_financials = (
-            self.get_latest_financial_period(
-                historical_financials
+            historical_financials[0]
+        )
+
+        # ----------------------------------------------------
+        # CORE FINANCIAL INPUTS
+        # SEC/Yahoo validation takes priority.
+        # ----------------------------------------------------
+
+        revenue = self.safe_float(
+            selected.get(
+                "revenue"
             )
         )
 
-        revenue = (
-            self.safe_float(
+        current_fcf = self.safe_float(
+            selected.get(
+                "free_cash_flow"
+            )
+        )
+
+        if revenue is None:
+
+            revenue = self.safe_float(
                 latest_financials.get(
                     "Revenue"
                 )
             )
-        )
 
-        current_fcf = (
-            self.safe_float(
+        if current_fcf is None:
+
+            current_fcf = self.safe_float(
                 latest_financials.get(
                     "Free Cash Flow"
                 )
             )
-        )
 
-        if (
-            revenue is None
-            or revenue <= 0
-        ):
+        if revenue is None or revenue <= 0:
 
             return {
-
-                "Ticker":
-                    symbol,
-
-                "Status":
-                    "FAILED",
-
-                "Reason":
-                    "Current revenue unavailable.",
-
+                "Ticker": symbol,
+                "Status": "FAILED",
+                "Reason": "Current revenue unavailable.",
             }
 
-        if (
-            current_fcf is None
-            or current_fcf <= 0
-        ):
+        if current_fcf is None or current_fcf <= 0:
 
             return {
-
-                "Ticker":
-                    symbol,
-
-                "Status":
-                    "FAILED",
-
+                "Ticker": symbol,
+                "Status": "FAILED",
                 "Reason":
                     "A positive current FCF could not be established.",
-
             }
+
+        # ----------------------------------------------------
+        # HISTORICAL GROWTH
+        # ----------------------------------------------------
 
         historical_revenue_growth = (
             self.calculate_revenue_growth(
@@ -1447,10 +1320,69 @@ class ValuationEngine:
             )
         )
 
+        analyst_estimates = (
+            self.get_analyst_revenue_growth(
+                symbol
+            )
+        )
+
+        earnings_estimates = (
+            EarningsSource()
+            .fetch(symbol)
+            .get(
+                "earnings_estimates",
+                {},
+            )
+        )
+
+        forecast_validation = (
+            ForecastValidator(
+                analyst_estimates.get(
+                    "revenue_estimates",
+                    {}
+                ),
+                earnings_estimates,
+            ).build()
+        )
+
+
+        current_eps_estimate = (
+            earnings_estimates
+            .get("0y", {})
+            .get("eps_avg")
+        )
+
+        next_eps_estimate = (
+            earnings_estimates
+            .get("+1y", {})
+            .get("eps_avg")
+        )
+
+        current_eps_growth = (
+            earnings_estimates
+            .get("0y", {})
+            .get("growth")
+        )
+
+        next_eps_growth = (
+            earnings_estimates
+            .get("+1y", {})
+            .get("growth")
+        )
+
+        analyst_forward_growth = (
+            self.safe_float(
+                analyst_estimates.get(
+                    "next_year"
+                )
+            )
+        )
+
         revenue_growth = (
             self.determine_revenue_growth(
                 info,
                 historical_revenue_growth,
+                analyst_forward_growth,
             )
         )
 
@@ -1478,157 +1410,167 @@ class ValuationEngine:
             self.determine_terminal_growth()
         )
 
-        # --------------------------------------------------------
-        # Shares
-        #
-        # Prefer sharesOutstanding, but fall back to market cap /
-        # current price if necessary.
-        # --------------------------------------------------------
+        # ----------------------------------------------------
+        # MARKET DATA
+        # ----------------------------------------------------
 
-        shares_outstanding = (
-            self.safe_float(
-                info.get(
-                    "sharesOutstanding"
-                )
-            )
-        )
-
-        current_price = (
-            self.safe_float(
-                info.get(
-                    "currentPrice"
-                )
+        current_price = self.safe_float(
+            info.get(
+                "currentPrice"
             )
         )
 
         if current_price is None:
 
-            current_price = (
-                self.safe_float(
-                    info.get(
-                        "regularMarketPrice"
-                    )
+            current_price = self.safe_float(
+                info.get(
+                    "regularMarketPrice"
                 )
             )
 
-        market_cap = (
-            self.safe_float(
-                info.get(
-                    "marketCap"
-                )
+        market_cap = self.safe_float(
+            info.get(
+                "marketCap"
+            )
+        )
+
+        # ----------------------------------------------------
+        # CAPITAL STRUCTURE
+        # ----------------------------------------------------
+
+        shares_outstanding = self.safe_float(
+            selected.get(
+                "shares_outstanding"
             )
         )
 
         if (
-            (
-                shares_outstanding is None
-                or shares_outstanding <= 0
-            )
-            and
-            market_cap is not None
-            and current_price is not None
-            and current_price > 0
+            shares_outstanding is None
+            or shares_outstanding <= 0
         ):
 
-            shares_outstanding = (
-                market_cap
-                / current_price
+            shares_outstanding = self.safe_float(
+                info.get(
+                    "sharesOutstanding"
+                )
             )
 
-        # --------------------------------------------------------
-        # Capital structure
-        # --------------------------------------------------------
+        total_debt = self.safe_float(
+            selected.get(
+                "total_debt"
+            )
+        )
 
-        total_debt = (
-            self.safe_float(
+        cash = self.safe_float(
+            selected.get(
+                "cash_and_equivalents"
+            )
+        )
+
+        net_debt = self.safe_float(
+            selected.get(
+                "net_debt"
+            )
+        )
+
+        if total_debt is None:
+
+            total_debt = self.safe_float(
                 info.get(
                     "totalDebt"
                 ),
                 0,
             )
-        )
 
-        cash = (
-            self.safe_float(
+        if cash is None:
+
+            cash = self.safe_float(
                 info.get(
                     "totalCash"
                 ),
                 0,
             )
-        )
 
-        net_debt = (
-            total_debt
-            - cash
-        )
+        if net_debt is None:
 
-        # --------------------------------------------------------
-        # Scenarios
-        # --------------------------------------------------------
-
-        bear = (
-            self.run_scenario(
-                "Bear",
-                revenue,
-                current_margin,
-                target_margin,
-                revenue_growth,
-                terminal_growth,
-                wacc,
-                shares_outstanding,
-                net_debt,
+            net_debt = (
+                total_debt
+                - cash
             )
+
+        # ----------------------------------------------------
+        # SCENARIOS
+        # ----------------------------------------------------
+
+        bear = self.run_scenario(
+            "Bear",
+            revenue,
+            current_margin,
+            target_margin,
+            revenue_growth,
+            terminal_growth,
+            wacc,
+            shares_outstanding,
+            net_debt,
+            analyst_estimates.get(
+                "current_year"
+            ),
+            analyst_estimates.get(
+                "next_year"
+            ),
         )
 
-        base = (
-            self.run_scenario(
-                "Base",
-                revenue,
-                current_margin,
-                target_margin,
-                revenue_growth,
-                terminal_growth,
-                wacc,
-                shares_outstanding,
-                net_debt,
-            )
+        base = self.run_scenario(
+            "Base",
+            revenue,
+            current_margin,
+            target_margin,
+            revenue_growth,
+            terminal_growth,
+            wacc,
+            shares_outstanding,
+            net_debt,
+            analyst_estimates.get(
+                "current_year"
+            ),
+            analyst_estimates.get(
+                "next_year"
+            ),
         )
 
-        bull = (
-            self.run_scenario(
-                "Bull",
-                revenue,
-                current_margin,
-                target_margin,
-                revenue_growth,
-                terminal_growth,
-                wacc,
-                shares_outstanding,
-                net_debt,
-            )
+        bull = self.run_scenario(
+            "Bull",
+            revenue,
+            current_margin,
+            target_margin,
+            revenue_growth,
+            terminal_growth,
+            wacc,
+            shares_outstanding,
+            net_debt,
+            analyst_estimates.get(
+                "current_year"
+            ),
+            analyst_estimates.get(
+                "next_year"
+            ),
         )
 
-        bear_value = (
-            bear.get(
-                "Intrinsic Value Per Share"
-            )
+        bear_value = bear.get(
+            "Intrinsic Value Per Share"
         )
 
-        base_value = (
-            base.get(
-                "Intrinsic Value Per Share"
-            )
+        base_value = base.get(
+            "Intrinsic Value Per Share"
         )
 
-        bull_value = (
-            bull.get(
-                "Intrinsic Value Per Share"
-            )
+        bull_value = bull.get(
+            "Intrinsic Value Per Share"
         )
 
-        # --------------------------------------------------------
-        # Expected return
-        # --------------------------------------------------------
+        # ----------------------------------------------------
+        # EXPECTED RETURN
+        # ----------------------------------------------------
 
         base_return = None
         annualised_return = None
@@ -1658,64 +1600,22 @@ class ValuationEngine:
                 - 1
             )
 
-        # --------------------------------------------------------
-        # Sensitivity
-        # --------------------------------------------------------
-
-        sensitivity = (
-            self.sensitivity(
-                revenue,
-                current_margin,
-                target_margin,
-                revenue_growth,
-                shares_outstanding,
-                net_debt,
-            )
-        )
-
-        terminal_value_share = (
-            base.get(
-                "Terminal Value % of Enterprise Value"
-            )
-        )
-
-        valuation_gap = None
-
-        if (
-            current_price is not None
-            and current_price > 0
-            and base_value is not None
-        ):
-
-            valuation_gap = (
-                base_value
-                / current_price
-                - 1
-            )
-
-        # ========================================================
+        # ----------------------------------------------------
         # RESULT
-        # ========================================================
+        # ----------------------------------------------------
 
         result = {
 
-            "Ticker":
-                symbol,
+            "Ticker": symbol,
 
-            "Company":
-                info.get(
-                    "longName"
-                ),
+            "Company": info.get(
+                "longName"
+            ),
 
-            "Status":
-                "COMPLETE",
+            "Status": "COMPLETE",
 
             "Analysed At":
                 self.utc_now(),
-
-            # ----------------------------------------------------
-            # Market
-            # ----------------------------------------------------
 
             "Current Price":
                 current_price,
@@ -1723,18 +1623,27 @@ class ValuationEngine:
             "Market Capitalisation":
                 market_cap,
 
-            # ----------------------------------------------------
-            # Financial period
-            # ----------------------------------------------------
+            "Financial Data Validation": {
 
-            "Financial Period Used":
-                latest_financials.get(
-                    "Period"
-                ),
+                "Overall Confidence":
+                    validation_confidence,
 
-            # ----------------------------------------------------
-            # Fundamentals
-            # ----------------------------------------------------
+                "Summary":
+                    (
+                        validation.get(
+                            "summary"
+                        )
+                        if isinstance(
+                            validation,
+                            dict,
+                        )
+                        else None
+                    ),
+
+                "Selected Financials":
+                    selected,
+
+            },
 
             "Current Revenue":
                 revenue,
@@ -1757,14 +1666,88 @@ class ValuationEngine:
             "Historical FCF Growth":
                 historical_fcf_growth,
 
-            # ----------------------------------------------------
-            # Forecast
-            # ----------------------------------------------------
-
             "Revenue Growth Assumption":
                 revenue_growth,
 
+            "Forecast Validation": {
+
+                "Overall Confidence":
+                    forecast_validation.get(
+                        "overall_confidence"
+                    ),
+
+                "Periods Checked":
+                    forecast_validation.get(
+                        "periods_checked"
+                    ),
+
+                "Consistent Periods":
+                    forecast_validation.get(
+                        "consistent_periods"
+                    ),
+
+                "Large Differences":
+                    forecast_validation.get(
+                        "large_differences"
+                    ),
+
+                "Comparisons":
+                    forecast_validation.get(
+                        "comparisons"
+                    ),
+
+            },
+
+            "Earnings Estimates": {
+
+                "Current Year EPS":
+                    current_eps_estimate,
+
+                "Next Year EPS":
+                    next_eps_estimate,
+
+                "Current Year EPS Growth":
+                    current_eps_growth,
+
+                "Next Year EPS Growth":
+                    next_eps_growth,
+
+                "Current Year Analysts":
+                    earnings_estimates
+                    .get("0y", {})
+                    .get("analysts"),
+
+                "Next Year Analysts":
+                    earnings_estimates
+                    .get("+1y", {})
+                    .get("analysts"),
+
+            },
+
             "Growth Assumption Sources": {
+
+                "Analyst Forward Revenue Growth":
+                    analyst_forward_growth,
+
+                "Analyst Current Year Revenue":
+                    analyst_estimates.get(
+                        "current_year_revenue"
+                    ),
+
+                "Analyst Next Year Revenue":
+                    analyst_estimates.get(
+                        "next_year_revenue"
+                    ),
+
+                "Analyst Current Year Count":
+                    analyst_estimates.get(
+                        "current_year_analysts"
+                    ),
+
+                "Analyst Next Year Count":
+                    analyst_estimates.get(
+                        "next_year_analysts"
+                    ),
 
                 "Yahoo Revenue Growth":
                     self.safe_float(
@@ -1778,8 +1761,9 @@ class ValuationEngine:
 
                 "Method":
                     (
-                        "70% Yahoo forward growth + "
-                        "30% historical revenue CAGR"
+                        "60% analyst forward growth + "
+                        "25% Yahoo growth + "
+                        "15% historical CAGR"
                     ),
 
             },
@@ -1793,10 +1777,6 @@ class ValuationEngine:
             "Forecast Years":
                 self.forecast_years,
 
-            # ----------------------------------------------------
-            # Capital structure
-            # ----------------------------------------------------
-
             "Shares Outstanding":
                 shares_outstanding,
 
@@ -1809,113 +1789,69 @@ class ValuationEngine:
             "Net Debt":
                 net_debt,
 
-            # ----------------------------------------------------
-            # Scenarios
-            # ----------------------------------------------------
+            "Intrinsic Value": {
 
-            "Bear Scenario":
-                bear,
+                "Bear":
+                    bear_value,
 
-            "Base Scenario":
-                base,
+                "Base":
+                    base_value,
 
-            "Bull Scenario":
-                bull,
+                "Bull":
+                    bull_value,
 
-            "Bear Value":
-                bear_value,
+            },
 
-            "Base Value":
-                base_value,
+            "Scenarios": {
 
-            "Bull Value":
-                bull_value,
+                "Bear": bear,
+                "Base": base,
+                "Bull": bull,
 
-            # ----------------------------------------------------
-            # Valuation
-            # ----------------------------------------------------
+            },
 
-            "Valuation Gap":
-                (
-                    valuation_gap * 100
-                    if valuation_gap is not None
-                    else None
+            "Expected Return": {
+
+                "Base":
+                    base_return,
+
+                "Annualised":
+                    annualised_return,
+
+                "Horizon Years":
+                    self.forecast_years,
+
+            },
+
+            "Terminal Value Contribution":
+                base.get(
+                    "Terminal Value % of Enterprise Value"
                 ),
-
-            "Terminal Value %":
-                (
-                    terminal_value_share * 100
-                    if terminal_value_share is not None
-                    else None
-                ),
-
-            # ----------------------------------------------------
-            # Expected return
-            # ----------------------------------------------------
-
-            "Expected Return":
-                (
-                    base_return * 100
-                    if base_return is not None
-                    else None
-                ),
-
-            "Expected Return Horizon Years":
-                self.forecast_years,
-
-            "Expected Return Horizon Days":
-                self.forecast_years * 365,
-
-            "Annualised Return":
-                (
-                    annualised_return * 100
-                    if annualised_return is not None
-                    else None
-                ),
-
-            # ----------------------------------------------------
-            # Sensitivity
-            # ----------------------------------------------------
-
-            "Sensitivity":
-                sensitivity,
 
         }
 
-        # ========================================================
-        # SAVE
-        # ========================================================
-
-        path = os.path.join(
+        output_path = os.path.join(
             self.output_directory,
             f"{symbol}.json",
         )
 
         with open(
-            path,
+            output_path,
             "w",
+            encoding="utf-8",
         ) as file:
 
             json.dump(
                 result,
                 file,
-                indent=2,
+                indent=4,
                 default=str,
             )
 
-        result[
-            "Output Path"
-        ] = path
-
-        # ========================================================
-        # PRINT
-        # ========================================================
-
         print()
-
         print(
-            f"Financial period used: "
-            f"{latest_financials.get('Period')}"
+            f"Validation confidence: "
+            f"{validation_confidence}"
         )
 
         print(
@@ -1929,97 +1865,131 @@ class ValuationEngine:
         )
 
         print()
+        print("INTRINSIC VALUE")
 
         print(
-            "HISTORICAL GROWTH"
+            f"Bear: {bear_value}"
         )
 
         print(
-            f"Revenue CAGR: "
-            f"{(
-                historical_revenue_growth * 100
-                if historical_revenue_growth is not None
-                else 0
-            ): .2f}%"
+            f"Base: {base_value}"
         )
 
         print(
-            f"FCF CAGR: "
-            f"{(
-                historical_fcf_growth * 100
-                if historical_fcf_growth is not None
-                else 0
-            ): .2f}%"
+            f"Bull: {bull_value}"
         )
 
         print()
+        print("VALUATION ASSUMPTIONS")
 
         print(
-            "VALUATION ENGINE"
+            "REVENUE GROWTH PATH"
+        )
+
+        base_growth_path = base.get(
+            "Growth Path",
+            [],
+        )
+
+        for index, growth in enumerate(
+            base_growth_path,
+            start=1,
+        ):
+
+            print(
+                f"Year {index}: "
+                f"{growth:.2%}"
+            )
+
+        print(
+            f"Analyst current-year growth: "
+            f"{analyst_estimates.get('current_year'):.2%}"
+            if analyst_estimates.get("current_year") is not None
+            else "Analyst current-year growth: N/A"
         )
 
         print(
-            f"Current Price: "
-            f"{current_price}"
-        )
-
-        print()
-
-        print(
-            "INTRINSIC VALUE"
-        )
-
-        print(
-            f"Bear: "
-            f"{bear_value}"
-        )
-
-        print(
-            f"Base: "
-            f"{base_value}"
-        )
-
-        print(
-            f"Bull: "
-            f"{bull_value}"
-        )
-
-        print()
-
-        print(
-            "VALUATION ASSUMPTIONS"
-        )
-
-        print(
-            f"Revenue growth: "
-            f"{revenue_growth * 100:.2f}%"
+            f"Analyst next-year growth: "
+            f"{analyst_estimates.get('next_year'):.2%}"
+            if analyst_estimates.get("next_year") is not None
+            else "Analyst next-year growth: N/A"
         )
 
         print(
             f"Current FCF margin: "
-            f"{current_margin * 100:.2f}%"
+            f"{current_margin:.2%}"
+        )
+
+        print()
+        print("FORECAST VALIDATION")
+
+        print(
+            f"Confidence: "
+            f"{forecast_validation.get('overall_confidence')}"
+        )
+
+        print(
+            f"Periods checked: "
+            f"{forecast_validation.get('periods_checked')}"
+        )
+
+        print(
+            f"Consistent: "
+            f"{forecast_validation.get('consistent_periods')}"
+        )
+
+        print(
+            f"Large differences: "
+            f"{forecast_validation.get('large_differences')}"
+        )
+
+        print()
+        print("EARNINGS CONSENSUS")
+
+        print(
+            f"Current-year EPS: "
+            f"${current_eps_estimate:.4f}"
+            if current_eps_estimate is not None
+            else "Current-year EPS: N/A"
+        )
+
+        print(
+            f"Next-year EPS: "
+            f"${next_eps_estimate:.4f}"
+            if next_eps_estimate is not None
+            else "Next-year EPS: N/A"
+        )
+
+        print(
+            f"Current-year EPS growth: "
+            f"{current_eps_growth:.2%}"
+            if current_eps_growth is not None
+            else "Current-year EPS growth: N/A"
+        )
+
+        print(
+            f"Next-year EPS growth: "
+            f"{next_eps_growth:.2%}"
+            if next_eps_growth is not None
+            else "Next-year EPS growth: N/A"
         )
 
         print(
             f"Target FCF margin: "
-            f"{target_margin * 100:.2f}%"
+            f"{target_margin:.2%}"
         )
 
         print(
-            f"WACC: "
-            f"{wacc * 100:.2f}%"
+            f"WACC: {wacc:.2%}"
         )
 
         print(
             f"Terminal growth: "
-            f"{terminal_growth * 100:.2f}%"
+            f"{terminal_growth:.2%}"
         )
 
         print()
-
-        print(
-            "CAPITAL STRUCTURE"
-        )
+        print("CAPITAL STRUCTURE")
 
         print(
             f"Shares Outstanding: "
@@ -2042,58 +2012,48 @@ class ValuationEngine:
         )
 
         print()
-
-        if base_return is not None:
-
-            print(
-                f"Base Expected Return: "
-                f"{base_return * 100:.2f}%"
-            )
-
-            print(
-                f"Horizon: "
-                f"{self.forecast_years} years"
-            )
-
-            print(
-                f"Annualised Return: "
-                f"{annualised_return * 100:.2f}%"
-            )
-
-        print()
-
-        if terminal_value_share is not None:
-
-            print(
-                f"Terminal Value Contribution: "
-                f"{terminal_value_share * 100:.2f}%"
-            )
-
-        print()
-
         print(
-            "SENSITIVITY"
+            f"Base Expected Return: "
+            f"{base_return:.2%}"
+            if base_return is not None
+            else "Base Expected Return: N/A"
         )
 
         print(
-            f"{len(sensitivity['Matrix'])} growth cases x "
-            f"{len(sensitivity['WACC'])} WACC cases"
+            f"Horizon: "
+            f"{self.forecast_years} years"
+        )
+
+        print(
+            f"Annualised Return: "
+            f"{annualised_return:.2%}"
+            if annualised_return is not None
+            else "Annualised Return: N/A"
         )
 
         print()
-
         print(
-            f"Saved to: "
-            f"{path}"
+            f"Saved to: {output_path}"
         )
 
         return result
 
+    # ========================================================
+    # RUN
+    # ========================================================
+
+    def run(
+        self,
+        symbol="NVDA",
+    ):
+
+        return self.analyse(
+            symbol
+        )
+
 
 if __name__ == "__main__":
 
-    engine = ValuationEngine()
-
-    engine.analyse(
+    ValuationEngine().run(
         "NVDA"
     )

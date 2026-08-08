@@ -51,7 +51,15 @@ class YahooSource:
 
         return None
 
-    def get_annual_financials(self, income_statement, cash_flow):
+    # ============================================================
+    # ANNUAL FINANCIALS
+    # ============================================================
+
+    def get_annual_financials(
+        self,
+        income_statement,
+        cash_flow,
+    ):
 
         revenue_line = self.find_line(
             income_statement,
@@ -123,6 +131,10 @@ class YahooSource:
 
         return result
 
+    # ============================================================
+    # REVENUE ESTIMATES
+    # ============================================================
+
     def get_revenue_estimates(self, ticker):
 
         try:
@@ -138,13 +150,21 @@ class YahooSource:
                 result.append(
                     {
                         "period": str(period),
-                        "average": self.safe_float(row.get("avg")),
-                        "low": self.safe_float(row.get("low")),
-                        "high": self.safe_float(row.get("high")),
+                        "average": self.safe_float(
+                            row.get("avg")
+                        ),
+                        "low": self.safe_float(
+                            row.get("low")
+                        ),
+                        "high": self.safe_float(
+                            row.get("high")
+                        ),
                         "yearago": self.safe_float(
                             row.get("yearAgoRevenue")
                         ),
-                        "growth": self.safe_float(row.get("growth")),
+                        "growth": self.safe_float(
+                            row.get("growth")
+                        ),
                         "currency": row.get("currency"),
                     }
                 )
@@ -152,7 +172,13 @@ class YahooSource:
             return result
 
         except Exception as error:
-            return {"error": str(error)}
+            return {
+                "error": str(error)
+            }
+
+    # ============================================================
+    # EARNINGS ESTIMATES
+    # ============================================================
 
     def get_earnings_estimates(self, ticker):
 
@@ -169,13 +195,21 @@ class YahooSource:
                 result.append(
                     {
                         "period": str(period),
-                        "average": self.safe_float(row.get("avg")),
-                        "low": self.safe_float(row.get("low")),
-                        "high": self.safe_float(row.get("high")),
+                        "average": self.safe_float(
+                            row.get("avg")
+                        ),
+                        "low": self.safe_float(
+                            row.get("low")
+                        ),
+                        "high": self.safe_float(
+                            row.get("high")
+                        ),
                         "yearago": self.safe_float(
                             row.get("yearAgoEps")
                         ),
-                        "growth": self.safe_float(row.get("growth")),
+                        "growth": self.safe_float(
+                            row.get("growth")
+                        ),
                         "currency": row.get("currency"),
                     }
                 )
@@ -183,7 +217,13 @@ class YahooSource:
             return result
 
         except Exception as error:
-            return {"error": str(error)}
+            return {
+                "error": str(error)
+            }
+
+    # ============================================================
+    # FETCH
+    # ============================================================
 
     def fetch(self, symbol):
 
@@ -191,10 +231,18 @@ class YahooSource:
 
         ticker = self.yf.Ticker(symbol)
 
+        # --------------------------------------------------------
+        # COMPANY INFO
+        # --------------------------------------------------------
+
         try:
             info = ticker.info
         except Exception:
             info = {}
+
+        # --------------------------------------------------------
+        # FINANCIAL STATEMENTS
+        # --------------------------------------------------------
 
         try:
             income_statement = ticker.income_stmt
@@ -211,56 +259,114 @@ class YahooSource:
         except Exception:
             balance_sheet = None
 
-        annual_financials = self.get_annual_financials(
-            income_statement,
-            cash_flow,
+        # --------------------------------------------------------
+        # ANNUAL FINANCIALS
+        # --------------------------------------------------------
+
+        annual_financials = (
+            self.get_annual_financials(
+                income_statement,
+                cash_flow,
+            )
         )
 
-        latest = annual_financials[0] if annual_financials else None
+        latest = (
+            annual_financials[0]
+            if annual_financials
+            else None
+        )
+
+        # ========================================================
+        # CASH
+        # ========================================================
 
         cash_result = self.latest_annual_value(
             balance_sheet,
             [
                 "Cash And Cash Equivalents",
-                "Cash Cash Equivalents And Short Term Investments",
             ],
         )
 
-        debt_result = self.latest_annual_value(
+        cash_plus_investments_result = (
+            self.latest_annual_value(
+                balance_sheet,
+                [
+                    "Cash Cash Equivalents And Short Term Investments",
+                ],
+            )
+        )
+
+        # ========================================================
+        # DEBT
+        # ========================================================
+
+        total_debt_result = self.latest_annual_value(
             balance_sheet,
             [
                 "Total Debt",
             ],
         )
 
-        current_debt_result = self.latest_annual_value(
-            balance_sheet,
-            [
-                "Current Debt",
-                "Current Debt And Capital Lease Obligation",
-            ],
+        long_term_debt_result = (
+            self.latest_annual_value(
+                balance_sheet,
+                [
+                    "Long Term Debt",
+                ],
+            )
         )
 
-        long_term_debt_result = self.latest_annual_value(
-            balance_sheet,
-            [
-                "Long Term Debt",
-                "Long Term Debt And Capital Lease Obligation",
-            ],
+        current_debt_result = (
+            self.latest_annual_value(
+                balance_sheet,
+                [
+                    "Current Debt",
+                ],
+            )
         )
 
-        total_debt = None
+        # ========================================================
+        # LEASE OBLIGATIONS
+        # ========================================================
 
-        if debt_result is not None:
-            total_debt = debt_result["value"]
+        capital_lease_result = (
+            self.latest_annual_value(
+                balance_sheet,
+                [
+                    "Capital Lease Obligations",
+                ],
+            )
+        )
+
+        long_term_lease_result = (
+            self.latest_annual_value(
+                balance_sheet,
+                [
+                    "Long Term Capital Lease Obligation",
+                ],
+            )
+        )
+
+        current_lease_result = (
+            self.latest_annual_value(
+                balance_sheet,
+                [
+                    "Current Capital Lease Obligation",
+                ],
+            )
+        )
+
+        # ========================================================
+        # TOTAL DEBT FALLBACK
+        # ========================================================
+
+        if total_debt_result is not None:
+
+            total_debt = (
+                total_debt_result["value"]
+            )
 
         else:
-
-            current_debt = (
-                current_debt_result["value"]
-                if current_debt_result is not None
-                else 0
-            )
 
             long_term_debt = (
                 long_term_debt_result["value"]
@@ -268,11 +374,27 @@ class YahooSource:
                 else 0
             )
 
+            current_debt = (
+                current_debt_result["value"]
+                if current_debt_result is not None
+                else 0
+            )
+
             if (
-                current_debt_result is not None
-                or long_term_debt_result is not None
+                long_term_debt_result is not None
+                or current_debt_result is not None
             ):
-                total_debt = current_debt + long_term_debt
+                total_debt = (
+                    long_term_debt
+                    + current_debt
+                )
+
+            else:
+                total_debt = None
+
+        # ========================================================
+        # PRICE / MARKET DATA
+        # ========================================================
 
         current_price = self.safe_float(
             info.get("currentPrice")
@@ -295,57 +417,164 @@ class YahooSource:
             info.get("beta")
         )
 
+        # ========================================================
+        # BROADER LIQUIDITY
+        # ========================================================
+
         yahoo_total_cash = self.safe_float(
             info.get("totalCash")
         )
 
         return {
-            "source": self.SOURCE_NAME,
-            "ticker": symbol,
-            "company": info.get("longName"),
+
+            "source":
+                self.SOURCE_NAME,
+
+            "ticker":
+                symbol,
+
+            "company":
+                info.get("longName"),
+
+            # ----------------------------------------------------
+            # MARKET
+            # ----------------------------------------------------
 
             "market": {
-                "current_price": current_price,
-                "market_cap": market_cap,
-                "shares_outstanding": shares,
-                "beta": beta,
+
+                "current_price":
+                    current_price,
+
+                "market_cap":
+                    market_cap,
+
+                "shares_outstanding":
+                    shares,
+
+                "beta":
+                    beta,
             },
+
+            # ----------------------------------------------------
+            # FINANCIALS
+            # ----------------------------------------------------
 
             "financials": {
-                "latest_annual": latest,
-                "historical_annual": annual_financials,
+
+                "latest_annual":
+                    latest,
+
+                "historical_annual":
+                    annual_financials,
             },
+
+            # ----------------------------------------------------
+            # BALANCE SHEET
+            # ----------------------------------------------------
 
             "balance_sheet": {
+
                 "cash_and_equivalents": {
-                    "value": (
-                        cash_result["value"]
-                        if cash_result is not None
-                        else None
-                    ),
-                    "period": (
-                        cash_result["period"]
-                        if cash_result is not None
-                        else None
-                    ),
+
+                    "value":
+                        (
+                            cash_result["value"]
+                            if cash_result is not None
+                            else None
+                        ),
+
+                    "period":
+                        (
+                            cash_result["period"]
+                            if cash_result is not None
+                            else None
+                        ),
                 },
+
+                "cash_cash_equivalents_and_short_term_investments":
+                    (
+                        cash_plus_investments_result["value"]
+                        if cash_plus_investments_result is not None
+                        else None
+                    ),
 
                 "total_debt": {
-                    "value": total_debt,
+
+                    "value":
+                        total_debt,
+
+                    "period":
+                        (
+                            total_debt_result["period"]
+                            if total_debt_result is not None
+                            else None
+                        ),
                 },
 
-                "yahoo_total_cash": {
-                    "value": yahoo_total_cash,
-                    "definition": (
-                        "Yahoo Finance totalCash field; "
-                        "may include broader liquidity than "
-                        "cash and cash equivalents."
+                "long_term_debt":
+                    (
+                        long_term_debt_result["value"]
+                        if long_term_debt_result is not None
+                        else None
                     ),
+
+                "current_debt":
+                    (
+                        current_debt_result["value"]
+                        if current_debt_result is not None
+                        else None
+                    ),
+
+                "capital_lease_obligations":
+                    (
+                        capital_lease_result["value"]
+                        if capital_lease_result is not None
+                        else None
+                    ),
+
+                "long_term_capital_lease_obligation":
+                    (
+                        long_term_lease_result["value"]
+                        if long_term_lease_result is not None
+                        else None
+                    ),
+
+                "current_capital_lease_obligation":
+                    (
+                        current_lease_result["value"]
+                        if current_lease_result is not None
+                        else None
+                    ),
+
+                "yahoo_total_cash": {
+
+                    "value":
+                        yahoo_total_cash,
+
+                    "definition":
+                        (
+                            "Yahoo Finance totalCash "
+                            "field; may include broader "
+                            "liquidity than cash and "
+                            "cash equivalents."
+                        ),
                 },
             },
 
+            # ----------------------------------------------------
+            # ESTIMATES
+            # ----------------------------------------------------
+
             "analyst_estimates": {
-                "revenue": self.get_revenue_estimates(ticker),
-                "earnings": self.get_earnings_estimates(ticker),
+
+                "revenue":
+                    self.get_revenue_estimates(
+                        ticker
+                    ),
+
+                "earnings":
+                    self.get_earnings_estimates(
+                        ticker
+                    ),
             },
         }
