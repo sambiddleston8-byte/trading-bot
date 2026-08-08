@@ -1,0 +1,184 @@
+{
+  "universe": "pilot_six_sector_diverse",
+  "started_at": "2026-08-08T23:48:43.951647+00:00",
+  "completed_at": "2026-08-08T23:48:43.951655+00:00",
+  "requested_count": 6,
+  "completed_count": 6,
+  "error_count": 0,
+  "audit_pass_count": 0,
+  "eligible_count": 0,
+  "results": [
+    {
+      "ticker": "A",
+      "name": "Agilent Technologies",
+      "sector": "Health Care",
+      "index_membership": [
+        "SP500"
+      ],
+      "investment_case_score": 32.81,
+      "decision": null,
+      "current_price": null,
+      "base_intrinsic_value": null,
+      "expected_return": null,
+      "thesis": {
+        "result": null,
+        "tested": 0,
+        "material_negative": 0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "REVIEW",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0
+      },
+      "research_status": "COMPLETE",
+      "researched_at": "2026-08-08T23:48:14.899207+00:00"
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "sector": "Information Technology",
+      "index_membership": [
+        "SP500",
+        "NASDAQ100"
+      ],
+      "investment_case_score": 23.09,
+      "decision": null,
+      "current_price": null,
+      "base_intrinsic_value": null,
+      "expected_return": null,
+      "thesis": {
+        "result": null,
+        "tested": 0,
+        "material_negative": 0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "REVIEW",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0
+      },
+      "research_status": "COMPLETE",
+      "researched_at": "2026-08-08T23:48:20.695048+00:00"
+    },
+    {
+      "ticker": "ABNB",
+      "name": "Airbnb",
+      "sector": "Consumer Discretionary",
+      "index_membership": [
+        "SP500",
+        "NASDAQ100"
+      ],
+      "investment_case_score": 49.91,
+      "decision": null,
+      "current_price": null,
+      "base_intrinsic_value": null,
+      "expected_return": null,
+      "thesis": {
+        "result": null,
+        "tested": 0,
+        "material_negative": 0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "REVIEW",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0
+      },
+      "research_status": "COMPLETE",
+      "researched_at": "2026-08-08T23:48:26.018057+00:00"
+    },
+    {
+      "ticker": "ACGL",
+      "name": "Arch Capital Group",
+      "sector": "Financials",
+      "index_membership": [
+        "SP500"
+      ],
+      "investment_case_score": 35.28,
+      "decision": null,
+      "current_price": null,
+      "base_intrinsic_value": null,
+      "expected_return": null,
+      "thesis": {
+        "result": null,
+        "tested": 0,
+        "material_negative": 0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "REVIEW",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0
+      },
+      "research_status": "COMPLETE",
+      "researched_at": "2026-08-08T23:48:31.598593+00:00"
+    },
+    {
+      "ticker": "ADM",
+      "name": "Archer Daniels Midland",
+      "sector": "Consumer Staples",
+      "index_membership": [
+        "SP500"
+      ],
+      "investment_case_score": 45.95,
+      "decision": null,
+      "current_price": null,
+      "base_intrinsic_value": null,
+      "expected_return": null,
+      "thesis": {
+        "result": null,
+        "tested": 0,
+        "material_negative": 0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "REVIEW",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0
+      },
+      "research_status": "COMPLETE",
+      "researched_at": "2026-08-08T23:48:38.519210+00:00"
+    },
+    {
+      "ticker": "ADP",
+      "name": "Automatic Data Processing",
+      "sector": "Industrials",
+      "index_membership": [
+        "SP500",
+        "NASDAQ100"
+      ],
+      "investment_case_score": 31.14,
+      "decision": null,
+      "current_price": null,
+      "base_intrinsic_value": null,
+      "expected_return": null,
+      "thesis": {
+        "result": null,
+        "tested": 0,
+        "material_negative": 0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "REVIEW",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0
+      },
+      "research_status": "COMPLETE",
+      "researched_at": "2026-08-08T23:48:43.951000+00:00"
+    }
+  ],
+  "ranked": []
+}

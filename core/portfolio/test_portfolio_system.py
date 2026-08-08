@@ -1,43 +1,267 @@
-from core.portfolio.universe_engine import (
-    UniverseEngine,
-)
-
 from core.portfolio.portfolio_engine import (
     PortfolioEngine,
 )
 
 
-def test_universe_engine_interface():
+def make_candidate(
+    ticker,
+    score,
+    expected_return,
+    sector,
+):
 
-    assert hasattr(
-        UniverseEngine,
-        "get_universe",
+    return {
+        "ticker":
+            ticker,
+
+        "name":
+            ticker,
+
+        "sector":
+            sector,
+
+        "industry":
+            "Test",
+
+        "index_membership":
+            ["SP500"],
+
+        "investment_case_score":
+            score,
+
+        "current_price":
+            100.0,
+
+        "base_intrinsic_value":
+            130.0,
+
+        "expected_return":
+            expected_return,
+
+        "decision":
+            "BUY",
+
+        "research_status":
+            "COMPLETE",
+
+        "thesis":
+            {
+                "result":
+                    "THESIS_SURVIVES",
+
+                "tested":
+                    10,
+
+                "material_negative":
+                    0,
+
+                "thesis_survives":
+                    True,
+            },
+
+        "audit":
+            {
+                "status":
+                    "PASS",
+
+                "finding_count":
+                    0,
+
+                "critical":
+                    0,
+
+                "high":
+                    0,
+
+                "medium":
+                    0,
+            },
+    }
+
+
+def test_candidate_scoring():
+
+    candidate = make_candidate(
+        "AAA",
+        90,
+        0.25,
+        "Technology",
     )
 
-    assert hasattr(
-        UniverseEngine,
-        "save",
+    score = (
+        PortfolioEngine
+        .candidate_score(
+            candidate
+        )
     )
 
+    assert score is not None
+    assert score > 90
 
-def test_portfolio_engine_interface():
 
-    assert hasattr(
-        PortfolioEngine,
-        "rank",
+def test_failed_audit_is_rejected():
+
+    candidate = make_candidate(
+        "BAD",
+        99,
+        0.50,
+        "Technology",
     )
 
-    assert hasattr(
-        PortfolioEngine,
-        "construct",
+    candidate[
+        "audit"
+    ][
+        "status"
+    ] = "REVIEW"
+
+    score = (
+        PortfolioEngine
+        .candidate_score(
+            candidate
+        )
     )
+
+    assert score is None
+
+
+def test_portfolio_construction():
+
+    candidates = [
+        make_candidate(
+            "AAA",
+            95,
+            0.30,
+            "Technology",
+        ),
+
+        make_candidate(
+            "BBB",
+            90,
+            0.20,
+            "Healthcare",
+        ),
+
+        make_candidate(
+            "CCC",
+            88,
+            0.15,
+            "Financials",
+        ),
+
+        make_candidate(
+            "DDD",
+            86,
+            0.12,
+            "Industrials",
+        ),
+    ]
+
+    scan = {
+        "universe":
+            "TEST",
+
+        "requested_count":
+            4,
+
+        "completed_count":
+            4,
+
+        "audit_pass_count":
+            4,
+
+        "results":
+            candidates,
+    }
+
+    portfolio = (
+        PortfolioEngine.construct(
+            scan,
+            number_of_stocks=4,
+            max_weight=0.30,
+        )
+    )
+
+    assert (
+        portfolio[
+            "number_of_stocks"
+        ]
+        == 4
+    )
+
+    assert (
+        len(
+            portfolio[
+                "holdings"
+            ]
+        )
+        == 4
+    )
+
+    total_weight = sum(
+        item[
+            "weight"
+        ]
+        for item in portfolio[
+            "holdings"
+        ]
+    )
+
+    assert abs(
+        total_weight - 1.0
+    ) < 0.00001
+
+    for holding in portfolio[
+        "holdings"
+    ]:
+
+        assert (
+            holding[
+                "weight"
+            ]
+            <= 0.300001
+        )
+
+
+def test_infeasible_position_constraints():
+
+    selected = [
+        {
+            "portfolio_conviction":
+                90,
+        }
+        for _ in range(4)
+    ]
+
+    try:
+
+        PortfolioEngine.calculate_weights(
+            selected,
+            max_weight=0.15,
+            min_weight=0.03,
+        )
+
+    except ValueError as exc:
+
+        assert (
+            "Infeasible portfolio constraints"
+            in str(exc)
+        )
+
+    else:
+
+        raise AssertionError(
+            "Expected infeasible constraints "
+            "to raise ValueError."
+        )
 
 
 if __name__ == "__main__":
 
-    test_universe_engine_interface()
-    test_portfolio_engine_interface()
+    test_candidate_scoring()
+    test_failed_audit_is_rejected()
+    test_portfolio_construction()
+    test_infeasible_position_constraints()
 
     print(
-        "PORTFOLIO INTERFACE TEST PASSED"
+        "PORTFOLIO SYSTEM TESTS PASSED"
     )
