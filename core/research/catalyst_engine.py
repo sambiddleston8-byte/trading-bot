@@ -21,8 +21,24 @@ class CatalystEngine:
             "direction": "BOTH",
             "importance": "HIGH",
         },
+        "clinical_trial": {
+            "direction": "BOTH",
+            "importance": "HIGH",
+        },
+        "regulatory_approval": {
+            "direction": "BOTH",
+            "importance": "HIGH",
+        },
+        "certification": {
+            "direction": "BOTH",
+            "importance": "HIGH",
+        },
         "product": {
             "direction": "POSITIVE",
+            "importance": "HIGH",
+        },
+        "product_launch": {
+            "direction": "BOTH",
             "importance": "HIGH",
         },
         "regulatory": {
@@ -31,6 +47,10 @@ class CatalystEngine:
         },
         "contracts": {
             "direction": "POSITIVE",
+            "importance": "HIGH",
+        },
+        "major_contract": {
+            "direction": "BOTH",
             "importance": "HIGH",
         },
         "customer": {
@@ -151,7 +171,9 @@ class CatalystEngine:
         )
 
         if probability is None:
-            probability = 0.5
+            # An unvalidated discovery headline has no allocation effect.
+            # Probability is populated later by CatalystProbabilityEngine.
+            probability = 0.0
 
         if impact is None:
             impact = 0
@@ -307,6 +329,67 @@ class CatalystEngine:
         # ------------------------------------------------
 
         rules = [
+
+            # Specific event types are checked before generic parent labels.
+            # Each headline is classified once below, preventing a trial or
+            # approval from being counted twice in the catalyst model.
+            (
+                "clinical_trial",
+                {
+                    "clinical trial",
+                    "phase 1",
+                    "phase 2",
+                    "phase 3",
+                    "trial result",
+                    "primary endpoint",
+                    "study readout",
+                },
+            ),
+
+            (
+                "regulatory_approval",
+                {
+                    "fda approval",
+                    "approved by the fda",
+                    "regulatory approval",
+                    "marketing authorization",
+                    "cleared by the fda",
+                    "drug approval",
+                },
+            ),
+
+            (
+                "certification",
+                {
+                    "faa certification",
+                    "faa approved",
+                    "type certification",
+                    "certified by",
+                },
+            ),
+
+            (
+                "major_contract",
+                {
+                    "major contract",
+                    "contract award",
+                    "awarded contract",
+                    "multiyear agreement",
+                    "multi-year agreement",
+                    "purchase order",
+                },
+            ),
+
+            (
+                "product_launch",
+                {
+                    "product launch",
+                    "launches new",
+                    "launching new",
+                    "commercial launch",
+                    "general availability",
+                },
+            ),
 
             (
                 "earnings",
@@ -523,7 +606,9 @@ class CatalystEngine:
                     category=category,
                     direction=direction,
                     impact=impact,
-                    probability=0.50,
+                    # Probability is calculated later from the evidence.  A
+                    # generic headline must not silently become a 50% event.
+                    probability=None,
                     expected_date=(
                         evidence.get(
                             "published_at"
@@ -560,6 +645,8 @@ class CatalystEngine:
                     research,
                     catalyst,
                 )
+
+                break
 
         # ------------------------------------------------
         # Explicit upcoming earnings catalyst.
@@ -635,7 +722,9 @@ class CatalystEngine:
                     category="earnings",
                     direction="BOTH",
                     impact=9,
-                    probability=0.70,
+                    # The probability engine recognises a dated earnings
+                    # calendar event separately from the unknown outcome.
+                    probability=None,
                     expected_date=str(
                         earnings_date
                     ),

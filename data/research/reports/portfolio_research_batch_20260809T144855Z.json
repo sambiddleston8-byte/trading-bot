@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T14:48:55.319209+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "MELI",
+      "sector": "Catalog/Specialty Distribution"
+    },
+    {
+      "ticker": "ASML",
+      "sector": "Industrial Machinery"
+    },
+    {
+      "ticker": "FER",
+      "sector": "Military, Government, Technical"
+    },
+    {
+      "ticker": "EA",
+      "sector": "Miscellaneous Amusement & Recreation Services"
+    },
+    {
+      "ticker": "TPL",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "PSKY",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "MLM",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "EXR",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "ED",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "GIS",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "DHI",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "BIIB",
+      "sector": "Health Care"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "MELI",
+      "sector": "Catalog/Specialty Distribution",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MELI.json"
+    },
+    {
+      "ticker": "ASML",
+      "sector": "Industrial Machinery",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ASML.json"
+    },
+    {
+      "ticker": "FER",
+      "sector": "Military, Government, Technical",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/FER.json"
+    },
+    {
+      "ticker": "EA",
+      "sector": "Miscellaneous Amusement & Recreation Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EA.json"
+    },
+    {
+      "ticker": "TPL",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/TPL.json"
+    },
+    {
+      "ticker": "PSKY",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/PSKY.json"
+    },
+    {
+      "ticker": "MLM",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MLM.json"
+    },
+    {
+      "ticker": "EXR",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EXR.json"
+    },
+    {
+      "ticker": "ED",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ED.json"
+    },
+    {
+      "ticker": "GIS",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/GIS.json"
+    },
+    {
+      "ticker": "DHI",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/DHI.json"
+    },
+    {
+      "ticker": "BIIB",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/BIIB.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T144855Z.json",
+  "completed_at": "2026-08-09T14:50:53.874207+00:00"
+}

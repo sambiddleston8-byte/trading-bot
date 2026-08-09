@@ -52,6 +52,59 @@ class SourceRegistry:
             },
         },
 
+        "FMP": {
+            "name": "Financial Modeling Prep",
+            "type": "SECONDARY",
+            "tier": 2,
+            "role": "Independent financial-statement and analyst-estimate cross-check",
+            "freshness_hours": 24,
+            "authoritative_fields": {
+                "analyst_consensus",
+                "revenue_estimate",
+                "eps_estimate",
+                "historical_prices",
+            },
+        },
+
+        "ALPHA_VANTAGE": {
+            "name": "Alpha Vantage",
+            "type": "SECONDARY",
+            "tier": 2,
+            "role": "Earnings transcripts, calendar and independent financial-data cross-check",
+            "freshness_hours": 24,
+            "authoritative_fields": {
+                "earnings_transcript",
+                "earnings_calendar",
+            },
+        },
+
+        "POLYGON": {
+            "name": "Massive (formerly Polygon)",
+            "type": "MARKET_DATA",
+            "tier": 2,
+            "role": "Independent historical price, volume and liquidity data",
+            "freshness_hours": 24,
+            "authoritative_fields": {
+                "current_price",
+                "historical_prices",
+                "volume",
+                "liquidity",
+            },
+        },
+
+        "FRED": {
+            "name": "Federal Reserve Economic Data",
+            "type": "MACRO",
+            "tier": 1,
+            "role": "Macroeconomic rates, inflation, credit and recession indicators",
+            "freshness_hours": 24 * 7,
+            "authoritative_fields": {
+                "macro_rates",
+                "inflation",
+                "credit_conditions",
+            },
+        },
+
         "CALCULATION": {
             "name": "Trading Bot",
             "type": "CALCULATION",

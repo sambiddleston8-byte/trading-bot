@@ -2,30 +2,30 @@
     "Ticker": "A",
     "Company": "Agilent Technologies, Inc.",
     "Status": "COMPLETE",
-    "Analysed At": "2026-08-08T23:48:12.547897+00:00",
+    "Analysed At": "2026-08-09T15:00:50.978683+00:00",
     "Current Price": 145.97,
     "Market Capitalisation": 41226588160.0,
     "Financial Data Validation": {
-        "Overall Confidence": "MEDIUM",
+        "Overall Confidence": "HIGH",
         "Summary": {
             "metrics_checked": 10,
             "agreements": 5,
-            "definition_differences": 0,
-            "discrepancies": 1,
+            "definition_differences": 1,
+            "discrepancies": 0,
             "insufficient_data": 4,
-            "overall_confidence": "MEDIUM"
+            "overall_confidence": "HIGH"
         },
         "Selected Financials": {
             "net_income": 1303000000.0,
             "operating_income": 1479000000.0,
             "gross_profit": null,
-            "equity": 6741000000.0,
+            "equity": -226000000.0,
             "revenue": 6948000000.0,
             "operating_cash_flow": 1559000000.0,
             "free_cash_flow": 1152000000.0,
             "cash_and_equivalents": 1789000000.0,
-            "total_debt": 3050000000.0,
-            "net_debt": 1261000000.0,
+            "total_debt": 3354000000.0,
+            "net_debt": 1565000000.0,
             "shares_outstanding": 283054377.0
         }
     },
@@ -132,13 +132,13 @@
     "Terminal Growth": 0.03,
     "Forecast Years": 5,
     "Shares Outstanding": 283054377.0,
-    "Total Debt": 3050000000.0,
+    "Total Debt": 3354000000.0,
     "Cash": 1789000000.0,
-    "Net Debt": 1261000000.0,
+    "Net Debt": 1565000000.0,
     "Intrinsic Value": {
-        "Bear": 44.87687591953269,
-        "Base": 70.21629141185063,
-        "Bull": 103.18972717867999
+        "Bear": 43.802877335861254,
+        "Base": 69.14229282817921,
+        "Bull": 102.11572859500856
     },
     "Scenarios": {
         "Bear": {
@@ -179,10 +179,10 @@
             "Terminal Present Value": 9951648579.508186,
             "Forecast Cash Flow PV": 4011947575.6014395,
             "Enterprise Value": 13963596155.109627,
-            "Net Debt": 1261000000.0,
-            "Equity Value": 12702596155.109627,
+            "Net Debt": 1565000000.0,
+            "Equity Value": 12398596155.109627,
             "Shares Outstanding": 283054377.0,
-            "Intrinsic Value Per Share": 44.87687591953269,
+            "Intrinsic Value Per Share": 43.802877335861254,
             "Terminal Value % of Enterprise Value": 0.7126852186903608,
             "Scenario": "Bear",
             "Starting Growth": -0.017913386489409107,
@@ -289,10 +289,10 @@
             "Terminal Present Value": 15768630601.729635,
             "Forecast Cash Flow PV": 5367398019.102199,
             "Enterprise Value": 21136028620.831833,
-            "Net Debt": 1261000000.0,
-            "Equity Value": 19875028620.831833,
+            "Net Debt": 1565000000.0,
+            "Equity Value": 19571028620.831833,
             "Shares Outstanding": 283054377.0,
-            "Intrinsic Value Per Share": 70.21629141185063,
+            "Intrinsic Value Per Share": 69.14229282817921,
             "Terminal Value % of Enterprise Value": 0.7460545632583007,
             "Scenario": "Base",
             "Starting Growth": 0.062086613510590895,
@@ -399,10 +399,10 @@
             "Terminal Present Value": 23429138848.718525,
             "Forecast Cash Flow PV": 7040165090.642708,
             "Enterprise Value": 30469303939.361233,
-            "Net Debt": 1261000000.0,
-            "Equity Value": 29208303939.361233,
+            "Net Debt": 1565000000.0,
+            "Equity Value": 28904303939.361233,
             "Shares Outstanding": 283054377.0,
-            "Intrinsic Value Per Share": 103.18972717867999,
+            "Intrinsic Value Per Share": 102.11572859500856,
             "Terminal Value % of Enterprise Value": 0.7689423721443143,
             "Scenario": "Bull",
             "Starting Growth": 0.1420866135105909,
@@ -473,8 +473,8 @@
         }
     },
     "Expected Return": {
-        "Base": -0.5189676549164168,
-        "Annualised": -0.13615692525632883,
+        "Base": -0.5263253214483852,
+        "Annualised": -0.13881583863667146,
         "Horizon Years": 5
     },
     "Terminal Value Contribution": 0.7460545632583007

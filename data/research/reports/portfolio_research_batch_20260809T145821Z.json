@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T14:58:21.573531+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "AFL",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "ALLE",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "AAPL",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "MSTR",
+      "sector": "Computer Software"
+    },
+    {
+      "ticker": "WMB",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "TMUS",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "NUE",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "INVH",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "ETR",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "KDP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "EBAY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "CAH",
+      "sector": "Health Care"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "AFL",
+      "sector": "Financials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AFL.json"
+    },
+    {
+      "ticker": "ALLE",
+      "sector": "Industrials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALLE.json"
+    },
+    {
+      "ticker": "AAPL",
+      "sector": "Information Technology",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AAPL.json"
+    },
+    {
+      "ticker": "MSTR",
+      "sector": "Computer Software",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MSTR.json"
+    },
+    {
+      "ticker": "WMB",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/WMB.json"
+    },
+    {
+      "ticker": "TMUS",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/TMUS.json"
+    },
+    {
+      "ticker": "NUE",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/NUE.json"
+    },
+    {
+      "ticker": "INVH",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/INVH.json"
+    },
+    {
+      "ticker": "ETR",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ETR.json"
+    },
+    {
+      "ticker": "KDP",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/KDP.json"
+    },
+    {
+      "ticker": "EBAY",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EBAY.json"
+    },
+    {
+      "ticker": "CAH",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CAH.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T145821Z.json",
+  "completed_at": "2026-08-09T15:00:21.647744+00:00"
+}

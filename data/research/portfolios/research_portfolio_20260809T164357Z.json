@@ -1,0 +1,2006 @@
+{
+  "version": "0.7-true-hundred-point-rating",
+  "created_at": "2026-08-09T16:43:57.700224+00:00",
+  "status": "RESEARCH_GATED_READY",
+  "universe": "saved_research_records",
+  "universe_count": 197,
+  "researched_count": 197,
+  "audit_pass_count": 104,
+  "eligible_count": 14,
+  "number_of_stocks": 13,
+  "constraints": {
+    "max_weight": 0.15,
+    "min_weight": 0.025,
+    "max_sector_weight": 0.5,
+    "cash_weight": 0.0
+  },
+  "cash_weight": 0.0,
+  "portfolio_expected_return": 0.82714,
+  "portfolio_annualised_expected_return": 0.122441,
+  "valuation_horizon_years": 5.0,
+  "return_disclosure": {
+    "label": "Model-implied valuation gap",
+    "meaning": "A weighted comparison of current prices with the base-case DCF values. It is not a promise or a time-certain forecast.",
+    "forecast_horizon_years": 5.0,
+    "annualised_coverage": 0.999999
+  },
+  "sector_weights": {
+    "Communication Services": 0.321643,
+    "Information Technology": 0.162129,
+    "Health Care": 0.259961,
+    "Computer Software": 0.059219,
+    "Energy": 0.072676,
+    "Consumer Discretionary": 0.124371
+  },
+  "holdings": [
+    {
+      "rank": 1,
+      "ticker": "NWS",
+      "name": "News Corp (Class B)",
+      "sector": "Communication Services",
+      "industry": "Publishing",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.109093,
+      "portfolio_conviction": 95.21,
+      "opportunity_score": 98.31,
+      "research_confidence": 82.8,
+      "decision_rating": {
+        "score": 85.3,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 95.2,
+          "evidence_quality": 92.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 80.0,
+          "technical_context": 80.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 35.0,
+          "residual_uncertainty_deduction": 1.32
+        }
+      },
+      "provider_evidence": {},
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 84.25,
+      "current_price": 32.45,
+      "base_intrinsic_value": 72.97264863161153,
+      "expected_return": 1.2487719146875662,
+      "annualised_expected_return": 0.1759506100081123,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 1.2487719146875662,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 10.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 80.0,
+        "momentum_score": 60.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 80.0,
+        "beta": 0.911,
+        "annualised_volatility": 0.2767,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 55.67,
+        "label": "NEUTRAL",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.839005,
+        "opportunity_score": 98.31,
+        "research_confidence": 82.8,
+        "expected_return": 1.2487719146875662,
+        "annualised_volatility": 0.2767,
+        "risk_score": 80.0
+      },
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review.",
+        "portfolio_conviction": 95.21,
+        "opportunity_score": 95.21,
+        "investment_case_score": 84.25,
+        "expected_return": 1.2487719146875662,
+        "valuation_upside": 1.2487719146875662,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 80.0,
+        "risk_score": 80.0,
+        "sentiment_score": 55.67
+      },
+      "confidence_label": "VERY_STRONG"
+    },
+    {
+      "rank": 2,
+      "ticker": "ACN",
+      "name": "Accenture",
+      "sector": "Information Technology",
+      "industry": "IT Consulting & Other Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.081041,
+      "portfolio_conviction": 92.91,
+      "opportunity_score": 98.14,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 82.1,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 92.9,
+          "evidence_quality": 80.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 80.0,
+          "technical_context": 90.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 25.0,
+          "residual_uncertainty_deduction": 1.42
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials",
+          "independent_estimates"
+        ],
+        "completed_source_count": 2,
+        "independent_company_source_count": 1
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 87.25,
+      "current_price": 175.72,
+      "base_intrinsic_value": 316.3907414314313,
+      "expected_return": 0.8005391613443622,
+      "annualised_expected_return": 0.12481348502899992,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 0.8005391613443622,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 9.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 90.0,
+        "momentum_score": 80.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 80.0,
+        "beta": 1.074,
+        "annualised_volatility": 0.4351,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 43.2,
+        "label": "NEUTRAL",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.458456,
+        "opportunity_score": 98.14,
+        "research_confidence": 72.0,
+        "expected_return": 0.8005391613443622,
+        "annualised_volatility": 0.4351,
+        "risk_score": 80.0
+      },
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 92.91,
+        "opportunity_score": 92.91,
+        "investment_case_score": 87.25,
+        "expected_return": 0.8005391613443622,
+        "valuation_upside": 0.8005391613443622,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 90.0,
+        "risk_score": 80.0,
+        "sentiment_score": 43.2
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 3,
+      "ticker": "BMY",
+      "name": "Bristol Myers Squibb",
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.102151,
+      "portfolio_conviction": 93.82,
+      "opportunity_score": 95.82,
+      "research_confidence": 85.8,
+      "decision_rating": {
+        "score": 81.8,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 93.8,
+          "evidence_quality": 95.3,
+          "expected_return": 80.5,
+          "valuation_reliability": 55.0,
+          "risk_quality": 70.0,
+          "technical_context": 90.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 25.0,
+          "residual_uncertainty_deduction": 1.37
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials",
+          "independent_estimates"
+        ],
+        "completed_source_count": 2,
+        "independent_company_source_count": 1
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 78.0,
+      "current_price": 64.72,
+      "base_intrinsic_value": 77.81330810548175,
+      "expected_return": 0.20230698556059568,
+      "annualised_expected_return": 0.037535759824275594,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 0.20230698556059568,
+      "decision": "BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 11.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 90.0,
+        "momentum_score": 80.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 70.0,
+        "beta": 0.225,
+        "annualised_volatility": 0.2723,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 72.67,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.642353,
+        "opportunity_score": 95.82,
+        "research_confidence": 85.8,
+        "expected_return": 0.20230698556059568,
+        "annualised_volatility": 0.2723,
+        "risk_score": 70.0
+      },
+      "reasoning": {
+        "summary": "Strong underlying investment case. Attractive expected return. Investment thesis survived adversarial review.",
+        "portfolio_conviction": 93.82,
+        "opportunity_score": 93.82,
+        "investment_case_score": 78.0,
+        "expected_return": 0.20230698556059568,
+        "valuation_upside": 0.20230698556059568,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 90.0,
+        "risk_score": 70.0,
+        "sentiment_score": 72.67
+      },
+      "confidence_label": "VERY_STRONG"
+    },
+    {
+      "rank": 4,
+      "ticker": "TEAM",
+      "name": "Atlassian",
+      "sector": "Computer Software",
+      "industry": "Computer Software",
+      "index_membership": [
+        "NASDAQ100"
+      ],
+      "weight": 0.059219,
+      "portfolio_conviction": 92.94,
+      "opportunity_score": 98.18,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 81.8,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 92.9,
+          "evidence_quality": 80.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 70.0,
+          "technical_context": 100.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 25.0,
+          "residual_uncertainty_deduction": 1.42
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials",
+          "independent_estimates"
+        ],
+        "completed_source_count": 2,
+        "independent_company_source_count": 1
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 89.75,
+      "current_price": 149.07,
+      "base_intrinsic_value": 208.69422645744385,
+      "expected_return": 0.3999746861034672,
+      "annualised_expected_return": 0.06960650769618137,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 0.3999746861034672,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 10.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 100.0,
+        "momentum_score": 100.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 70.0,
+        "beta": 1.038,
+        "annualised_volatility": 0.7695,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 64.57,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.279938,
+        "opportunity_score": 98.18,
+        "research_confidence": 72.0,
+        "expected_return": 0.3999746861034672,
+        "annualised_volatility": 0.7695,
+        "risk_score": 70.0
+      },
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 92.94,
+        "opportunity_score": 92.94,
+        "investment_case_score": 89.75,
+        "expected_return": 0.3999746861034672,
+        "valuation_upside": 0.3999746861034672,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 100.0,
+        "risk_score": 70.0,
+        "sentiment_score": 64.57
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 5,
+      "ticker": "FOXA",
+      "name": "Fox Corporation (Class A)",
+      "sector": "Communication Services",
+      "industry": "Broadcasting",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.076808,
+      "portfolio_conviction": 91.74,
+      "opportunity_score": 96.67,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 81.2,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 91.7,
+          "evidence_quality": 80.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 80.0,
+          "technical_context": 70.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 35.0,
+          "residual_uncertainty_deduction": 1.5
+        }
+      },
+      "provider_evidence": {},
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 80.25,
+      "current_price": 64.03,
+      "base_intrinsic_value": 148.4002568612679,
+      "expected_return": 1.3176676067666393,
+      "annualised_expected_return": 0.1830694235742656,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 1.3176676067666393,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 8.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 70.0,
+        "momentum_score": 40.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 80.0,
+        "beta": 0.541,
+        "annualised_volatility": 0.3534,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 65.45,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.516896,
+        "opportunity_score": 96.67,
+        "research_confidence": 72.0,
+        "expected_return": 1.3176676067666393,
+        "annualised_volatility": 0.3534,
+        "risk_score": 80.0
+      },
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 91.74,
+        "opportunity_score": 91.74,
+        "investment_case_score": 80.25,
+        "expected_return": 1.3176676067666393,
+        "valuation_upside": 1.3176676067666393,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 70.0,
+        "risk_score": 80.0,
+        "sentiment_score": 65.45
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 6,
+      "ticker": "APA",
+      "name": "APA Corporation",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.072676,
+      "portfolio_conviction": 91.5,
+      "opportunity_score": 96.38,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 79.9,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 91.5,
+          "evidence_quality": 80.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 60.0,
+          "technical_context": 80.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 35.0,
+          "residual_uncertainty_deduction": 1.58
+        }
+      },
+      "provider_evidence": {},
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 82.75,
+      "current_price": 37.63,
+      "base_intrinsic_value": 57.315429425273244,
+      "expected_return": 0.5231312629623504,
+      "annualised_expected_return": 0.08779602241684992,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 0.5231312629623504,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 9.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 80.0,
+        "momentum_score": 60.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 60.0,
+        "beta": 0.348,
+        "annualised_volatility": 0.4571,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 61.33,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.390031,
+        "opportunity_score": 96.38,
+        "research_confidence": 72.0,
+        "expected_return": 0.5231312629623504,
+        "annualised_volatility": 0.4571,
+        "risk_score": 60.0
+      },
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 91.5,
+        "opportunity_score": 91.5,
+        "investment_case_score": 82.75,
+        "expected_return": 0.5231312629623504,
+        "valuation_upside": 0.5231312629623504,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 80.0,
+        "risk_score": 60.0,
+        "sentiment_score": 61.33
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 7,
+      "ticker": "CNC",
+      "name": "Centene Corporation",
+      "sector": "Health Care",
+      "industry": "Managed Health Care",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.070862,
+      "portfolio_conviction": 91.51,
+      "opportunity_score": 96.39,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 79.8,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 91.5,
+          "evidence_quality": 80.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 65.0,
+          "technical_context": 80.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 25.0,
+          "residual_uncertainty_deduction": 1.62
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials",
+          "independent_estimates"
+        ],
+        "completed_source_count": 2,
+        "independent_company_source_count": 1
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 79.25,
+      "current_price": 65.77,
+      "base_intrinsic_value": 163.42402797668927,
+      "expected_return": 1.4847807203388976,
+      "annualised_expected_return": 0.1996584399084551,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 1.4847807203388976,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 9.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 80.0,
+        "momentum_score": 80.0,
+        "moving_average_score": 80.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 65.0,
+        "beta": 1.105,
+        "annualised_volatility": 0.4939,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 64.57,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.381845,
+        "opportunity_score": 96.39,
+        "research_confidence": 72.0,
+        "expected_return": 1.4847807203388976,
+        "annualised_volatility": 0.4939,
+        "risk_score": 65.0
+      },
+      "reasoning": {
+        "summary": "Strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 91.51,
+        "opportunity_score": 91.51,
+        "investment_case_score": 79.25,
+        "expected_return": 1.4847807203388976,
+        "valuation_upside": 1.4847807203388976,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 80.0,
+        "risk_score": 65.0,
+        "sentiment_score": 64.57
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 8,
+      "ticker": "TKO",
+      "name": "TKO Group Holdings",
+      "sector": "Communication Services",
+      "industry": "Movies & Entertainment",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.076911,
+      "portfolio_conviction": 92.03,
+      "opportunity_score": 97.04,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 78.9,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 92.0,
+          "evidence_quality": 80.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 70.0,
+          "technical_context": 55.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 25.0,
+          "residual_uncertainty_deduction": 1.79
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials",
+          "independent_estimates"
+        ],
+        "completed_source_count": 2,
+        "independent_company_source_count": 1
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 83.75,
+      "current_price": 186.56,
+      "base_intrinsic_value": 310.27097546262485,
+      "expected_return": 0.6631162921452876,
+      "annualised_expected_return": 0.10709406761627172,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 0.6631162921452876,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 11.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 55.0,
+        "momentum_score": 60.0,
+        "moving_average_score": 50.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 70.0,
+        "beta": 0.648,
+        "annualised_volatility": 0.3261,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 64.57,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.517919,
+        "opportunity_score": 97.04,
+        "research_confidence": 72.0,
+        "expected_return": 0.6631162921452876,
+        "annualised_volatility": 0.3261,
+        "risk_score": 70.0
+      },
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 92.03,
+        "opportunity_score": 92.03,
+        "investment_case_score": 83.75,
+        "expected_return": 0.6631162921452876,
+        "valuation_upside": 0.6631162921452876,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 55.0,
+        "risk_score": 70.0,
+        "sentiment_score": 64.57
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 9,
+      "ticker": "ADBE",
+      "name": "Adobe Inc.",
+      "sector": "Information Technology",
+      "industry": "Application Software",
+      "index_membership": [
+        "SP500",
+        "NASDAQ100"
+      ],
+      "weight": 0.081088,
+      "portfolio_conviction": 74.33,
+      "opportunity_score": 72.21,
+      "research_confidence": 82.8,
+      "decision_rating": {
+        "score": 78.3,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 74.3,
+          "evidence_quality": 92.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 100.0,
+          "risk_quality": 75.0,
+          "technical_context": 90.0,
+          "thesis_strength": 25.0,
+          "source_breadth": 37.5,
+          "residual_uncertainty_deduction": 1.5
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_estimates",
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials"
+        ],
+        "completed_source_count": 3,
+        "independent_company_source_count": 2
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 46.08,
+      "current_price": 265.21,
+      "base_intrinsic_value": 453.3734045187431,
+      "expected_return": 0.7094883470409981,
+      "annualised_expected_return": 0.113200080180889,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 0.7094883470409981,
+      "decision": "WATCHLIST",
+      "thesis": {
+        "result": "THESIS_WEAKENED",
+        "tested": 11.0,
+        "material_negative": 1.0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "PASS_WITH_WARNINGS",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "findings": [
+          {
+            "severity": "MEDIUM",
+            "type": "SOURCE_DISCREPANCY",
+            "field": "shares_outstanding",
+            "message": "shares_outstanding differs by 3.75% between Yahoo Finance and SEC EDGAR.",
+            "evidence": {
+              "first": {
+                "source": "Yahoo Finance",
+                "value": 397500000.0
+              },
+              "second": {
+                "source": "SEC EDGAR",
+                "value": 413000000.0
+              },
+              "difference_percent": 0.03753026634382567,
+              "raw_difference_percent": 0.03753026634382567,
+              "selected": null,
+              "selected_source": null,
+              "reconciliation": null
+            }
+          }
+        ]
+      },
+      "market_signals": {
+        "technical_score": 90.0,
+        "momentum_score": 80.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 75.0,
+        "beta": 1.397,
+        "annualised_volatility": 0.3853,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 50.0,
+        "label": "NEUTRAL",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment.",
+        "Additional material negative findings from adversarial research would weaken the thesis."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.458848,
+        "opportunity_score": 72.21,
+        "research_confidence": 82.8,
+        "expected_return": 0.7094883470409981,
+        "annualised_volatility": 0.3853,
+        "risk_score": 75.0
+      },
+      "reasoning": {
+        "summary": "Attractive expected return. Material upside to base intrinsic value. Conditional allocation: The thesis was weakened by a limited adverse finding; allocation is reduced and monitoring is required.",
+        "portfolio_conviction": 74.33,
+        "opportunity_score": 74.33,
+        "investment_case_score": 46.08,
+        "expected_return": 0.7094883470409981,
+        "valuation_upside": 0.7094883470409981,
+        "thesis_result": "THESIS_WEAKENED",
+        "material_negative": 1.0,
+        "technical_score": 90.0,
+        "risk_score": 75.0,
+        "sentiment_score": 50.0
+      },
+      "confidence_label": "VERY_STRONG"
+    },
+    {
+      "rank": 10,
+      "ticker": "CI",
+      "name": "Cigna",
+      "sector": "Health Care",
+      "industry": "Health Care Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.086948,
+      "portfolio_conviction": 91.56,
+      "opportunity_score": 96.45,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 78.2,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 91.6,
+          "evidence_quality": 80.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 70.0,
+          "technical_context": 45.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 25.0,
+          "residual_uncertainty_deduction": 1.88
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials",
+          "independent_estimates"
+        ],
+        "completed_source_count": 2,
+        "independent_company_source_count": 1
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 81.75,
+      "current_price": 282.49,
+      "base_intrinsic_value": 670.7328693364469,
+      "expected_return": 1.3743596917995218,
+      "annualised_expected_return": 0.1888013844243701,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 1.3743596917995218,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 9.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 45.0,
+        "momentum_score": 40.0,
+        "moving_average_score": 50.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 70.0,
+        "beta": 0.321,
+        "annualised_volatility": 0.3251,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 70.4,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.515775,
+        "opportunity_score": 96.45,
+        "research_confidence": 72.0,
+        "expected_return": 1.3743596917995218,
+        "annualised_volatility": 0.3251,
+        "risk_score": 70.0
+      },
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 91.56,
+        "opportunity_score": 91.56,
+        "investment_case_score": 81.75,
+        "expected_return": 1.3743596917995218,
+        "valuation_upside": 1.3743596917995218,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 45.0,
+        "risk_score": 70.0,
+        "sentiment_score": 70.4
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 11,
+      "ticker": "TTD",
+      "name": "Trade Desk (The)",
+      "sector": "Communication Services",
+      "industry": "Advertising",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.058831,
+      "portfolio_conviction": 83.31,
+      "opportunity_score": 86.14,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 75.3,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 83.3,
+          "evidence_quality": 80.0,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 80.0,
+          "technical_context": 22.5,
+          "thesis_strength": 100.0,
+          "source_breadth": 25.0,
+          "residual_uncertainty_deduction": 1.98
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials",
+          "independent_estimates"
+        ],
+        "completed_source_count": 2,
+        "independent_company_source_count": 1
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 67.5,
+      "current_price": 13.8,
+      "base_intrinsic_value": 30.327897124960057,
+      "expected_return": 1.1976737047072503,
+      "annualised_expected_return": 0.17055720472065028,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 1.1976737047072503,
+      "decision": "BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 10.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 22.5,
+        "momentum_score": 20.0,
+        "moving_average_score": 25.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 80.0,
+        "beta": 1.037,
+        "annualised_volatility": 0.5698,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 25.71,
+        "label": "NEGATIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.337538,
+        "opportunity_score": 86.14,
+        "research_confidence": 72.0,
+        "expected_return": 1.1976737047072503,
+        "annualised_volatility": 0.5698,
+        "risk_score": 80.0
+      },
+      "reasoning": {
+        "summary": "Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 83.31,
+        "opportunity_score": 83.31,
+        "investment_case_score": 67.5,
+        "expected_return": 1.1976737047072503,
+        "valuation_upside": 1.1976737047072503,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 22.5,
+        "risk_score": 80.0,
+        "sentiment_score": 25.71
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 12,
+      "ticker": "BKNG",
+      "name": "Booking Holdings",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "index_membership": [
+        "SP500",
+        "NASDAQ100"
+      ],
+      "weight": 0.063624,
+      "portfolio_conviction": 79.74,
+      "opportunity_score": 81.67,
+      "research_confidence": 72.0,
+      "decision_rating": {
+        "score": 73.8,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 79.7,
+          "evidence_quality": 80.0,
+          "expected_return": 65.9,
+          "valuation_reliability": 55.0,
+          "risk_quality": 75.0,
+          "technical_context": 100.0,
+          "thesis_strength": 100.0,
+          "source_breadth": 35.0,
+          "residual_uncertainty_deduction": 1.29
+        }
+      },
+      "provider_evidence": {},
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 64.5,
+      "current_price": 214.42,
+      "base_intrinsic_value": 242.15486484159004,
+      "expected_return": 0.12934831098586907,
+      "annualised_expected_return": 0.02462649399914718,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 0.12934831098586907,
+      "decision": "WATCHLIST",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 9.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 100.0,
+        "momentum_score": 100.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 75.0,
+        "beta": 1.068,
+        "annualised_volatility": 0.3608,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 50.0,
+        "label": "NEUTRAL",
+        "confidence": "HIGH",
+        "independent_source_count": 29.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.315972,
+        "opportunity_score": 81.67,
+        "research_confidence": 72.0,
+        "expected_return": 0.12934831098586907,
+        "annualised_volatility": 0.3608,
+        "risk_score": 75.0
+      },
+      "reasoning": {
+        "summary": "Positive expected return. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+        "portfolio_conviction": 79.74,
+        "opportunity_score": 79.74,
+        "investment_case_score": 64.5,
+        "expected_return": 0.12934831098586907,
+        "valuation_upside": 0.12934831098586907,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 100.0,
+        "risk_score": 75.0,
+        "sentiment_score": 50.0
+      },
+      "confidence_label": "STRONG"
+    },
+    {
+      "rank": 13,
+      "ticker": "ABNB",
+      "name": "Airbnb",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "index_membership": [
+        "SP500",
+        "NASDAQ100"
+      ],
+      "weight": 0.060747,
+      "portfolio_conviction": 68.5,
+      "opportunity_score": 67.93,
+      "research_confidence": 70.8,
+      "decision_rating": {
+        "score": 70.1,
+        "maximum_score": 100.0,
+        "label": "Decision rating",
+        "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+        "formula": {
+          "opportunity": 0.3,
+          "evidence_quality": 0.2,
+          "expected_return": 0.15,
+          "valuation_reliability": 0.1,
+          "risk_quality": 0.08,
+          "technical_context": 0.05,
+          "thesis_strength": 0.07,
+          "source_breadth": 0.05
+        },
+        "components": {
+          "opportunity": 68.5,
+          "evidence_quality": 78.7,
+          "expected_return": 100.0,
+          "valuation_reliability": 55.0,
+          "risk_quality": 90.0,
+          "technical_context": 100.0,
+          "thesis_strength": 25.0,
+          "source_breadth": 25.0,
+          "residual_uncertainty_deduction": 1.89
+        }
+      },
+      "provider_evidence": {
+        "version": "1.1-reconciled-supplemental-evidence",
+        "status": "COMPLETE",
+        "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+        "completed_roles": [
+          "independent_market_history",
+          "macro_context"
+        ],
+        "unavailable_roles": [
+          "independent_financials",
+          "independent_estimates"
+        ],
+        "completed_source_count": 2,
+        "independent_company_source_count": 1
+      },
+      "portfolio_decision": "SELECTED",
+      "investment_case_score": 51.71,
+      "current_price": 178.07,
+      "base_intrinsic_value": 267.5289207591945,
+      "expected_return": 0.5023806410916745,
+      "annualised_expected_return": 0.08481578461580774,
+      "valuation_horizon_years": 5.0,
+      "valuation_upside": 0.5023806410916745,
+      "decision": "WATCHLIST",
+      "thesis": {
+        "result": "THESIS_WEAKENED",
+        "tested": 11.0,
+        "material_negative": 1.0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "PASS_WITH_WARNINGS",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "findings": [
+          {
+            "severity": "MEDIUM",
+            "type": "SOURCE_DISCREPANCY",
+            "field": "total_debt",
+            "message": "total_debt differs by 3.29% between Yahoo Finance and SEC EDGAR.",
+            "evidence": {
+              "first": {
+                "source": "Yahoo Finance",
+                "value": 2067000000.0
+              },
+              "second": {
+                "source": "SEC EDGAR",
+                "value": 1999000000.0
+              },
+              "difference_percent": 0.03289791969037252,
+              "raw_difference_percent": 0.03289791969037252,
+              "selected": null,
+              "selected_source": null,
+              "reconciliation": {
+                "field": "Total Debt",
+                "status": "UNRESOLVED",
+                "confidence": "REVIEW",
+                "sources": {
+                  "SEC EDGAR": 1999000000.0,
+                  "Yahoo Finance": 2067000000.0
+                },
+                "difference_percent": 0.03289791969037252,
+                "selected": null,
+                "selected_source": null,
+                "reason": "Sources disagree materially and no defensible resolution has yet been established.",
+                "escalation": {
+                  "field": "Total Debt",
+                  "status": "ESCALATE",
+                  "reconciliation_status": "UNRESOLVED",
+                  "confidence": "REVIEW",
+                  "next_sources": [
+                    {
+                      "source": "COMPANY FILINGS",
+                      "priority": 100,
+                      "type": "PRIMARY"
+                    },
+                    {
+                      "source": "COMPANY IR",
+                      "priority": 90,
+                      "type": "PRIMARY_CORPORATE"
+                    },
+                    {
+                      "source": "EARNINGS RELEASE",
+                      "priority": 85,
+                      "type": "PRIMARY_CORPORATE"
+                    },
+                    {
+                      "source": "REPUTABLE FINANCIAL DATA",
+                      "priority": 60,
+                      "type": "SECONDARY_DATA"
+                    },
+                    {
+                      "source": "CNBC",
+                      "priority": 40,
+                      "type": "SECONDARY_CONTEXT"
+                    }
+                  ],
+                  "reason": "Primary sources disagree and the difference has not been defensibly explained.",
+                  "created_at": "2026-08-09T15:00:59.076422+00:00"
+                },
+                "reconciled_at": "2026-08-09T15:00:59.076434+00:00",
+                "supporting_values": {
+                  "yahoo_underlying_debt": 3994000000.0,
+                  "yahoo_long_term_debt": 1995000000.0,
+                  "yahoo_current_debt": 1999000000.0,
+                  "yahoo_capital_lease_obligations": 68000000.0,
+                  "sec_noncurrent_debt": 0.0,
+                  "sec_current_debt": 1999000000.0
+                }
+              }
+            }
+          }
+        ]
+      },
+      "market_signals": {
+        "technical_score": 100.0,
+        "momentum_score": 100.0,
+        "moving_average_score": 100.0,
+        "drawdown_score": null,
+        "trend_persistence_score": null,
+        "return_20d": null,
+        "return_60d": null,
+        "return_120d": null,
+        "return_252d": null,
+        "drawdown_from_252d_high": null,
+        "risk_score": 90.0,
+        "beta": 1.137,
+        "annualised_volatility": 0.3406,
+        "downside_volatility": null,
+        "maximum_drawdown": null,
+        "debt_to_cash": null,
+        "risk_components": []
+      },
+      "sentiment": {
+        "score": 71.64,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment.",
+        "Additional material negative findings from adversarial research would weaken the thesis."
+      ],
+      "position_sizing": {
+        "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+        "signal": 0.292442,
+        "opportunity_score": 67.93,
+        "research_confidence": 70.8,
+        "expected_return": 0.5023806410916745,
+        "annualised_volatility": 0.3406,
+        "risk_score": 90.0
+      },
+      "reasoning": {
+        "summary": "Attractive expected return. Material upside to base intrinsic value. Conditional allocation: The thesis was weakened by a limited adverse finding; allocation is reduced and monitoring is required.",
+        "portfolio_conviction": 68.5,
+        "opportunity_score": 68.5,
+        "investment_case_score": 51.71,
+        "expected_return": 0.5023806410916745,
+        "valuation_upside": 0.5023806410916745,
+        "thesis_result": "THESIS_WEAKENED",
+        "material_negative": 1.0,
+        "technical_score": 100.0,
+        "risk_score": 90.0,
+        "sentiment_score": 71.64
+      },
+      "confidence_label": "STRONG"
+    }
+  ],
+  "method": "RISK_ADJUSTED_EVIDENCE_WEIGHTED_DIVERSIFIED_SELECTION",
+  "selection_logic": [
+    "Research must complete.",
+    "Evidence audit must PASS or PASS_WITH_WARNINGS.",
+    "Warning-only audits are disclosed and receive a conviction penalty.",
+    "Master portfolio decision must mark the company ELIGIBLE.",
+    "Expected return must clear the master portfolio threshold.",
+    "Evidence confidence is capped below certainty.",
+    "Position sizing uses opportunity, evidence confidence, expected return, volatility and risk quality.",
+    "Sector concentration has a 25% soft penalty and a stated hard limit.",
+    "Individual position size is constrained.",
+    "The prototype is fully invested; cash is not an allocation option.",
+    "The completed portfolio receives a separate risk review."
+  ],
+  "market_context": {
+    "market_regime": {
+      "status": "COMPLETE",
+      "regime": "RISK_ON",
+      "score": 95.0,
+      "coverage": 197,
+      "agreement": 1.0
+    },
+    "macro_environment": {
+      "status": "COMPLETE",
+      "regime": "RESTRICTIVE",
+      "policy_rate": 3.63,
+      "inflation_yoy": 0.037265,
+      "real_gdp_yoy": 0.021018,
+      "coverage": 197,
+      "agreement": 1.0
+    }
+  },
+  "cash_policy": {
+    "cash_weight": 0.0,
+    "reason": "Prototype policy is fully invested; market context changes selection and sizing, not cash allocation."
+  },
+  "construction_readiness": {
+    "target_holdings": 15,
+    "constructible_holdings": 13,
+    "eligible_count": 13,
+    "shortfall": 2,
+    "target_reached": false,
+    "ready": true,
+    "message": "13 master-approved, audit-cleared companies are available for a fully invested 13-holding portfolio. 2 more candidates are needed to reach the 15-holding target."
+  },
+  "benchmark": {
+    "version": "1.1-paper-performance-history",
+    "benchmark": {
+      "name": "S&P 500 Index",
+      "ticker": "^GSPC",
+      "purpose": "The S&P 500 is the reference index for assessing the prototype's future paper-portfolio performance."
+    },
+    "performance_comparison": {
+      "status": "NOT_ENOUGH_DATA",
+      "reason": "No dated portfolio and S&P 500 price observations are available yet.",
+      "windows": [
+        "1 month",
+        "3 months",
+        "6 months",
+        "12 months"
+      ],
+      "history": []
+    },
+    "valuation_time_horizon": {
+      "forecast_years": 5.0,
+      "label": "5-year DCF forecast period",
+      "disclosure": "The valuation gap is model-implied over the stated DCF forecast period. It is not a guaranteed return by that date."
+    }
+  },
+  "risk_review": {
+    "Pass": true,
+    "Position Checks": [
+      {
+        "Ticker": "NWS",
+        "Weight": 0.109093,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "ACN",
+        "Weight": 0.081041,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "BMY",
+        "Weight": 0.10215100000000002,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "TEAM",
+        "Weight": 0.059219,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "FOXA",
+        "Weight": 0.076808,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "APA",
+        "Weight": 0.072676,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "CNC",
+        "Weight": 0.070862,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "TKO",
+        "Weight": 0.076911,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "ADBE",
+        "Weight": 0.081088,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "CI",
+        "Weight": 0.08694799999999998,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "TTD",
+        "Weight": 0.058830999999999994,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "BKNG",
+        "Weight": 0.063624,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "ABNB",
+        "Weight": 0.060747,
+        "Flags": [],
+        "Pass": true
+      }
+    ],
+    "Sector Check": {
+      "Sector Exposure": {
+        "Communication Services": 32.16,
+        "Information Technology": 16.21,
+        "Health Care": 26.0,
+        "Computer Software": 5.92,
+        "Energy": 7.27,
+        "Consumer Discretionary": 12.44
+      },
+      "Flags": [],
+      "Pass": true
+    },
+    "Cash Check": {
+      "Cash Weight": 0.0,
+      "Minimum Required": 0.0,
+      "Pass": true,
+      "Flag": null
+    },
+    "Risk Check": {
+      "Flags": [],
+      "Pass": true
+    },
+    "Concentration": {
+      "HHI": 0.0799,
+      "Effective Positions": 12.52
+    },
+    "Portfolio Volatility": 11.2,
+    "Portfolio Volatility Limit": 25.0,
+    "Drawdown Check": {
+      "Current Drawdown %": 0.0,
+      "Maximum Allowed %": 20.0,
+      "Pass": true,
+      "Flag": null
+    },
+    "Flags": [],
+    "method": "POSITION_SECTOR_CASH_RISK_AND_VOLATILITY_REVIEW",
+    "volatility_coverage": {
+      "covered_holdings": 13,
+      "total_holdings": 13,
+      "note": "Portfolio volatility is an independent-position estimate; correlations are not yet modelled."
+    }
+  }
+}

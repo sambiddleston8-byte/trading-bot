@@ -703,5 +703,324 @@
       "6M": {},
       "12M": {}
     }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-09T01:46:19.861080",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-09T01:48:01.165419",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "AAPL",
+    "Date": "2026-08-09T01:48:06.289294",
+    "Price At Decision": null,
+    "Overall Score": 57.0,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "MSFT",
+    "Date": "2026-08-09T01:48:09.642038",
+    "Price At Decision": null,
+    "Overall Score": 63.6,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-09T01:48:13.130347",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "META",
+    "Date": "2026-08-09T01:48:16.312581",
+    "Price At Decision": null,
+    "Overall Score": 59.0,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "AMZN",
+    "Date": "2026-08-09T01:48:20.350670",
+    "Price At Decision": null,
+    "Overall Score": 68.0,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "GOOG",
+    "Date": "2026-08-09T01:48:23.890177",
+    "Price At Decision": null,
+    "Overall Score": 63.7,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "RKLB",
+    "Date": "2026-08-09T01:48:27.175385",
+    "Price At Decision": null,
+    "Overall Score": 47.9,
+    "Rating": "\u2605\u2606\u2606\u2606\u2606  SELL",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "JOBY",
+    "Date": "2026-08-09T01:48:30.684768",
+    "Price At Decision": null,
+    "Overall Score": 50.8,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-09T02:04:15.433207",
+    "Price At Decision": null,
+    "Overall Score": 67.8,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
   }
 ]

@@ -4,9 +4,11 @@ from core.data_quality.conflict_detector import ConflictDetector
 from core.data_quality.freshness_checker import FreshnessChecker
 
 
+from core.data_quality.source_reconciliation_engine import SourceReconciliationEngine
+
 class ValidatedFinancialData:
 
-    VERSION = "1.1"
+    VERSION = "1.2"
 
     DEFAULT_TOLERANCE = 0.005
 
@@ -117,6 +119,8 @@ class ValidatedFinancialData:
         cash = balance.get("cash_and_equivalents") or {}
         equity = balance.get("equity") or {}
         debt = balance.get("total_debt") or {}
+        current_debt = balance.get("current_debt") or {}
+        noncurrent_debt = balance.get("noncurrent_debt") or {}
         shares = balance.get("shares_outstanding") or {}
 
         return {
@@ -146,6 +150,12 @@ class ValidatedFinancialData:
             ),
             "total_debt": self._number(
                 debt.get("value")
+            ),
+            "current_debt": self._number(
+                current_debt.get("value")
+            ),
+            "noncurrent_debt": self._number(
+                noncurrent_debt.get("value")
             ),
             "shares_outstanding": self._number(
                 shares.get("value")
@@ -494,61 +504,58 @@ class ValidatedFinancialData:
         # --------------------------------------------------------
 
         debt_reconciliation = (
-            self._debt_comparison(
-                yahoo,
-                sec,
+            SourceReconciliationEngine
+            .reconcile_debt(
+                sec_debt=sec.get("total_debt"),
+                yahoo_total_debt=yahoo.get("total_debt"),
+                yahoo_long_term_debt=yahoo.get("long_term_debt"),
+                yahoo_current_debt=yahoo.get("current_debt"),
+                yahoo_leases=yahoo.get("capital_lease_obligations"),
+                sec_noncurrent_debt=sec.get("noncurrent_debt"),
+                sec_current_debt=sec.get("current_debt"),
             )
         )
 
+        reconciliation_status = debt_reconciliation.get(
+            "status"
+        )
+
+        conflict_status = (
+            "DISCREPANCY"
+            if reconciliation_status
+            in {
+                "UNRESOLVED",
+                "DISCREPANCY",
+            }
+            else reconciliation_status
+        )
+
+        debt_difference = debt_reconciliation.get(
+            "difference_percent"
+        )
+
+        if debt_difference is None:
+            debt_difference = debt_reconciliation.get(
+                "underlying_difference_percent"
+            )
+
         conflicts["total_debt"] = {
             "field": "total_debt",
-
             "first": {
                 "source": "Yahoo Finance",
-                "value": yahoo.get(
-                    "total_debt"
-                ),
+                "value": yahoo.get("total_debt"),
             },
-
             "second": {
                 "source": "SEC EDGAR",
-                "value": sec.get(
-                    "total_debt"
-                ),
+                "value": sec.get("total_debt"),
             },
-
-            "difference_percent":
-                self._percent_difference(
-                    yahoo.get(
-                        "total_debt"
-                    ),
-                    sec.get(
-                        "total_debt"
-                    ),
-                ),
-
-            "status":
-                debt_reconciliation.get(
-                    "status"
-                ),
-
-            "selected":
-                debt_reconciliation.get(
-                    "selected"
-                ),
-
-            "selected_source":
-                debt_reconciliation.get(
-                    "selected_source"
-                ),
-
-            "confidence":
-                debt_reconciliation.get(
-                    "confidence"
-                ),
-
-            "reconciliation":
-                debt_reconciliation,
+            "difference_percent": debt_difference,
+            "status": conflict_status,
+            "reconciliation_status": reconciliation_status,
+            "selected": debt_reconciliation.get("selected"),
+            "selected_source": debt_reconciliation.get("selected_source"),
+            "confidence": debt_reconciliation.get("confidence"),
+            "reconciliation": debt_reconciliation,
         }
 
         # --------------------------------------------------------

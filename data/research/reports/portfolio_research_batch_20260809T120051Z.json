@@ -1,0 +1,40 @@
+{
+  "created_at": "2026-08-09T12:00:51.235242+00:00",
+  "requested_count": 4,
+  "completed_count": 4,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "AFL",
+      "sector": "Financials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AFL.json"
+    },
+    {
+      "ticker": "ABBV",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ABBV.json"
+    },
+    {
+      "ticker": "ALLE",
+      "sector": "Industrials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALLE.json"
+    },
+    {
+      "ticker": "CHTR",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CHTR.json"
+    }
+  ]
+}

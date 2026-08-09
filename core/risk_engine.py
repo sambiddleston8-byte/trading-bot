@@ -6,9 +6,9 @@ class RiskEngine:
     def __init__(
         self,
         max_position_weight=0.10,
-        max_sector_weight=0.30,
+        max_sector_weight=0.50,
         max_portfolio_volatility=0.25,
-        minimum_cash_weight=0.05,
+        minimum_cash_weight=0.00,
         maximum_drawdown_limit=0.20,
         high_risk_threshold=40,
     ):

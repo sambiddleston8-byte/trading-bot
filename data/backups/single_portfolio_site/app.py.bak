@@ -1,0 +1,152 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import streamlit as st
+
+
+ROOT = Path(__file__).resolve().parent
+UNIVERSE_PATH = ROOT / "data/research/universe/both.json"
+SCAN_DIRECTORY = ROOT / "data/research/universe_scans"
+PIPELINE_DIRECTORY = ROOT / "data/research/pipeline"
+PORTFOLIO_DIRECTORY = ROOT / "data/research/portfolios"
+
+
+def load_json(path: Path) -> object:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def universe_tickers(payload: object) -> set[str]:
+    if isinstance(payload, list):
+        items = payload
+    elif isinstance(payload, dict):
+        items = (
+            payload.get("companies")
+            or payload.get("tickers")
+            or payload.get("constituents")
+            or payload.get("symbols")
+            or []
+        )
+    else:
+        items = []
+
+    tickers: set[str] = set()
+    for item in items:
+        if isinstance(item, str):
+            tickers.add(item.upper())
+        elif isinstance(item, dict):
+            ticker = item.get("ticker") or item.get("symbol")
+            if ticker:
+                tickers.add(str(ticker).upper())
+    return tickers
+
+
+def latest_json(directory: Path) -> tuple[Path | None, dict]:
+    paths = sorted(directory.glob("*.json"), key=lambda path: path.stat().st_mtime)
+    if not paths:
+        return None, {}
+    path = paths[-1]
+    data = load_json(path)
+    return path, data if isinstance(data, dict) else {}
+
+
+def as_number(value: object) -> float | None:
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def scan_rows(scan: dict) -> list[dict]:
+    entries = scan.get("results") or scan.get("candidates") or scan.get("ranked") or []
+    rows: list[dict] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        audit = entry.get("audit") or {}
+        rows.append(
+            {
+                "Ticker": entry.get("ticker", "—"),
+                "Sector": entry.get("sector", "—"),
+                "Research": entry.get("research_status", "—"),
+                "Audit": audit.get("status") or entry.get("audit_status", "—"),
+                "Score": as_number(entry.get("investment_case_score") or entry.get("score")),
+                "Expected return": as_number(entry.get("expected_return")),
+            }
+        )
+    return rows
+
+
+st.set_page_config(page_title="Investment Intelligence", page_icon="📈", layout="wide")
+st.title("Investment Intelligence")
+st.caption("Long-term research workflow: universe → research → audit → ranking → portfolio construction")
+
+universe = universe_tickers(load_json(UNIVERSE_PATH))
+scan_path, scan = latest_json(SCAN_DIRECTORY)
+rows = scan_rows(scan)
+pipeline_records = list(PIPELINE_DIRECTORY.glob("*.json"))
+portfolio_records = list(PORTFOLIO_DIRECTORY.glob("*.json")) if PORTFOLIO_DIRECTORY.exists() else []
+
+scan_name = scan.get("universe") or (scan_path.stem if scan_path else "No scan saved")
+requested = scan.get("requested") or len(rows)
+audit_pass = scan.get("audit_pass_count") or sum(row["Audit"] == "PASS" for row in rows)
+eligible = scan.get("eligible_count") or 0
+
+st.info(
+    "The combined investable universe contains S&P 500 and Nasdaq-100 companies. "
+    "The latest saved scan below is a six-company pilot used to validate the research and audit gates; "
+    "it is not a whole-universe result."
+)
+
+first, second, third, fourth = st.columns(4)
+first.metric("Combined universe", f"{len(universe):,}", "S&P 500 + Nasdaq-100")
+second.metric("Research records", f"{len(pipeline_records):,}", "completed files")
+third.metric("Pilot audit PASS", f"{audit_pass} / {requested}", "strict audit gate")
+fourth.metric("Saved portfolios", f"{len(portfolio_records):,}", "only created after eligibility")
+
+st.subheader("Latest pilot validation run")
+left, right = st.columns(2)
+with left:
+    st.markdown("#### What this represents")
+    st.write(f"**Run:** {scan_name}")
+    st.write(f"**Companies tested:** {requested}")
+    st.write(f"**Completed research:** {scan.get('completed_count', len(rows))}")
+    st.write(f"**Execution errors:** {scan.get('error_count', 0)}")
+
+with right:
+    st.markdown("#### Audit gate")
+    if eligible:
+        st.success(f"{eligible} candidates cleared the required gates.")
+    else:
+        st.warning("No portfolio was created: no candidate has cleared the strict audit gate yet.")
+    st.caption("A PASS is required before a company can be considered for portfolio construction.")
+
+st.markdown("#### Pilot results")
+if rows:
+    visible_rows = [
+        {key: value for key, value in row.items() if key != "Expected return"}
+        for row in rows
+    ]
+    st.dataframe(
+        visible_rows,
+        hide_index=True,
+        width="stretch",
+        column_config={
+            "Score": st.column_config.NumberColumn(format="%.2f"),
+        },
+    )
+else:
+    st.info("No saved scan results are available yet.")
+
+st.divider()
+st.subheader("How to read the system")
+st.markdown(
+    "- **Universe** is the 517-company S&P 500 + Nasdaq-100 starting set.\n"
+    "- **Pilot validation** checks that research, valuation, and audit data flow correctly before scaling.\n"
+    "- **Strict audit PASS** is intentionally required before portfolio construction.\n"
+    "- A zero-holding portfolio is a safety outcome, not a recommendation to buy nothing forever."
+)

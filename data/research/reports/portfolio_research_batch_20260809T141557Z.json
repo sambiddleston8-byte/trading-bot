@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T14:15:57.824773+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "ABNB",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "ADM",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "AAPL",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "AMT",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "MPC",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "META",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "FCX",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "DLR",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "CMS",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "CLX",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "CCL",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "ABT",
+      "sector": "Health Care"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "ABNB",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ABNB.json"
+    },
+    {
+      "ticker": "ADM",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ADM.json"
+    },
+    {
+      "ticker": "AAPL",
+      "sector": "Information Technology",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AAPL.json"
+    },
+    {
+      "ticker": "AMT",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AMT.json"
+    },
+    {
+      "ticker": "MPC",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MPC.json"
+    },
+    {
+      "ticker": "META",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/META.json"
+    },
+    {
+      "ticker": "FCX",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/FCX.json"
+    },
+    {
+      "ticker": "DLR",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/DLR.json"
+    },
+    {
+      "ticker": "CMS",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CMS.json"
+    },
+    {
+      "ticker": "CLX",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CLX.json"
+    },
+    {
+      "ticker": "CCL",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CCL.json"
+    },
+    {
+      "ticker": "ABT",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ABT.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T141557Z.json",
+  "completed_at": "2026-08-09T14:17:21.200352+00:00"
+}

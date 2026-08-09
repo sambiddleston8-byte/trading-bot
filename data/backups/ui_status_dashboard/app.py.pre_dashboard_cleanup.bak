@@ -1,0 +1,90 @@
+from pathlib import Path
+import json
+
+import streamlit as st
+
+ROOT = Path(__file__).resolve().parent
+DATA = ROOT / "data" / "research"
+
+
+def load_json(path):
+    try:
+        with path.open(encoding="utf-8") as file:
+            return json.load(file)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def universe_count():
+    data = load_json(DATA / "universe" / "both.json")
+    return len(data.get("companies", []))
+
+
+def latest_scan():
+    paths = sorted(
+        (DATA / "universe_scans").glob("*.json"),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+    return (paths[0], load_json(paths[0])) if paths else (None, {})
+
+
+def audit_rows(scan):
+    return [
+        {
+            "Ticker": item.get("ticker"),
+            "Sector": item.get("sector"),
+            "Research": item.get("research_status"),
+            "Audit": item.get("audit", {}).get("status"),
+            "Score": item.get("investment_case_score"),
+            "Expected return": item.get("expected_return"),
+        }
+        for item in scan.get("results", [])
+    ]
+
+
+st.set_page_config(page_title="Investment Intelligence Platform", page_icon="📈", layout="wide")
+st.title("📈 Investment Intelligence Platform")
+st.caption("Live research, audit, scanner and portfolio status.")
+
+scan_path, scan = latest_scan()
+pipeline_count = len(list((DATA / "pipeline").glob("*.json")))
+
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Combined universe", universe_count())
+col2.metric("Pipeline records", pipeline_count)
+col3.metric("Latest audit PASS", scan.get("audit_pass_count", 0))
+col4.metric("Portfolio eligible", scan.get("eligible_count", 0))
+
+st.divider()
+st.subheader("Current system state")
+
+if scan_path:
+    st.write(f"Latest scan: {scan_path.relative_to(ROOT)}")
+    left, right = st.columns(2)
+    with left:
+        st.json({
+            "universe": scan.get("universe"),
+            "requested": scan.get("requested_count"),
+            "completed": scan.get("completed_count"),
+            "errors": scan.get("error_count"),
+            "audit_pass": scan.get("audit_pass_count"),
+            "eligible": scan.get("eligible_count"),
+        })
+    with right:
+        st.dataframe(audit_rows(scan), use_container_width=True, hide_index=True)
+else:
+    st.warning("No universe scan has been saved yet.")
+
+st.divider()
+st.subheader("Architecture gates")
+st.markdown("""
+- **Universe:** S&P 500 + Nasdaq-100 combined source.
+- **Research:** fundamental, valuation, news, catalysts and thesis challenge.
+- **Audit:** source discrepancies are preserved and classified.
+- **Scanner:** only complete, audit-approved research becomes eligible.
+- **Portfolio:** position and sector constraints are enforced before allocation.
+""")
+
+if scan.get("eligible_count", 0) == 0:
+    st.info("No portfolio is currently produced because the latest scan has no strict audit-PASS candidates. This is an intentional safety gate, not a dashboard error.")

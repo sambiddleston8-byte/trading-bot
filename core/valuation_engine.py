@@ -215,6 +215,16 @@ class ValuationEngine:
             ],
         )
 
+        # Prefer a reported free-cash-flow total.  Reconstructing OCF + capex
+        # remains a fallback for statements that do not expose that line.
+        free_cash_flow_line = self.find_line(
+            cash_flow,
+            [
+                "Free Cash Flow",
+                "FreeCashFlow",
+            ],
+        )
+
         if revenue_line is None:
             return []
 
@@ -251,8 +261,17 @@ class ValuationEngine:
                     )
                 )
 
+            if free_cash_flow_line is not None:
+
+                fcf = self.safe_float(
+                    free_cash_flow_line.get(
+                        column
+                    )
+                )
+
             if (
-                operating_cash is not None
+                fcf is None
+                and operating_cash is not None
                 and capex is not None
             ):
 

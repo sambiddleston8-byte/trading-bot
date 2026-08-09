@@ -427,6 +427,10 @@ class FundamentalAnalysisEngine:
             )
         )
 
+        # The research pipeline reuses this exact data snapshot when deriving
+        # technical and risk signals.
+        self.last_context = context
+
         validation = getattr(
             context,
             "validated_financial_data",

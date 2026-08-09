@@ -1,0 +1,54 @@
+from pathlib import Path
+import json
+
+import streamlit as st
+
+ROOT = Path(__file__).resolve().parents[1]
+SCAN_DIR = ROOT / "data" / "research" / "universe_scans"
+
+
+def load_json(path):
+    with path.open(encoding="utf-8") as file:
+        return json.load(file)
+
+
+st.title("🛰️ Universe Scanner")
+st.caption("Research completion, audit status and portfolio eligibility.")
+
+paths = sorted(SCAN_DIR.glob("*.json"), key=lambda path: path.stat().st_mtime, reverse=True)
+
+if not paths:
+    st.warning("No saved universe scans are available.")
+    st.stop()
+
+selected = st.selectbox("Saved scan", paths, format_func=lambda path: path.name)
+scan = load_json(selected)
+
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Requested", scan.get("requested_count", 0))
+col2.metric("Completed", scan.get("completed_count", 0))
+col3.metric("Audit PASS", scan.get("audit_pass_count", 0))
+col4.metric("Eligible", scan.get("eligible_count", 0))
+
+rows = []
+for item in scan.get("results", []):
+    audit = item.get("audit", {})
+    rows.append({
+        "Ticker": item.get("ticker"),
+        "Sector": item.get("sector"),
+        "Research": item.get("research_status"),
+        "Audit": audit.get("status"),
+        "Score": item.get("investment_case_score"),
+        "Decision": item.get("decision"),
+        "Expected return": item.get("expected_return"),
+    })
+
+st.subheader("Research and audit results")
+st.dataframe(rows, use_container_width=True, hide_index=True)
+
+st.subheader("Audit evidence")
+for item in scan.get("results", []):
+    findings = item.get("audit", {}).get("findings", [])
+    if findings:
+        with st.expander(f"{item.get('ticker')} — {item.get('audit', {}).get('status')}"):
+            st.dataframe(findings, use_container_width=True, hide_index=True)

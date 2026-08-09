@@ -15,6 +15,9 @@ from core.portfolio.universe_engine import (
 from core.research.investment_research_pipeline import (
     InvestmentResearchPipeline,
 )
+from core.research.research_contract import (
+    ResearchContract,
+)
 
 
 class UniverseScanner:
@@ -75,30 +78,17 @@ class UniverseScanner:
         result,
     ):
 
-        synthesis = result.get(
-            "synthesis",
-            {}
-        )
-
-        # Current research synthesis schema.
-        score = synthesis.get(
-            "investment_case_score"
-        )
-
-        if score is None:
-
-            score = synthesis.get(
-                "score"
+        canonical = (
+            ResearchContract
+            .from_pipeline_result(
+                result
             )
-
-        if score is None:
-
-            score = result.get(
-                "investment_case_score"
-            )
+        )
 
         return cls._number(
-            score
+            canonical.get(
+                "investment_case_score"
+            )
         )
 
     @classmethod
@@ -107,22 +97,16 @@ class UniverseScanner:
         result,
     ):
 
-        synthesis = result.get(
-            "synthesis",
-            {}
+        canonical = (
+            ResearchContract
+            .from_pipeline_result(
+                result
+            )
         )
 
-        decision = synthesis.get(
+        return canonical.get(
             "decision"
         )
-
-        if decision is None:
-
-            decision = result.get(
-                "decision"
-            )
-
-        return decision
 
     @classmethod
     def _extract_expected_return(
@@ -130,30 +114,17 @@ class UniverseScanner:
         result,
     ):
 
-        core = result.get(
-            "core",
-            {}
-        )
-
-        valuation = core.get(
-            "valuation",
-            {}
-        )
-
-        expected = (
-            valuation.get(
-                "expected_return"
+        canonical = (
+            ResearchContract
+            .from_pipeline_result(
+                result
             )
         )
-
-        if expected is None:
-
-            expected = result.get(
-                "expected_return"
-            )
 
         return cls._number(
-            expected
+            canonical.get(
+                "expected_return"
+            )
         )
 
     @classmethod
@@ -162,30 +133,17 @@ class UniverseScanner:
         result,
     ):
 
-        core = result.get(
-            "core",
-            {}
-        )
-
-        valuation = core.get(
-            "valuation",
-            {}
-        )
-
-        value = (
-            valuation.get(
-                "base_intrinsic_value"
+        canonical = (
+            ResearchContract
+            .from_pipeline_result(
+                result
             )
         )
-
-        if value is None:
-
-            value = result.get(
-                "base_intrinsic_value"
-            )
 
         return cls._number(
-            value
+            canonical.get(
+                "base_intrinsic_value"
+            )
         )
 
     @classmethod
@@ -194,30 +152,17 @@ class UniverseScanner:
         result,
     ):
 
-        core = result.get(
-            "core",
-            {}
-        )
-
-        valuation = core.get(
-            "valuation",
-            {}
-        )
-
-        price = (
-            valuation.get(
-                "current_price"
+        canonical = (
+            ResearchContract
+            .from_pipeline_result(
+                result
             )
         )
-
-        if price is None:
-
-            price = result.get(
-                "current_price"
-            )
 
         return cls._number(
-            price
+            canonical.get(
+                "current_price"
+            )
         )
 
     @classmethod
@@ -226,39 +171,17 @@ class UniverseScanner:
         result,
     ):
 
-        thesis = (
-            result.get(
-                "research",
-                {}
-            ).get(
-                "thesis_challenge",
-                {}
+        canonical = (
+            ResearchContract
+            .from_pipeline_result(
+                result
             )
         )
 
-        return {
-            "result":
-                thesis.get(
-                    "result"
-                ),
-
-            "tested":
-                thesis.get(
-                    "tested",
-                    0,
-                ),
-
-            "material_negative":
-                thesis.get(
-                    "material_negative",
-                    0,
-                ),
-
-            "thesis_survives":
-                thesis.get(
-                    "thesis_survives"
-                ),
-        }
+        return canonical.get(
+            "thesis",
+            {},
+        )
 
     @classmethod
     def _extract_audit(
@@ -266,41 +189,17 @@ class UniverseScanner:
         result,
     ):
 
-        audit = result.get(
-            "audit",
-            {}
+        canonical = (
+            ResearchContract
+            .from_pipeline_result(
+                result
+            )
         )
 
-        return {
-            "status":
-                audit.get(
-                    "status"
-                ),
-
-            "finding_count":
-                audit.get(
-                    "finding_count",
-                    0,
-                ),
-
-            "critical":
-                audit.get(
-                    "critical",
-                    0,
-                ),
-
-            "high":
-                audit.get(
-                    "high",
-                    0,
-                ),
-
-            "medium":
-                audit.get(
-                    "medium",
-                    0,
-                ),
-        }
+        return canonical.get(
+            "audit",
+            {},
+        )
 
     @classmethod
     def _research_one(

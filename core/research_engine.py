@@ -1,5 +1,6 @@
 import feedparser
 import yfinance as yf
+import re
 
 from datetime import datetime
 from urllib.parse import quote
@@ -8,6 +9,39 @@ from core.filings.sec_engine import SECFilingEngine
 
 
 class ResearchEngine:
+
+    @staticmethod
+    def headline_is_relevant(title, symbol, company_name=None):
+        """Require a headline to identify the company before it becomes evidence.
+
+        RSS feeds sometimes return broad market articles even where the URL is
+        ticker-specific.  Those articles must not create catalysts for the
+        wrong company.
+        """
+        text = str(title or "").lower()
+        ticker = str(symbol or "").strip().lower()
+        if len(ticker) >= 2 and re.search(
+            rf"(?<![a-z0-9]){re.escape(ticker)}(?![a-z0-9])",
+            text,
+        ):
+            return True
+
+        company = str(company_name or "").lower()
+        company = re.sub(
+            r"\b(incorporated|inc|corp|corporation|plc|ltd|limited|company|co)\b\.?,?",
+            " ",
+            company,
+        )
+        aliases = {
+            part.strip()
+            for part in re.split(r"[,&/]|\band\b", company)
+            if len(part.strip()) >= 4
+        }
+        aliases.update(re.findall(r"[a-z]{4,}", company))
+        return any(
+            re.search(rf"(?<![a-z]){re.escape(alias)}(?![a-z])", text)
+            for alias in aliases
+        )
 
     def __init__(self):
 
@@ -185,6 +219,23 @@ class ResearchEngine:
 
                 "Dividend Yield":
                     info.get("dividendYield"),
+            }
+
+            before_filter = len(research["News"])
+            research["News"] = [
+                article
+                for article in research["News"]
+                if self.headline_is_relevant(
+                    article.get("Title"),
+                    symbol,
+                    info.get("longName"),
+                )
+            ]
+            research["News Relevance"] = {
+                "checked": before_filter,
+                "accepted": len(research["News"]),
+                "rejected": before_filter - len(research["News"]),
+                "company": info.get("longName"),
             }
 
             if "Yahoo Finance" not in research[

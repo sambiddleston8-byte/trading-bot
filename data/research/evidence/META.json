@@ -1,0 +1,20 @@
+{
+  "Ticker": "META",
+  "Company": null,
+  "Generated At": "2026-08-09T00:48:15.622465+00:00",
+  "Status": "COMPLETE",
+  "Summary": {
+    "Total Evidence Items": 0,
+    "Quantitative Evidence": 0,
+    "Market Evidence": 0,
+    "External Event Evidence": 0,
+    "Model Evidence": 0
+  },
+  "Evidence": {
+    "Fundamentals": [],
+    "Valuation": [],
+    "Expected Returns": [],
+    "Catalysts": []
+  },
+  "Sources": []
+}

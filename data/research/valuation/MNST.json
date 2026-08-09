@@ -1,0 +1,481 @@
+{
+    "Ticker": "MNST",
+    "Company": "Monster Beverage Corporation",
+    "Status": "COMPLETE",
+    "Analysed At": "2026-08-09T17:57:58.766167+00:00",
+    "Current Price": 90.36,
+    "Market Capitalisation": 88509956096.0,
+    "Financial Data Validation": {
+        "Overall Confidence": "LOW",
+        "Summary": {
+            "metrics_checked": 10,
+            "agreements": 4,
+            "definition_differences": 0,
+            "discrepancies": 2,
+            "insufficient_data": 4,
+            "overall_confidence": "LOW"
+        },
+        "Selected Financials": {
+            "net_income": 1905432000.0,
+            "operating_income": 2419354000.0,
+            "gross_profit": 4632195000.0,
+            "equity": 8254108000.0,
+            "revenue": 8294343000.0,
+            "operating_cash_flow": 2098177000.0,
+            "free_cash_flow": 1965902000.0,
+            "cash_and_equivalents": 2088117000.0,
+            "total_debt": 373951000.0,
+            "net_debt": -1714166000.0,
+            "shares_outstanding": 978113000.0
+        }
+    },
+    "Current Revenue": 8294343000.0,
+    "Current Free Cash Flow": 1965902000.0,
+    "Current FCF Margin": 0.23701720558216607,
+    "Target FCF Margin": 0.218731417076309,
+    "Historical Financials": [
+        {
+            "Period": "2025-12-31 00:00:00",
+            "Revenue": 8294343000.0,
+            "Operating Cash Flow": 2098177000.0,
+            "Capital Expenditure": -157529000.0,
+            "Free Cash Flow": 1940648000.0
+        },
+        {
+            "Period": "2024-12-31 00:00:00",
+            "Revenue": 7492709000.0,
+            "Operating Cash Flow": 1928533000.0,
+            "Capital Expenditure": -306434000.0,
+            "Free Cash Flow": 1622099000.0
+        },
+        {
+            "Period": "2023-12-31 00:00:00",
+            "Revenue": 7140027000.0,
+            "Operating Cash Flow": 1717753000.0,
+            "Capital Expenditure": -234724000.0,
+            "Free Cash Flow": 1483029000.0
+        },
+        {
+            "Period": "2022-12-31 00:00:00",
+            "Revenue": 6311050000.0,
+            "Operating Cash Flow": 887699000.0,
+            "Capital Expenditure": -212153000.0,
+            "Free Cash Flow": 675546000.0
+        }
+    ],
+    "Historical Revenue Growth": 0.09536818669323455,
+    "Historical FCF Growth": 0.4215559171240728,
+    "Revenue Growth Assumption": 0.11874522440398518,
+    "Forecast Validation": {
+        "Overall Confidence": "MEDIUM",
+        "Periods Checked": 4,
+        "Consistent Periods": 3,
+        "Large Differences": 0,
+        "Comparisons": [
+            {
+                "period": "0q",
+                "revenue_growth": 0.1288,
+                "eps_growth": 0.1144,
+                "growth_difference": -0.014399999999999996,
+                "status": "CONSISTENT",
+                "revenue_analysts": 13.0,
+                "eps_analysts": 11.0
+            },
+            {
+                "period": "+1q",
+                "revenue_growth": 0.1155,
+                "eps_growth": 0.18620001,
+                "growth_difference": 0.07070001,
+                "status": "MODERATE_DIFFERENCE",
+                "revenue_analysts": 13.0,
+                "eps_analysts": 11.0
+            },
+            {
+                "period": "0y",
+                "revenue_growth": 0.16450001,
+                "eps_growth": 0.1892,
+                "growth_difference": 0.024699990000000005,
+                "status": "CONSISTENT",
+                "revenue_analysts": 23.0,
+                "eps_analysts": 10.0
+            },
+            {
+                "period": "+1y",
+                "revenue_growth": 0.089899994,
+                "eps_growth": 0.12640001,
+                "growth_difference": 0.03650001600000001,
+                "status": "CONSISTENT",
+                "revenue_analysts": 24.0,
+                "eps_analysts": 14.0
+            }
+        ]
+    },
+    "Earnings Estimates": {
+        "Current Year EPS": 2.30712,
+        "Next Year EPS": 2.59884,
+        "Current Year EPS Growth": 0.1892,
+        "Next Year EPS Growth": 0.12640001,
+        "Current Year Analysts": 10.0,
+        "Next Year Analysts": 14.0
+    },
+    "Growth Assumption Sources": {
+        "Analyst Forward Revenue Growth": 0.089899994,
+        "Analyst Current Year Revenue": 9658625880.0,
+        "Analyst Next Year Revenue": 10526693780.0,
+        "Analyst Current Year Count": 23.0,
+        "Analyst Next Year Count": 24.0,
+        "Yahoo Revenue Growth": 0.202,
+        "Historical Revenue CAGR": 0.09536818669323455,
+        "Method": "60% analyst forward growth + 25% Yahoo growth + 15% historical CAGR"
+    },
+    "WACC": 0.075,
+    "Terminal Growth": 0.03,
+    "Forecast Years": 5,
+    "Shares Outstanding": 978113000.0,
+    "Total Debt": 373951000.0,
+    "Cash": 2088117000.0,
+    "Net Debt": -1714166000.0,
+    "Intrinsic Value": {
+        "Bear": 40.05643133026358,
+        "Base": 56.82198729968496,
+        "Bull": 78.23981667948489
+    },
+    "Scenarios": {
+        "Bear": {
+            "Status": "COMPLETE",
+            "Forecast Present Values": [
+                {
+                    "Year": 1,
+                    "Free Cash Flow": 2027162098.0735362,
+                    "Discount Factor": 0.9302325581395349,
+                    "Present Value": 1885732184.2544522
+                },
+                {
+                    "Year": 2,
+                    "Free Cash Flow": 1999003353.9080043,
+                    "Discount Factor": 0.8653326122228232,
+                    "Present Value": 1729802794.0793982
+                },
+                {
+                    "Year": 3,
+                    "Free Cash Flow": 1960692630.6556342,
+                    "Discount Factor": 0.804960569509603,
+                    "Present Value": 1578280256.6058412
+                },
+                {
+                    "Year": 4,
+                    "Free Cash Flow": 1912141754.4310281,
+                    "Discount Factor": 0.7488005297763749,
+                    "Present Value": 1431812758.7254808
+                },
+                {
+                    "Year": 5,
+                    "Free Cash Flow": 1853359399.328602,
+                    "Discount Factor": 0.6965586323501163,
+                    "Present Value": 1290973488.449564
+                }
+            ],
+            "Terminal Value": 42421337362.41023,
+            "Terminal Present Value": 29548948735.62336,
+            "Forecast Cash Flow PV": 7916601482.114737,
+            "Enterprise Value": 37465550217.7381,
+            "Net Debt": -1714166000.0,
+            "Equity Value": 39179716217.7381,
+            "Shares Outstanding": 978113000.0,
+            "Intrinsic Value Per Share": 40.05643133026358,
+            "Terminal Value % of Enterprise Value": 0.788696510898521,
+            "Scenario": "Bear",
+            "Starting Growth": 0.03874522440398517,
+            "Target FCF Margin": 0.178731417076309,
+            "Growth Path": [
+                0.08450001,
+                0.039899993999999994,
+                0.037424995499999995,
+                0.034949997,
+                0.0324749985
+            ],
+            "Revenue Forecast": [
+                {
+                    "Year": 1,
+                    "Growth": 0.08450001,
+                    "Revenue": 8995215066.44343
+                },
+                {
+                    "Year": 2,
+                    "Growth": 0.039899993999999994,
+                    "Revenue": 9354124093.623232
+                },
+                {
+                    "Year": 3,
+                    "Growth": 0.037424995499999995,
+                    "Revenue": 9704202145.733522
+                },
+                {
+                    "Year": 4,
+                    "Growth": 0.034949997,
+                    "Revenue": 10043363981.614304
+                },
+                {
+                    "Year": 5,
+                    "Growth": 0.0324749985,
+                    "Revenue": 10369522211.85218
+                }
+            ],
+            "FCF Forecast": [
+                {
+                    "Year": 1,
+                    "FCF Margin": 0.22536004788099467,
+                    "Free Cash Flow": 2027162098.0735362
+                },
+                {
+                    "Year": 2,
+                    "FCF Margin": 0.21370289017982325,
+                    "Free Cash Flow": 1999003353.9080043
+                },
+                {
+                    "Year": 3,
+                    "FCF Margin": 0.20204573247865182,
+                    "Free Cash Flow": 1960692630.6556342
+                },
+                {
+                    "Year": 4,
+                    "FCF Margin": 0.1903885747774804,
+                    "Free Cash Flow": 1912141754.4310281
+                },
+                {
+                    "Year": 5,
+                    "FCF Margin": 0.178731417076309,
+                    "Free Cash Flow": 1853359399.328602
+                }
+            ],
+            "WACC": 0.075,
+            "Terminal Growth": 0.03
+        },
+        "Base": {
+            "Status": "COMPLETE",
+            "Forecast Present Values": [
+                {
+                    "Year": 1,
+                    "Free Cash Flow": 2253969280.974795,
+                    "Discount Factor": 0.9302325581395349,
+                    "Present Value": 2096715610.2091115
+                },
+                {
+                    "Year": 2,
+                    "Free Cash Flow": 2418101895.108518,
+                    "Discount Factor": 0.8653326122228232,
+                    "Present Value": 2092462429.5152133
+                },
+                {
+                    "Year": 3,
+                    "Free Cash Flow": 2557894404.827361,
+                    "Discount Factor": 0.804960569509603,
+                    "Present Value": 2059004136.8552597
+                },
+                {
+                    "Year": 4,
+                    "Free Cash Flow": 2667375446.3112783,
+                    "Discount Factor": 0.7488005297763749,
+                    "Present Value": 1997332147.3103797
+                },
+                {
+                    "Year": 5,
+                    "Free Cash Flow": 2741503116.8615417,
+                    "Discount Factor": 0.6965586323501163,
+                    "Present Value": 1909617661.6646566
+                }
+            ],
+            "Terminal Value": 62749960230.386406,
+            "Terminal Present Value": 43709026478.10214,
+            "Forecast Cash Flow PV": 10155131985.55462,
+            "Enterprise Value": 53864158463.65676,
+            "Net Debt": -1714166000.0,
+            "Equity Value": 55578324463.65676,
+            "Shares Outstanding": 978113000.0,
+            "Intrinsic Value Per Share": 56.82198729968496,
+            "Terminal Value % of Enterprise Value": 0.8114677315082071,
+            "Scenario": "Base",
+            "Starting Growth": 0.11874522440398518,
+            "Target FCF Margin": 0.218731417076309,
+            "Growth Path": [
+                0.16450001,
+                0.089899994,
+                0.07492499550000001,
+                0.059949997,
+                0.0449749985
+            ],
+            "Revenue Forecast": [
+                {
+                    "Year": 1,
+                    "Growth": 0.16450001,
+                    "Revenue": 9658762506.44343
+                },
+                {
+                    "Year": 2,
+                    "Growth": 0.089899994,
+                    "Revenue": 10527085197.82012
+                },
+                {
+                    "Year": 3,
+                    "Growth": 0.07492499550000001,
+                    "Revenue": 11315827008.894909
+                },
+                {
+                    "Year": 4,
+                    "Growth": 0.059949997,
+                    "Revenue": 11994210804.130676
+                },
+                {
+                    "Year": 5,
+                    "Growth": 0.0449749985,
+                    "Revenue": 12533650417.055138
+                }
+            ],
+            "FCF Forecast": [
+                {
+                    "Year": 1,
+                    "FCF Margin": 0.23336004788099465,
+                    "Free Cash Flow": 2253969280.974795
+                },
+                {
+                    "Year": 2,
+                    "FCF Margin": 0.22970289017982326,
+                    "Free Cash Flow": 2418101895.108518
+                },
+                {
+                    "Year": 3,
+                    "FCF Margin": 0.2260457324786518,
+                    "Free Cash Flow": 2557894404.827361
+                },
+                {
+                    "Year": 4,
+                    "FCF Margin": 0.22238857477748042,
+                    "Free Cash Flow": 2667375446.3112783
+                },
+                {
+                    "Year": 5,
+                    "FCF Margin": 0.218731417076309,
+                    "Free Cash Flow": 2741503116.8615417
+                }
+            ],
+            "WACC": 0.075,
+            "Terminal Growth": 0.03
+        },
+        "Bull": {
+            "Status": "COMPLETE",
+            "Forecast Present Values": [
+                {
+                    "Year": 1,
+                    "Free Cash Flow": 2491393222.916054,
+                    "Discount Factor": 0.9302325581395349,
+                    "Present Value": 2317575091.084701
+                },
+                {
+                    "Year": 2,
+                    "Free Cash Flow": 2891038744.021274,
+                    "Discount Factor": 0.8653326122228232,
+                    "Present Value": 2501710108.401319
+                },
+                {
+                    "Year": 3,
+                    "Free Cash Flow": 3272908260.992912,
+                    "Discount Factor": 0.804960569509603,
+                    "Present Value": 2634562097.721539
+                },
+                {
+                    "Year": 4,
+                    "Free Cash Flow": 3612615247.165464,
+                    "Discount Factor": 0.7488005297763749,
+                    "Present Value": 2705128210.955709
+                },
+                {
+                    "Year": 5,
+                    "Free Cash Flow": 3885468423.1239605,
+                    "Discount Factor": 0.6965586323501163,
+                    "Present Value": 2706456570.850789
+                }
+            ],
+            "Terminal Value": 88934055018.17065,
+            "Terminal Present Value": 61947783732.806946,
+            "Forecast Cash Flow PV": 12865432079.014057,
+            "Enterprise Value": 74813215811.821,
+            "Net Debt": -1714166000.0,
+            "Equity Value": 76527381811.821,
+            "Shares Outstanding": 978113000.0,
+            "Intrinsic Value Per Share": 78.23981667948489,
+            "Terminal Value % of Enterprise Value": 0.8280326284680143,
+            "Scenario": "Bull",
+            "Starting Growth": 0.19874522440398518,
+            "Target FCF Margin": 0.258731417076309,
+            "Growth Path": [
+                0.24450001,
+                0.139899994,
+                0.11242499550000001,
+                0.084949997,
+                0.0574749985
+            ],
+            "Revenue Forecast": [
+                {
+                    "Year": 1,
+                    "Growth": 0.24450001,
+                    "Revenue": 10322309946.44343
+                },
+                {
+                    "Year": 2,
+                    "Growth": 0.139899994,
+                    "Revenue": 11766401046.017008
+                },
+                {
+                    "Year": 3,
+                    "Growth": 0.11242499550000001,
+                    "Revenue": 13089238630.666666
+                },
+                {
+                    "Year": 4,
+                    "Growth": 0.084949997,
+                    "Revenue": 14201169413.074083
+                },
+                {
+                    "Year": 5,
+                    "Growth": 0.0574749985,
+                    "Revenue": 15017381603.788763
+                }
+            ],
+            "FCF Forecast": [
+                {
+                    "Year": 1,
+                    "FCF Margin": 0.24136004788099466,
+                    "Free Cash Flow": 2491393222.916054
+                },
+                {
+                    "Year": 2,
+                    "FCF Margin": 0.24570289017982325,
+                    "Free Cash Flow": 2891038744.021274
+                },
+                {
+                    "Year": 3,
+                    "FCF Margin": 0.2500457324786518,
+                    "Free Cash Flow": 3272908260.992912
+                },
+                {
+                    "Year": 4,
+                    "FCF Margin": 0.2543885747774804,
+                    "Free Cash Flow": 3612615247.165464
+                },
+                {
+                    "Year": 5,
+                    "FCF Margin": 0.258731417076309,
+                    "Free Cash Flow": 3885468423.1239605
+                }
+            ],
+            "WACC": 0.075,
+            "Terminal Growth": 0.03
+        }
+    },
+    "Expected Return": {
+        "Base": -0.3711599457759521,
+        "Annualised": -0.0886020669924058,
+        "Horizon Years": 5
+    },
+    "Terminal Value Contribution": 0.8114677315082071
+}

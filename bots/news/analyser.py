@@ -5,9 +5,12 @@ from core.company_context import CompanyContext
 
 class NewsAnalyser:
 
-    def analyse(self, context: CompanyContext):
-
-        symbol = context.symbol
+    def analyse(self, context: CompanyContext | str):
+        symbol = (
+            context.strip().upper()
+            if isinstance(context, str)
+            else context.symbol
+        )
 
         url = (
             "https://feeds.finance.yahoo.com/"

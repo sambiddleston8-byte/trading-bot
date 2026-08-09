@@ -1,0 +1,61 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T12:25:05.484836+00:00",
+  "requested_count": 4,
+  "companies": [
+    {
+      "ticker": "EOG",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "ECHO",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "BALL",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "AVB",
+      "sector": "Real Estate"
+    }
+  ],
+  "completed_count": 4,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "EOG",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EOG.json"
+    },
+    {
+      "ticker": "ECHO",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ECHO.json"
+    },
+    {
+      "ticker": "BALL",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/BALL.json"
+    },
+    {
+      "ticker": "AVB",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AVB.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T122505Z.json",
+  "completed_at": "2026-08-09T12:25:29.430879+00:00"
+}

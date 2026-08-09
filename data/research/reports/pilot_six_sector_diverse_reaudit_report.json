@@ -1,0 +1,386 @@
+[
+  {
+    "ticker": "A",
+    "previous_status": "REVIEW",
+    "new_status": "REVIEW",
+    "critical": 0,
+    "high": 1,
+    "medium": 0,
+    "findings": [
+      {
+        "severity": "HIGH",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "total_debt",
+        "message": "total_debt differs by -9.06% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 3354000000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 3050000000.0
+          },
+          "difference_percent": -0.09063804412641624,
+          "raw_difference_percent": -9.063804412641623,
+          "selected": 3050000000.0,
+          "selected_source": "SEC",
+          "reconciliation": {
+            "metric": "Total Debt",
+            "yahoo_reported_total": 3354000000.0,
+            "yahoo_underlying_debt": 3354000000.0,
+            "yahoo_long_term_debt": 3050000000.0,
+            "yahoo_current_debt": 304000000.0,
+            "yahoo_capital_lease_obligations": null,
+            "sec_reported_debt": 3050000000.0,
+            "status": "DISCREPANCY",
+            "selected": 3050000000.0,
+            "selected_source": "SEC",
+            "confidence": "REVIEW"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "ticker": "AAPL",
+    "previous_status": "REVIEW",
+    "new_status": "REVIEW",
+    "critical": 0,
+    "high": 1,
+    "medium": 1,
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "shares_outstanding",
+        "message": "shares_outstanding differs by 1.21% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 14594180000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 14773260000.0
+          },
+          "difference_percent": 0.012121901327127526,
+          "raw_difference_percent": 0.012121901327127526,
+          "selected": null,
+          "selected_source": null,
+          "reconciliation": null
+        }
+      },
+      {
+        "severity": "HIGH",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "total_debt",
+        "message": "total_debt differs by -8.09% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 98657000000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 90678000000.0
+          },
+          "difference_percent": -0.08087616692175922,
+          "raw_difference_percent": -8.087616692175922,
+          "selected": 90678000000.0,
+          "selected_source": "SEC",
+          "reconciliation": {
+            "metric": "Total Debt",
+            "yahoo_reported_total": 98657000000.0,
+            "yahoo_underlying_debt": 98657000000.0,
+            "yahoo_long_term_debt": 78328000000.0,
+            "yahoo_current_debt": 20329000000.0,
+            "yahoo_capital_lease_obligations": 12842000000.0,
+            "sec_reported_debt": 90678000000.0,
+            "status": "DISCREPANCY",
+            "selected": 90678000000.0,
+            "selected_source": "SEC",
+            "confidence": "REVIEW"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "ticker": "ABNB",
+    "previous_status": "REVIEW",
+    "new_status": "PASS_WITH_WARNINGS",
+    "critical": 0,
+    "high": 0,
+    "medium": 1,
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "total_debt",
+        "message": "total_debt differs by -3.24% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 2067000000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 2000000000.0
+          },
+          "difference_percent": -0.0324141267537494,
+          "raw_difference_percent": -3.24141267537494,
+          "selected": 2000000000.0,
+          "selected_source": "SEC",
+          "reconciliation": {
+            "metric": "Total Debt",
+            "yahoo_reported_total": 2067000000.0,
+            "yahoo_underlying_debt": 3994000000.0,
+            "yahoo_long_term_debt": 1995000000.0,
+            "yahoo_current_debt": 1999000000.0,
+            "yahoo_capital_lease_obligations": 68000000.0,
+            "sec_reported_debt": 2000000000.0,
+            "status": "DISCREPANCY",
+            "selected": 2000000000.0,
+            "selected_source": "SEC",
+            "confidence": "REVIEW"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "ticker": "ACGL",
+    "previous_status": "REVIEW",
+    "new_status": "REVIEW",
+    "critical": 0,
+    "high": 2,
+    "medium": 1,
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "revenue",
+        "message": "revenue differs by 3.19% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 19294000000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 19929000000.0
+          },
+          "difference_percent": 0.03186311405489488,
+          "raw_difference_percent": 0.03186311405489488,
+          "selected": null,
+          "selected_source": null,
+          "reconciliation": null
+        }
+      },
+      {
+        "severity": "HIGH",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "shares_outstanding",
+        "message": "shares_outstanding differs by 5.01% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 341000000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 359000000.0
+          },
+          "difference_percent": 0.05013927576601671,
+          "raw_difference_percent": 0.05013927576601671,
+          "selected": null,
+          "selected_source": null,
+          "reconciliation": null
+        }
+      },
+      {
+        "severity": "HIGH",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "total_debt",
+        "message": "total_debt differs by unavailable between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 2729000000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": null
+          },
+          "difference_percent": null,
+          "raw_difference_percent": null,
+          "selected": 2729000000.0,
+          "selected_source": "Yahoo",
+          "reconciliation": {
+            "metric": "Total Debt",
+            "yahoo_reported_total": 2729000000.0,
+            "yahoo_underlying_debt": 2729000000.0,
+            "yahoo_long_term_debt": 2729000000.0,
+            "yahoo_current_debt": 0.0,
+            "yahoo_capital_lease_obligations": null,
+            "sec_reported_debt": null,
+            "status": "DISCREPANCY",
+            "selected": 2729000000.0,
+            "selected_source": "Yahoo",
+            "confidence": "REVIEW"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "ticker": "ADM",
+    "previous_status": "REVIEW",
+    "new_status": "FAIL",
+    "critical": 1,
+    "high": 0,
+    "medium": 0,
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "total_debt",
+        "message": "total_debt differs by -21.99% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 9758000000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 7612000000.0
+          },
+          "difference_percent": -0.21992211518753846,
+          "raw_difference_percent": -21.992211518753845,
+          "selected": 7612000000.0,
+          "selected_source": "SEC",
+          "reconciliation": {
+            "metric": "Total Debt",
+            "yahoo_reported_total": 9758000000.0,
+            "yahoo_underlying_debt": 8410000000.0,
+            "yahoo_long_term_debt": 6606000000.0,
+            "yahoo_current_debt": 1804000000.0,
+            "yahoo_capital_lease_obligations": 1348000000.0,
+            "sec_reported_debt": 7612000000.0,
+            "status": "DISCREPANCY",
+            "selected": 7612000000.0,
+            "selected_source": "SEC",
+            "confidence": "REVIEW"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "ticker": "ADP",
+    "previous_status": "REVIEW",
+    "new_status": "FAIL",
+    "critical": 2,
+    "high": 2,
+    "medium": 0,
+    "findings": [
+      {
+        "severity": "HIGH",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "revenue",
+        "message": "revenue differs by 6.32% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 20560900000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 21947400000.0
+          },
+          "difference_percent": 0.06317377001376018,
+          "raw_difference_percent": 0.06317377001376018,
+          "selected": null,
+          "selected_source": null,
+          "reconciliation": null
+        }
+      },
+      {
+        "severity": "HIGH",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "operating_cash_flow",
+        "message": "operating_cash_flow differs by 9.22% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 4939700000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 5441200000.0
+          },
+          "difference_percent": 0.09216716900683673,
+          "raw_difference_percent": 0.09216716900683673,
+          "selected": null,
+          "selected_source": null,
+          "reconciliation": null
+        }
+      },
+      {
+        "severity": "CRITICAL",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "cash_and_equivalents",
+        "message": "cash_and_equivalents differs by 20.86% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 3347800000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 4230100000.0
+          },
+          "difference_percent": 0.20857662939410415,
+          "raw_difference_percent": 0.20857662939410415,
+          "selected": null,
+          "selected_source": null,
+          "reconciliation": null
+        }
+      },
+      {
+        "severity": "CRITICAL",
+        "type": "SOURCE_DISCREPANCY",
+        "field": "total_debt",
+        "message": "total_debt differs by -99.59% between Yahoo Finance and SEC EDGAR.",
+        "evidence": {
+          "first": {
+            "source": "Yahoo Finance",
+            "value": 9065400000.0
+          },
+          "second": {
+            "source": "SEC EDGAR",
+            "value": 37000000.0
+          },
+          "difference_percent": -0.9959185474441283,
+          "raw_difference_percent": -99.59185474441283,
+          "selected": 37000000.0,
+          "selected_source": "SEC",
+          "reconciliation": {
+            "metric": "Total Debt",
+            "yahoo_reported_total": 9065400000.0,
+            "yahoo_underlying_debt": 8744200000.0,
+            "yahoo_long_term_debt": 3974700000.0,
+            "yahoo_current_debt": 4769500000.0,
+            "yahoo_capital_lease_obligations": 321200000.0,
+            "sec_reported_debt": 37000000.0,
+            "status": "DISCREPANCY",
+            "selected": 37000000.0,
+            "selected_source": "SEC",
+            "confidence": "REVIEW"
+          }
+        }
+      }
+    ]
+  }
+]

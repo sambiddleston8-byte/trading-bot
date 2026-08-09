@@ -166,6 +166,69 @@ class SECSource:
 
         return candidates[0]
 
+    def annual_flow_for_period(
+        self,
+        facts,
+        tags,
+        period_end,
+    ):
+        """Return an annual flow only when it matches the reference period.
+
+        Company Facts retains old taxonomy tags for many years.  Without an
+        explicit period check a missing current tag can silently pull a value
+        from an old annual filing into an otherwise current analysis.
+        """
+
+        if not period_end:
+            return self.latest_annual_flow(facts, tags)
+
+        candidates = []
+
+        for tag in tags:
+            for item in self.annual_values(facts, tag):
+                if (
+                    item.get("start")
+                    and item.get("end") == period_end
+                    and item.get("fiscal_period") == "FY"
+                ):
+                    candidates.append({"tag": tag, **item})
+
+        if not candidates:
+            return None
+
+        candidates.sort(
+            key=lambda item: (item.get("filed") or "", item.get("tag") or ""),
+            reverse=True,
+        )
+        return candidates[0]
+
+    def balance_value_for_period(
+        self,
+        facts,
+        tags,
+        period_end,
+    ):
+        """Return a balance-sheet value for the reference fiscal year-end."""
+
+        if not period_end:
+            return self.latest_balance_value(facts, tags)
+
+        candidates = []
+
+        for tag in tags:
+            for item in self.annual_values(facts, tag):
+                if item.get("end") == period_end:
+                    candidates.append({"tag": tag, **item})
+
+        if not candidates:
+            return None
+
+        candidates.sort(
+            key=lambda item: (item.get("filed") or "", item.get("tag") or ""),
+            reverse=True,
+        )
+        return candidates[0]
+
     def parse(self, company_facts):
 
         facts = company_facts
@@ -178,84 +241,114 @@ class SECSource:
             ],
         )
 
-        net_income = self.latest_annual_flow(
+        reference_end = revenue.get("end") if revenue else None
+
+        net_income = self.annual_flow_for_period(
             facts,
             [
                 "NetIncomeLoss",
                 "ProfitLoss",
             ],
+            reference_end,
         )
 
-        operating_income = self.latest_annual_flow(
+        operating_income = self.annual_flow_for_period(
             facts,
             [
                 "OperatingIncomeLoss",
             ],
+            reference_end,
         )
 
-        gross_profit = self.latest_annual_flow(
+        gross_profit = self.annual_flow_for_period(
             facts,
             [
                 "GrossProfit",
             ],
+            reference_end,
         )
 
-        operating_cash_flow = self.latest_annual_flow(
+        operating_cash_flow = self.annual_flow_for_period(
             facts,
             [
                 "NetCashProvidedByUsedInOperatingActivities",
             ],
+            reference_end,
         )
 
-        capex = self.latest_annual_flow(
+        capex = self.annual_flow_for_period(
             facts,
             [
                 "PaymentsToAcquirePropertyPlantAndEquipment",
                 "PaymentsToAcquireProductiveAssets",
             ],
+            reference_end,
         )
 
-        cash = self.latest_balance_value(
+        cash = self.balance_value_for_period(
             facts,
             [
                 "CashAndCashEquivalentsAtCarryingValue",
             ],
+            reference_end,
         )
 
-        equity = self.latest_balance_value(
+        equity = self.balance_value_for_period(
             facts,
             [
                 "StockholdersEquity",
                 "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
             ],
+            reference_end,
         )
 
-        current_debt = self.latest_balance_value(
+        current_debt = self.balance_value_for_period(
             facts,
             [
                 "LongTermDebtCurrent",
+                "ShortTermBorrowings",
+                "ShortTermDebt",
             ],
+            reference_end,
         )
 
-        noncurrent_debt = self.latest_balance_value(
+        noncurrent_debt = self.balance_value_for_period(
             facts,
             [
                 "LongTermDebtNoncurrent",
+                "LongTermDebt",
             ],
+            reference_end,
         )
 
-        total_debt = self.latest_balance_value(
+        total_debt = self.balance_value_for_period(
             facts,
             [
                 "LongTermDebt",
             ],
+            reference_end,
         )
 
-        shares = self.latest_balance_value(
+        # Balance-sheet components are only additive when they come from the
+        # same reporting date.  Some issuers stop using one standard taxonomy
+        # tag, leaving an old fact behind in Company Facts; combining it with a
+        # newer component would manufacture an invalid current debt balance.
+        if (
+            current_debt is not None
+            and noncurrent_debt is not None
+            and current_debt.get("end")
+            and noncurrent_debt.get("end")
+            and current_debt.get("end")
+            != noncurrent_debt.get("end")
+        ):
+            current_debt = None
+
+        shares = self.balance_value_for_period(
             facts,
             [
                 "CommonStockSharesOutstanding",
             ],
+            reference_end,
         )
 
         free_cash_flow = None
@@ -270,37 +363,55 @@ class SECSource:
                 - float(capex["value"])
             )
 
-        debt_value = None
+        # Prefer the explicitly split balance-sheet components.  A generic
+        # ``LongTermDebt`` fact is not consistently comparable across issuers:
+        # it can exclude the current portion, while Yahoo's Total Debt includes
+        # it.  Adding the SEC current and non-current facts gives the like-for-
+        # like measure used by the validation layer.
+        current_value = (
+            float(current_debt["value"])
+            if current_debt is not None
+            else 0
+        )
 
-        if total_debt is not None:
+        noncurrent_value = (
+            float(noncurrent_debt["value"])
+            if noncurrent_debt is not None
+            else 0
+        )
+
+        if (
+            current_debt is not None
+            or noncurrent_debt is not None
+        ):
+
+            debt_value = (
+                current_value
+                + noncurrent_value
+            )
+
+            debt_source_tag = "+".join(
+                tag.get("tag")
+                for tag in (
+                    current_debt,
+                    noncurrent_debt,
+                )
+                if tag is not None
+                and tag.get("tag")
+            )
+
+        elif total_debt is not None:
 
             debt_value = float(
                 total_debt["value"]
             )
 
+            debt_source_tag = total_debt.get("tag")
+
         else:
 
-            current_value = (
-                float(current_debt["value"])
-                if current_debt is not None
-                else 0
-            )
-
-            noncurrent_value = (
-                float(noncurrent_debt["value"])
-                if noncurrent_debt is not None
-                else 0
-            )
-
-            if (
-                current_debt is not None
-                or noncurrent_debt is not None
-            ):
-
-                debt_value = (
-                    current_value
-                    + noncurrent_value
-                )
+            debt_value = None
+            debt_source_tag = None
 
         return {
 
@@ -368,11 +479,7 @@ class SECSource:
 
                     "value": debt_value,
 
-                    "source_tag": (
-                        total_debt.get("tag")
-                        if total_debt is not None
-                        else None
-                    ),
+                    "source_tag": debt_source_tag,
                 },
 
                 "shares_outstanding": shares,

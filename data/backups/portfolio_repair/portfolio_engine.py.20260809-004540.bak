@@ -1,0 +1,1286 @@
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from pathlib import Path
+import json
+
+
+class PortfolioEngine:
+
+    """
+    Portfolio construction engine.
+
+    Pipeline:
+
+        researched universe
+              ↓
+        audited candidates
+              ↓
+        conviction score
+              ↓
+        diversification constraints
+              ↓
+        position sizing
+              ↓
+        portfolio
+
+    This is the first real portfolio-selection layer.
+
+    It deliberately does NOT perform company research itself.
+    Research remains the responsibility of UniverseScanner /
+    InvestmentResearchPipeline.
+    """
+
+    VERSION = "0.2-conviction-portfolio"
+
+    DEFAULT_HOLDINGS = 12
+
+    DEFAULT_MAX_WEIGHT = 0.15
+
+    DEFAULT_MIN_WEIGHT = 0.03
+
+    DEFAULT_MAX_SECTOR_WEIGHT = 0.30
+
+    @staticmethod
+    def now():
+
+        return datetime.now(
+            timezone.utc
+        ).isoformat()
+
+    @staticmethod
+    def number(
+        value
+    ):
+
+        try:
+
+            if value is None:
+                return None
+
+            return float(
+                value
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+
+            return None
+
+    @staticmethod
+    def safe_dict(
+        value
+    ):
+
+        if isinstance(
+            value,
+            dict,
+        ):
+            return value
+
+        return {}
+
+    # ========================================================
+    # CANDIDATE QUALITY
+    # ========================================================
+
+    @classmethod
+    def candidate_score(
+        cls,
+        item,
+    ):
+        """
+        Convert the research output into a portfolio
+        conviction score.
+
+        The research engine remains the primary source of
+        investment quality.
+
+        Portfolio construction then rewards:
+
+        - high investment case score
+        - positive expected return
+        - surviving thesis
+        - clean audit
+        - valuation upside
+
+        and penalises:
+
+        - negative expected return
+        - material thesis negatives
+        - failed / incomplete research
+        """
+
+        audit = cls.safe_dict(
+            item.get(
+                "audit"
+            )
+        )
+
+        if audit.get(
+            "status"
+        ) != "PASS":
+
+            return None
+
+        if item.get(
+            "research_status"
+        ) != "COMPLETE":
+
+            return None
+
+        base = cls.number(
+            item.get(
+                "investment_case_score"
+            )
+        )
+
+        if base is None:
+
+            return None
+
+        score = base
+
+        expected_return = cls.number(
+            item.get(
+                "expected_return"
+            )
+        )
+
+        # ----------------------------------------------------
+        # Expected return
+        # ----------------------------------------------------
+
+        if expected_return is not None:
+
+            if expected_return >= 0.40:
+
+                score += 12
+
+            elif expected_return >= 0.25:
+
+                score += 9
+
+            elif expected_return >= 0.15:
+
+                score += 6
+
+            elif expected_return >= 0.05:
+
+                score += 2
+
+            elif expected_return < 0:
+
+                score -= 12
+
+        # ----------------------------------------------------
+        # Thesis challenge
+        # ----------------------------------------------------
+
+        thesis = cls.safe_dict(
+            item.get(
+                "thesis"
+            )
+        )
+
+        material_negative = (
+            cls.number(
+                thesis.get(
+                    "material_negative"
+                )
+            )
+            or 0
+        )
+
+        score -= min(
+            material_negative * 2,
+            12,
+        )
+
+        if thesis.get(
+            "thesis_survives"
+        ) is True:
+
+            score += 4
+
+        elif thesis.get(
+            "thesis_survives"
+        ) is False:
+
+            score -= 8
+
+        # ----------------------------------------------------
+        # Valuation upside
+        # ----------------------------------------------------
+
+        current_price = cls.number(
+            item.get(
+                "current_price"
+            )
+        )
+
+        intrinsic_value = cls.number(
+            item.get(
+                "base_intrinsic_value"
+            )
+        )
+
+        valuation_upside = None
+
+        if (
+            current_price is not None
+            and intrinsic_value is not None
+            and current_price > 0
+        ):
+
+            valuation_upside = (
+                intrinsic_value
+                / current_price
+            ) - 1
+
+            if valuation_upside >= 0.50:
+
+                score += 8
+
+            elif valuation_upside >= 0.25:
+
+                score += 5
+
+            elif valuation_upside >= 0.10:
+
+                score += 3
+
+            elif valuation_upside < 0:
+
+                score -= 8
+
+        return round(
+            max(
+                0,
+                min(
+                    100,
+                    score,
+                ),
+            ),
+            2,
+        )
+
+    # ========================================================
+    # CANDIDATE ENRICHMENT
+    # ========================================================
+
+    @classmethod
+    def prepare_candidates(
+        cls,
+        scan,
+    ):
+
+        candidates = []
+
+        for item in scan.get(
+            "results",
+            [],
+        ):
+
+            score = (
+                cls.candidate_score(
+                    item
+                )
+            )
+
+            if score is None:
+                continue
+
+            candidate = dict(
+                item
+            )
+
+            candidate[
+                "portfolio_conviction"
+            ] = score
+
+            current_price = cls.number(
+                candidate.get(
+                    "current_price"
+                )
+            )
+
+            intrinsic_value = cls.number(
+                candidate.get(
+                    "base_intrinsic_value"
+                )
+            )
+
+            if (
+                current_price
+                and intrinsic_value
+                and current_price > 0
+            ):
+
+                candidate[
+                    "valuation_upside"
+                ] = (
+                    intrinsic_value
+                    / current_price
+                ) - 1
+
+            else:
+
+                candidate[
+                    "valuation_upside"
+                ] = None
+
+            candidates.append(
+                candidate
+            )
+
+        candidates.sort(
+            key=lambda item:
+                item.get(
+                    "portfolio_conviction",
+                    -1,
+                ),
+            reverse=True,
+        )
+
+        return candidates
+
+    # ========================================================
+    # DIVERSIFICATION
+    # ========================================================
+
+    @classmethod
+    def can_add(
+        cls,
+        candidate,
+        selected,
+        sector_weights,
+        max_sector_weight,
+    ):
+
+        sector = (
+            candidate.get(
+                "sector"
+            )
+            or "Unknown"
+        )
+
+        current_sector_weight = (
+            sector_weights.get(
+                sector,
+                0.0,
+            )
+        )
+
+        # Initial approximate allocation used for
+        # selection-stage concentration control.
+        provisional_weight = (
+            1.0
+            /
+            max(
+                len(selected) + 1,
+                1,
+            )
+        )
+
+        if (
+            current_sector_weight
+            + provisional_weight
+            > max_sector_weight
+        ):
+
+            return False
+
+        return True
+
+    # ========================================================
+    # SELECTION
+    # ========================================================
+
+    @classmethod
+    def select(
+        cls,
+        candidates,
+        number_of_stocks,
+        max_sector_weight,
+    ):
+
+        selected = []
+
+        sector_weights = {}
+
+        for candidate in candidates:
+
+            if len(selected) >= (
+                number_of_stocks
+            ):
+
+                break
+
+            sector = (
+                candidate.get(
+                    "sector"
+                )
+                or "Unknown"
+            )
+
+            # First names are allowed through naturally.
+            # Once a sector becomes concentrated, skip it
+            # temporarily and look for the next strongest name.
+
+            if not cls.can_add(
+                candidate,
+                selected,
+                sector_weights,
+                max_sector_weight,
+            ):
+
+                continue
+
+            selected.append(
+                candidate
+            )
+
+            provisional = (
+                1.0
+                /
+                number_of_stocks
+            )
+
+            sector_weights[
+                sector
+            ] = (
+                sector_weights.get(
+                    sector,
+                    0.0,
+                )
+                + provisional
+            )
+
+        # ----------------------------------------------------
+        # If sector constraints prevented enough holdings,
+        # fill remaining positions with the best candidates.
+        # The final weighting layer will enforce the actual
+        # sector limits.
+        # ----------------------------------------------------
+
+        if len(selected) < (
+            number_of_stocks
+        ):
+
+            selected_tickers = {
+                item[
+                    "ticker"
+                ]
+                for item in selected
+            }
+
+            for candidate in candidates:
+
+                if len(selected) >= (
+                    number_of_stocks
+                ):
+
+                    break
+
+                if candidate[
+                    "ticker"
+                ] in selected_tickers:
+
+                    continue
+
+                selected.append(
+                    candidate
+                )
+
+                selected_tickers.add(
+                    candidate[
+                        "ticker"
+                    ]
+                )
+
+        return selected
+
+    # ========================================================
+    # POSITION SIZING
+    # ========================================================
+
+    @classmethod
+    def calculate_weights(
+        cls,
+        selected,
+        max_weight,
+        min_weight,
+    ):
+
+        if not selected:
+
+            return []
+
+        raw = []
+
+        for item in selected:
+
+            conviction = (
+                cls.number(
+                    item.get(
+                        "portfolio_conviction"
+                    )
+                )
+                or 0
+            )
+
+            # Square-root weighting stops the strongest
+            # names dominating the portfolio too aggressively.
+            raw_weight = (
+                conviction ** 0.5
+            )
+
+            raw.append(
+                max(
+                    raw_weight,
+                    0.01,
+                )
+            )
+
+        total = sum(
+            raw
+        )
+
+        weights = [
+            value / total
+            for value in raw
+        ]
+
+        # ----------------------------------------------------
+        # Apply maximum position constraint.
+        # ----------------------------------------------------
+
+        weights = [
+            min(
+                value,
+                max_weight,
+            )
+            for value in weights
+        ]
+
+        # ----------------------------------------------------
+        # Apply minimum position constraint.
+        # ----------------------------------------------------
+
+        weights = [
+            max(
+                value,
+                min_weight,
+            )
+            for value in weights
+        ]
+
+        # ----------------------------------------------------
+        # Iteratively renormalise while respecting max weight.
+        # ----------------------------------------------------
+
+        for _ in range(20):
+
+            total = sum(
+                weights
+            )
+
+            if total <= 0:
+                break
+
+            normalised = [
+                value / total
+                for value in weights
+            ]
+
+            capped = [
+                min(
+                    value,
+                    max_weight,
+                )
+                for value in normalised
+            ]
+
+            if all(
+                abs(
+                    capped[index]
+                    - weights[index]
+                ) < 0.000001
+                for index in range(
+                    len(weights)
+                )
+            ):
+
+                weights = capped
+                break
+
+            weights = capped
+
+        # Final normalisation.
+        total = sum(
+            weights
+        )
+
+        if total > 0:
+
+            weights = [
+                value / total
+                for value in weights
+            ]
+
+        return [
+            round(
+                value,
+                6,
+            )
+            for value in weights
+        ]
+
+    # ========================================================
+    # REASONING
+    # ========================================================
+
+    @classmethod
+    def build_reasoning(
+        cls,
+        item,
+    ):
+
+        conviction = cls.number(
+            item.get(
+                "portfolio_conviction"
+            )
+        )
+
+        investment_score = cls.number(
+            item.get(
+                "investment_case_score"
+            )
+        )
+
+        expected_return = cls.number(
+            item.get(
+                "expected_return"
+            )
+        )
+
+        valuation_upside = cls.number(
+            item.get(
+                "valuation_upside"
+            )
+        )
+
+        thesis = cls.safe_dict(
+            item.get(
+                "thesis"
+            )
+        )
+
+        reasons = []
+
+        if (
+            investment_score is not None
+            and investment_score >= 80
+        ):
+
+            reasons.append(
+                "Very strong underlying "
+                "investment case."
+            )
+
+        elif (
+            investment_score is not None
+            and investment_score >= 70
+        ):
+
+            reasons.append(
+                "Strong underlying "
+                "investment case."
+            )
+
+        if (
+            expected_return is not None
+            and expected_return >= 0.20
+        ):
+
+            reasons.append(
+                "Attractive expected return."
+            )
+
+        elif (
+            expected_return is not None
+            and expected_return >= 0.05
+        ):
+
+            reasons.append(
+                "Positive expected return."
+            )
+
+        if (
+            valuation_upside is not None
+            and valuation_upside >= 0.25
+        ):
+
+            reasons.append(
+                "Material upside to base "
+                "intrinsic value."
+            )
+
+        if thesis.get(
+            "thesis_survives"
+        ) is True:
+
+            reasons.append(
+                "Investment thesis survived "
+                "adversarial review."
+            )
+
+        if not reasons:
+
+            reasons.append(
+                "Selected based on relative "
+                "portfolio conviction."
+            )
+
+        return {
+            "summary":
+                " ".join(
+                    reasons
+                ),
+
+            "portfolio_conviction":
+                conviction,
+
+            "investment_case_score":
+                investment_score,
+
+            "expected_return":
+                expected_return,
+
+            "valuation_upside":
+                valuation_upside,
+
+            "thesis_result":
+                thesis.get(
+                    "result"
+                ),
+
+            "material_negative":
+                thesis.get(
+                    "material_negative",
+                    0,
+                ),
+        }
+
+    # ========================================================
+    # CONSTRUCT
+    # ========================================================
+
+    @classmethod
+    def construct(
+        cls,
+        scan,
+        number_of_stocks=DEFAULT_HOLDINGS,
+        max_weight=DEFAULT_MAX_WEIGHT,
+        min_weight=DEFAULT_MIN_WEIGHT,
+        max_sector_weight=DEFAULT_MAX_SECTOR_WEIGHT,
+    ):
+
+        candidates = (
+            cls.prepare_candidates(
+                scan
+            )
+        )
+
+        if not candidates:
+
+            raise RuntimeError(
+                "No eligible audited "
+                "portfolio candidates "
+                "were found."
+            )
+
+        number_of_stocks = min(
+            int(
+                number_of_stocks
+            ),
+            len(candidates),
+        )
+
+        selected = cls.select(
+            candidates,
+            number_of_stocks,
+            max_sector_weight,
+        )
+
+        weights = cls.calculate_weights(
+            selected,
+            max_weight,
+            min_weight,
+        )
+
+        holdings = []
+
+        for rank, (
+            item,
+            weight,
+        ) in enumerate(
+            zip(
+                selected,
+                weights,
+            ),
+            start=1,
+        ):
+
+            holdings.append(
+                {
+                    "rank":
+                        rank,
+
+                    "ticker":
+                        item[
+                            "ticker"
+                        ],
+
+                    "name":
+                        item.get(
+                            "name"
+                        ),
+
+                    "sector":
+                        item.get(
+                            "sector"
+                        ),
+
+                    "industry":
+                        item.get(
+                            "industry"
+                        ),
+
+                    "index_membership":
+                        item.get(
+                            "index_membership",
+                            [],
+                        ),
+
+                    "weight":
+                        weight,
+
+                    "portfolio_conviction":
+                        item[
+                            "portfolio_conviction"
+                        ],
+
+                    "investment_case_score":
+                        item.get(
+                            "investment_case_score"
+                        ),
+
+                    "current_price":
+                        item.get(
+                            "current_price"
+                        ),
+
+                    "base_intrinsic_value":
+                        item.get(
+                            "base_intrinsic_value"
+                        ),
+
+                    "expected_return":
+                        item.get(
+                            "expected_return"
+                        ),
+
+                    "valuation_upside":
+                        item.get(
+                            "valuation_upside"
+                        ),
+
+                    "decision":
+                        item.get(
+                            "decision"
+                        ),
+
+                    "thesis":
+                        item.get(
+                            "thesis",
+                            {},
+                        ),
+
+                    "audit":
+                        item.get(
+                            "audit",
+                            {},
+                        ),
+
+                    "reasoning":
+                        cls.build_reasoning(
+                            item
+                        ),
+                }
+            )
+
+        # ----------------------------------------------------
+        # Portfolio statistics
+        # ----------------------------------------------------
+
+        expected_returns = [
+            cls.number(
+                item.get(
+                    "expected_return"
+                )
+            )
+            for item in holdings
+        ]
+
+        expected_returns = [
+            value
+            for value in expected_returns
+            if value is not None
+        ]
+
+        weighted_expected_return = 0.0
+
+        for holding in holdings:
+
+            expected = cls.number(
+                holding.get(
+                    "expected_return"
+                )
+            )
+
+            if expected is not None:
+
+                weighted_expected_return += (
+                    holding[
+                        "weight"
+                    ]
+                    * expected
+                )
+
+        sector_weights = {}
+
+        for holding in holdings:
+
+            sector = (
+                holding.get(
+                    "sector"
+                )
+                or "Unknown"
+            )
+
+            sector_weights[
+                sector
+            ] = (
+                sector_weights.get(
+                    sector,
+                    0.0,
+                )
+                + holding[
+                    "weight"
+                ]
+            )
+
+        return {
+            "version":
+                cls.VERSION,
+
+            "created_at":
+                cls.now(),
+
+            "status":
+                "PROTOTYPE_READY",
+
+            "universe":
+                scan.get(
+                    "universe"
+                ),
+
+            "universe_count":
+                scan.get(
+                    "requested_count"
+                ),
+
+            "researched_count":
+                scan.get(
+                    "completed_count"
+                ),
+
+            "audit_pass_count":
+                scan.get(
+                    "audit_pass_count"
+                ),
+
+            "eligible_count":
+                len(
+                    candidates
+                ),
+
+            "number_of_stocks":
+                len(
+                    holdings
+                ),
+
+            "constraints":
+                {
+                    "max_weight":
+                        max_weight,
+
+                    "min_weight":
+                        min_weight,
+
+                    "max_sector_weight":
+                        max_sector_weight,
+                },
+
+            "portfolio_expected_return":
+                round(
+                    weighted_expected_return,
+                    6,
+                ),
+
+            "sector_weights":
+                {
+                    key:
+                        round(
+                            value,
+                            6,
+                        )
+                    for key, value
+                    in sector_weights.items()
+                },
+
+            "holdings":
+                holdings,
+
+            "method":
+                "CONVICTION_WEIGHTED_"
+                "DIVERSIFIED_SELECTION",
+
+            "selection_logic":
+                [
+                    "Research must complete.",
+                    "Evidence audit must PASS.",
+                    "Investment case score is primary.",
+                    "Expected return affects conviction.",
+                    "Adversarial thesis findings affect conviction.",
+                    "Intrinsic-value upside affects conviction.",
+                    "Sector concentration is constrained.",
+                    "Individual position size is constrained.",
+                ],
+        }
+
+    # ========================================================
+    # SAVE
+    # ========================================================
+
+    @staticmethod
+    def save(
+        portfolio,
+        path=None,
+    ):
+
+        if path is None:
+
+            path = (
+                "data/research/"
+                "portfolios/"
+                "prototype.json"
+            )
+
+        path = Path(
+            path
+        )
+
+        path.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        with path.open(
+            "w",
+            encoding="utf-8",
+        ) as file:
+
+            json.dump(
+                portfolio,
+                file,
+                indent=2,
+            )
+
+        return str(
+            path
+        )
+
+
+if __name__ == "__main__":
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--scan",
+        default=(
+            "data/research/"
+            "universe_scans/"
+            "sp500.json"
+        ),
+    )
+
+    parser.add_argument(
+        "--stocks",
+        type=int,
+        default=12,
+    )
+
+    parser.add_argument(
+        "--max-weight",
+        type=float,
+        default=0.15,
+    )
+
+    parser.add_argument(
+        "--min-weight",
+        type=float,
+        default=0.03,
+    )
+
+    parser.add_argument(
+        "--max-sector-weight",
+        type=float,
+        default=0.30,
+    )
+
+    args = parser.parse_args()
+
+    scan_path = Path(
+        args.scan
+    )
+
+    if not scan_path.exists():
+
+        raise SystemExit(
+            "Scan file does not exist: "
+            f"{scan_path}\n"
+            "Run UniverseScanner first."
+        )
+
+    with scan_path.open(
+        "r",
+        encoding="utf-8",
+    ) as file:
+
+        scan = json.load(
+            file
+        )
+
+    portfolio = (
+        PortfolioEngine.construct(
+            scan,
+            number_of_stocks=args.stocks,
+            max_weight=args.max_weight,
+            min_weight=args.min_weight,
+            max_sector_weight=(
+                args.max_sector_weight
+            ),
+        )
+    )
+
+    saved = (
+        PortfolioEngine.save(
+            portfolio
+        )
+    )
+
+    print()
+    print("=" * 80)
+    print("PORTFOLIO CONSTRUCTION COMPLETE")
+    print("=" * 80)
+
+    print()
+    print(
+        "Universe:",
+        portfolio[
+            "universe"
+        ],
+    )
+
+    print(
+        "Researched:",
+        portfolio[
+            "researched_count"
+        ],
+    )
+
+    print(
+        "Audit PASS:",
+        portfolio[
+            "audit_pass_count"
+        ],
+    )
+
+    print(
+        "Eligible:",
+        portfolio[
+            "eligible_count"
+        ],
+    )
+
+    print(
+        "Holdings:",
+        portfolio[
+            "number_of_stocks"
+        ],
+    )
+
+    print()
+    print(
+        "EXPECTED PORTFOLIO RETURN:",
+        portfolio[
+            "portfolio_expected_return"
+        ],
+    )
+
+    print()
+    print("HOLDINGS")
+
+    for holding in portfolio[
+        "holdings"
+    ]:
+
+        print(
+            holding[
+                "rank"
+            ],
+            "|",
+            holding[
+                "ticker"
+            ],
+            "|",
+            f"{holding['weight']:.2%}",
+            "|",
+            holding[
+                "portfolio_conviction"
+            ],
+            "|",
+            holding[
+                "reasoning"
+            ][
+                "summary"
+            ],
+        )
+
+    print()
+    print(
+        "Saved:",
+        saved,
+    )
+
+    print()
+    print("=" * 80)
+    print("PORTFOLIO ENGINE PASSED")
+    print("=" * 80)

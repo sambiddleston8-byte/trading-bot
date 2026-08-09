@@ -1,182 +1,68 @@
-from core.decision_engine import DecisionEngine
-from core.portfolio_constructor import PortfolioConstructor
+"""Compatibility facade for the one supported portfolio-construction path.
+
+The older DecisionEngine and PortfolioConstructor are retained as historical
+experiments, but this public manager deliberately does not call them.  Every
+prototype portfolio must use the evidence-audited research pipeline and the
+Master Portfolio Decision Engine.
+"""
+
+from __future__ import annotations
+
+from core.application.portfolio_construction_service import (
+    PortfolioConstructionService,
+)
+from core.application.research_service import ResearchService
+from core.research.research_contract import ResearchContract
 
 
 class PortfolioManager:
+    """Research named companies through the official pipeline, then construct."""
 
-    def __init__(self):
-
-        self.decision_engine = DecisionEngine()
-        self.constructor = PortfolioConstructor()
-
-    def analyse_universe(
-        self,
-        symbols,
-    ):
-
+    def analyse_universe(self, symbols: list[str]) -> list[dict]:
         analyses = []
-
         for symbol in symbols:
-
-            symbol = symbol.upper().strip()
-
-            if not symbol:
+            ticker = str(symbol).upper().strip()
+            if not ticker:
                 continue
-
-            print(
-                f"Analysing {symbol}..."
-            )
-
             try:
-
-                result = (
-                    self.decision_engine.analyse(
-                        symbol
-                    )
-                )
-
+                result = ResearchService.run(ticker)
+                analyses.append(ResearchContract.from_pipeline_result(result))
+            except Exception as exc:
                 analyses.append(
-                    result
+                    {
+                        "ticker": ticker,
+                        "research_status": "ERROR",
+                        "error": str(exc),
+                    }
                 )
-
-            except Exception as error:
-
-                print(
-                    f"{symbol} failed: {error}"
-                )
-
         return analyses
 
     def construct_portfolio(
         self,
-        symbols,
-    ):
-
-        analyses = (
-            self.analyse_universe(
-                symbols
-            )
-        )
-
-        portfolio = (
-            self.constructor.construct(
-                analyses
-            )
-        )
-
+        symbols: list[str] | None = None,
+        target_holdings: int = 8,
+    ) -> dict:
+        analyses = self.analyse_universe(symbols) if symbols else []
+        construction = PortfolioConstructionService.construct(target_holdings)
         return {
-
-            "Analyses":
-                analyses,
-
-            "Portfolio":
-                portfolio,
-
+            "analyses": analyses,
+            "construction": construction,
+            "portfolio": construction.get("portfolio"),
         }
 
-    def print_portfolio(
-        self,
-        portfolio,
-    ):
+    @staticmethod
+    def print_portfolio(result: dict) -> None:
+        construction = result.get("construction") or {}
+        if construction.get("status") != "CONSTRUCTED":
+            print(construction.get("reason", "Portfolio is not ready to construct."))
+            return
 
-        data = portfolio.get(
-            "Portfolio",
-            {}
-        )
-
-        print()
-        print("=" * 60)
-        print("PROPOSED PORTFOLIO")
-        print("=" * 60)
-        print()
-
-        positions = data.get(
-            "Positions",
-            []
-        )
-
-        if not positions:
-
+        portfolio = construction["portfolio"]
+        print("\nPROPOSED PORTFOLIO")
+        for holding in portfolio.get("holdings", []):
             print(
-                "No qualifying positions."
+                f"{holding.get('ticker'):<8} "
+                f"{holding.get('weight', 0):>7.2%} "
+                f"conviction {holding.get('portfolio_conviction', 0):.1f}"
             )
-
-        else:
-
-            for position in positions:
-
-                print(
-                    f"{position['Ticker']:<10}"
-                    f"{position['Allocation'] * 100:>7.2f}%"
-                    f"  "
-                    f"{position['Recommendation']:<12}"
-                    f"Score: "
-                    f"{position['Score']}"
-                )
-
-        print()
-
-        print(
-            f"Positions: "
-            f"{data.get('Position Count', 0)}"
-        )
-
-        print(
-            f"Invested: "
-            f"{data.get('Invested %', 0)}%"
-        )
-
-        print(
-            f"Cash: "
-            f"{data.get('Cash %', 0)}%"
-        )
-
-        print()
-
-        print("SECTOR EXPOSURE")
-        print("-" * 60)
-
-        sectors = data.get(
-            "Sector Exposure",
-            {}
-        )
-
-        if not sectors:
-
-            print(
-                "No sector exposure."
-            )
-
-        else:
-
-            for sector, allocation in sectors.items():
-
-                print(
-                    f"{sector:<30}"
-                    f"{allocation * 100:>7.2f}%"
-                )
-
-        print()
-        print("=" * 60)
-
-
-if __name__ == "__main__":
-
-    manager = PortfolioManager()
-
-    symbols = [
-        "NVDA",
-        "MSFT",
-        "GOOGL",
-        "AMZN",
-        "META",
-        "AAPL",
-    ]
-
-    result = manager.construct_portfolio(
-        symbols
-    )
-
-    manager.print_portfolio(
-        result
-    )
+        print(f"Cash: {portfolio.get('cash_weight', 0):.2%}")

@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T15:08:31.045779+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "AMGN",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "BBY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "BG",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "AEP",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "SW",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "PLD",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "NEE",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "KVUE",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "GRMN",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "CRL",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "AKAM",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "AIG",
+      "sector": "Financials"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "AMGN",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AMGN.json"
+    },
+    {
+      "ticker": "BBY",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/BBY.json"
+    },
+    {
+      "ticker": "BG",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/BG.json"
+    },
+    {
+      "ticker": "AEP",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AEP.json"
+    },
+    {
+      "ticker": "SW",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/SW.json"
+    },
+    {
+      "ticker": "PLD",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/PLD.json"
+    },
+    {
+      "ticker": "NEE",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/NEE.json"
+    },
+    {
+      "ticker": "KVUE",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/KVUE.json"
+    },
+    {
+      "ticker": "GRMN",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/GRMN.json"
+    },
+    {
+      "ticker": "CRL",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CRL.json"
+    },
+    {
+      "ticker": "AKAM",
+      "sector": "Information Technology",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AKAM.json"
+    },
+    {
+      "ticker": "AIG",
+      "sector": "Financials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AIG.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T150831Z.json",
+  "completed_at": "2026-08-09T15:10:11.520286+00:00"
+}

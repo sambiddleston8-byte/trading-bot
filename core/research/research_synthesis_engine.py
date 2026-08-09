@@ -483,6 +483,87 @@ class ResearchSynthesisEngine:
     # ========================================================
 
     @classmethod
+    def market_signal_synthesis(
+        cls,
+        analysis,
+    ):
+        signals = analysis.get(
+            "market_signals",
+            {},
+        )
+
+        if not isinstance(signals, dict):
+            signals = {}
+
+        technical = signals.get("technical", {})
+        risk = signals.get("risk", {})
+
+        if not isinstance(technical, dict):
+            technical = {}
+
+        if not isinstance(risk, dict):
+            risk = {}
+
+        return {
+            "technical_score": cls.number(technical.get("score"), None),
+            "momentum_score": cls.number(technical.get("momentum_score"), None),
+            "risk_score": cls.number(risk.get("score"), None),
+            "beta": cls.number(risk.get("beta"), None),
+            "annualised_volatility": cls.number(
+                risk.get("annualised_volatility"),
+                None,
+            ),
+        }
+
+    @classmethod
+    def sentiment_synthesis(
+        cls,
+        analysis,
+    ):
+        sentiment = analysis.get("sentiment", {})
+
+        if not isinstance(sentiment, dict):
+            sentiment = {}
+
+        return {
+            "score": cls.number(sentiment.get("score"), None),
+            "label": sentiment.get("label") or "UNAVAILABLE",
+            "confidence": sentiment.get("confidence") or "REVIEW",
+            "independent_source_count": cls.number(
+                sentiment.get("independent_source_count"),
+                0,
+            ),
+        }
+
+    @classmethod
+    def market_context_synthesis(
+        cls,
+        analysis,
+    ):
+        market_regime = analysis.get("market_regime", {})
+        macro_environment = analysis.get("macro_environment", {})
+
+        if not isinstance(market_regime, dict):
+            market_regime = {}
+        if not isinstance(macro_environment, dict):
+            macro_environment = {}
+
+        return {
+            "market_regime": {
+                "status": market_regime.get("status") or "UNAVAILABLE",
+                "regime": market_regime.get("regime") or "UNAVAILABLE",
+                "score": cls.number(market_regime.get("score"), None),
+            },
+            "macro_environment": {
+                "status": macro_environment.get("status") or "UNAVAILABLE",
+                "regime": macro_environment.get("regime") or "UNAVAILABLE",
+                "policy_rate": cls.number(macro_environment.get("policy_rate"), None),
+                "inflation_yoy": cls.number(macro_environment.get("inflation_yoy"), None),
+                "real_gdp_yoy": cls.number(macro_environment.get("real_gdp_yoy"), None),
+            },
+        }
+
+    @classmethod
     def data_quality_synthesis(
         cls,
         analysis,
@@ -842,6 +923,82 @@ class ResearchSynthesisEngine:
     # ========================================================
 
     @classmethod
+    def final_decision(
+        cls,
+        score,
+        valuation,
+        thesis,
+        data_quality,
+    ):
+        """Make the post-research recommendation after every specialist has reported."""
+
+        expected_return = valuation.get(
+            "expected_return"
+        )
+
+        if thesis.get("result") != "THESIS_SURVIVES":
+            return {
+                "decision": "WATCHLIST",
+                "reason": (
+                    "The thesis has not survived adversarial review, so the "
+                    "earlier core recommendation cannot be used for a portfolio."
+                ),
+            }
+
+        if data_quality.get("unresolved_discrepancies", 0) > 0:
+            return {
+                "decision": "WATCHLIST",
+                "reason": (
+                    "Unresolved source-data discrepancies require review before "
+                    "a portfolio recommendation can be made."
+                ),
+            }
+
+        if expected_return is None:
+            return {
+                "decision": "WATCHLIST",
+                "reason": "Expected return is unavailable.",
+            }
+
+        if expected_return < -0.10:
+            return {
+                "decision": "AVOID",
+                "reason": "Base valuation implies a materially negative expected return.",
+            }
+
+        if expected_return < 0.05:
+            return {
+                "decision": "WATCHLIST",
+                "reason": "Expected return is below the portfolio entry threshold.",
+            }
+
+        if score >= 75 and expected_return >= 0.25:
+            return {
+                "decision": "STRONG_BUY",
+                "reason": (
+                    "Strong aggregate research score, attractive valuation, and "
+                    "a surviving thesis support a high-conviction recommendation."
+                ),
+            }
+
+        if score >= 65:
+            return {
+                "decision": "BUY",
+                "reason": (
+                    "The research case clears the portfolio entry threshold after "
+                    "synthesis and adversarial review."
+                ),
+            }
+
+        return {
+            "decision": "WATCHLIST",
+            "reason": (
+                "The research case is not yet strong enough for a portfolio "
+                "recommendation."
+            ),
+        }
+
+    @classmethod
     def conclusion(
         cls,
         score,
@@ -935,6 +1092,18 @@ class ResearchSynthesisEngine:
             )
         )
 
+        market_signals = cls.market_signal_synthesis(
+            analysis
+        )
+
+        sentiment = cls.sentiment_synthesis(
+            analysis
+        )
+
+        market_context = cls.market_context_synthesis(
+            analysis
+        )
+
         overall_score = (
             cls.investment_case_score(
                 fundamental,
@@ -943,6 +1112,13 @@ class ResearchSynthesisEngine:
                 thesis,
                 data_quality,
             )
+        )
+
+        final_decision = cls.final_decision(
+            overall_score,
+            valuation,
+            thesis,
+            data_quality,
         )
 
         result = {
@@ -958,6 +1134,10 @@ class ResearchSynthesisEngine:
 
             "investment_case_score":
                 overall_score,
+
+            "decision": final_decision["decision"],
+
+            "decision_reason": final_decision["reason"],
 
             "conclusion":
                 cls.conclusion(
@@ -980,6 +1160,15 @@ class ResearchSynthesisEngine:
 
             "data_quality":
                 data_quality,
+
+            "market_signals":
+                market_signals,
+
+            "sentiment":
+                sentiment,
+
+            "market_context":
+                market_context,
 
             "bull_case":
                 cls.build_bull_case(

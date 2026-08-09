@@ -1,0 +1,951 @@
+{
+  "version": "1.4-research-led-paper-reallocation",
+  "status": "COMPLETE",
+  "checked_at": "2026-08-09T18:01:37.825255+00:00",
+  "portfolio_created_at": "2026-08-09T16:43:57.700224+00:00",
+  "policy": {
+    "basis": [
+      "Refreshed fundamental and valuation research",
+      "Technical and risk signals",
+      "Catalyst and sentiment evidence",
+      "Thesis challenge and evidence audit",
+      "Observed correlation, economic-exposure and liquidity review"
+    ],
+    "price_use": "Price movement is shown as context only; it does not create a sell rule on its own.",
+    "research_freshness": "Saved research older than 14 days is flagged for refresh; a refresh does not create an automatic trade.",
+    "portfolio_changes": "A balanced evidence-led transfer automatically updates the proposed paper portfolio after its limits are checked. The monitor cannot place a broker order.",
+    "execution": "ALERT_ONLY_NO_AUTOMATIC_TRADES"
+  },
+  "summary": {
+    "position_count": 13,
+    "action_counts": {
+      "HOLD": 11,
+      "EXIT_REVIEW": 2
+    },
+    "alerts_required": 2,
+    "allocation_changes_required": 2,
+    "proposed_transfer_count": 2,
+    "proposed_transfer_weight": 0.141835,
+    "replacement_candidates_available": 1
+  },
+  "benchmark": {
+    "name": "S&P 500 Index",
+    "ticker": "^GSPC",
+    "price": 7757.64013671875
+  },
+  "positions": [
+    {
+      "ticker": "NWS",
+      "company": "News Corp (Class B)",
+      "weight": 0.109093,
+      "entry_price": 32.45,
+      "current_price": 32.45000076293945,
+      "price_change": 2.3511231184158987e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.109093,
+        "suggested_weight": 0.109093,
+        "allocation_change": 0.0,
+        "decision_rating": 84.3,
+        "decision_rating_change": -1.0,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 80.0,
+        "risk_score": 80.0,
+        "positive_catalyst_score": 38.0,
+        "negative_catalyst_score": 24.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "ACN",
+      "company": "Accenture",
+      "weight": 0.081041,
+      "entry_price": 175.72,
+      "current_price": 175.72000122070312,
+      "price_change": 6.946865083179432e-09,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.081041,
+        "suggested_weight": 0.081041,
+        "allocation_change": 0.0,
+        "decision_rating": 82.0,
+        "decision_rating_change": -0.1,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 90.0,
+        "risk_score": 80.0,
+        "positive_catalyst_score": 14.0,
+        "negative_catalyst_score": 6.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "BMY",
+      "company": "Bristol Myers Squibb",
+      "weight": 0.102151,
+      "entry_price": 64.72,
+      "current_price": 64.72000122070312,
+      "price_change": 1.8861296746663925e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.102151,
+        "suggested_weight": 0.102151,
+        "allocation_change": 0.0,
+        "decision_rating": 80.4,
+        "decision_rating_change": -1.4,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 90.0,
+        "risk_score": 70.0,
+        "positive_catalyst_score": 23.0,
+        "negative_catalyst_score": 4.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "TEAM",
+      "company": "Atlassian",
+      "weight": 0.059219,
+      "entry_price": 149.07,
+      "current_price": 149.07000732421875,
+      "price_change": 4.913274809226209e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.059219,
+        "suggested_weight": 0.059219,
+        "allocation_change": 0.0,
+        "decision_rating": 81.7,
+        "decision_rating_change": -0.1,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 100.0,
+        "risk_score": 70.0,
+        "positive_catalyst_score": 36.0,
+        "negative_catalyst_score": 8.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "FOXA",
+      "company": "Fox Corporation (Class A)",
+      "weight": 0.076808,
+      "entry_price": 64.03,
+      "current_price": 64.02999877929688,
+      "price_change": -1.9064549827696453e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.076808,
+        "suggested_weight": 0.076808,
+        "allocation_change": 0.0,
+        "decision_rating": 81.0,
+        "decision_rating_change": -0.2,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 70.0,
+        "risk_score": 80.0,
+        "positive_catalyst_score": 28.0,
+        "negative_catalyst_score": 0.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "APA",
+      "company": "APA Corporation",
+      "weight": 0.072676,
+      "entry_price": 37.63,
+      "current_price": 37.630001068115234,
+      "price_change": 2.8384672612347117e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.072676,
+        "suggested_weight": 0.072676,
+        "allocation_change": 0.0,
+        "decision_rating": 79.7,
+        "decision_rating_change": -0.2,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 80.0,
+        "risk_score": 60.0,
+        "positive_catalyst_score": 32.0,
+        "negative_catalyst_score": 12.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "CNC",
+      "company": "Centene Corporation",
+      "weight": 0.070862,
+      "entry_price": 65.77,
+      "current_price": 65.7699966430664,
+      "price_change": -5.10404986053814e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.070862,
+        "suggested_weight": 0.070862,
+        "allocation_change": 0.0,
+        "decision_rating": 79.6,
+        "decision_rating_change": -0.2,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 80.0,
+        "risk_score": 65.0,
+        "positive_catalyst_score": 16.0,
+        "negative_catalyst_score": 8.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "TKO",
+      "company": "TKO Group Holdings",
+      "weight": 0.076911,
+      "entry_price": 186.56,
+      "current_price": 186.55999755859375,
+      "price_change": -1.3086440042719971e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.076911,
+        "suggested_weight": 0.076911,
+        "allocation_change": 0.0,
+        "decision_rating": 78.8,
+        "decision_rating_change": -0.1,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 55.0,
+        "risk_score": 70.0,
+        "positive_catalyst_score": 14.0,
+        "negative_catalyst_score": 3.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "ADBE",
+      "company": "Adobe Inc.",
+      "weight": 0.081088,
+      "entry_price": 265.21,
+      "current_price": 265.2099914550781,
+      "price_change": -3.221945577003282e-08,
+      "action": "EXIT_REVIEW",
+      "alerts": [
+        "The updated fundamental, valuation, thesis, audit or catalyst evidence no longer clears the portfolio safeguards. The proposed paper allocation should move out of this holding unless a portfolio constraint blocks it."
+      ],
+      "allocation_recommendation": {
+        "action": "EXIT_REVIEW",
+        "current_weight": 0.081088,
+        "suggested_weight": 0.0,
+        "allocation_change": -0.0811,
+        "decision_rating": 75.8,
+        "decision_rating_change": -2.5,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS_WITH_WARNINGS",
+        "thesis_result": "THESIS_WEAKENED",
+        "technical_score": 90.0,
+        "risk_score": 75.0,
+        "positive_catalyst_score": 12.0,
+        "negative_catalyst_score": 6.0,
+        "reason": "The updated fundamental, valuation, thesis, audit or catalyst evidence no longer clears the portfolio safeguards. The proposed paper allocation should move out of this holding unless a portfolio constraint blocks it."
+      }
+    },
+    {
+      "ticker": "CI",
+      "company": "Cigna",
+      "weight": 0.086948,
+      "entry_price": 282.49,
+      "current_price": 282.489990234375,
+      "price_change": -3.45698077941492e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.086948,
+        "suggested_weight": 0.086948,
+        "allocation_change": 0.0,
+        "decision_rating": 78.0,
+        "decision_rating_change": -0.2,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 45.0,
+        "risk_score": 70.0,
+        "positive_catalyst_score": 20.0,
+        "negative_catalyst_score": 0.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "TTD",
+      "company": "Trade Desk (The)",
+      "weight": 0.058831,
+      "entry_price": 13.8,
+      "current_price": 13.800000190734863,
+      "price_change": 1.3821366939836821e-08,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.058831,
+        "suggested_weight": 0.058831,
+        "allocation_change": 0.0,
+        "decision_rating": 74.5,
+        "decision_rating_change": -0.8,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 22.5,
+        "risk_score": 80.0,
+        "positive_catalyst_score": 12.0,
+        "negative_catalyst_score": 40.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "BKNG",
+      "company": "Booking Holdings",
+      "weight": 0.063624,
+      "entry_price": 214.42,
+      "current_price": 214.4199981689453,
+      "price_change": -8.539570384158424e-09,
+      "action": "HOLD",
+      "alerts": [],
+      "allocation_recommendation": {
+        "action": "NO_CHANGE",
+        "current_weight": 0.063624,
+        "suggested_weight": 0.063624,
+        "allocation_change": 0.0,
+        "decision_rating": 72.7,
+        "decision_rating_change": -1.1,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS",
+        "thesis_result": "THESIS_SURVIVES",
+        "technical_score": 100.0,
+        "risk_score": 75.0,
+        "positive_catalyst_score": 14.0,
+        "negative_catalyst_score": 24.0,
+        "reason": "The latest saved research still supports the existing proposed allocation."
+      }
+    },
+    {
+      "ticker": "ABNB",
+      "company": "Airbnb",
+      "weight": 0.060747,
+      "entry_price": 178.07,
+      "current_price": 178.07000732421875,
+      "price_change": 4.113112117565265e-08,
+      "action": "EXIT_REVIEW",
+      "alerts": [
+        "The updated fundamental, valuation, thesis, audit or catalyst evidence no longer clears the portfolio safeguards. The proposed paper allocation should move out of this holding unless a portfolio constraint blocks it."
+      ],
+      "allocation_recommendation": {
+        "action": "EXIT_REVIEW",
+        "current_weight": 0.060747,
+        "suggested_weight": 0.0,
+        "allocation_change": -0.0607,
+        "decision_rating": 68.3,
+        "decision_rating_change": -1.8,
+        "master_recommendation": "ELIGIBLE",
+        "audit_status": "PASS_WITH_WARNINGS",
+        "thesis_result": "THESIS_WEAKENED",
+        "technical_score": 100.0,
+        "risk_score": 90.0,
+        "positive_catalyst_score": 74.0,
+        "negative_catalyst_score": 8.0,
+        "reason": "The updated fundamental, valuation, thesis, audit or catalyst evidence no longer clears the portfolio safeguards. The proposed paper allocation should move out of this holding unless a portfolio constraint blocks it."
+      }
+    }
+  ],
+  "reallocation_plan": {
+    "status": "READY_TO_APPLY_TO_PROPOSED_PORTFOLIO",
+    "automatic_proposed_portfolio_update": true,
+    "transfers": [
+      {
+        "from_ticker": "ABNB",
+        "from_company": "Airbnb",
+        "to_ticker": "AOS",
+        "to_company": "A. O. Smith",
+        "weight": 0.060747,
+        "from_reason": "The updated fundamental, valuation, thesis, audit or catalyst evidence no longer clears the portfolio safeguards. The proposed paper allocation should move out of this holding unless a portfolio constraint blocks it.",
+        "to_reason": "An audit-cleared, master-approved replacement was selected using the same risk-adjusted opportunity, evidence confidence, expected-return, volatility and risk-quality sizing inputs.",
+        "replacement_holding": {
+          "ticker": "AOS",
+          "name": "A. O. Smith",
+          "sector": "Industrials",
+          "industry": "Building Products",
+          "index_membership": [
+            "SP500"
+          ],
+          "weight": 0.0,
+          "portfolio_conviction": 88.7,
+          "opportunity_score": 92.87,
+          "research_confidence": 72.0,
+          "decision_rating": {
+            "score": 75.4,
+            "maximum_score": 100.0,
+            "label": "Decision rating",
+            "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+            "formula": {
+              "opportunity": 0.3,
+              "evidence_quality": 0.2,
+              "expected_return": 0.15,
+              "valuation_reliability": 0.1,
+              "risk_quality": 0.08,
+              "technical_context": 0.05,
+              "thesis_strength": 0.07,
+              "source_breadth": 0.05
+            },
+            "components": {
+              "opportunity": 88.7,
+              "evidence_quality": 72.0,
+              "expected_return": 98.1,
+              "valuation_reliability": 55.0,
+              "risk_quality": 73.0,
+              "technical_context": 52.3,
+              "thesis_strength": 100.0,
+              "source_breadth": 12.5,
+              "residual_uncertainty_deduction": 1.96
+            }
+          },
+          "provider_evidence": {
+            "version": "1.4-timestamped-provider-evidence",
+            "status": "COMPLETE",
+            "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+            "completed_roles": [
+              "macro_context"
+            ],
+            "unavailable_roles": [
+              "analyst_expectations",
+              "financial_statement_cross_check",
+              "independent_company_news",
+              "independent_estimates",
+              "independent_financial_quality",
+              "independent_financials",
+              "independent_market_history"
+            ],
+            "completed_evidence_types": [
+              "fred_ten_year_treasury"
+            ],
+            "completed_source_count": 1,
+            "completed_evidence_count": 1,
+            "independent_company_source_count": 0,
+            "provider_freshness": {
+              "fred": {
+                "status": "FRESH",
+                "age_hours": 1.6666666666666667e-08,
+                "max_age_hours": 168
+              }
+            },
+            "fresh_provider_count": 1,
+            "stale_or_untimestamped_providers": [],
+            "freshness_policy": "Provider data is supplementary only and must be timestamped; stale saved research requires a full refresh."
+          },
+          "portfolio_decision": "AUTOMATIC_RESEARCH_APPROVED_REPLACEMENT",
+          "investment_case_score": 80.25,
+          "current_price": 63.98,
+          "base_intrinsic_value": 82.58107816101607,
+          "expected_return": 0.29073270023469955,
+          "annualised_expected_return": 0.05236710057265048,
+          "valuation_horizon_years": 5.0,
+          "valuation_upside": 0.29073270023469955,
+          "decision": "STRONG_BUY",
+          "thesis": {
+            "result": "THESIS_SURVIVES",
+            "tested": 9.0,
+            "material_negative": 0,
+            "thesis_survives": true
+          },
+          "audit": {
+            "status": "PASS",
+            "finding_count": 0,
+            "critical": 0,
+            "high": 0,
+            "medium": 0,
+            "findings": []
+          },
+          "market_signals": {
+            "technical_score": 52.29,
+            "momentum_score": 58.12,
+            "moving_average_score": 53.29,
+            "drawdown_score": 37.42,
+            "trend_persistence_score": 58.33,
+            "support_resistance_score": 77.08,
+            "volume_confirmation_score": 52.93,
+            "return_20d": 0.064981,
+            "return_60d": 0.108064,
+            "return_120d": -0.195459,
+            "return_252d": null,
+            "drawdown_from_252d_high": -0.195559,
+            "support_level": 55.4443,
+            "resistance_level": 63.6247,
+            "volume_ratio_20d_to_60d": 1.0353,
+            "nearest_fibonacci_level": "61.8%",
+            "distance_to_nearest_fibonacci_level": -0.010414,
+            "risk_score": 73.0,
+            "beta": 1.157,
+            "annualised_volatility": 0.2645,
+            "downside_volatility": 0.1618,
+            "maximum_drawdown": -0.302881,
+            "debt_to_cash": 1.1009,
+            "risk_components": [
+              {
+                "factor": "beta",
+                "impact": "LOW",
+                "reason": "Beta exceeds 1.0."
+              },
+              {
+                "factor": "debt_to_cash",
+                "impact": "LOW",
+                "reason": "Debt exceeds cash."
+              },
+              {
+                "factor": "volatility",
+                "impact": "LOW",
+                "reason": "Annualised volatility exceeds 25%."
+              },
+              {
+                "factor": "maximum_drawdown",
+                "impact": "MEDIUM",
+                "reason": "Observed drawdown exceeds 25%."
+              }
+            ]
+          },
+          "sentiment": {
+            "score": 50.0,
+            "label": "NEUTRAL",
+            "confidence": "HIGH",
+            "independent_source_count": 15.0
+          },
+          "monitoring_conditions": [
+            "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+            "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+            "New evidence contradicting the principal investment thesis would trigger a reassessment."
+          ],
+          "position_sizing": {
+            "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+            "signal": 0.496684,
+            "opportunity_score": 92.87,
+            "research_confidence": 72.0,
+            "expected_return": 0.29073270023469955,
+            "annualised_volatility": 0.2645,
+            "risk_score": 73.0
+          },
+          "reasoning": {
+            "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+            "portfolio_conviction": 88.7,
+            "opportunity_score": 88.7,
+            "investment_case_score": 80.25,
+            "expected_return": 0.29073270023469955,
+            "valuation_upside": 0.29073270023469955,
+            "thesis_result": "THESIS_SURVIVES",
+            "material_negative": 0,
+            "technical_score": 52.29,
+            "risk_score": 73.0,
+            "sentiment_score": 50.0
+          }
+        }
+      },
+      {
+        "from_ticker": "ADBE",
+        "from_company": "Adobe Inc.",
+        "to_ticker": "AOS",
+        "to_company": "A. O. Smith",
+        "weight": 0.081088,
+        "from_reason": "The updated fundamental, valuation, thesis, audit or catalyst evidence no longer clears the portfolio safeguards. The proposed paper allocation should move out of this holding unless a portfolio constraint blocks it.",
+        "to_reason": "An audit-cleared, master-approved replacement was selected using the same risk-adjusted opportunity, evidence confidence, expected-return, volatility and risk-quality sizing inputs.",
+        "replacement_holding": {
+          "ticker": "AOS",
+          "name": "A. O. Smith",
+          "sector": "Industrials",
+          "industry": "Building Products",
+          "index_membership": [
+            "SP500"
+          ],
+          "weight": 0.0,
+          "portfolio_conviction": 88.7,
+          "opportunity_score": 92.87,
+          "research_confidence": 72.0,
+          "decision_rating": {
+            "score": 75.4,
+            "maximum_score": 100.0,
+            "label": "Decision rating",
+            "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
+            "formula": {
+              "opportunity": 0.3,
+              "evidence_quality": 0.2,
+              "expected_return": 0.15,
+              "valuation_reliability": 0.1,
+              "risk_quality": 0.08,
+              "technical_context": 0.05,
+              "thesis_strength": 0.07,
+              "source_breadth": 0.05
+            },
+            "components": {
+              "opportunity": 88.7,
+              "evidence_quality": 72.0,
+              "expected_return": 98.1,
+              "valuation_reliability": 55.0,
+              "risk_quality": 73.0,
+              "technical_context": 52.3,
+              "thesis_strength": 100.0,
+              "source_breadth": 12.5,
+              "residual_uncertainty_deduction": 1.96
+            }
+          },
+          "provider_evidence": {
+            "version": "1.4-timestamped-provider-evidence",
+            "status": "COMPLETE",
+            "evidence_policy": "CONFIDENCE_ONLY_PENDING_FIELD_RECONCILIATION",
+            "completed_roles": [
+              "macro_context"
+            ],
+            "unavailable_roles": [
+              "analyst_expectations",
+              "financial_statement_cross_check",
+              "independent_company_news",
+              "independent_estimates",
+              "independent_financial_quality",
+              "independent_financials",
+              "independent_market_history"
+            ],
+            "completed_evidence_types": [
+              "fred_ten_year_treasury"
+            ],
+            "completed_source_count": 1,
+            "completed_evidence_count": 1,
+            "independent_company_source_count": 0,
+            "provider_freshness": {
+              "fred": {
+                "status": "FRESH",
+                "age_hours": 1.6666666666666667e-08,
+                "max_age_hours": 168
+              }
+            },
+            "fresh_provider_count": 1,
+            "stale_or_untimestamped_providers": [],
+            "freshness_policy": "Provider data is supplementary only and must be timestamped; stale saved research requires a full refresh."
+          },
+          "portfolio_decision": "AUTOMATIC_RESEARCH_APPROVED_REPLACEMENT",
+          "investment_case_score": 80.25,
+          "current_price": 63.98,
+          "base_intrinsic_value": 82.58107816101607,
+          "expected_return": 0.29073270023469955,
+          "annualised_expected_return": 0.05236710057265048,
+          "valuation_horizon_years": 5.0,
+          "valuation_upside": 0.29073270023469955,
+          "decision": "STRONG_BUY",
+          "thesis": {
+            "result": "THESIS_SURVIVES",
+            "tested": 9.0,
+            "material_negative": 0,
+            "thesis_survives": true
+          },
+          "audit": {
+            "status": "PASS",
+            "finding_count": 0,
+            "critical": 0,
+            "high": 0,
+            "medium": 0,
+            "findings": []
+          },
+          "market_signals": {
+            "technical_score": 52.29,
+            "momentum_score": 58.12,
+            "moving_average_score": 53.29,
+            "drawdown_score": 37.42,
+            "trend_persistence_score": 58.33,
+            "support_resistance_score": 77.08,
+            "volume_confirmation_score": 52.93,
+            "return_20d": 0.064981,
+            "return_60d": 0.108064,
+            "return_120d": -0.195459,
+            "return_252d": null,
+            "drawdown_from_252d_high": -0.195559,
+            "support_level": 55.4443,
+            "resistance_level": 63.6247,
+            "volume_ratio_20d_to_60d": 1.0353,
+            "nearest_fibonacci_level": "61.8%",
+            "distance_to_nearest_fibonacci_level": -0.010414,
+            "risk_score": 73.0,
+            "beta": 1.157,
+            "annualised_volatility": 0.2645,
+            "downside_volatility": 0.1618,
+            "maximum_drawdown": -0.302881,
+            "debt_to_cash": 1.1009,
+            "risk_components": [
+              {
+                "factor": "beta",
+                "impact": "LOW",
+                "reason": "Beta exceeds 1.0."
+              },
+              {
+                "factor": "debt_to_cash",
+                "impact": "LOW",
+                "reason": "Debt exceeds cash."
+              },
+              {
+                "factor": "volatility",
+                "impact": "LOW",
+                "reason": "Annualised volatility exceeds 25%."
+              },
+              {
+                "factor": "maximum_drawdown",
+                "impact": "MEDIUM",
+                "reason": "Observed drawdown exceeds 25%."
+              }
+            ]
+          },
+          "sentiment": {
+            "score": 50.0,
+            "label": "NEUTRAL",
+            "confidence": "HIGH",
+            "independent_source_count": 15.0
+          },
+          "monitoring_conditions": [
+            "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+            "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+            "New evidence contradicting the principal investment thesis would trigger a reassessment."
+          ],
+          "position_sizing": {
+            "method": "RISK_ADJUSTED_OPPORTUNITY_WITH_EVIDENCE_CONFIDENCE",
+            "signal": 0.496684,
+            "opportunity_score": 92.87,
+            "research_confidence": 72.0,
+            "expected_return": 0.29073270023469955,
+            "annualised_volatility": 0.2645,
+            "risk_score": 73.0
+          },
+          "reasoning": {
+            "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review. Conditional allocation: The valuation is terminal-value sensitive; allocation is reduced and the model requires monitoring.",
+            "portfolio_conviction": 88.7,
+            "opportunity_score": 88.7,
+            "investment_case_score": 80.25,
+            "expected_return": 0.29073270023469955,
+            "valuation_upside": 0.29073270023469955,
+            "thesis_result": "THESIS_SURVIVES",
+            "material_negative": 0,
+            "technical_score": 52.29,
+            "risk_score": 73.0,
+            "sentiment_score": 50.0
+          }
+        }
+      }
+    ],
+    "total_requested_increase": 0.141835,
+    "total_evidence_led_reduction": 0.141835,
+    "total_transfer_proposed": 0.141835,
+    "unfunded_increase": 0.0,
+    "unused_reduction": 0.0,
+    "replacement_candidates_considered": 1,
+    "replacement_transfers": 2,
+    "policy": "Transfers are proposed only between holdings whose refreshed research supports opposite allocation changes. A balanced transfer updates the proposed paper portfolio automatically after its portfolio limits are checked. No broker order is ever sent."
+  },
+  "market_exposure": {
+    "status": "COMPLETE",
+    "reason": "Correlation uses overlapping daily returns from roughly one year of observed price history.",
+    "return_observation_count": 250,
+    "covered_holdings": 13,
+    "total_holdings": 13,
+    "effective_position_count": 12.52,
+    "sector_weights": {
+      "Communication Services": 0.321643,
+      "Information Technology": 0.162129,
+      "Health Care": 0.259961,
+      "Computer Software": 0.059219,
+      "Energy": 0.072676,
+      "Consumer Discretionary": 0.124371
+    },
+    "industry_weights": {
+      "Publishing": 0.109093,
+      "IT Consulting & Other Services": 0.081041,
+      "Pharmaceuticals": 0.102151,
+      "Computer Software": 0.059219,
+      "Broadcasting": 0.076808,
+      "Oil & Gas Exploration & Production": 0.072676,
+      "Managed Health Care": 0.070862,
+      "Movies & Entertainment": 0.076911,
+      "Application Software": 0.081088,
+      "Health Care Services": 0.086948,
+      "Advertising": 0.058831,
+      "Hotels, Resorts & Cruise Lines": 0.124371
+    },
+    "highest_correlated_pairs": [
+      {
+        "first_ticker": "ADBE",
+        "second_ticker": "TEAM",
+        "correlation": 0.612
+      },
+      {
+        "first_ticker": "ACN",
+        "second_ticker": "ADBE",
+        "correlation": 0.6
+      },
+      {
+        "first_ticker": "ABNB",
+        "second_ticker": "BKNG",
+        "correlation": 0.558
+      },
+      {
+        "first_ticker": "ABNB",
+        "second_ticker": "TEAM",
+        "correlation": 0.527
+      },
+      {
+        "first_ticker": "ACN",
+        "second_ticker": "TEAM",
+        "correlation": 0.498
+      },
+      {
+        "first_ticker": "ACN",
+        "second_ticker": "NWS",
+        "correlation": 0.451
+      },
+      {
+        "first_ticker": "ADBE",
+        "second_ticker": "NWS",
+        "correlation": 0.425
+      },
+      {
+        "first_ticker": "ADBE",
+        "second_ticker": "TTD",
+        "correlation": 0.42
+      },
+      {
+        "first_ticker": "FOXA",
+        "second_ticker": "NWS",
+        "correlation": 0.42
+      },
+      {
+        "first_ticker": "ABNB",
+        "second_ticker": "ADBE",
+        "correlation": 0.399
+      }
+    ],
+    "liquidity": [
+      {
+        "ticker": "NWS",
+        "company": "News Corp (Class B)",
+        "weight": 0.109093,
+        "average_daily_dollar_volume_20d": 35941199.88,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "ACN",
+        "company": "Accenture",
+        "weight": 0.081041,
+        "average_daily_dollar_volume_20d": 1162013319.79,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "BMY",
+        "company": "Bristol Myers Squibb",
+        "weight": 0.102151,
+        "average_daily_dollar_volume_20d": 819876972.83,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "TEAM",
+        "company": "Atlassian",
+        "weight": 0.059219,
+        "average_daily_dollar_volume_20d": 548566867.48,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "FOXA",
+        "company": "Fox Corporation (Class A)",
+        "weight": 0.076808,
+        "average_daily_dollar_volume_20d": 269815515.9,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "APA",
+        "company": "APA Corporation",
+        "weight": 0.072676,
+        "average_daily_dollar_volume_20d": 198609248.97,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "CNC",
+        "company": "Centene Corporation",
+        "weight": 0.070862,
+        "average_daily_dollar_volume_20d": 344213040.26,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "TKO",
+        "company": "TKO Group Holdings",
+        "weight": 0.076911,
+        "average_daily_dollar_volume_20d": 202043005.88,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "ADBE",
+        "company": "Adobe Inc.",
+        "weight": 0.081088,
+        "average_daily_dollar_volume_20d": 1330000631.26,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "CI",
+        "company": "Cigna",
+        "weight": 0.086948,
+        "average_daily_dollar_volume_20d": 580908971.22,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "TTD",
+        "company": "Trade Desk (The)",
+        "weight": 0.058831,
+        "average_daily_dollar_volume_20d": 425108412.31,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "BKNG",
+        "company": "Booking Holdings",
+        "weight": 0.063624,
+        "average_daily_dollar_volume_20d": 1232812385.42,
+        "status": "COMPLETE"
+      },
+      {
+        "ticker": "ABNB",
+        "company": "Airbnb",
+        "weight": 0.060747,
+        "average_daily_dollar_volume_20d": 661143028.94,
+        "status": "COMPLETE"
+      }
+    ],
+    "risk_alerts": [],
+    "method": "OBSERVED_RETURN_CORRELATION_AND_20_DAY_DOLLAR_VOLUME"
+  },
+  "replacement_candidates": [
+    {
+      "ticker": "AOS",
+      "name": "A. O. Smith",
+      "sector": "Industrials",
+      "decision_rating": 75.4
+    }
+  ],
+  "reallocation_apply_status": "NOT_APPLIED_CONSTRAINT_REVIEW",
+  "reallocation_apply_reason": "The proposed transfers would no longer leave the paper portfolio fully invested."
+}

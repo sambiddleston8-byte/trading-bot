@@ -1,0 +1,61 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T12:24:26.152484+00:00",
+  "requested_count": 4,
+  "companies": [
+    {
+      "ticker": "AVY",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "COP",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "CVX",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "DVN",
+      "sector": "Energy"
+    }
+  ],
+  "completed_count": 4,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "AVY",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AVY.json"
+    },
+    {
+      "ticker": "COP",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/COP.json"
+    },
+    {
+      "ticker": "CVX",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CVX.json"
+    },
+    {
+      "ticker": "DVN",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/DVN.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T122426Z.json",
+  "completed_at": "2026-08-09T12:24:49.226699+00:00"
+}

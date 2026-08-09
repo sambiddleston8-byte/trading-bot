@@ -1,0 +1,109 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T12:47:54.925055+00:00",
+  "requested_count": 8,
+  "companies": [
+    {
+      "ticker": "EOG",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "EQT",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "FOX",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "CF",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "BXP",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "AEP",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "BG",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "APTV",
+      "sector": "Consumer Discretionary"
+    }
+  ],
+  "completed_count": 8,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "EOG",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EOG.json"
+    },
+    {
+      "ticker": "EQT",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EQT.json"
+    },
+    {
+      "ticker": "FOX",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "STRONG_BUY",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/FOX.json"
+    },
+    {
+      "ticker": "CF",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CF.json"
+    },
+    {
+      "ticker": "BXP",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/BXP.json"
+    },
+    {
+      "ticker": "AEP",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AEP.json"
+    },
+    {
+      "ticker": "BG",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/BG.json"
+    },
+    {
+      "ticker": "APTV",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/APTV.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T124754Z.json",
+  "completed_at": "2026-08-09T12:48:50.087029+00:00"
+}

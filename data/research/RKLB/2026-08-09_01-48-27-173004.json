@@ -1,0 +1,797 @@
+{
+    "Ticker": "RKLB",
+    "Research": {
+        "Ticker": "RKLB",
+        "Timestamp": "2026-08-09T01:48:25.653404",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab Set to Report Q2 Earnings: Should You Own the Stock? - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQM2tZajY1V3RpT1YtMUhFaDBLYW5uMnluZHZHRzVZcDA3OTlTZG9mMFRWTkMzQmM1S1FJaXRrR2paaVVzcWtmLVJkYnk4Ymc5RG92SWNtdDJCd01Va0VycDNtZERfc2YwdUd3T0lEMjI0SDR1RVRFVjRMdE1COWEwMVk1WGVZWjRvY2FhS0dyS2xscWc?oc=5",
+                "Published": "Thu, 06 Aug 2026 15:17:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab Shares Under Pressure Despite $397 Million Space Force Contract as Neutron Test Looms - TechStock\u00b2",
+                "Link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOODctUnZyODJZenUyUi16cDFvNENrckhJN2M5b0wtTHRoNWZ3OE9qRklHQmVVVlhuOUJidUZRSXY3N2dUMFR3a3RKUkhpLTd1ZVdjc3Ixc1NDVDNGaERSMzY3d0JwZURST3Bwc1BseDNfZ0ZFY3BqSjA1WjhmSzVrZzNyNGxMSHA5Y2c1TFlWVG5WOUc2c3c1N01kaUpjdVJheHcteTlHQ05weXdNc1FNTjd3QnE1MGM?oc=5",
+                "Published": "Wed, 05 Aug 2026 15:29:48 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab surges 34% in best day ever on revenue beat, record-setting launch deal - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9tMjRlRzJhZmFuOGZya2wzeXh5eGVxVzRGbkQycnVUcU5VT2pDQi0xbEJtMkZLa1BFOUdJdzJ6WEV5ZU94SHp6ODV0NXdzOTJuRkRsRC11c0QtREJwWE9CTDI4RmM2QmcwbEVjcllscS11RmZ3VzdtR9IBfkFVX3lxTFBNTkx2QXozMEhtR0JfTURLUndkNmRnSF82Z1AyR194d1A3d19fMmtZdHBINU5Udk1ieVllT1RRbVF0ZXNRQ3ZyaF9DS1NvVGhrZjVITGlPOUdBamF0NXh2emswZ2VqeExYNVJlRFdySGFhUkxXT21QeHlGX1ZvUQ?oc=5",
+                "Published": "Fri, 08 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "RKLB stock hits 52-week high at $135.76 after Q1 revenue beat - eciks.org",
+                "Link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNM0dHZTdFbjMyMWRsMVV4bThuOE13eDNJTUhmZFl0aURxZ1BLRXd1LXZmelZTSDFTVVduUS0wdXU5NUQ3aGVORUM4LWh4VzRwSm5Tem5HYVZlb0t5Ri1Kd0tmYm1HZ3oxOGVUSmN6X1I1TlFsN2szTEFCbEdQWFQ3TkdGSmJuZm0ySkxfRVRYdnQ1NzQ?oc=5",
+                "Published": "Tue, 26 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Aerospace Q1 Earnings: Rocket Lab (NASDAQ:RKLB) is the Best in the Biz - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQNnpPb1dJRzVJMHY1Qzdzd3FrX09DZ1pOTExLNEVHLTIwWjNFTUNTWWkyVVgyM1hWWTJ2UkdKUlozaVRSRGhjbFc3aHVack5xXzd5d2FfUTVCWHZMbERnQTRqT3hkczF1QWNFSGJVVDZWQUF2bXR0akY5RVZXREtkTTNjaVVISnk3SV80ZVhJcHhKNkxJal9SenI4RGFGZWtyVjVVZFJjMC1CT3B3ay1ncDJVd2NzcEpJbVYzR250a0JfcEZsQ1kw?oc=5",
+                "Published": "Mon, 15 Jun 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab Earnings Greatly Exceed Expectations, Ignoring Risks as Stock Price Surges? - TradingKey",
+                "Link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxOSEtBYjhHZlJiMXE0TmNjckhQcFlSS0JYR2RfVE9nbnV2anB5UkI1Wk91YTFsUUVYRlg2TW8yeDZhN2V3LVMycVNSZXFvZW1DVkphTDRpWVhTZVhEY1ozUG9wOGVtZEdXUTdwZzVjVzlKdmt2bVlDS3k3QS1PZDZQX3J3Z2VWZEFzV3dCZ0pkT1RxVVlUcmJaUm1YQldjbVVFNVFmekRRcTg0cnZpbi1CeTNhNENJb2ZmZmJCd3ZJRWZScnFjdnFabXRmeDdZa3BVOUFINzM1WmFWSDZxRTJGbTBYYw?oc=5",
+                "Published": "Sat, 09 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab Breaks Out On Revenue Beat, Record Launch Contract - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNZUdiaFl1M0Exb0M4VFViUkRoNjVxWWwwV3NzNHJQMTZBUzlVZ2JMSE5PdnZwcGVBUVBkbE9jT01CTmE5X1NMcnBFU1dkRzhGWFJ3VTJZZlBfN00ySEVJbUZXZzNvcnk3ZkVtN1M5eGJhUUhtRlZvRUU0eFF2VG1BZEd4VF9IVVZxT3hZNDhOTDlHUXdqenk4YUVsYUZ1UHZfekE?oc=5",
+                "Published": "Fri, 08 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab (RKLB) Revenue Growth Tests Bullish Profitability Narratives - simplywall.st",
+                "Link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxQdkxOcGl1RDVFSTFrbU5lTW5pdlRuS1k0YnNodmE3UnJQMmoxTmNNQ3E5MHZmcV9hNk9hNEFzeEczdW03bDNjNVNVZXMyS29Yamk5dl9RbE1WeVh3NUkxazdsRmllU0FBTzNnUDNCamEtb25fUEstbGNpWTNEVkNfaTkwdmdVYmlpdDNzSjlhQ2F2bFM3YzRfaVpFR1h6c3E3dl9wR0l3b2I2blREZXFWaTFBYW1aR2xsVEN4ckxzbFpYRWQ3Z3g1MHBKQThpelXSAdQBQVVfeXFMT0RDdUdLQl9BNDF5Q1dJaHg5LUZvNV9SRW92dllIZW5taVZRU2hXb0duVGF2Qk8yQ0VWZGo3NjNwRy02TjlRMXdYb0YyRHBlUHdpNFItRkFzamd4R2cyOFp1NnA5SFhTN0MxbjVkS1MxS2ZrWW56bVFmZkk4WXpLTzRHZ0NBWTJjQzk2RUpna3A5X0RJaGl0ZGdWVnVIZzRaWXFsUVNZWWlUaUxNbmxfVGlIVlRkRkxJVGNWRk5aV2l5S19ZYWRScGd3c2VCaEVldUYxZlU?oc=5",
+                "Published": "Sat, 09 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab to Release Q1 Earnings: How to Approach the Stock Now? - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOelR5cHkzQVZjRkxCem5mYW9SVmZvV0FrdEtRcElSbTJKMU1Tc1U3U0trcVlYZF9KUnI1dW0xdlJKSUxuWWpDQmRrYngtcUhZOXFkOG1RTk96T0JVSFhMeUpUUGtlTmxLZVgzWWs2MTRwOFVCcW9aWUNLTnZtcHl5cjR2N2UtemdtU3JSVmpBd005R2haTFk2dE9Vbw?oc=5",
+                "Published": "Wed, 06 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab stock has crashed into a local bear market: will RKLB rebound? - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNS1RWUE9DZnJ2YzFrSnUydVpfRzJaNlRzREZMUXIzZTkwYzgzT1REcjlLQmE2enBTNk1HTEpNd0tucXF1cFdQNzA0ZWExbk42ZUVHX1ZIb05QbGdUS2lKR3kyVklwMjk4U1dmUHRKSHAzeC1najdtS1RDQmlHRWpndlNmYWVOWk94VERZOUNKeVpaZnMxUDRmLTE5alF4RzltUk5NMUFoMXdVS2xMX3BkZVRjb2tNMWVScDRuT2R6bDIwT3NrbVFV?oc=5",
+                "Published": "Tue, 09 Jun 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Why Rocket Lab (RKLB) Stock Is Trading Up Today - StockStory",
+                "Link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQV293Nmc1SWVSZy1zd1NPeEo0Zk5kVGJLQ3JQeTNpcWk3S1lhVVdRVkkwZENBWVktM0xhRjZjc3lqdUdDdkNEb3dmQXMycnZoR3NvRDRaMnJ0aVZFaGtoRUpTWGgzUnV2MUNXbTBZUWg0b3hoTVRQTkl3S0ExNEdaLWZETjRnY01mU3N2elk3UkdWTUFlVDhqdFlRc0FQRGZxSGphNVBvVFllaFN3RXc?oc=5",
+                "Published": "Mon, 11 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab Corporation (RKLB) Reports Q1 Loss, Beats Revenue Estimates - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQU2VyVGw0ZXpiZHlMVWtBblpTUEtlMEV4S0VFQlpSdFRvRHd3LUxQSUpHanByLWx3RVBCdTBNWmxHNzRweEVjcVkyeHVaTHlPRGVjRUJMa0NWVThQWjJUMlV5RDBMd3FtOXNfRkYxWFlFbzFNU1RnQTlKZDgwY2xqUU1rLVUxZmUzRTVpeTU1TlRmbTVlY2p0bzEwSEs3eUp0T2c?oc=5",
+                "Published": "Thu, 07 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab\u2019s (NASDAQ:RKLB) Q1 CY2026: Strong Sales - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOUEVPTmVXcmI1SVdtYmJVcGdmWWFvOXNBNHg4ajVHMV84N203VXRVUlpNRXNHT2gwQ0ZHRkhQaS0ycm15Qm5CVDJNRmJyY1dqd3pncmlwdTFsVThSWGN6czRvTVJoaFpNZHcydjFrcFlLSnhJUTFzMHQ2eUp5SXdCSWNkNnhaQWJyaUI5STgxTEY5SHhJcjVkckt3T28zT3B2eGhfTFFWS3p4UkJZ?oc=5",
+                "Published": "Thu, 07 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab Corporation (RKLB) Stock Slides as Market Rises: Facts to Know Before You Trade - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQLUVvc0hTdjM2ZTN2R3RTZ19VMkN5Q0VLdFE5dWZsMllBY0pBUGdqMjVSVkdEVlpWYkZLcEJuOHdiSXpUNEdwc0E0VUVtM3hVQWVyUkJyQ0xqTUF4M2hFd3p2bzhXZFB6VTFick9NNWV0UkFJVGNFRlRLY1NZNkg0TGxSYzhyOHBJbWliYUVTbmhGNE42TFNnNDJoZUNWcVk?oc=5",
+                "Published": "Fri, 10 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Rocket Lab Stock Advances 74% in 3 Months: Time to Take Profits? - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNRUpNTW1ZU2lQOWExTzhfZTBaakZtTXFtSkFjMzBtMlYtWDdzT3BkZG96V1dka3dhQkJHdGd5cFF2TkFhSWxWSi0ydWpDYll6bUxZM0ZWdS1fZV8wTE0wLThWb2hGMjRJMThKdmU1RU1sT1p5QzJjTXBodFRaa0NVSnFTTmd4TWs3UFVEelJNYzZqd1NnRDRYMFNBczhHblFfYXVBMHdPSDdveGN5NW1RWkp0U2lGb0dx?oc=5",
+                "Published": "Tue, 12 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Palantir CEO drops 11-word bombshell for stock market investors",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/palantir-ceo-drops-11-word-160300224.html",
+                "Published": "2026-08-07T16:03:00Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Reveals How Alphabet Inc (NASDAQ:GOOGL) Can Reverse Recent Weakness",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-reveals-alphabet-inc-183314728.html",
+                "Published": "2026-08-07T18:33:14Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Believes Meta Platforms, Inc. (NASDAQ:META) Can Do Better",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-believes-meta-platforms-183357464.html",
+                "Published": "2026-08-07T18:33:57Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Called Linde plc (NASDAQ:LIN)\u2019s Share Price Movement \u201cStupid\u201d",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-called-linde-plc-183106534.html",
+                "Published": "2026-08-07T18:31:06Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Shares Key Reason Why Caterpillar Inc. (NYSE:CAT)\u2019s Shares Are Higher Than Deere\u2019s",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-shares-key-reason-183005462.html",
+                "Published": "2026-08-07T18:30:05Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Ondo Perps hits $7 billion in volume weeks after launch",
+                "Link": "https://finance.yahoo.com/markets/crypto/articles/ondo-perps-hits-7-billion-215819332.html",
+                "Published": "2026-08-07T21:58:19Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Says There\u2019s Merit To Starbucks Corporation (NASDAQ:SBUX)\u2019s Turnaround Efforts",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-says-merit-starbucks-183707712.html",
+                "Published": "2026-08-07T18:37:07Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "DOCS Stock Surges 40% Following Doximity Earnings. What Comes Next.",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/docs-stock-surges-40-following-182925336.html",
+                "Published": "2026-08-07T18:29:25Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Gloats After Getting The Boeing Company (NYSE:BA)\u2019s Shares Right",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-gloats-getting-boeing-182822239.html",
+                "Published": "2026-08-07T18:28:22Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Didn\u2019t Think Seagate Technology Holdings plc (NASDAQ:STX)\u2019s Earnings Were Bad",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-didn-t-think-182716107.html",
+                "Published": "2026-08-07T18:27:16Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Ken Griffin's Feud With Mamdani Hasn't Stopped His $6 Billion Manhattan Skyscraper\u2014 It's Now Under Demolition",
+                "Link": "https://finance.yahoo.com/real-estate/articles/ken-griffins-feud-mamdani-hasnt-183018107.html",
+                "Published": "2026-08-07T18:30:18Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Was \u201cBlown Away\u201d By Microsoft Corporation (NASDAQ:MSFT)\u2019s Financials",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-blown-away-microsoft-183838604.html",
+                "Published": "2026-08-07T18:38:38Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer\u2019s Post Earnings Palantir Technologies Inc. (NASDAQ:PLTR) Worry Didn\u2019t Materialize",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-post-earnings-palantir-182440005.html",
+                "Published": "2026-08-07T18:24:40Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Shares Reasons Behind Why NVIDIA Corporation (NASDAQ:NVDA)\u2019s Shares Are Finally Rising",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-shares-reasons-behind-182404118.html",
+                "Published": "2026-08-07T18:24:04Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Are Wall Street Analysts Predicting Palo Alto Networks Stock Will Climb or Sink?",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/wall-street-analysts-predicting-palo-182223594.html",
+                "Published": "2026-08-07T18:22:23Z"
+            }
+        ],
+        "Financial Data": {
+            "Company": "Rocket Lab Corporation",
+            "Sector": "Industrials",
+            "Industry": "Aerospace & Defense",
+            "Market Cap": 51753738240,
+            "Revenue Growth": 0.635,
+            "Earnings Growth": null,
+            "Profit Margin": -0.26872,
+            "Operating Margin": -0.22356,
+            "Forward PE": 9943.578,
+            "Trailing PE": null,
+            "PEG": null,
+            "Price To Book": 21.060259,
+            "ROE": -0.13549,
+            "ROIC": null,
+            "Beta": 2.629,
+            "Dividend Yield": null
+        },
+        "SEC Filings": {
+            "Ticker": "RKLB",
+            "Timestamp": "2026-08-09T01:48:26.506021",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-29",
+                    "Report Date": "2026-06-28",
+                    "Accession Number": "0001753926-26-001085",
+                    "Document": "g085783_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819994/000175392626001085/g085783_8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-05",
+                    "Report Date": "2026-06-03",
+                    "Accession Number": "0001819994-26-000056",
+                    "Document": "rklb-20260603.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819994/000181999426000056/rklb-20260603.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-21",
+                    "Report Date": "2026-05-20",
+                    "Accession Number": "0001819994-26-000048",
+                    "Document": "rklb-20260520.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819994/000181999426000048/rklb-20260520.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-20",
+                    "Report Date": "2026-05-20",
+                    "Accession Number": "0001819994-26-000045",
+                    "Document": "rklb-20260520.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819994/000181999426000045/rklb-20260520.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-08",
+                    "Report Date": "2026-05-08",
+                    "Accession Number": "0001753926-26-000799",
+                    "Document": "g085715_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819994/000175392626000799/g085715_8k.htm",
+                    "Type": "Current Report"
+                }
+            ],
+            "Filing Count": 5
+        }
+    },
+    "Evidence": {
+        "Ticker": "RKLB",
+        "Company": null,
+        "Generated At": "2026-08-09T00:48:26.506423+00:00",
+        "Status": "COMPLETE",
+        "Summary": {
+            "Total Evidence Items": 0,
+            "Quantitative Evidence": 0,
+            "Market Evidence": 0,
+            "External Event Evidence": 0,
+            "Model Evidence": 0
+        },
+        "Evidence": {
+            "Fundamentals": [],
+            "Valuation": [],
+            "Expected Returns": [],
+            "Catalysts": []
+        },
+        "Sources": [],
+        "Output Path": "data/research/evidence/RKLB.json"
+    },
+    "Profile": {
+        "Ticker": "RKLB",
+        "Company Name": "Rocket Lab Corporation",
+        "Short Name": "Rocket Lab Corporation",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Industrials",
+        "Industry": "Aerospace & Defense",
+        "Country": "United States",
+        "City": "Long Beach",
+        "Website": "https://rocketlabcorp.com",
+        "Employees": 2600,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Sir Peter  Beck",
+                "age": 47,
+                "title": "Founder, Chairman, President & CEO",
+                "yearBorn": 1978,
+                "fiscalYear": 2025,
+                "totalPay": 800000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Adam C. Spice",
+                "age": 56,
+                "title": "CFO & Treasurer",
+                "yearBorn": 1969,
+                "fiscalYear": 2025,
+                "totalPay": 455090,
+                "exercisedValue": 86072888,
+                "unexercisedValue": 223462896
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Frank  Klein",
+                "age": 52,
+                "title": "Chief Operations Officer",
+                "yearBorn": 1973,
+                "fiscalYear": 2025,
+                "totalPay": 426025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Arjun L. Kampani J.D.",
+                "age": 53,
+                "title": "Senior VP, General Counsel & Corporate Secretary",
+                "yearBorn": 1972,
+                "fiscalYear": 2025,
+                "totalPay": 447460,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Agostino  Ricupati CPA",
+                "age": 58,
+                "title": "VP, Corporate Controller & Chief Accounting Officer",
+                "yearBorn": 1967,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Morgan  Bailey Connaughton",
+                "title": "Vice President of Marketing & Communications",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Connie  Lundgren",
+                "title": "Vice President of People & Culture",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Shaun  O'Donnell",
+                "age": 46,
+                "title": "Chief Engineer of Special Projects",
+                "yearBorn": 1979,
+                "fiscalYear": 2025,
+                "totalPay": 326541,
+                "exercisedValue": 0,
+                "unexercisedValue": 4620073
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Ehson  Mosleh",
+                "title": "Space Systems Chief Engineer",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Murielle  Baker",
+                "title": "Senior Communications Manager",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "Rocket Lab Corporation, a space company, provides launch services and space systems solutions in the United States, Canada, Japan, and internationally. The company operates through launch services and space systems segments. The company provides launch services, spacecraft design services, spacecraft components, spacecraft manufacturing, optical systems, and other spacecraft and on-orbit management solutions and constellation management services, as well as designs and manufactures small and medium-class rockets and develops flight and ground software. It also designs, manufactures, and sells Electron, an orbital small launch vehicle for small spacecraft launch services, as well as develops Neutron launch vehicles for large constellation deployments, interplanetary missions, and potentially for human spaceflight. In addition, the company designs and manufactures a range of components and subsystems for its launch vehicles and spacecraft. It serves commercial, aerospace prime contractors, and government customers. Rocket Lab Corporation was formerly known as Rocket Lab USA, Inc. and changed its name to Rocket Lab Corporation in August 2021. The company was founded in 2006 and is headquartered in Long Beach, California.",
+        "Market Cap": 51753738240,
+        "Enterprise Value": 46693269504,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "Rocket Lab Corporation",
+        "Symbol": "RKLB",
+        "Exchange": "NMS",
+        "Sector": "Industrials",
+        "Industry": "Aerospace & Defense",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 2600,
+        "Market Cap": 51753738240,
+        "Enterprise Value": 46693269504,
+        "Revenue": 679577984,
+        "Net Income": -182615008,
+        "PE": null,
+        "Forward PE": 9943.578,
+        "PEG": null,
+        "Price to Book": 21.060259,
+        "Price to Sales": 76.1557,
+        "Dividend Yield": null,
+        "Beta": 2.629,
+        "52 Week High": 151.0,
+        "52 Week Low": 37.57,
+        "Current Price": 82.83,
+        "Previous Close": 75.67
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 65,
+        "Revenue History": {
+            "2025-12-31 00:00:00": 601799000.0,
+            "2024-12-31 00:00:00": 436214000.0,
+            "2023-12-31 00:00:00": 244592000.0,
+            "2022-12-31 00:00:00": 210996000.0
+        },
+        "Revenue CAGR": 41.81616811787951,
+        "Net Income History": {
+            "2025-12-31 00:00:00": -198209000.0,
+            "2024-12-31 00:00:00": -190175000.0,
+            "2023-12-31 00:00:00": -182571000.0,
+            "2022-12-31 00:00:00": -135944000.0
+        },
+        "Earnings CAGR": null,
+        "Operating Cash Flow": {
+            "2025-12-31 00:00:00": -165521000.0,
+            "2024-12-31 00:00:00": -48890000.0,
+            "2023-12-31 00:00:00": -98867000.0,
+            "2022-12-31 00:00:00": -106538000.0
+        },
+        "Free Cash Flow": {
+            "2025-12-31 00:00:00": -321806000.0,
+            "2024-12-31 00:00:00": -115983000.0,
+            "2023-12-31 00:00:00": -153574000.0,
+            "2022-12-31 00:00:00": -148950000.0
+        },
+        "Profit Margin": -0.26872,
+        "Operating Margin": -0.22356,
+        "ROIC": null,
+        "Total Debt": 253955000.0,
+        "Cash": 828660000.0,
+        "Net Debt": -574705000.0,
+        "Strengths": [
+            "Strong multi-year revenue growth.",
+            "The company has a net cash position."
+        ],
+        "Weaknesses": [
+            "Operating cash flow is negative.",
+            "Free cash flow is negative.",
+            "Low net profit margin.",
+            "Low operating margin."
+        ],
+        "Summary": "Financial fundamentals are generally strong."
+    },
+    "Moat Analysis": {
+        "Moat Score": 37,
+        "Classification": "NO CLEAR MOAT",
+        "Gross Margin": 0.36556,
+        "Operating Margin": -0.22356,
+        "ROE": -0.13549,
+        "ROIC": null,
+        "Strengths": [],
+        "Weaknesses": [
+            "Low operating margins may indicate competitive pressure.",
+            "Low return on equity."
+        ],
+        "Summary": "The available financial evidence does not provide strong evidence of a durable moat."
+    },
+    "Industry Analysis": {
+        "Industry Score": 60,
+        "Sector": "Industrials",
+        "Industry": "Aerospace & Defense",
+        "Assessment": "NEUTRAL",
+        "Strengths": [
+            "Sector: Industrials",
+            "Industry: Aerospace & Defense",
+            "Revenue growth is strong."
+        ],
+        "Weaknesses": [
+            "Operating profitability is relatively weak."
+        ],
+        "Summary": "The company operates in the Aerospace & Defense industry within the Industrials sector. The current industry/competitive assessment is NEUTRAL."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 50,
+        "Sector": "Industrials",
+        "Industry": "Aerospace & Defense",
+        "Peers": [],
+        "Subject Company": {
+            "Ticker": "RKLB",
+            "Company": "Rocket Lab Corporation",
+            "Market Cap": 51753738240,
+            "PE": null,
+            "Forward PE": 9943.578,
+            "Revenue Growth": 0.635,
+            "Profit Margin": -0.26872,
+            "Operating Margin": -0.22356,
+            "ROE": -0.13549,
+            "ROIC": null
+        },
+        "Valuation Rank": null,
+        "Growth Rank": null,
+        "Profitability Rank": null,
+        "Assessment": "The company does not currently stand out strongly against its peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 65,
+        "Assessment": "POSITIVE",
+        "Earnings Date": "None",
+        "Positive Surprises": 12,
+        "Negative Surprises": 4,
+        "Trailing PE": null,
+        "Forward PE": 9943.578,
+        "Revenue Growth": 0.635,
+        "Earnings Growth": null,
+        "Strengths": [
+            "The company has frequently exceeded recent EPS estimates."
+        ],
+        "Weaknesses": [
+            "The company has frequently missed recent EPS estimates."
+        ],
+        "Catalysts": [
+            "Continued earnings beats could support positive sentiment.",
+            "Strong revenue growth provides support for future earnings expansion."
+        ],
+        "Risks": [
+            "Further earnings disappointments could pressure the shares."
+        ],
+        "Summary": "Earnings intelligence is currently positive. The system identified 12 recent positive earnings surprises and 4 negative surprises."
+    },
+    "Overall Score": 47.9,
+    "Rating": "\u2605\u2606\u2606\u2606\u2606  SELL",
+    "Business Quality": 66.7,
+    "Valuation": 20,
+    "Technical": 22.5,
+    "Risk": 50,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 100,
+        "Profitability": 0,
+        "Balance Sheet": 100,
+        "Business Quality": 66.7,
+        "Confidence": 85,
+        "Strengths": [
+            "Excellent long-term revenue growth",
+            "Very strong net cash position"
+        ],
+        "Weaknesses": [
+            "Weak profitability"
+        ],
+        "Summary": "The business demonstrates mixed financial quality with both strengths and weaknesses."
+    },
+    "Valuation Analysis": {
+        "PE": null,
+        "Forward PE": 9943.578,
+        "PEG": null,
+        "Price to Sales": 76.1557,
+        "Price to Book": 21.060259,
+        "Valuation Score": 20,
+        "Confidence": 80,
+        "Strengths": [],
+        "Weaknesses": [
+            "Expensive forward valuation",
+            "Very expensive relative to revenue",
+            "High Price/Book multiple"
+        ],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Momentum": 20,
+        "Moving Average": 25,
+        "Technical Score": 22.5
+    },
+    "Risk Analysis": {
+        "Risk Score": 50,
+        "Beta": 2.629
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "Jim Cramer Weighs In on Space Equities: Rocket Lab (RKLB) vs. Voyager Technologies (VOYG)",
+            "Rocket Lab Just Unveiled a Game-Changing Technology Worth Watching",
+            "Rocket Lab (RKLB) Won a Major Space Force Contract. Now It Has to Prove Neutron",
+            "Rocket Lab (RKLB) Stock Looks Fairly Priced As Its 12x Run Continues",
+            "Stock Market Today, Aug. 7: Space Exploration Technologies Surges on Q2 Revenue Beat, Lockup Relief, and Terafab Update",
+            "Why Rocket Lab Stock Just Jumped",
+            "S&P 500 Posts Weekly Gain as Tech Giants Surge",
+            "SpaceX Stock Lands An Upgrade, Rocket Lab Surges After Electron Mission",
+            "Why Rocket Lab Stock Took Flight on Friday",
+            "Why Is Rocket Lab Stock Jumping Today"
+        ],
+        "Catalysts": [
+            "Jim Cramer Weighs In on Space Equities: Rocket Lab (RKLB) vs. Voyager Technologies (VOYG)",
+            "Rocket Lab Just Unveiled a Game-Changing Technology Worth Watching",
+            "Rocket Lab (RKLB) Won a Major Space Force Contract. Now It Has to Prove Neutron",
+            "Rocket Lab (RKLB) Stock Looks Fairly Priced As Its 12x Run Continues",
+            "Stock Market Today, Aug. 7: Space Exploration Technologies Surges on Q2 Revenue Beat, Lockup Relief, and Terafab Update",
+            "Why Rocket Lab Stock Just Jumped",
+            "S&P 500 Posts Weekly Gain as Tech Giants Surge",
+            "SpaceX Stock Lands An Upgrade, Rocket Lab Surges After Electron Mission",
+            "Why Rocket Lab Stock Took Flight on Friday",
+            "Why Is Rocket Lab Stock Jumping Today"
+        ],
+        "Events": [
+            {
+                "headline": "Jim Cramer Weighs In on Space Equities: Rocket Lab (RKLB) vs. Voyager Technologies (VOYG)",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Rocket Lab Just Unveiled a Game-Changing Technology Worth Watching",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Rocket Lab (RKLB) Won a Major Space Force Contract. Now It Has to Prove Neutron",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Rocket Lab (RKLB) Stock Looks Fairly Priced As Its 12x Run Continues",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Stock Market Today, Aug. 7: Space Exploration Technologies Surges on Q2 Revenue Beat, Lockup Relief, and Terafab Update",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Rocket Lab Stock Just Jumped",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "S&P 500 Posts Weekly Gain as Tech Giants Surge",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "SpaceX Stock Lands An Upgrade, Rocket Lab Surges After Electron Mission",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Rocket Lab Stock Took Flight on Friday",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Is Rocket Lab Stock Jumping Today",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 40,
+        "Confidence": 75,
+        "Strengths": [],
+        "Weaknesses": [
+            "Very low insider ownership"
+        ],
+        "Summary": "Management quality raises some concerns.",
+        "Insider Ownership": 0.0083099995,
+        "Institutional Ownership": 0.59024,
+        "Employees": 2600
+    },
+    "Strengths": [
+        "Positive recent news"
+    ],
+    "Weaknesses": [
+        "Premium valuation",
+        "Elevated investment risk"
+    ],
+    "Summary": "Recent news flow has been supportive. Valuation appears demanding. Investment risk is above average.",
+    "Report": "============================================================\nInvestment Report: RKLB\n============================================================\n\nOverall Rating : \u2605\u2606\u2606\u2606\u2606  SELL\nOverall Score  : 47.9\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nRecent news flow has been supportive. Valuation appears demanding. Investment risk is above average.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 66.7\nValuation        : 20\nTechnical        : 22.5\nRisk             : 50\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 Jim Cramer Weighs In on Space Equities: Rocket Lab (RKLB) vs. Voyager Technologies (VOYG)\n\u2022 Rocket Lab Just Unveiled a Game-Changing Technology Worth Watching\n\u2022 Rocket Lab (RKLB) Won a Major Space Force Contract. Now It Has to Prove Neutron\n\u2022 Rocket Lab (RKLB) Stock Looks Fairly Priced As Its 12x Run Continues\n\u2022 Stock Market Today, Aug. 7: Space Exploration Technologies Surges on Q2 Revenue Beat, Lockup Relief, and Terafab Update\n\n============================================================",
+    "Catalysts": [
+        "Jim Cramer Weighs In on Space Equities: Rocket Lab (RKLB) vs. Voyager Technologies (VOYG)",
+        "Rocket Lab Just Unveiled a Game-Changing Technology Worth Watching",
+        "Rocket Lab (RKLB) Won a Major Space Force Contract. Now It Has to Prove Neutron",
+        "Rocket Lab (RKLB) Stock Looks Fairly Priced As Its 12x Run Continues",
+        "Stock Market Today, Aug. 7: Space Exploration Technologies Surges on Q2 Revenue Beat, Lockup Relief, and Terafab Update",
+        "Why Rocket Lab Stock Just Jumped",
+        "S&P 500 Posts Weekly Gain as Tech Giants Surge",
+        "SpaceX Stock Lands An Upgrade, Rocket Lab Surges After Electron Mission",
+        "Why Rocket Lab Stock Took Flight on Friday",
+        "Why Is Rocket Lab Stock Jumping Today"
+    ],
+    "Headlines": [
+        "Jim Cramer Weighs In on Space Equities: Rocket Lab (RKLB) vs. Voyager Technologies (VOYG)",
+        "Rocket Lab Just Unveiled a Game-Changing Technology Worth Watching",
+        "Rocket Lab (RKLB) Won a Major Space Force Contract. Now It Has to Prove Neutron",
+        "Rocket Lab (RKLB) Stock Looks Fairly Priced As Its 12x Run Continues",
+        "Stock Market Today, Aug. 7: Space Exploration Technologies Surges on Q2 Revenue Beat, Lockup Relief, and Terafab Update",
+        "Why Rocket Lab Stock Just Jumped",
+        "S&P 500 Posts Weekly Gain as Tech Giants Surge",
+        "SpaceX Stock Lands An Upgrade, Rocket Lab Surges After Electron Mission",
+        "Why Rocket Lab Stock Took Flight on Friday",
+        "Why Is Rocket Lab Stock Jumping Today"
+    ],
+    "Investment Committee": {
+        "Committee Score": 50.0,
+        "Factor Score": 50.0,
+        "Expected Return Score": 50.0,
+        "Expected Return": 0.0,
+        "Expected Return Confidence": 50.0,
+        "Expected Return Analysis": null,
+        "Recommendation": "REDUCE / AVOID",
+        "Confidence": 78.0,
+        "Adaptive Weights": {
+            "Business Quality": 0.14285714285714285,
+            "Financial Strength": 0.14285714285714285,
+            "Valuation": 0.09523809523809523,
+            "Growth": 0.14285714285714285,
+            "Profitability": 0.14285714285714285,
+            "Momentum": 0.14285714285714285,
+            "Risk": 0.09523809523809523,
+            "Size": 0.023809523809523808,
+            "Balance Sheet": 0.07142857142857142,
+            "Dividend": 0.0
+        },
+        "Factor Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Specialist Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Learning Enabled": false,
+        "Strengths": [],
+        "Concerns": [
+            "Expected return is limited at 0.0%."
+        ],
+        "Summary": "The Investment Committee assigns 50.0/100 and recommends REDUCE / AVOID. Expected return is 0.0% over 252 days. Confidence is 78.0%."
+    },
+    "Position Sizing": {
+        "Allocation": 0.0,
+        "Allocation %": 0.0,
+        "Max Position %": 10.0,
+        "Min Position %": 1.0,
+        "Max Sector %": 25.0
+    },
+    "Research Comparison": {
+        "Has Previous": false,
+        "Changes": []
+    }
+}

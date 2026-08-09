@@ -1,0 +1,808 @@
+{
+  "version": "0.3-research-and-risk-gated",
+  "created_at": "2026-08-09T13:26:27.688970+00:00",
+  "status": "RESEARCH_GATED_READY",
+  "universe": "saved_research_records",
+  "universe_count": 40,
+  "researched_count": 40,
+  "audit_pass_count": 21,
+  "eligible_count": 8,
+  "number_of_stocks": 8,
+  "constraints": {
+    "max_weight": 0.15,
+    "min_weight": 0.03,
+    "max_sector_weight": 0.5,
+    "cash_weight": 0.05
+  },
+  "cash_weight": 0.05,
+  "portfolio_expected_return": 0.679515,
+  "sector_weights": {
+    "Information Technology": 0.134763,
+    "Energy": 0.354945,
+    "Communication Services": 0.134763,
+    "Consumer Discretionary": 0.116549,
+    "Materials": 0.106427,
+    "Health Care": 0.102552
+  },
+  "holdings": [
+    {
+      "rank": 1,
+      "ticker": "ACN",
+      "name": "Accenture",
+      "sector": "Information Technology",
+      "industry": "IT Consulting & Other Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.134763,
+      "portfolio_conviction": 100,
+      "investment_case_score": 87.25,
+      "current_price": 175.72,
+      "base_intrinsic_value": 316.3907414314313,
+      "expected_return": 0.8005391613443622,
+      "valuation_upside": 0.8005391613443622,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 8.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 90.0,
+        "momentum_score": 80.0,
+        "risk_score": 80.0,
+        "beta": 1.074,
+        "annualised_volatility": 0.4351
+      },
+      "sentiment": {
+        "score": 53.09,
+        "label": "NEUTRAL",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review.",
+        "portfolio_conviction": 100.0,
+        "investment_case_score": 87.25,
+        "expected_return": 0.8005391613443622,
+        "valuation_upside": 0.8005391613443622,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 90.0,
+        "risk_score": 80.0,
+        "sentiment_score": 53.09
+      },
+      "research_confidence": 100,
+      "confidence_label": "HIGH"
+    },
+    {
+      "rank": 2,
+      "ticker": "APA",
+      "name": "APA Corporation",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.134763,
+      "portfolio_conviction": 100,
+      "investment_case_score": 82.75,
+      "current_price": 37.63,
+      "base_intrinsic_value": 57.315429425273244,
+      "expected_return": 0.5231312629623504,
+      "valuation_upside": 0.5231312629623504,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 9.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 80.0,
+        "momentum_score": 60.0,
+        "risk_score": 60.0,
+        "beta": 0.348,
+        "annualised_volatility": 0.4571
+      },
+      "sentiment": {
+        "score": 65.45,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review.",
+        "portfolio_conviction": 100.0,
+        "investment_case_score": 82.75,
+        "expected_return": 0.5231312629623504,
+        "valuation_upside": 0.5231312629623504,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 80.0,
+        "risk_score": 60.0,
+        "sentiment_score": 65.45
+      },
+      "research_confidence": 100,
+      "confidence_label": "HIGH"
+    },
+    {
+      "rank": 3,
+      "ticker": "FOX",
+      "name": "Fox Corporation (Class B)",
+      "sector": "Communication Services",
+      "industry": "Broadcasting",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.134763,
+      "portfolio_conviction": 100,
+      "investment_case_score": 81.5,
+      "current_price": 57.03,
+      "base_intrinsic_value": 221.3083246737719,
+      "expected_return": 2.880559787371066,
+      "valuation_upside": 2.880559787371066,
+      "decision": "STRONG_BUY",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 8.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 70.0,
+        "momentum_score": 40.0,
+        "risk_score": 80.0,
+        "beta": 0.541,
+        "annualised_volatility": 0.3404
+      },
+      "sentiment": {
+        "score": 57.85,
+        "label": "NEUTRAL",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "reasoning": {
+        "summary": "Very strong underlying investment case. Attractive expected return. Material upside to base intrinsic value. Investment thesis survived adversarial review.",
+        "portfolio_conviction": 100.0,
+        "investment_case_score": 81.5,
+        "expected_return": 2.880559787371066,
+        "valuation_upside": 2.880559787371066,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 70.0,
+        "risk_score": 80.0,
+        "sentiment_score": 57.85
+      },
+      "research_confidence": 100,
+      "confidence_label": "HIGH"
+    },
+    {
+      "rank": 4,
+      "ticker": "EOG",
+      "name": "EOG Resources",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.117751,
+      "portfolio_conviction": 70.16,
+      "investment_case_score": 71.25,
+      "current_price": 134.74,
+      "base_intrinsic_value": 135.7165564179577,
+      "expected_return": 0.00724770979633127,
+      "valuation_upside": 0.00724770979633127,
+      "decision": "WATCHLIST",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 10.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 55.0,
+        "momentum_score": 60.0,
+        "risk_score": 70.0,
+        "beta": 0.278,
+        "annualised_volatility": 0.2797
+      },
+      "sentiment": {
+        "score": 64.57,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "reasoning": {
+        "summary": "Strong underlying investment case. Investment thesis survived adversarial review.",
+        "portfolio_conviction": 70.16,
+        "investment_case_score": 71.25,
+        "expected_return": 0.00724770979633127,
+        "valuation_upside": 0.00724770979633127,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 55.0,
+        "risk_score": 70.0,
+        "sentiment_score": 64.57
+      },
+      "research_confidence": 70.16,
+      "confidence_label": "MODERATE"
+    },
+    {
+      "rank": 5,
+      "ticker": "ABNB",
+      "name": "Airbnb",
+      "sector": "Consumer Discretionary",
+      "industry": "Hotels, Resorts & Cruise Lines",
+      "index_membership": [
+        "SP500",
+        "NASDAQ100"
+      ],
+      "weight": 0.116549,
+      "portfolio_conviction": 68.25,
+      "investment_case_score": 51.71,
+      "current_price": 178.07,
+      "base_intrinsic_value": 267.5289207591945,
+      "expected_return": 0.5023806410916745,
+      "valuation_upside": 0.5023806410916745,
+      "decision": "WATCHLIST",
+      "thesis": {
+        "result": "THESIS_WEAKENED",
+        "tested": 11.0,
+        "material_negative": 1.0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "PASS_WITH_WARNINGS",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "findings": [
+          {
+            "severity": "MEDIUM",
+            "type": "SOURCE_DISCREPANCY",
+            "field": "total_debt",
+            "message": "total_debt differs by 3.29% between Yahoo Finance and SEC EDGAR.",
+            "evidence": {
+              "first": {
+                "source": "Yahoo Finance",
+                "value": 2067000000.0
+              },
+              "second": {
+                "source": "SEC EDGAR",
+                "value": 1999000000.0
+              },
+              "difference_percent": 0.03289791969037252,
+              "raw_difference_percent": 0.03289791969037252,
+              "selected": null,
+              "selected_source": null,
+              "reconciliation": {
+                "field": "Total Debt",
+                "status": "UNRESOLVED",
+                "confidence": "REVIEW",
+                "sources": {
+                  "SEC EDGAR": 1999000000.0,
+                  "Yahoo Finance": 2067000000.0
+                },
+                "difference_percent": 0.03289791969037252,
+                "selected": null,
+                "selected_source": null,
+                "reason": "Sources disagree materially and no defensible resolution has yet been established.",
+                "escalation": {
+                  "field": "Total Debt",
+                  "status": "ESCALATE",
+                  "reconciliation_status": "UNRESOLVED",
+                  "confidence": "REVIEW",
+                  "next_sources": [
+                    {
+                      "source": "COMPANY FILINGS",
+                      "priority": 100,
+                      "type": "PRIMARY"
+                    },
+                    {
+                      "source": "COMPANY IR",
+                      "priority": 90,
+                      "type": "PRIMARY_CORPORATE"
+                    },
+                    {
+                      "source": "EARNINGS RELEASE",
+                      "priority": 85,
+                      "type": "PRIMARY_CORPORATE"
+                    },
+                    {
+                      "source": "REPUTABLE FINANCIAL DATA",
+                      "priority": 60,
+                      "type": "SECONDARY_DATA"
+                    },
+                    {
+                      "source": "CNBC",
+                      "priority": 40,
+                      "type": "SECONDARY_CONTEXT"
+                    }
+                  ],
+                  "reason": "Primary sources disagree and the difference has not been defensibly explained.",
+                  "created_at": "2026-08-09T12:42:53.688106+00:00"
+                },
+                "reconciled_at": "2026-08-09T12:42:53.688117+00:00",
+                "supporting_values": {
+                  "yahoo_underlying_debt": 3994000000.0,
+                  "yahoo_long_term_debt": 1995000000.0,
+                  "yahoo_current_debt": 1999000000.0,
+                  "yahoo_capital_lease_obligations": 68000000.0,
+                  "sec_noncurrent_debt": 0.0,
+                  "sec_current_debt": 1999000000.0
+                }
+              }
+            }
+          }
+        ]
+      },
+      "market_signals": {
+        "technical_score": 100.0,
+        "momentum_score": 100.0,
+        "risk_score": 90.0,
+        "beta": 1.137,
+        "annualised_volatility": 0.3406
+      },
+      "sentiment": {
+        "score": 68.0,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment.",
+        "Additional material negative findings from adversarial research would weaken the thesis."
+      ],
+      "reasoning": {
+        "summary": "Attractive expected return. Material upside to base intrinsic value.",
+        "portfolio_conviction": 68.25,
+        "investment_case_score": 51.71,
+        "expected_return": 0.5023806410916745,
+        "valuation_upside": 0.5023806410916745,
+        "thesis_result": "THESIS_WEAKENED",
+        "material_negative": 1.0,
+        "technical_score": 100.0,
+        "risk_score": 90.0,
+        "sentiment_score": 68.0
+      },
+      "research_confidence": 68.25,
+      "confidence_label": "MODERATE"
+    },
+    {
+      "rank": 6,
+      "ticker": "CF",
+      "name": "CF Industries",
+      "sector": "Materials",
+      "industry": "Fertilizers & Agricultural Chemicals",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.106427,
+      "portfolio_conviction": 53.22,
+      "investment_case_score": 43.61,
+      "current_price": 114.35,
+      "base_intrinsic_value": 183.8345345559251,
+      "expected_return": 0.6076478754344128,
+      "valuation_upside": 0.6076478754344128,
+      "decision": "WATCHLIST",
+      "thesis": {
+        "result": "THESIS_WEAKENED",
+        "tested": 8.0,
+        "material_negative": 1.0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "PASS_WITH_WARNINGS",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "findings": [
+          {
+            "severity": "MEDIUM",
+            "type": "SOURCE_DISCREPANCY",
+            "field": "shares_outstanding",
+            "message": "shares_outstanding differs by 1.44% between Yahoo Finance and SEC EDGAR.",
+            "evidence": {
+              "first": {
+                "source": "Yahoo Finance",
+                "value": 151338130.0
+              },
+              "second": {
+                "source": "SEC EDGAR",
+                "value": 153552162.0
+              },
+              "difference_percent": 0.014418761489011141,
+              "raw_difference_percent": 0.014418761489011141,
+              "selected": null,
+              "selected_source": null,
+              "reconciliation": null
+            }
+          }
+        ]
+      },
+      "market_signals": {
+        "technical_score": 45.0,
+        "momentum_score": 40.0,
+        "risk_score": 70.0,
+        "beta": 0.398,
+        "annualised_volatility": 0.416
+      },
+      "sentiment": {
+        "score": 63.6,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment.",
+        "Additional material negative findings from adversarial research would weaken the thesis."
+      ],
+      "reasoning": {
+        "summary": "Attractive expected return. Material upside to base intrinsic value.",
+        "portfolio_conviction": 53.22,
+        "investment_case_score": 43.61,
+        "expected_return": 0.6076478754344128,
+        "valuation_upside": 0.6076478754344128,
+        "thesis_result": "THESIS_WEAKENED",
+        "material_negative": 1.0,
+        "technical_score": 45.0,
+        "risk_score": 70.0,
+        "sentiment_score": 63.6
+      },
+      "research_confidence": 53.22,
+      "confidence_label": "LOW"
+    },
+    {
+      "rank": 7,
+      "ticker": "A",
+      "name": "Agilent Technologies",
+      "sector": "Health Care",
+      "industry": "Life Sciences Tools & Services",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.102552,
+      "portfolio_conviction": 47.96,
+      "investment_case_score": 68.5,
+      "current_price": 145.97,
+      "base_intrinsic_value": 69.14229282817921,
+      "expected_return": -0.5263253214483852,
+      "valuation_upside": -0.5263253214483852,
+      "decision": "AVOID",
+      "thesis": {
+        "result": "THESIS_SURVIVES",
+        "tested": 8.0,
+        "material_negative": 0,
+        "thesis_survives": true
+      },
+      "audit": {
+        "status": "PASS",
+        "finding_count": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "findings": []
+      },
+      "market_signals": {
+        "technical_score": 100.0,
+        "momentum_score": 100.0,
+        "risk_score": 75.0,
+        "beta": 1.229,
+        "annualised_volatility": 0.3304
+      },
+      "sentiment": {
+        "score": 63.08,
+        "label": "POSITIVE",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment."
+      ],
+      "reasoning": {
+        "summary": "Investment thesis survived adversarial review.",
+        "portfolio_conviction": 47.96,
+        "investment_case_score": 68.5,
+        "expected_return": -0.5263253214483852,
+        "valuation_upside": -0.5263253214483852,
+        "thesis_result": "THESIS_SURVIVES",
+        "material_negative": 0,
+        "technical_score": 100.0,
+        "risk_score": 75.0,
+        "sentiment_score": 63.08
+      },
+      "research_confidence": 47.96,
+      "confidence_label": "LOW"
+    },
+    {
+      "rank": 8,
+      "ticker": "EQT",
+      "name": "EQT Corporation",
+      "sector": "Energy",
+      "industry": "Oil & Gas Exploration & Production",
+      "index_membership": [
+        "SP500"
+      ],
+      "weight": 0.102431,
+      "portfolio_conviction": 47.8,
+      "investment_case_score": 42.16,
+      "current_price": 51.69,
+      "base_intrinsic_value": 73.30892408767784,
+      "expected_return": 0.4182419053526376,
+      "valuation_upside": 0.4182419053526376,
+      "decision": "WATCHLIST",
+      "thesis": {
+        "result": "THESIS_WEAKENED",
+        "tested": 8.0,
+        "material_negative": 1.0,
+        "thesis_survives": false
+      },
+      "audit": {
+        "status": "PASS_WITH_WARNINGS",
+        "finding_count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "findings": [
+          {
+            "severity": "MEDIUM",
+            "type": "SOURCE_DISCREPANCY",
+            "field": "revenue",
+            "message": "revenue differs by 3.37% between Yahoo Finance and SEC EDGAR.",
+            "evidence": {
+              "first": {
+                "source": "Yahoo Finance",
+                "value": 8353217000.0
+              },
+              "second": {
+                "source": "SEC EDGAR",
+                "value": 8644211000.0
+              },
+              "difference_percent": 0.033663454073483395,
+              "raw_difference_percent": 0.033663454073483395,
+              "selected": null,
+              "selected_source": null,
+              "reconciliation": null
+            }
+          }
+        ]
+      },
+      "market_signals": {
+        "technical_score": 45.0,
+        "momentum_score": 40.0,
+        "risk_score": 70.0,
+        "beta": 0.578,
+        "annualised_volatility": 0.3073
+      },
+      "sentiment": {
+        "score": 55.67,
+        "label": "NEUTRAL",
+        "confidence": "HIGH",
+        "independent_source_count": 30.0
+      },
+      "monitoring_conditions": [
+        "A material deterioration in expected returns or intrinsic value would weaken the investment case.",
+        "A sustained deterioration in revenue growth or earnings expectations would weaken the thesis.",
+        "New evidence contradicting the principal investment thesis would trigger a reassessment.",
+        "A high-impact negative catalyst becoming more probable would require reassessment.",
+        "Additional material negative findings from adversarial research would weaken the thesis."
+      ],
+      "reasoning": {
+        "summary": "Attractive expected return. Material upside to base intrinsic value.",
+        "portfolio_conviction": 47.8,
+        "investment_case_score": 42.16,
+        "expected_return": 0.4182419053526376,
+        "valuation_upside": 0.4182419053526376,
+        "thesis_result": "THESIS_WEAKENED",
+        "material_negative": 1.0,
+        "technical_score": 45.0,
+        "risk_score": 70.0,
+        "sentiment_score": 55.67
+      },
+      "research_confidence": 47.8,
+      "confidence_label": "LOW"
+    }
+  ],
+  "method": "CONVICTION_WEIGHTED_DIVERSIFIED_SELECTION",
+  "selection_logic": [
+    "Research must complete.",
+    "Evidence audit must PASS or PASS_WITH_WARNINGS.",
+    "Warning-only audits are disclosed and receive a conviction penalty.",
+    "Decision must be BUY or STRONG_BUY.",
+    "Expected return must clear the portfolio threshold.",
+    "Thesis must survive adversarial review.",
+    "Technical and risk research must be available.",
+    "Investment case score is primary.",
+    "Expected return affects conviction.",
+    "Adversarial thesis findings affect conviction.",
+    "Intrinsic-value upside affects conviction.",
+    "Sector concentration is constrained.",
+    "Individual position size is constrained.",
+    "A cash reserve is retained.",
+    "The completed portfolio receives a separate risk review."
+  ],
+  "market_context": {
+    "market_regime": {
+      "status": "COMPLETE",
+      "regime": "RISK_ON",
+      "score": 95.0,
+      "coverage": 40,
+      "agreement": 1.0
+    },
+    "macro_environment": {
+      "status": "COMPLETE",
+      "regime": "RESTRICTIVE",
+      "policy_rate": 3.63,
+      "inflation_yoy": 0.037265,
+      "real_gdp_yoy": 0.021018,
+      "coverage": 40,
+      "agreement": 1.0
+    }
+  },
+  "cash_policy": {
+    "cash_weight": 0.05,
+    "reason": "No defensive market-context override is active."
+  },
+  "risk_review": {
+    "Pass": true,
+    "Position Checks": [
+      {
+        "Ticker": "ACN",
+        "Weight": 0.134763,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "APA",
+        "Weight": 0.134763,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "FOX",
+        "Weight": 0.134763,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "EOG",
+        "Weight": 0.117751,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "ABNB",
+        "Weight": 0.116549,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "CF",
+        "Weight": 0.106427,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "A",
+        "Weight": 0.102552,
+        "Flags": [],
+        "Pass": true
+      },
+      {
+        "Ticker": "EQT",
+        "Weight": 0.102431,
+        "Flags": [],
+        "Pass": true
+      }
+    ],
+    "Sector Check": {
+      "Sector Exposure": {
+        "Information Technology": 13.48,
+        "Energy": 35.49,
+        "Communication Services": 13.48,
+        "Consumer Discretionary": 11.65,
+        "Materials": 10.64,
+        "Health Care": 10.26
+      },
+      "Flags": [],
+      "Pass": true
+    },
+    "Cash Check": {
+      "Cash Weight": 5.0,
+      "Minimum Required": 5.0,
+      "Pass": true,
+      "Flag": null
+    },
+    "Risk Check": {
+      "Flags": [],
+      "Pass": true
+    },
+    "Concentration": {
+      "HHI": 0.1143,
+      "Effective Positions": 8.75
+    },
+    "Portfolio Volatility": 12.69,
+    "Portfolio Volatility Limit": 25.0,
+    "Drawdown Check": {
+      "Current Drawdown %": 0.0,
+      "Maximum Allowed %": 20.0,
+      "Pass": true,
+      "Flag": null
+    },
+    "Flags": [],
+    "method": "POSITION_SECTOR_CASH_RISK_AND_VOLATILITY_REVIEW",
+    "volatility_coverage": {
+      "covered_holdings": 8,
+      "total_holdings": 8,
+      "note": "Portfolio volatility is an independent-position estimate; correlations are not yet modelled."
+    }
+  }
+}

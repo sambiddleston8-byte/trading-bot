@@ -291,6 +291,8 @@ class SourceReconciliationEngine:
         yahoo_long_term_debt,
         yahoo_current_debt,
         yahoo_leases,
+        sec_noncurrent_debt=None,
+        sec_current_debt=None,
     ):
 
         sec_debt = cls.number(
@@ -313,6 +315,14 @@ class SourceReconciliationEngine:
             yahoo_leases
         )
 
+        sec_noncurrent_debt = cls.number(
+            sec_noncurrent_debt
+        )
+
+        sec_current_debt = cls.number(
+            sec_current_debt
+        )
+
         underlying_yahoo_debt = None
 
         if (
@@ -325,6 +335,13 @@ class SourceReconciliationEngine:
                 + yahoo_current_debt
             )
 
+        elif yahoo_long_term_debt is not None:
+
+            # yfinance does not consistently expose a separate current-debt
+            # field.  Keep the disclosed long-term amount as a comparable
+            # component instead of treating it as an invented zero balance.
+            underlying_yahoo_debt = yahoo_long_term_debt
+
         sources = {
             "SEC EDGAR":
                 sec_debt,
@@ -336,6 +353,66 @@ class SourceReconciliationEngine:
         # First check whether Yahoo's underlying debt
         # excluding leases agrees with SEC.
         # ----------------------------------------------------
+
+        component_difference = None
+
+        if (
+            yahoo_long_term_debt is not None
+            and sec_noncurrent_debt is not None
+        ):
+
+            component_difference = cls.difference_percent(
+                yahoo_long_term_debt,
+                sec_noncurrent_debt,
+            )
+
+            # If Yahoo's Total Debt is explained by its disclosed long-term
+            # debt plus lease obligations, compare that long-term component
+            # with SEC non-current debt.  This is the common Amazon-style
+            # presentation where Yahoo omits the current debt component while
+            # including finance leases in Total Debt.
+            yahoo_total_explained_by_leases = (
+                yahoo_total_debt is not None
+                and yahoo_leases is not None
+                and cls.difference_percent(
+                    yahoo_total_debt,
+                    yahoo_long_term_debt + yahoo_leases,
+                ) is not None
+                and cls.difference_percent(
+                    yahoo_total_debt,
+                    yahoo_long_term_debt + yahoo_leases,
+                ) <= 0.02
+            )
+
+            if (
+                yahoo_total_explained_by_leases
+                and component_difference is not None
+                and component_difference <= 0.02
+            ):
+
+                return {
+                    "field": "Total Debt",
+                    "status": "RESOLVED_DEFINITION_DIFFERENCE",
+                    "confidence": "HIGH",
+                    "sources": sources,
+                    "supporting_values": {
+                        "yahoo_underlying_debt": underlying_yahoo_debt,
+                        "yahoo_capital_lease_obligations": yahoo_leases,
+                        "sec_debt": sec_debt,
+                        "sec_noncurrent_debt": sec_noncurrent_debt,
+                        "sec_current_debt": sec_current_debt,
+                    },
+                    "selected": sec_debt,
+                    "selected_source": "SEC EDGAR",
+                    "reason": (
+                        "Yahoo Finance Total Debt is explained by long-term debt "
+                        "plus finance leases, while its disclosed long-term debt "
+                        "agrees with SEC non-current debt. SEC total debt is used "
+                        "because it separately includes the current debt component."
+                    ),
+                    "underlying_difference_percent": component_difference,
+                    "reconciled_at": cls.now(),
+                }
 
         if (
             underlying_yahoo_debt is not None
@@ -376,6 +453,12 @@ class SourceReconciliationEngine:
 
                         "sec_debt":
                             sec_debt,
+
+                        "sec_noncurrent_debt":
+                            sec_noncurrent_debt,
+
+                        "sec_current_debt":
+                            sec_current_debt,
                     },
 
                     "selected":
@@ -422,6 +505,12 @@ class SourceReconciliationEngine:
 
             "yahoo_capital_lease_obligations":
                 yahoo_leases,
+
+            "sec_noncurrent_debt":
+                sec_noncurrent_debt,
+
+            "sec_current_debt":
+                sec_current_debt,
         }
 
         return result

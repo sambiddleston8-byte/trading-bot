@@ -339,7 +339,6 @@ class ThesisChallenger:
 
         if forecast_confidence in {
             "LOW",
-            "REVIEW",
         }:
 
             test_area(
@@ -349,12 +348,15 @@ class ThesisChallenger:
                 "HIGH",
             )
 
-        elif forecast_confidence == "MEDIUM":
+        elif forecast_confidence in {
+            "MEDIUM",
+            "REVIEW",
+        }:
 
             test_area(
                 "earnings",
                 "Forecast evidence is useful but contains meaningful uncertainty.",
-                "MATERIAL_NEGATIVE",
+                "CAUTION",
                 "MEDIUM",
             )
 
@@ -477,6 +479,15 @@ class ThesisChallenger:
             "net_debt"
         )
 
+        leverage = (
+            fundamentals.get(
+                "balance_sheet",
+                {},
+            ).get(
+                "net_debt_to_fcf"
+            )
+        )
+
         if (
             net_debt is not None
             and float(
@@ -491,12 +502,24 @@ class ThesisChallenger:
                 "HIGH",
             )
 
+        elif (
+            leverage is not None
+            and float(leverage) >= 3.0
+        ):
+
+            test_area(
+                "balance_sheet",
+                "Net debt is high relative to free cash flow.",
+                "MATERIAL_NEGATIVE",
+                "MEDIUM",
+            )
+
         elif net_debt is not None:
 
             test_area(
                 "balance_sheet",
-                "The company carries net debt that could increase downside risk.",
-                "MATERIAL_NEGATIVE",
+                "The company carries net debt, but leverage is not currently extreme.",
+                "CAUTION",
                 "MEDIUM",
             )
 
@@ -671,7 +694,7 @@ class ThesisChallenger:
 
             if negative > positive:
 
-                impact = "MATERIAL_NEGATIVE"
+                impact = "CAUTION"
 
             elif positive > negative:
 
@@ -679,7 +702,7 @@ class ThesisChallenger:
 
             else:
 
-                impact = "MATERIAL_NEGATIVE"
+                impact = "NEUTRAL"
 
             test_area(
                 area,

@@ -85,6 +85,18 @@ class YahooSource:
             ],
         )
 
+        # Some issuers provide a direct free-cash-flow line while one of the
+        # component lines is absent or uses a different convention.  The
+        # reported total is the better source in that case; reconstruct from
+        # operating cash flow and capex only when it is unavailable.
+        free_cash_flow_line = self.find_line(
+            cash_flow,
+            [
+                "Free Cash Flow",
+                "FreeCashFlow",
+            ],
+        )
+
         if revenue_line is None:
             return []
 
@@ -113,8 +125,14 @@ class YahooSource:
                     capex_line.get(column)
                 )
 
+            if free_cash_flow_line is not None:
+                fcf = self.safe_float(
+                    free_cash_flow_line.get(column)
+                )
+
             if (
-                operating_cash is not None
+                fcf is None
+                and operating_cash is not None
                 and capex is not None
             ):
                 fcf = operating_cash + capex

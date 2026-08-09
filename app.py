@@ -1,19 +1,21 @@
+from __future__ import annotations
+
 import streamlit as st
 
 st.set_page_config(
-    page_title="Investment Intelligence Platform",
-    page_icon="📈",
+    page_title="Portfolio Construction",
+    page_icon="💼",
     layout="wide",
 )
 
-st.title("📈 Investment Intelligence Platform")
-
-st.header("Dashboard")
-
-st.write(
-    "Welcome to your Investment Intelligence Platform."
+navigation = st.navigation(
+    [
+        st.Page(
+            "pages/Portfolio_Construction.py",
+            title="Portfolio Construction",
+            icon="💼",
+            default=True,
+        )
+    ]
 )
-
-st.info(
-    "Use the menu on the left to navigate through the platform."
-)
+navigation.run()

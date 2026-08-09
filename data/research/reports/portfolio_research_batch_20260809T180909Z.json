@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T18:09:09.138073+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "INSM",
+      "sector": "Biotechnology"
+    },
+    {
+      "ticker": "ZS",
+      "sector": "EDP Services"
+    },
+    {
+      "ticker": "ALLE",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ACGL",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "UDR",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "PNW",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "PEP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "LEN",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "DHR",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ANET",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ALL",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AXON",
+      "sector": "Industrials"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "INSM",
+      "sector": "Biotechnology",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/INSM.json"
+    },
+    {
+      "ticker": "ZS",
+      "sector": "EDP Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ZS.json"
+    },
+    {
+      "ticker": "ALLE",
+      "sector": "Industrials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALLE.json"
+    },
+    {
+      "ticker": "ACGL",
+      "sector": "Financials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ACGL.json"
+    },
+    {
+      "ticker": "UDR",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/UDR.json"
+    },
+    {
+      "ticker": "PNW",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/PNW.json"
+    },
+    {
+      "ticker": "PEP",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/PEP.json"
+    },
+    {
+      "ticker": "LEN",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/LEN.json"
+    },
+    {
+      "ticker": "DHR",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/DHR.json"
+    },
+    {
+      "ticker": "ANET",
+      "sector": "Information Technology",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ANET.json"
+    },
+    {
+      "ticker": "ALL",
+      "sector": "Financials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALL.json"
+    },
+    {
+      "ticker": "AXON",
+      "sector": "Industrials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AXON.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T180909Z.json",
+  "completed_at": "2026-08-09T18:11:07.423068+00:00"
+}

@@ -1,0 +1,43 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T12:12:30.956745+00:00",
+  "requested_count": 4,
+  "completed_count": 4,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "AEE",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AEE.json"
+    },
+    {
+      "ticker": "ABNB",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ABNB.json"
+    },
+    {
+      "ticker": "ADM",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ADM.json"
+    },
+    {
+      "ticker": "ACGL",
+      "sector": "Financials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ACGL.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T121230Z.json",
+  "completed_at": "2026-08-09T12:12:53.366702+00:00"
+}

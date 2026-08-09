@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T14:00:08.802728+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "ACGL",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "A",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ADP",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "AEE",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "MELI",
+      "sector": "Catalog/Specialty Distribution"
+    },
+    {
+      "ticker": "ASML",
+      "sector": "Industrial Machinery"
+    },
+    {
+      "ticker": "FER",
+      "sector": "Military, Government, Technical"
+    },
+    {
+      "ticker": "EA",
+      "sector": "Miscellaneous Amusement & Recreation Services"
+    },
+    {
+      "ticker": "ARM",
+      "sector": "Semiconductors"
+    },
+    {
+      "ticker": "CCEP",
+      "sector": "Soft Drinks"
+    },
+    {
+      "ticker": "ALNY",
+      "sector": "Biotechnology"
+    },
+    {
+      "ticker": "PDD",
+      "sector": "EDP Services"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "ACGL",
+      "sector": "Financials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ACGL.json"
+    },
+    {
+      "ticker": "A",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/A.json"
+    },
+    {
+      "ticker": "ADP",
+      "sector": "Industrials",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ADP.json"
+    },
+    {
+      "ticker": "AEE",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AEE.json"
+    },
+    {
+      "ticker": "MELI",
+      "sector": "Catalog/Specialty Distribution",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MELI.json"
+    },
+    {
+      "ticker": "ASML",
+      "sector": "Industrial Machinery",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ASML.json"
+    },
+    {
+      "ticker": "FER",
+      "sector": "Military, Government, Technical",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/FER.json"
+    },
+    {
+      "ticker": "EA",
+      "sector": "Miscellaneous Amusement & Recreation Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EA.json"
+    },
+    {
+      "ticker": "ARM",
+      "sector": "Semiconductors",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ARM.json"
+    },
+    {
+      "ticker": "CCEP",
+      "sector": "Soft Drinks",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CCEP.json"
+    },
+    {
+      "ticker": "ALNY",
+      "sector": "Biotechnology",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALNY.json"
+    },
+    {
+      "ticker": "PDD",
+      "sector": "EDP Services",
+      "status": "COMPLETE",
+      "decision": "BUY",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/PDD.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T140008Z.json",
+  "completed_at": "2026-08-09T14:01:34.933145+00:00"
+}

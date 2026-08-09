@@ -1,11 +1,12 @@
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+from core.research.research_contract import ResearchContract
 
 
 class InvestmentResearchPipeline:
 
-    VERSION = "1.1-research-integrated"
+    VERSION = "1.3-calibrated-portfolio-evidence"
 
     # ========================================================
     # TIME
@@ -53,6 +54,10 @@ class InvestmentResearchPipeline:
             CatalystValidationEngine,
         )
 
+        from core.research.catalyst_probability_engine import (
+            CatalystProbabilityEngine,
+        )
+
         from core.research.thesis_challenger import (
             ThesisChallenger,
         )
@@ -63,6 +68,46 @@ class InvestmentResearchPipeline:
 
         from core.research.evidence_audit_engine import (
             EvidenceAuditEngine,
+        )
+
+        from core.research.market_signal_engine import (
+            MarketSignalEngine,
+        )
+
+        from core.research.sentiment_signal_engine import (
+            SentimentSignalEngine,
+        )
+
+        from core.research.market_regime_engine import (
+            MarketRegimeEngine,
+        )
+
+        from core.research.macro_environment_engine import (
+            MacroEnvironmentEngine,
+        )
+
+        from core.research.specialist_research_engine import (
+            SpecialistResearchEngine,
+        )
+
+        from core.research.master_portfolio_decision_engine import (
+            MasterPortfolioDecisionEngine,
+        )
+
+        from core.research.outcome_learning_adapter import (
+            OutcomeLearningAdapter,
+        )
+
+        from core.research.valuation_quality_engine import (
+            ValuationQualityEngine,
+        )
+
+        from core.research.research_failure_diagnostics_engine import (
+            ResearchFailureDiagnosticsEngine,
+        )
+
+        from core.research.supplemental_provider_evidence_service import (
+            SupplementalProviderEvidenceService,
         )
 
         return {
@@ -87,6 +132,9 @@ class InvestmentResearchPipeline:
             "catalyst_validation":
                 CatalystValidationEngine,
 
+            "catalyst_probability":
+                CatalystProbabilityEngine,
+
             "thesis":
                 ThesisChallenger,
 
@@ -95,6 +143,35 @@ class InvestmentResearchPipeline:
 
             "audit":
                 EvidenceAuditEngine,
+
+            "market_signals":
+                MarketSignalEngine,
+
+            "sentiment":
+                SentimentSignalEngine,
+
+            "market_regime":
+                MarketRegimeEngine,
+
+            "macro_environment":
+                MacroEnvironmentEngine,
+
+            "specialist_research":
+                SpecialistResearchEngine,
+
+            "master_decision":
+                MasterPortfolioDecisionEngine,
+
+            "outcome_learning":
+                OutcomeLearningAdapter,
+
+            "valuation_quality":
+                ValuationQualityEngine,
+
+            "diagnostics":
+                ResearchFailureDiagnosticsEngine,
+
+            "supplemental_evidence": SupplementalProviderEvidenceService,
         }
 
     # ========================================================
@@ -139,8 +216,10 @@ class InvestmentResearchPipeline:
 
         engines = cls.load_engines()
 
+        fundamental_engine = engines["fundamental"]()
+
         fundamental = cls.call(
-            engines["fundamental"](),
+            fundamental_engine,
             "analyse",
             ticker,
         )
@@ -158,6 +237,26 @@ class InvestmentResearchPipeline:
             valuation,
         )
 
+        valuation_quality = cls.call(
+            engines["valuation_quality"],
+            "assess",
+            valuation,
+            decision,
+        )
+
+        market_signals = cls.call(
+            engines["market_signals"](),
+            "analyse",
+            ticker,
+            context=getattr(fundamental_engine, "last_context", None),
+        )
+
+        specialist_research = cls.call(
+            engines["specialist_research"],
+            "analyse",
+            context=getattr(fundamental_engine, "last_context", None),
+        )
+
         return {
             "fundamental":
                 fundamental,
@@ -167,6 +266,15 @@ class InvestmentResearchPipeline:
 
             "decision":
                 decision,
+
+            "valuation_quality":
+                valuation_quality,
+
+            "market_signals":
+                market_signals,
+
+            "specialist_research":
+                specialist_research,
         }
 
     # ========================================================
@@ -212,6 +320,23 @@ class InvestmentResearchPipeline:
             "NewsResearchEngine does not expose "
             "analyse() or research()."
         )
+
+    @classmethod
+    def analyse_sentiment(
+        cls,
+        news,
+    ):
+
+        return cls.load_engines()["sentiment"].analyse(news)
+
+    @classmethod
+    def analyse_market_context(cls):
+        engines = cls.load_engines()
+
+        return {
+            "market_regime": engines["market_regime"]().analyse(),
+            "macro_environment": engines["macro_environment"]().analyse(),
+        }
 
     # ========================================================
     # BUILD CATALYST RESEARCH
@@ -400,6 +525,11 @@ class InvestmentResearchPipeline:
             ["catalyst_validation"]
         )
 
+        probability_engine = (
+            cls.load_engines()
+            ["catalyst_probability"]
+        )
+
         if not isinstance(
             catalysts,
             dict,
@@ -428,9 +558,14 @@ class InvestmentResearchPipeline:
 
             try:
 
+                assessed = dict(catalyst)
+                probability = probability_engine.assess(assessed)
+                assessed["probability"] = probability["probability"]
+                assessed["probability_assessment"] = probability
+
                 validated.append(
                     validator.validate(
-                        catalyst
+                        assessed
                     )
                 )
 
@@ -464,6 +599,11 @@ class InvestmentResearchPipeline:
             "validated_catalysts"
         ] = validated
 
+        validated_summary = validator.summary(validated)
+        result["summary"] = validated_summary
+        result["positive_score"] = validated_summary["positive_score"]
+        result["negative_score"] = validated_summary["negative_score"]
+
         return result
 
     # ========================================================
@@ -480,6 +620,9 @@ class InvestmentResearchPipeline:
         catalysts,
         thesis,
         news,
+        market_signals,
+        sentiment,
+        market_context,
     ):
 
         decision_scores = (
@@ -727,6 +870,18 @@ class InvestmentResearchPipeline:
             "news":
                 news,
 
+            "sentiment":
+                sentiment,
+
+            "market_regime":
+                market_context.get("market_regime", {}),
+
+            "macro_environment":
+                market_context.get("macro_environment", {}),
+
+            "market_signals":
+                market_signals,
+
             "thesis_challenge": {
 
                 "overall_challenge_result":
@@ -848,6 +1003,23 @@ class InvestmentResearchPipeline:
             "decision"
         ]
 
+        market_signals = core.get(
+            "market_signals",
+            {},
+        )
+
+        specialist_research = core.get(
+            "specialist_research",
+            {},
+        )
+
+        valuation_quality = core.get(
+            "valuation_quality",
+            {},
+        )
+
+        market_context = cls.analyse_market_context()
+
         # ----------------------------------------------------
         # 2. NEWS
         # ----------------------------------------------------
@@ -869,6 +1041,8 @@ class InvestmentResearchPipeline:
                     str(exc),
 
             }
+
+        sentiment = cls.analyse_sentiment(news)
 
         # ----------------------------------------------------
         # 3. CATALYSTS
@@ -958,6 +1132,9 @@ class InvestmentResearchPipeline:
                 catalysts,
                 thesis,
                 news,
+                market_signals,
+                sentiment,
+                market_context,
             )
         )
 
@@ -976,6 +1153,13 @@ class InvestmentResearchPipeline:
             )
         )
 
+        # Synthesis is the final recommendation because it is the first stage
+        # to see valuation, catalysts, evidence quality, and the adversarial
+        # thesis challenge together.  Audit this final recommendation rather
+        # than the earlier core-only decision.
+        synthesis_input = dict(synthesis_input)
+        synthesis_input["decision"] = synthesis.get("decision")
+
         # ----------------------------------------------------
         # 8. FINAL EVIDENCE AUDIT
         # ----------------------------------------------------
@@ -987,6 +1171,8 @@ class InvestmentResearchPipeline:
         # ----------------------------------------------------
         # 9. FINAL RESULT
         # ----------------------------------------------------
+
+        supplemental_evidence = cls.load_engines()["supplemental_evidence"].collect(ticker)
 
         result = {
 
@@ -1016,6 +1202,9 @@ class InvestmentResearchPipeline:
                 "decision":
                     decision,
 
+                "valuation_quality":
+                    valuation_quality,
+
             },
 
             "research": {
@@ -1023,11 +1212,33 @@ class InvestmentResearchPipeline:
                 "news":
                     news,
 
+                "sentiment":
+                    sentiment,
+
+                "market_regime":
+                    market_context.get("market_regime", {}),
+
+                "macro_environment":
+                    market_context.get("macro_environment", {}),
+
                 "catalysts":
                     catalysts,
 
                 "thesis_challenge":
                     thesis,
+
+                "market_signals":
+                    market_signals,
+
+                "specialist_research":
+                    specialist_research,
+
+                "supplemental_provider_evidence": supplemental_evidence,
+
+                "provider_evidence_summary": supplemental_evidence.get(
+                    "summary",
+                    {},
+                ),
 
             },
 
@@ -1041,6 +1252,44 @@ class InvestmentResearchPipeline:
                 synthesis_input,
 
         }
+
+        result["canonical"] = (
+            ResearchContract
+            .from_pipeline_result(
+                result
+            )
+        )
+
+        # The master decision layer combines all completed specialist work,
+        # without permitting it to override the evidence audit, valuation,
+        # risk, or adversarial-thesis gates.  It is saved separately so both
+        # the portfolio and a holding's research page can show its reasoning.
+        result["master_decision"] = (
+            cls.load_engines()["master_decision"].evaluate(
+                result["canonical"],
+                catalysts=catalysts,
+                learning_adjustment=(
+                    cls.load_engines()["outcome_learning"].for_decision(
+                        result["canonical"].get("decision")
+                    )
+                ),
+            )
+        )
+
+        result["diagnostics"] = (
+            cls.load_engines()["diagnostics"].analyse(
+                result
+            )
+        )
+
+        # Rebuild once more so the canonical portfolio-facing record contains
+        # the master decision just calculated above.
+        result["canonical"] = (
+            ResearchContract
+            .from_pipeline_result(
+                result
+            )
+        )
 
         # ----------------------------------------------------
         # 10. SAVE

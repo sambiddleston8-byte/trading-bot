@@ -1,0 +1,61 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T17:55:57.950137+00:00",
+  "requested_count": 4,
+  "companies": [
+    {
+      "ticker": "MELI",
+      "sector": "Catalog/Specialty Distribution"
+    },
+    {
+      "ticker": "REG",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "NRG",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "MKC",
+      "sector": "Consumer Staples"
+    }
+  ],
+  "completed_count": 4,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "MELI",
+      "sector": "Catalog/Specialty Distribution",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MELI.json"
+    },
+    {
+      "ticker": "REG",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/REG.json"
+    },
+    {
+      "ticker": "NRG",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/NRG.json"
+    },
+    {
+      "ticker": "MKC",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MKC.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T175557Z.json",
+  "completed_at": "2026-08-09T17:56:34.812018+00:00"
+}

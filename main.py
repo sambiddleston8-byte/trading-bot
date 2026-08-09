@@ -1,91 +1,51 @@
-from core.watchlist import Watchlist
-from core.decision_engine import DecisionEngine
+"""Command-line entry point for the portfolio-construction prototype."""
 
-engine = DecisionEngine()
+import argparse
 
-watchlist = Watchlist("data/watchlists/growth.txt")
+from core.application.portfolio_coverage_service import PortfolioCoverageService
+from core.application.portfolio_construction_service import PortfolioConstructionService
+from core.portfolio_manager import PortfolioManager
 
-results = []
 
-print("\nAnalysing watchlist...\n")
-
-for ticker in watchlist.load():
-
-    try:
-
-        result = engine.analyse(ticker)
-
-        results.append(result)
-
-        print(f"✓ {ticker}")
-
-    except Exception as e:
-
-        print(f"✗ {ticker}: {e}")
-
-results.sort(
-    key=lambda x: x["Overall Score"],
-    reverse=True,
-)
-
-print("\n" + "=" * 120)
-print("AI INVESTMENT INTELLIGENCE PLATFORM")
-print("=" * 120)
-
-print(
-    "{:<8} {:>8} {:>8} {:>8} {:>8} {:>8} {:>10} {:>10} {}".format(
-        "Ticker",
-        "Quality",
-        "Value",
-        "Tech",
-        "Risk",
-        "News",
-        "Overall",
-        "Rating",
-        "",
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Portfolio construction prototype")
+    parser.add_argument(
+        "--research",
+        action="store_true",
+        help="Run one paced, checkpointed research batch before checking readiness.",
     )
-)
+    parser.add_argument("--batch-size", type=int, default=12)
+    parser.add_argument("--delay", type=float, default=1.0)
+    args = parser.parse_args()
 
-print("-" * 120)
-
-for stock in results:
-
-    print(
-        "{:<8} {:>8.1f} {:>8.1f} {:>8.1f} {:>8.1f} {:>8.1f} {:>10.1f} {:>10}".format(
-            stock["Ticker"],
-            stock["Business Quality"],
-            stock["Valuation"],
-            stock["Technical"],
-            stock["Risk"],
-            stock["News"],
-            stock["Overall Score"],
-            stock["Rating"],
+    if args.research:
+        cycle = PortfolioCoverageService.run_cycle(
+            target_holdings=8,
+            batch_size=args.batch_size,
+            delay_seconds=args.delay,
         )
-    )
+        batch = cycle.get("batch") or {}
+        print(
+            "Research cycle: "
+            f"{cycle['status']} "
+            f"({batch.get('completed_count', 0)} completed, "
+            f"{batch.get('error_count', 0)} errors)"
+        )
 
-    print("")
+    status = PortfolioCoverageService.status(target_holdings=8)
+    universe = status["universe"]
+    readiness = status["readiness"]
+    print("PORTFOLIO CONSTRUCTION PROTOTYPE")
+    print(f"Universe: {universe['unique_ticker_count']} companies (S&P 500 + Nasdaq-100)")
+    print(f"Portfolio-ready candidates: {readiness['eligible_count']}")
+    print(readiness["message"])
 
-    print("  Strengths:")
-
-    if stock["Strengths"]:
-        for strength in stock["Strengths"]:
-            print(f"    • {strength}")
+    if readiness["ready"]:
+        manager = PortfolioManager()
+        manager.print_portfolio(manager.construct_portfolio(target_holdings=8))
     else:
-        print("    • None")
+        print("Run one paced research cycle before attempting construction.")
 
-    print("")
 
-    print("  Weaknesses:")
-
-    if stock["Weaknesses"]:
-        for weakness in stock["Weaknesses"]:
-            print(f"    • {weakness}")
-    else:
-        print("    • None")
-
-    print("")
-
-    print("Investment Report:")
-    print(stock["Report"])
-
-    print("-" * 120)
+if __name__ == "__main__":
+    main()

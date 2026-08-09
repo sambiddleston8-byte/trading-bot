@@ -1,0 +1,83 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import streamlit as st
+
+from core.research.research_contract import ResearchContract
+
+
+PIPELINE_DIRECTORY = Path("data/research/pipeline")
+
+
+def load_record(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def format_number(value: object, digits: int = 2) -> str:
+    if value is None:
+        return "Not available"
+    try:
+        return f"{float(value):,.{digits}f}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def format_percent(value: object) -> str:
+    if value is None:
+        return "Not available"
+    try:
+        return f"{float(value):.1%}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+st.set_page_config(page_title="Company Analysis", page_icon="🔎", layout="wide")
+st.title("Company Analysis")
+st.caption("A stable view of completed research records. It does not rerun the legacy analysis engine.")
+
+records = sorted(PIPELINE_DIRECTORY.glob("*.json"))
+if not records:
+    st.info("No completed research records are available yet.")
+    st.stop()
+
+record_by_ticker = {path.stem.upper(): path for path in records}
+ticker = st.selectbox("Completed research record", sorted(record_by_ticker))
+raw_record = load_record(record_by_ticker[ticker])
+record = ResearchContract.from_pipeline_result(raw_record)
+
+st.subheader(record.get("ticker", ticker))
+st.caption(f"Research status: {record.get('research_status', 'UNKNOWN')}")
+
+first, second, third, fourth = st.columns(4)
+first.metric("Investment-case score", format_number(record.get("investment_case_score")))
+second.metric("Decision", record.get("decision", "UNKNOWN"))
+third.metric("Current price", format_number(record.get("current_price")))
+fourth.metric("Expected return", format_percent(record.get("expected_return")))
+
+left, right = st.columns(2)
+with left:
+    st.subheader("Valuation")
+    st.write({
+        "Current price": format_number(record.get("current_price")),
+        "Base intrinsic value": format_number(record.get("base_intrinsic_value")),
+        "Expected return": format_percent(record.get("expected_return")),
+    })
+
+with right:
+    audit = record.get("audit") or {}
+    st.subheader("Audit")
+    st.write({
+        "Status": audit.get("status", "NOT_RUN"),
+        "Critical findings": audit.get("critical", 0),
+        "High findings": audit.get("high", 0),
+        "Medium findings": audit.get("medium", 0),
+    })
+
+thesis = record.get("thesis") or {}
+st.subheader("Thesis")
+st.write(thesis.get("summary") or thesis.get("statement") or "No thesis summary was recorded.")
+
+with st.expander("Canonical research record"):
+    st.json(record)

@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T14:03:29.515742+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "ALNY",
+      "sector": "Biotechnology"
+    },
+    {
+      "ticker": "MELI",
+      "sector": "Catalog/Specialty Distribution"
+    },
+    {
+      "ticker": "PDD",
+      "sector": "EDP Services"
+    },
+    {
+      "ticker": "ASML",
+      "sector": "Industrial Machinery"
+    },
+    {
+      "ticker": "INSM",
+      "sector": "Biotechnology"
+    },
+    {
+      "ticker": "ZS",
+      "sector": "EDP Services"
+    },
+    {
+      "ticker": "MSTR",
+      "sector": "Computer Software"
+    },
+    {
+      "ticker": "EXE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "FOXA",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "CRH",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "CBRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "AES",
+      "sector": "Utilities"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "ALNY",
+      "sector": "Biotechnology",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALNY.json"
+    },
+    {
+      "ticker": "MELI",
+      "sector": "Catalog/Specialty Distribution",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MELI.json"
+    },
+    {
+      "ticker": "PDD",
+      "sector": "EDP Services",
+      "status": "COMPLETE",
+      "decision": "BUY",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/PDD.json"
+    },
+    {
+      "ticker": "ASML",
+      "sector": "Industrial Machinery",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ASML.json"
+    },
+    {
+      "ticker": "INSM",
+      "sector": "Biotechnology",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/INSM.json"
+    },
+    {
+      "ticker": "ZS",
+      "sector": "EDP Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ZS.json"
+    },
+    {
+      "ticker": "MSTR",
+      "sector": "Computer Software",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/MSTR.json"
+    },
+    {
+      "ticker": "EXE",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EXE.json"
+    },
+    {
+      "ticker": "FOXA",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "STRONG_BUY",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/FOXA.json"
+    },
+    {
+      "ticker": "CRH",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CRH.json"
+    },
+    {
+      "ticker": "CBRE",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CBRE.json"
+    },
+    {
+      "ticker": "AES",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AES.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T140329Z.json",
+  "completed_at": "2026-08-09T14:05:06.934779+00:00"
+}

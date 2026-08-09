@@ -1,35 +1,26 @@
-from core.decision_engine import DecisionEngine
+"""Research scanner backed by the portfolio's official evidence-first path."""
+
+from core.application.research_service import ResearchService
+from core.research.research_contract import ResearchContract
 
 
 class ScannerAnalyser:
-
-    def __init__(self):
-
-        self.engine = DecisionEngine()
-
     def scan(self, tickers):
-
         results = []
-
-        print(f"\nScanning {len(tickers)} companies...\n")
-
         for ticker in tickers:
-
             try:
-
-                analysis = self.engine.analyse(ticker)
-
-                results.append(analysis)
-
-                print(f"✓ {ticker}")
-
-            except Exception as e:
-
-                print(f"✗ {ticker}: {e}")
-
-        results.sort(
-            key=lambda stock: stock["Overall Score"],
+                result = ResearchService.run(str(ticker).upper())
+                results.append(ResearchContract.from_pipeline_result(result))
+            except Exception as exc:
+                results.append(
+                    {
+                        "ticker": str(ticker).upper(),
+                        "research_status": "ERROR",
+                        "error": str(exc),
+                    }
+                )
+        return sorted(
+            results,
+            key=lambda stock: stock.get("investment_case_score") or -1,
             reverse=True,
         )
-
-        return results

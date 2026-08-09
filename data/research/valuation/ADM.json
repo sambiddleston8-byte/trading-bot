@@ -2,7 +2,7 @@
     "Ticker": "ADM",
     "Company": "Archer-Daniels-Midland Company",
     "Status": "COMPLETE",
-    "Analysed At": "2026-08-08T23:48:36.282076+00:00",
+    "Analysed At": "2026-08-09T15:05:19.976915+00:00",
     "Current Price": 76.59,
     "Market Capitalisation": 36913045504.0,
     "Financial Data Validation": {
@@ -16,7 +16,7 @@
             "overall_confidence": "MEDIUM"
         },
         "Selected Financials": {
-            "net_income": 1078000000.0,
+            "net_income": 1073000000.0,
             "operating_income": null,
             "gross_profit": 5033000000.0,
             "equity": 22740000000.0,
@@ -24,8 +24,8 @@
             "operating_cash_flow": 5452000000.0,
             "free_cash_flow": 4204000000.0,
             "cash_and_equivalents": 1015000000.0,
-            "total_debt": 7612000000.0,
-            "net_debt": 6597000000.0,
+            "total_debt": 7404000000.0,
+            "net_debt": 6389000000.0,
             "shares_outstanding": 481956527.0
         }
     },
@@ -132,13 +132,13 @@
     "Terminal Growth": 0.03,
     "Forecast Years": 5,
     "Shares Outstanding": 481956527.0,
-    "Total Debt": 7612000000.0,
+    "Total Debt": 7404000000.0,
     "Cash": 1015000000.0,
-    "Net Debt": 6597000000.0,
+    "Net Debt": 6389000000.0,
     "Intrinsic Value": {
-        "Bear": 29.496828555319983,
-        "Base": 152.7936114747291,
-        "Bull": 351.8278643773948
+        "Bear": 29.928402749977582,
+        "Base": 153.2251856693867,
+        "Bull": 352.25943857205243
     },
     "Scenarios": {
         "Bear": {
@@ -179,10 +179,10 @@
             "Terminal Present Value": 11829175184.08847,
             "Forecast Cash Flow PV": 8984013863.947973,
             "Enterprise Value": 20813189048.036446,
-            "Net Debt": 6597000000.0,
-            "Equity Value": 14216189048.036446,
+            "Net Debt": 6389000000.0,
+            "Equity Value": 14424189048.036446,
             "Shares Outstanding": 481956527.0,
-            "Intrinsic Value Per Share": 29.496828555319983,
+            "Intrinsic Value Per Share": 29.928402749977582,
             "Terminal Value % of Enterprise Value": 0.5683499610168802,
             "Scenario": "Bear",
             "Starting Growth": -0.03503206526736197,
@@ -289,10 +289,10 @@
             "Terminal Present Value": 62658649865.97905,
             "Forecast Cash Flow PV": 17578228468.168736,
             "Enterprise Value": 80236878334.14778,
-            "Net Debt": 6597000000.0,
-            "Equity Value": 73639878334.14778,
+            "Net Debt": 6389000000.0,
+            "Equity Value": 73847878334.14778,
             "Shares Outstanding": 481956527.0,
-            "Intrinsic Value Per Share": 152.7936114747291,
+            "Intrinsic Value Per Share": 153.2251856693867,
             "Terminal Value % of Enterprise Value": 0.7809208329994605,
             "Scenario": "Base",
             "Starting Growth": 0.044967934732638035,
@@ -399,10 +399,10 @@
             "Terminal Present Value": 145597469382.85928,
             "Forecast Cash Flow PV": 30565266234.296932,
             "Enterprise Value": 176162735617.15622,
-            "Net Debt": 6597000000.0,
-            "Equity Value": 169565735617.15622,
+            "Net Debt": 6389000000.0,
+            "Equity Value": 169773735617.15622,
             "Shares Outstanding": 481956527.0,
-            "Intrinsic Value Per Share": 351.8278643773948,
+            "Intrinsic Value Per Share": 352.25943857205243,
             "Terminal Value % of Enterprise Value": 0.826494144024179,
             "Scenario": "Bull",
             "Starting Growth": 0.12496793473263804,
@@ -473,8 +473,8 @@
         }
     },
     "Expected Return": {
-        "Base": 0.9949551047751546,
-        "Annualised": 0.148118263116241,
+        "Base": 1.0005899682646127,
+        "Annualised": 0.1487661165595784,
         "Horizon Years": 5
     },
     "Terminal Value Contribution": 0.7809208329994605

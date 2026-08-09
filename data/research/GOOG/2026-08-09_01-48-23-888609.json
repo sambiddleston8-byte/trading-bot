@@ -1,0 +1,769 @@
+{
+    "Ticker": "GOOG",
+    "Research": {
+        "Ticker": "GOOG",
+        "Timestamp": "2026-08-09T01:48:22.010224",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "These 7 Stocks Are Analyst Favorites For Magnificent Earnings Growth; Arista Beats Views - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQd2FkMG42Rmh3aXFzM0xLX2hESGVCcnR6NW1MWjhiaFZjNGtST2pXOGY4dzVnUzFnQy13dHY5OGh0QzlnRjlxcmZrbEhEcGFtc00xWjY3S2g2NGZzTllfMzNMaGdWTmNfUEgyTEVRekF6aWZNLTRUOGNzcTRQVjdBb2M1c0Fia21VUTM1QWw2UXRodw?oc=5",
+                "Published": "Sat, 08 Aug 2026 12:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Google reports 12th consecutive quarter of strong revenue gains | Alphabet - The Guardian",
+                "Link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1sZWpjTTRRaDNrdkx2S19tenRsYXI0aGJPRzRsWU9UWGpNWFAzN2FRZ2VFb3g0ckdZejkyUWZwbTROdWd5WFI5MmxZc2hNUS1vMWZSYVR4eGRrakFoanl0ZUJOVWlPLWhvaTIxcTlfMFF5c09TejZ2dEFEY0hRdw?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Google burns through $6bn in cash as AI spending climbs again - Financial Times",
+                "Link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPQWtib1FUSkl3cjZ4MEp1Szlhand0LVFhdWpRQkxBR2FkQjNWSUI5X29QNnpoVGtLUnVxNHY4N0FOblpMOUFBUDRwNGNCZFBFN0FRRWJsUy0wM2VpN21Ka0Z6UGJQdldxcnNiYUJkNTFzV01ibXBsSTNUaUhRQnhmdFBXcGM?oc=5",
+                "Published": "Thu, 23 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Google falls more than 6% on capex growth expectations despite earnings beat - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNWEt0UXR4Vjl6UDN6YThSVC1nbE5KOFBHcUdjLW1mRVdmSEFOdi04WV9oSF9iVTJ3Y2F5YWNDM1FVWTM3eW5pX1Fjdi1mQXZ1b3hPQ0RnTnBkTUFkR1NsNUdMLWxqeENHYlFoTVJpemhIVVVLeVlPZDBIanFxdlc5RWdHZ00zd3Ytd2EzQmozczQ3eUFCbHc0TlBzZ05JM2JpNkV1RUtuRU9hVG8wZjNLN2RwTjJ6Y2stNlVJcmN1cmxnSmg2aVlISW1iVUZ2ZUd4?oc=5",
+                "Published": "Thu, 23 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Google\u2019s AI Spending Spree Has Investors Nervous - WSJ",
+                "Link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOSU9fWGMxOGJIQk16OUhQOV9OelJSZDh0S0toVV95WDVIakdqTUcwaGhBOGJ0VVlWbmxDX3pMWWZncG01Zjd5NVh3UUV5UlJtR0RTUmMwVWNkRmY1eEFqQV95SjQtckY0cVVsOUtOMm5oYWRiWEJ6MzJCZzZyTE5RMWYxal83Sm5s?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Here\u2019s How Much Google Parent Alphabet\u2019s Stock Is Seen Moving After Earnings - Investopedia",
+                "Link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNclBYWnJUZmJxWEgwa0tKMmRGUmxlNi1kVTZ5TVJ1TXFaVnpOalZscGowd2VsdEdMOVJUTWhwb0oyYUFCOFU3bWJrdUFkRUYzRU5GZFdLTDl3a2Z3RTctcnUweUEySjR3bzhHMC1Xcm5yTlBHVVhhR2F1VThpeWlzSWdScF8tUVVlMXRNczVKUGhoSU1UMklmbGJNNWJnODdQb3lPbmZGM1BMSzRsa2cxRjRkbVh4RS14UHpjNXoyNTUwSzdCbTFnOVBn?oc=5",
+                "Published": "Tue, 21 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Q1 2026 earnings call: Remarks from our CEO - blog.google",
+                "Link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNdXNtN3pKTExWYVpPM0dRbjJFSHMzdnF6T2w1RTc0RXYtMzBoOFV0TXpBOWdYWEg5ZU90VTRkLWNUX1dwNjc2ODVXcTJlT3Y4ZFNSRmJ2VWtGSkc0WS04N1RvNVUyYXFSSWx6T00zX0lvbEtVZEszdlgwQ09ybXhVS3l3YUI3Wk82NGlTZEx3?oc=5",
+                "Published": "Wed, 29 Apr 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Alphabet's Gemini delay, spending worries loom over earnings - reuters.com",
+                "Link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQOUVlakRjb0pKczZEQ0lZNGNyUGowNkxxcTJ3UlAtRUlEX19rc1JMS3BkVXo3SkQ3a2Y4eG1OcmpNTnJENXJENzktZHA4UW9zQU9kV09yZnR6VUxkNGpLTEROcmZDU2ZqdExLN3AwT0haTUZKZEhmQUl0dkwwckVNY2JtQ05Tc2hpU2YzSVZPZUZCa3piUmZnRVUyNFpyV0hRczJZYVBn?oc=5",
+                "Published": "Tue, 21 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Google Parent Alphabet Stock Price Forecast: Earnings Beat Expectations, Why Did the Stock Price Fall? - TradingKey",
+                "Link": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxPY0VYQlhfaFc1bEZHN0FBRk83UGl6czhXSjJFa3pNVDNjS1pNQmh3R2lsMXVSdmNFeTNuYmhJcmpBVjVsdUYybmpTalQyZUpZSUhKMzNjNlJlQTZybEVmdldQM1Q4U0dnb29hSkJ2SW9rWHlBTkJ5dzBtOENZNkNBOUZtUjl1UjVvWkxNbERJU210cHZZRW1lNTE3aG1JQV8zRnZfaHRZc0drRUpZZTl1cDNkd0JDcjF5ZHNmWFl1bXdPVnJRNU0yZWVpOUxubXBQci13ZmhEUnplZU9GcnZibXp5OGxzT3pjaFRhd0ViQ1dwZTlM?oc=5",
+                "Published": "Thu, 23 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Billionaire Money Manager Christopher Begg Bought Google at 15x Earnings. Here's Why He Calls It the Best Business in the World - 24/7 Wall St.",
+                "Link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxOX3hpLWFwT1o0QmlKY19QUjduWEZDenNkaTNxaWlaSVduT3hmRmR3QTdjWG11TzZCOE0tTFlXOWxGMzhFZ0d2ZTQwa1RvaDZQZ1ZMZ2xtaEl0NmZIQzR6dWxoZlFYUUllTDZrOGVRaVZxWHcxOG5OcFh1dmNTc3BpaFdyRE5KMFFrLTFlcng3UTlpQlhreWNjTmZONWpLQ3F1akQwazY1LXVZUjcwQmhKMl9odDRpd0xDb01hWE5mLXkwSzU3cWxmZUVYNDRpR09SbEdON29CTFN6dUNCTzVicEJtS1VaTHFmSEttbW9EUS15Y1ZXSkNNX003NDZ0QQ?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Google parent earnings beat projections amid plans to invest deeply in AI - The Guardian",
+                "Link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxQSVU0S3BEaU1KbDROYUR0WTNfeUNCb2lKSHV0TmdXVG5McnJsdWxRbEN1eFJ6QTVxUi1UYVB2cmRXS3VCbVl3MzFxZ0d3dS1la3RZRE9aWGVFZm9obVdTcUhvTGtDVFdfbmZnc09kRnFGMk81UXZiMm5kNzlkVkJKTzIxZlFiWnFLb3c?oc=5",
+                "Published": "Wed, 04 Feb 2026 08:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Google Earnings, Revenue Top Views As Cloud Growth Accelerates. Search Results In-Line. - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPNlY5QnprTnBMOUFwbzZuX3BBa1dlU05HdGxfcFh5d0NhdFpKTjZLMGh0MHY2eXhYYW5Oa3Y5Z0RkcWppWXl2VEctdUd3ckM1bEE3VE42YnFBSWt5dlgyU0pTcVk5b05BUFNRTFlxYnJKaUxPR1dMcnplQS1CQWV2cGM3UGRuaWVlZENyTzdZckpKb3gweVE?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Alphabet Stock Plunges as Investors React to Google\u2019s Massive AI Spending Plans - Investopedia",
+                "Link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNZ1hUTkZzSFBxM1pGY212ak9PSlNZT0hFMWFNSE1FR0VHSHRSMnhqSnZMbzIzVXc2QUdKVXpRaFQ1YnRSd1FLTXF6LVdkR1pSZjhPdVAwbmN2QmhEZHMyQ003VGVkVTJaSDJQczM2WTRYQUlmSUI2Z3RfN0JMWmRsYy1BUDZYOWV5V2F6TmZva00xMWdEUGhEUEJES1BUVEhsUVBLbGR2Y2Z4emFKb2o3NUEzazFISkJpSmc?oc=5",
+                "Published": "Thu, 23 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Google increases capex forecast again after cloud-driven quarterly beat - reuters.com",
+                "Link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPNTZyTWZjRUFlVHJzZlUxbjIzNFI4OUt5WG1WR1ZtV0U0OHlBSVpJQm10VFJiYy1zcjhHUGpYTlVRWWduUjJHd19OYW1aaTZ4ZE81V3FOU1AwQVFmVzJaeEFHYkJJNUJxQzRVZFF1dDVjLTdpNjR2bTBIN1BrVTZXMUNUaWxBVkQ3VEZBNThMeWNxRnk1RnMtLTlUS0UtNGJNNkQ4?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Q4 earnings call: Remarks from our CEO - blog.google",
+                "Link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNbXRUR25GSWJtc1FxZl9KRHM2cUtVMHVMRmJFMmtWQzFyLUlHZExvMXp5N0EzVE9BZnBsTVJYR1BBcnJ0V3BBUzlJWWxMUHdSazJHSDRZczJPRUF4NHVWQkNNVjNlRkRqY2FFbUhESXFFZzl1WDA3MDlQUzB4Z3U4VnpwVlc4aTl4Vl95VWd3?oc=5",
+                "Published": "Wed, 04 Feb 2026 08:00:00 GMT"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Palantir CEO drops 11-word bombshell for stock market investors",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/palantir-ceo-drops-11-word-160300224.html",
+                "Published": "2026-08-07T16:03:00Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Reveals How Alphabet Inc (NASDAQ:GOOGL) Can Reverse Recent Weakness",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-reveals-alphabet-inc-183314728.html",
+                "Published": "2026-08-07T18:33:14Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Believes Meta Platforms, Inc. (NASDAQ:META) Can Do Better",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-believes-meta-platforms-183357464.html",
+                "Published": "2026-08-07T18:33:57Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Called Linde plc (NASDAQ:LIN)\u2019s Share Price Movement \u201cStupid\u201d",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-called-linde-plc-183106534.html",
+                "Published": "2026-08-07T18:31:06Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Shares Key Reason Why Caterpillar Inc. (NYSE:CAT)\u2019s Shares Are Higher Than Deere\u2019s",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-shares-key-reason-183005462.html",
+                "Published": "2026-08-07T18:30:05Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Ondo Perps hits $7 billion in volume weeks after launch",
+                "Link": "https://finance.yahoo.com/markets/crypto/articles/ondo-perps-hits-7-billion-215819332.html",
+                "Published": "2026-08-07T21:58:19Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Says There\u2019s Merit To Starbucks Corporation (NASDAQ:SBUX)\u2019s Turnaround Efforts",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-says-merit-starbucks-183707712.html",
+                "Published": "2026-08-07T18:37:07Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "DOCS Stock Surges 40% Following Doximity Earnings. What Comes Next.",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/docs-stock-surges-40-following-182925336.html",
+                "Published": "2026-08-07T18:29:25Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Gloats After Getting The Boeing Company (NYSE:BA)\u2019s Shares Right",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-gloats-getting-boeing-182822239.html",
+                "Published": "2026-08-07T18:28:22Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Didn\u2019t Think Seagate Technology Holdings plc (NASDAQ:STX)\u2019s Earnings Were Bad",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-didn-t-think-182716107.html",
+                "Published": "2026-08-07T18:27:16Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Ken Griffin's Feud With Mamdani Hasn't Stopped His $6 Billion Manhattan Skyscraper\u2014 It's Now Under Demolition",
+                "Link": "https://finance.yahoo.com/real-estate/articles/ken-griffins-feud-mamdani-hasnt-183018107.html",
+                "Published": "2026-08-07T18:30:18Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Was \u201cBlown Away\u201d By Microsoft Corporation (NASDAQ:MSFT)\u2019s Financials",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-blown-away-microsoft-183838604.html",
+                "Published": "2026-08-07T18:38:38Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer\u2019s Post Earnings Palantir Technologies Inc. (NASDAQ:PLTR) Worry Didn\u2019t Materialize",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-post-earnings-palantir-182440005.html",
+                "Published": "2026-08-07T18:24:40Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jim Cramer Shares Reasons Behind Why NVIDIA Corporation (NASDAQ:NVDA)\u2019s Shares Are Finally Rising",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-shares-reasons-behind-182404118.html",
+                "Published": "2026-08-07T18:24:04Z"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Are Wall Street Analysts Predicting Palo Alto Networks Stock Will Climb or Sink?",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/wall-street-analysts-predicting-palo-182223594.html",
+                "Published": "2026-08-07T18:22:23Z"
+            }
+        ],
+        "Financial Data": {
+            "Company": "Alphabet Inc.",
+            "Sector": "Communication Services",
+            "Industry": "Internet Content & Information",
+            "Market Cap": 4322915254272,
+            "Revenue Growth": 0.242,
+            "Earnings Growth": 2.94,
+            "Profit Margin": 0.54771,
+            "Operating Margin": 0.34033,
+            "Forward PE": 23.989391,
+            "Trailing PE": 17.726679,
+            "PEG": 0.98,
+            "Price To Book": 6.944947,
+            "ROE": 0.48676,
+            "ROIC": null,
+            "Beta": 1.237,
+            "Dividend Yield": 0.25
+        },
+        "SEC Filings": {
+            "Ticker": "GOOG",
+            "Timestamp": "2026-08-09T01:48:23.132513",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "13F-HR",
+                    "Filing Date": "2026-08-07",
+                    "Report Date": "2026-06-30",
+                    "Accession Number": "0001652044-26-000073",
+                    "Document": "xslForm13F_X02/primary_doc.xml",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000073/xslForm13F_X02/primary_doc.xml",
+                    "Type": "Institutional Holdings"
+                },
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-07-23",
+                    "Report Date": "2026-06-30",
+                    "Accession Number": "0001652044-26-000071",
+                    "Document": "goog-20260630.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-22",
+                    "Report Date": "2026-07-22",
+                    "Accession Number": "0001652044-26-000066",
+                    "Document": "goog-20260722.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/goog-20260722.htm",
+                    "Type": "Current Report"
+                }
+            ],
+            "Filing Count": 3
+        }
+    },
+    "Evidence": {
+        "Ticker": "GOOG",
+        "Company": null,
+        "Generated At": "2026-08-09T00:48:23.132846+00:00",
+        "Status": "COMPLETE",
+        "Summary": {
+            "Total Evidence Items": 0,
+            "Quantitative Evidence": 0,
+            "Market Evidence": 0,
+            "External Event Evidence": 0,
+            "Model Evidence": 0
+        },
+        "Evidence": {
+            "Fundamentals": [],
+            "Valuation": [],
+            "Expected Returns": [],
+            "Catalysts": []
+        },
+        "Sources": [],
+        "Output Path": "data/research/evidence/GOOG.json"
+    },
+    "Profile": {
+        "Ticker": "GOOG",
+        "Company Name": "Alphabet Inc.",
+        "Short Name": "Alphabet Inc.",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Communication Services",
+        "Industry": "Internet Content & Information",
+        "Country": "United States",
+        "City": "Mountain View",
+        "Website": "https://abc.xyz",
+        "Employees": 198933,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Sundar  Pichai",
+                "age": 52,
+                "title": "CEO & Director",
+                "yearBorn": 1973,
+                "fiscalYear": 2025,
+                "totalPay": 10906079,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Ruth M. Porat",
+                "age": 67,
+                "title": "President & Chief Investment Officer",
+                "yearBorn": 1958,
+                "fiscalYear": 2025,
+                "totalPay": 1015596,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Dr. Lawrence Edward Page II",
+                "age": 52,
+                "title": "Co-Founder & Director",
+                "yearBorn": 1973,
+                "fiscalYear": 2025,
+                "totalPay": 1,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Sergey  Brin",
+                "age": 51,
+                "title": "Co-Founder & Director",
+                "yearBorn": 1974,
+                "fiscalYear": 2025,
+                "totalPay": 1,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Anat  Ashkenazi",
+                "age": 52,
+                "title": "Senior VP & CFO",
+                "yearBorn": 1973,
+                "fiscalYear": 2025,
+                "totalPay": 1087961,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. J. Kent Walker",
+                "age": 64,
+                "title": "President of Global Affairs, Chief Legal Officer & Company Secretary",
+                "yearBorn": 1961,
+                "fiscalYear": 2025,
+                "totalPay": 1015596,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Philipp  Schindler",
+                "age": 54,
+                "title": "Senior Vice President & Chief Business Officer of Google",
+                "yearBorn": 1971,
+                "fiscalYear": 2025,
+                "totalPay": 1623997,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Marsida  Saraci",
+                "age": 46,
+                "title": "Principal Accounting Officer, VP & Controller",
+                "yearBorn": 1979,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "Alphabet Inc. offers various products and platforms in the United States, Europe, the Middle East, Africa, the Asia-Pacific, Canada, and Latin America. It operates through Google Services, Google Cloud, and Other Bets segments. The Google Services segment provides products and services, including ads, Android, Chrome, devices, Gmail, Google Drive, Google Maps, Google Photos, Google Play, Search, and YouTube. It is also involved in the sale of apps and in-app purchases and digital content in Google Play and YouTube; and devices, as well as the provision of YouTube consumer subscription services, such as YouTube TV, YouTube Music and Premium, NFL Sunday Ticket, and Google One. The Google Cloud segment offers consumption-based fees and subscriptions for AI solutions, including AI infrastructure, Vertex AI platform, and Gemini enterprise. It also provides cybersecurity, and data and analytics services; Google Workspace that include cloud-based communication and collaboration tools for enterprises, such as Calendar, Gmail, Docs, Drive, and Meet; and other enterprise services. The Other Bets segment sells transportation and internet services. Alphabet Inc. was incorporated in 1998 and is headquartered in Mountain View, California.",
+        "Market Cap": 4322915254272,
+        "Enterprise Value": 4219278196736,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "Alphabet Inc.",
+        "Symbol": "GOOG",
+        "Exchange": "NMS",
+        "Sector": "Communication Services",
+        "Industry": "Internet Content & Information",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 198933,
+        "Market Cap": 4322915254272,
+        "Enterprise Value": 4219278196736,
+        "Revenue": 445865984000,
+        "Net Income": 244118994944,
+        "PE": 17.726679,
+        "Forward PE": 23.989391,
+        "PEG": 0.98,
+        "Price to Book": 6.944947,
+        "Price to Sales": 9.695548,
+        "Dividend Yield": 0.25,
+        "Beta": 1.237,
+        "52 Week High": 404.47,
+        "52 Week Low": 197.46,
+        "Current Price": 353.47,
+        "Previous Close": 356.62
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 85,
+        "Revenue History": {
+            "2025-12-31 00:00:00": 402836000000.0,
+            "2024-12-31 00:00:00": 350018000000.0,
+            "2023-12-31 00:00:00": 307394000000.0,
+            "2022-12-31 00:00:00": 282836000000.0
+        },
+        "Revenue CAGR": 12.511745609215975,
+        "Net Income History": {
+            "2025-12-31 00:00:00": 132170000000.0,
+            "2024-12-31 00:00:00": 100118000000.0,
+            "2023-12-31 00:00:00": 73795000000.0,
+            "2022-12-31 00:00:00": 59972000000.0
+        },
+        "Earnings CAGR": 30.13520060775734,
+        "Operating Cash Flow": {
+            "2025-12-31 00:00:00": 164713000000.0,
+            "2024-12-31 00:00:00": 125299000000.0,
+            "2023-12-31 00:00:00": 101746000000.0,
+            "2022-12-31 00:00:00": 91495000000.0
+        },
+        "Free Cash Flow": {
+            "2025-12-31 00:00:00": 73266000000.0,
+            "2024-12-31 00:00:00": 72764000000.0,
+            "2023-12-31 00:00:00": 69495000000.0,
+            "2022-12-31 00:00:00": 60010000000.0
+        },
+        "Profit Margin": 0.54771,
+        "Operating Margin": 0.34033,
+        "ROIC": null,
+        "Total Debt": 59291000000.0,
+        "Cash": 30708000000.0,
+        "Net Debt": 28583000000.0,
+        "Strengths": [
+            "Strong multi-year earnings growth.",
+            "The company generates positive operating cash flow.",
+            "The company generates positive free cash flow.",
+            "Strong net profit margin.",
+            "Strong operating margin."
+        ],
+        "Weaknesses": [
+            "The company has net debt."
+        ],
+        "Summary": "Financial fundamentals are exceptionally strong."
+    },
+    "Moat Analysis": {
+        "Moat Score": 85,
+        "Classification": "WIDE MOAT",
+        "Gross Margin": 0.60897,
+        "Operating Margin": 0.34033,
+        "ROE": 0.48676,
+        "ROIC": null,
+        "Strengths": [
+            "Very strong gross margins suggest significant pricing power or intellectual-property advantages.",
+            "Strong operating margins indicate attractive economics.",
+            "High return on equity.",
+            "Very large scale can provide meaningful competitive advantages.",
+            "Large organisational scale may support significant operational advantages."
+        ],
+        "Weaknesses": [],
+        "Summary": "The available financial evidence suggests a strong and potentially durable competitive advantage."
+    },
+    "Industry Analysis": {
+        "Industry Score": 95,
+        "Sector": "Communication Services",
+        "Industry": "Internet Content & Information",
+        "Assessment": "EXCELLENT",
+        "Strengths": [
+            "Sector: Communication Services",
+            "Industry: Internet Content & Information",
+            "The company has exceptional scale within its market.",
+            "Revenue growth is strong.",
+            "Operating profitability is strong.",
+            "High gross margins suggest strong economics."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company operates in the Internet Content & Information industry within the Communication Services sector. The current industry/competitive assessment is EXCELLENT."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 50,
+        "Sector": "Communication Services",
+        "Industry": "Internet Content & Information",
+        "Peers": [],
+        "Subject Company": {
+            "Ticker": "GOOG",
+            "Company": "Alphabet Inc.",
+            "Market Cap": 4322915254272,
+            "PE": 17.726679,
+            "Forward PE": 23.989391,
+            "Revenue Growth": 0.242,
+            "Profit Margin": 0.54771,
+            "Operating Margin": 0.34033,
+            "ROE": 0.48676,
+            "ROIC": null
+        },
+        "Valuation Rank": null,
+        "Growth Rank": null,
+        "Profitability Rank": null,
+        "Assessment": "The company does not currently stand out strongly against its peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 70,
+        "Assessment": "POSITIVE",
+        "Earnings Date": "None",
+        "Positive Surprises": 20,
+        "Negative Surprises": 4,
+        "Trailing PE": 17.726679,
+        "Forward PE": 23.989391,
+        "Revenue Growth": 0.242,
+        "Earnings Growth": 2.94,
+        "Strengths": [
+            "The company has frequently exceeded recent EPS estimates."
+        ],
+        "Weaknesses": [
+            "The company has frequently missed recent EPS estimates."
+        ],
+        "Catalysts": [
+            "Continued earnings beats could support positive sentiment.",
+            "Strong revenue growth provides support for future earnings expansion.",
+            "Strong earnings growth is a positive fundamental catalyst."
+        ],
+        "Risks": [
+            "Further earnings disappointments could pressure the shares.",
+            "Forward valuation is above trailing valuation."
+        ],
+        "Summary": "Earnings intelligence is currently positive. The system identified 20 recent positive earnings surprises and 4 negative surprises."
+    },
+    "Overall Score": 63.7,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Business Quality": 67.2,
+    "Valuation": 70,
+    "Technical": 35.0,
+    "Risk": 75,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 80,
+        "Profitability": 61.6,
+        "Balance Sheet": 60,
+        "Business Quality": 67.2,
+        "Confidence": 85,
+        "Strengths": [
+            "Strong long-term revenue growth"
+        ],
+        "Weaknesses": [],
+        "Summary": "The business demonstrates mixed financial quality with both strengths and weaknesses."
+    },
+    "Valuation Analysis": {
+        "PE": 17.726679,
+        "Forward PE": 23.989391,
+        "PEG": 0.98,
+        "Price to Sales": 9.695548,
+        "Price to Book": 6.944947,
+        "Valuation Score": 70,
+        "Confidence": 80,
+        "Strengths": [
+            "Low P/E ratio",
+            "PEG indicates attractive growth valuation"
+        ],
+        "Weaknesses": [],
+        "Summary": "Valuation appears broadly reasonable with a balanced mix of attractive and expensive metrics."
+    },
+    "Technical Analysis": {
+        "Momentum": 20,
+        "Moving Average": 50,
+        "Technical Score": 35.0
+    },
+    "Risk Analysis": {
+        "Risk Score": 75,
+        "Beta": 1.237
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "What Does Oracle (ORCL) Gain From Bringing New AI Models Into Its Apps?",
+            "NiSource Q2 Earnings Call Highlights",
+            "Broadcom (AVGO) Pairs AI Chip Boom With A Software Security Push",
+            "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner",
+            "Even Without Alphabet and Amazon, the S&P 500 Just Posted Its Biggest Earnings Beat Ever",
+            "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+            "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+            "Google shutting down a popular feature after 10 years",
+            "Berkshire Hathaway's new CEO Greg Abel spends a chunk of the company's massive cashpile",
+            "SanDisk Just Unveiled the First High-Bandwidth Flash Standard. What That Means for SNDK Stock."
+        ],
+        "Catalysts": [
+            "What Does Oracle (ORCL) Gain From Bringing New AI Models Into Its Apps?",
+            "NiSource Q2 Earnings Call Highlights",
+            "Broadcom (AVGO) Pairs AI Chip Boom With A Software Security Push",
+            "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner",
+            "Even Without Alphabet and Amazon, the S&P 500 Just Posted Its Biggest Earnings Beat Ever",
+            "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+            "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+            "Google shutting down a popular feature after 10 years",
+            "Berkshire Hathaway's new CEO Greg Abel spends a chunk of the company's massive cashpile",
+            "SanDisk Just Unveiled the First High-Bandwidth Flash Standard. What That Means for SNDK Stock."
+        ],
+        "Events": [
+            {
+                "headline": "What Does Oracle (ORCL) Gain From Bringing New AI Models Into Its Apps?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "NiSource Q2 Earnings Call Highlights",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Broadcom (AVGO) Pairs AI Chip Boom With A Software Security Push",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Even Without Alphabet and Amazon, the S&P 500 Just Posted Its Biggest Earnings Beat Ever",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Google shutting down a popular feature after 10 years",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Berkshire Hathaway's new CEO Greg Abel spends a chunk of the company's massive cashpile",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "SanDisk Just Unveiled the First High-Bandwidth Flash Standard. What That Means for SNDK Stock.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 75,
+        "Confidence": 75,
+        "Strengths": [
+            "Meaningful insider ownership",
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [],
+        "Summary": "Management quality appears satisfactory.",
+        "Insider Ownership": 0.06598,
+        "Institutional Ownership": 0.60645,
+        "Employees": 198933
+    },
+    "Strengths": [
+        "Positive recent news"
+    ],
+    "Weaknesses": [],
+    "Summary": "Recent news flow has been supportive.",
+    "Report": "============================================================\nInvestment Report: GOOG\n============================================================\n\nOverall Rating : \u2605\u2605\u2606\u2606\u2606  WEAK\nOverall Score  : 63.7\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nRecent news flow has been supportive.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 67.2\nValuation        : 70\nTechnical        : 35.0\nRisk             : 75\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 What Does Oracle (ORCL) Gain From Bringing New AI Models Into Its Apps?\n\u2022 NiSource Q2 Earnings Call Highlights\n\u2022 Broadcom (AVGO) Pairs AI Chip Boom With A Software Security Push\n\u2022 Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner\n\u2022 Even Without Alphabet and Amazon, the S&P 500 Just Posted Its Biggest Earnings Beat Ever\n\n============================================================",
+    "Catalysts": [
+        "What Does Oracle (ORCL) Gain From Bringing New AI Models Into Its Apps?",
+        "NiSource Q2 Earnings Call Highlights",
+        "Broadcom (AVGO) Pairs AI Chip Boom With A Software Security Push",
+        "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner",
+        "Even Without Alphabet and Amazon, the S&P 500 Just Posted Its Biggest Earnings Beat Ever",
+        "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+        "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+        "Google shutting down a popular feature after 10 years",
+        "Berkshire Hathaway's new CEO Greg Abel spends a chunk of the company's massive cashpile",
+        "SanDisk Just Unveiled the First High-Bandwidth Flash Standard. What That Means for SNDK Stock."
+    ],
+    "Headlines": [
+        "What Does Oracle (ORCL) Gain From Bringing New AI Models Into Its Apps?",
+        "NiSource Q2 Earnings Call Highlights",
+        "Broadcom (AVGO) Pairs AI Chip Boom With A Software Security Push",
+        "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner",
+        "Even Without Alphabet and Amazon, the S&P 500 Just Posted Its Biggest Earnings Beat Ever",
+        "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+        "Alphabet CEO Sundar Pichai Just Made a Decision That Could Move Nvidia and Broadcom Stock",
+        "Google shutting down a popular feature after 10 years",
+        "Berkshire Hathaway's new CEO Greg Abel spends a chunk of the company's massive cashpile",
+        "SanDisk Just Unveiled the First High-Bandwidth Flash Standard. What That Means for SNDK Stock."
+    ],
+    "Investment Committee": {
+        "Committee Score": 50.0,
+        "Factor Score": 50.0,
+        "Expected Return Score": 50.0,
+        "Expected Return": 0.0,
+        "Expected Return Confidence": 50.0,
+        "Expected Return Analysis": null,
+        "Recommendation": "REDUCE / AVOID",
+        "Confidence": 78.0,
+        "Adaptive Weights": {
+            "Business Quality": 0.14285714285714285,
+            "Financial Strength": 0.14285714285714285,
+            "Valuation": 0.09523809523809523,
+            "Growth": 0.14285714285714285,
+            "Profitability": 0.14285714285714285,
+            "Momentum": 0.14285714285714285,
+            "Risk": 0.09523809523809523,
+            "Size": 0.023809523809523808,
+            "Balance Sheet": 0.07142857142857142,
+            "Dividend": 0.0
+        },
+        "Factor Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Specialist Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Learning Enabled": false,
+        "Strengths": [],
+        "Concerns": [
+            "Expected return is limited at 0.0%."
+        ],
+        "Summary": "The Investment Committee assigns 50.0/100 and recommends REDUCE / AVOID. Expected return is 0.0% over 252 days. Confidence is 78.0%."
+    },
+    "Position Sizing": {
+        "Allocation": 0.0,
+        "Allocation %": 0.0,
+        "Max Position %": 10.0,
+        "Min Position %": 1.0,
+        "Max Sector %": 25.0
+    },
+    "Research Comparison": {
+        "Has Previous": false,
+        "Changes": []
+    }
+}

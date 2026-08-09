@@ -547,6 +547,66 @@ class CatalystValidationEngine:
 
         return result
 
+    # ========================================================
+    # PORTFOLIO-FACING EVENT CONTRIBUTION
+    # ========================================================
+
+    @classmethod
+    def validated_contribution(cls, catalyst):
+        """Return a conservative event contribution from validated evidence.
+
+        Discovery headlines are intentionally excluded.  The value combines
+        event impact, evidence-led event probability, validation quality and
+        whether the event may already be reflected in valuation.
+        """
+        catalyst = catalyst if isinstance(catalyst, dict) else {}
+        validation = catalyst.get("validation") or {}
+        if not isinstance(validation, dict):
+            return 0.0
+        validation_score = cls.number(validation.get("score"))
+        probability = cls.number(catalyst.get("probability"))
+        impact = cls.number(catalyst.get("impact"))
+        if (
+            validation_score is None
+            or validation_score < 50.0
+            or probability is None
+            or impact is None
+        ):
+            return 0.0
+        pricing = validation.get("pricing") or {}
+        pricing_score = cls.number(pricing.get("score"))
+        pricing_multiplier = 0.50 if pricing_score is None else pricing_score / 100.0
+        return round(
+            max(0.0, impact * probability * (validation_score / 100.0) * pricing_multiplier),
+            4,
+        )
+
+    @classmethod
+    def summary(cls, catalysts):
+        """Summarise only catalysts that clear the validation threshold."""
+        items = catalysts if isinstance(catalysts, list) else []
+        positive = 0.0
+        negative = 0.0
+        validated = 0
+        for item in items:
+            contribution = cls.validated_contribution(item)
+            if contribution <= 0:
+                continue
+            validated += 1
+            direction = str((item or {}).get("direction") or "").upper()
+            if direction == "POSITIVE":
+                positive += contribution
+            elif direction == "NEGATIVE":
+                negative += contribution
+        return {
+            "method": "VALIDATED_EVIDENCE_WEIGHTED_EVENT_CONTRIBUTION",
+            "discovered_count": len(items),
+            "validated_count": validated,
+            "positive_score": round(positive, 2),
+            "negative_score": round(negative, 2),
+            "net_score": round(positive - negative, 2),
+        }
+
 
 # ============================================================
 # TEST

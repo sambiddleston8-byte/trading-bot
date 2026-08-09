@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T14:17:22.499509+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "AMZN",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "BF-B",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "ACN",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ARE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "OKE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "NFLX",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "IFF",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "DOC",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "CNP",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "COST",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "CMG",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "ALGN",
+      "sector": "Health Care"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "AMZN",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AMZN.json"
+    },
+    {
+      "ticker": "BF-B",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/BF-B.json"
+    },
+    {
+      "ticker": "ACN",
+      "sector": "Information Technology",
+      "status": "COMPLETE",
+      "decision": "STRONG_BUY",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ACN.json"
+    },
+    {
+      "ticker": "ARE",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ARE.json"
+    },
+    {
+      "ticker": "OKE",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/OKE.json"
+    },
+    {
+      "ticker": "NFLX",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/NFLX.json"
+    },
+    {
+      "ticker": "IFF",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/IFF.json"
+    },
+    {
+      "ticker": "DOC",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/DOC.json"
+    },
+    {
+      "ticker": "CNP",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CNP.json"
+    },
+    {
+      "ticker": "COST",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/COST.json"
+    },
+    {
+      "ticker": "CMG",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CMG.json"
+    },
+    {
+      "ticker": "ALGN",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALGN.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T141722Z.json",
+  "completed_at": "2026-08-09T14:18:46.328888+00:00"
+}

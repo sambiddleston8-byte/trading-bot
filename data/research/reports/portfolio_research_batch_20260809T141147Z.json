@@ -1,0 +1,157 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T14:11:47.499864+00:00",
+  "requested_count": 12,
+  "companies": [
+    {
+      "ticker": "FER",
+      "sector": "Military, Government, Technical"
+    },
+    {
+      "ticker": "EA",
+      "sector": "Miscellaneous Amusement & Recreation Services"
+    },
+    {
+      "ticker": "ARM",
+      "sector": "Semiconductors"
+    },
+    {
+      "ticker": "CCEP",
+      "sector": "Soft Drinks"
+    },
+    {
+      "ticker": "SHOP",
+      "sector": "Computer Software"
+    },
+    {
+      "ticker": "FANG",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "GOOG",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "CTVA",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "CCI",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "ATO",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "CASY",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "AZO",
+      "sector": "Consumer Discretionary"
+    }
+  ],
+  "completed_count": 12,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "FER",
+      "sector": "Military, Government, Technical",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/FER.json"
+    },
+    {
+      "ticker": "EA",
+      "sector": "Miscellaneous Amusement & Recreation Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/EA.json"
+    },
+    {
+      "ticker": "ARM",
+      "sector": "Semiconductors",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ARM.json"
+    },
+    {
+      "ticker": "CCEP",
+      "sector": "Soft Drinks",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CCEP.json"
+    },
+    {
+      "ticker": "SHOP",
+      "sector": "Computer Software",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/SHOP.json"
+    },
+    {
+      "ticker": "FANG",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/FANG.json"
+    },
+    {
+      "ticker": "GOOG",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/GOOG.json"
+    },
+    {
+      "ticker": "CTVA",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CTVA.json"
+    },
+    {
+      "ticker": "CCI",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CCI.json"
+    },
+    {
+      "ticker": "ATO",
+      "sector": "Utilities",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ATO.json"
+    },
+    {
+      "ticker": "CASY",
+      "sector": "Consumer Staples",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/CASY.json"
+    },
+    {
+      "ticker": "AZO",
+      "sector": "Consumer Discretionary",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AZO.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T141147Z.json",
+  "completed_at": "2026-08-09T14:13:10.599818+00:00"
+}

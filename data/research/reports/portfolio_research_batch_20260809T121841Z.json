@@ -1,0 +1,75 @@
+{
+  "status": "COMPLETE",
+  "created_at": "2026-08-09T12:18:41.466030+00:00",
+  "requested_count": 8,
+  "completed_count": 8,
+  "error_count": 0,
+  "outcomes": [
+    {
+      "ticker": "ABBV",
+      "sector": "Health Care",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ABBV.json"
+    },
+    {
+      "ticker": "ADP",
+      "sector": "Industrials",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ADP.json"
+    },
+    {
+      "ticker": "AMT",
+      "sector": "Real Estate",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "FAIL",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AMT.json"
+    },
+    {
+      "ticker": "AAPL",
+      "sector": "Information Technology",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/AAPL.json"
+    },
+    {
+      "ticker": "APP",
+      "sector": "Communication Services",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "REVIEW",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/APP.json"
+    },
+    {
+      "ticker": "ALB",
+      "sector": "Materials",
+      "status": "COMPLETE",
+      "decision": "AVOID",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALB.json"
+    },
+    {
+      "ticker": "APA",
+      "sector": "Energy",
+      "status": "COMPLETE",
+      "decision": "STRONG_BUY",
+      "audit_status": "PASS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/APA.json"
+    },
+    {
+      "ticker": "ALLE",
+      "sector": "Industrials",
+      "status": "COMPLETE",
+      "decision": "WATCHLIST",
+      "audit_status": "PASS_WITH_WARNINGS",
+      "output_path": "/Users/sambiddleston/Desktop/trading-bot/data/research/pipeline/ALLE.json"
+    }
+  ],
+  "path": "/Users/sambiddleston/Desktop/trading-bot/data/research/reports/portfolio_research_batch_20260809T121841Z.json",
+  "completed_at": "2026-08-09T12:19:25.111930+00:00"
+}

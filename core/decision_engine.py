@@ -108,7 +108,8 @@ class DecisionEngine:
         )
 
         evidence = self.evidence.analyse(
-            research
+            symbol,
+            research,
         )
 
         # --------------------------------
