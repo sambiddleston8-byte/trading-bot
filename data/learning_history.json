@@ -1022,5 +1022,266 @@
       "6M": {},
       "12M": {}
     }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-09T19:24:34.104277",
+    "Price At Decision": null,
+    "Overall Score": 68.9,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "AAPL",
+    "Date": "2026-08-09T19:24:38.498650",
+    "Price At Decision": null,
+    "Overall Score": 58.8,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "MSFT",
+    "Date": "2026-08-09T19:24:42.791557",
+    "Price At Decision": null,
+    "Overall Score": 60.2,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "NVDA",
+    "Date": "2026-08-09T19:24:45.322187",
+    "Price At Decision": null,
+    "Overall Score": 68.9,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "META",
+    "Date": "2026-08-09T19:24:49.238024",
+    "Price At Decision": null,
+    "Overall Score": 57.3,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "AMZN",
+    "Date": "2026-08-09T19:24:53.822713",
+    "Price At Decision": null,
+    "Overall Score": 68.1,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "GOOG",
+    "Date": "2026-08-09T19:24:57.576768",
+    "Price At Decision": null,
+    "Overall Score": 67.3,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "RKLB",
+    "Date": "2026-08-09T19:25:01.356242",
+    "Price At Decision": null,
+    "Overall Score": 46.6,
+    "Rating": "\u2605\u2606\u2606\u2606\u2606  SELL",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
+  },
+  {
+    "Ticker": "JOBY",
+    "Date": "2026-08-09T19:25:04.820100",
+    "Price At Decision": null,
+    "Overall Score": 46.9,
+    "Rating": "\u2605\u2606\u2606\u2606\u2606  SELL",
+    "Committee Score": 50.0,
+    "Recommendation": "REDUCE / AVOID",
+    "Confidence": 78.0,
+    "Specialist Scores": {
+      "Business Quality": 50.0,
+      "Financial Strength": 50.0,
+      "Valuation": 50.0,
+      "Growth": 50.0,
+      "Profitability": 50.0,
+      "Momentum": 50.0,
+      "Risk": 50.0,
+      "Size": 50.0,
+      "Balance Sheet": 50.0,
+      "Dividend": 50.0
+    },
+    "Status": "OPEN",
+    "Outcomes": {
+      "1M": {},
+      "3M": {},
+      "6M": {},
+      "12M": {}
+    }
   }
 ]

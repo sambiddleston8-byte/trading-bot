@@ -1,0 +1,874 @@
+{
+    "Ticker": "NVDA",
+    "Research": {
+        "Ticker": "NVDA",
+        "Timestamp": "2026-08-09T19:24:43.915861",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "NVDA Stock Price Drop\u2014the Time to Buy Nvidia or Diversify Across the AI Datacenter Supply Chain? - TradingKey",
+                "Link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOQlAwNnB4N3RpV3B1elhmaHlOUXpnQUFnMkFKdGRaY29aMWFzVDlpb1ItbVJneEQ3SUk1cjNVZHVpc0ZfbldDbUxJOVBwRWJ4Umg5Rk1FWnJwZFdaTWNKSkduaTExWHBMcnEtbHhVRFBhcUtOQ2k2ZkhBTUZldE1vWnZVUE1hNVFyUmF6QlJ6Q041c0h6R2U0SjRNQXJaOUkxR3V2b0JiRjJKbUZyT19rMEJxVGV0b3EteV91SVAwdUhUTTFBSmFFeg?oc=5",
+                "Published": "Sun, 09 Aug 2026 05:56:13 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia's Stock Is Completely Mispriced (NASDAQ:NVDA) - Seeking Alpha",
+                "Link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNSmtLdDNybHBVRHUwbmxQclc5dlo3NDdZdU1SbWJQdWZoalE5T2s4dkZjM1FPUTVpVkR4RUJ6NnVFVE05Rnp5NHVSX3hTRzVqNzZCVjVlT1F1UlRSNXNMV2JYYzg0MGRYR25HSTQ3Rkw0UGJQMkJ5WVhOOUotVnVfRHVCWQ?oc=5",
+                "Published": "Sun, 09 Aug 2026 13:30:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia Heads For Weekly Pop After Big Tech Reports; Is Nvidia A Buy Now? - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1rYXhicnZWRldIUE9nVmZUeTZ0Qnpiclo0elV6YXNpRGw1TFVuOFpJdk11VTFKNmh2ZlI4Mkp2dERNNWxoTEh6Y2w2cVRfNGlXNXQxVmpSSG9VSHViQVpiMkFwOGFGSXBYZjl6OHhKLUdwNGNOdWdTejJZSDZsZw?oc=5",
+                "Published": "Fri, 07 Aug 2026 17:47:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "This 1 Number Will Be NVIDIA\u2019s Catalyst Before It Reports Earnings in August - 24/7 Wall St.",
+                "Link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNQ05mbEExazFRd3NrMVQwZnQtS2Nabl96aG5XTGVaUkVUcWdkUFo4UThfZ2lrZzNLUjNTU3ZCSUZNRE04TVM1WV9EcGxlRXB5ekRxcVBBcFZnVFRxajVjSm1HTlBKTnJHMExNemh3WnBJOHVha1RsSWc0cDJOc2pmSEI1ZXFOelpheW8weUk4VDkzQnRSS2xCNmdEckhhZkwzdkdWU1R4V3F1emk4VklZdmdxak1kWjktSTFHT0dXeThGZmRRSjVKdGtRMU5GMWlUaEFMVmdJVQ?oc=5",
+                "Published": "Tue, 04 Aug 2026 13:00:34 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Cathie Wood's Ark Piled Into Nvidia and Taiwan Semiconductor After Meta's Earnings Miss. Here's What It Signals for Artificial Intelligence (AI) Stocks. - The Globe and Mail",
+                "Link": "https://news.google.com/rss/articles/CBMizgJBVV95cUxOU2ctS3J6cHFHcXBLLVZvbWdFSVpBNjVNYlIwN3VrR2VXOEpaS29wR3ZOb2lxcXZiTnJLUjNXUExGTktjYlhPbzU4Y1ZTakpjUzVVb1YxV3Y0RTV6OVQzYjRkVXJSTnVtaU1RR0NTQUNFalI1aVkzWEQwc082MndLU2hSWGRRTVNqRG9oZ0tWUjdyNGhQX1FiRnZwOVpaMGNveDg4cmxoQ01LUm9VT2kzelV1c09YWkFUZkM4NFZvRmZZYmtmNUVjMDk5bnBqOExtNTdKbFY5ZXlRemtzZXZMdGhqdWp0RHdBMmplWlA1ZXpaNm9IdEZpYjF0SktXRXgwcTEtOXNRekV4TDlzWTBZZjhjNEhPSkJiRVhvdWpFSTNCdDBOWm9oOTYwWVFheXJlcjV3Vk1mSVNqTFpveEhFajZKR0s0cTNnRXE0WHFR?oc=5",
+                "Published": "Sun, 09 Aug 2026 07:29:19 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia's latest record earnings fail to impress investors - BBC",
+                "Link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9acnFWSVR0WTRLWV9oVUQzRVdzM3JEMUdadXlSeUZIMkRiemdFWUlMRktCTmwtYXNWVml5YnI5dFlHOHQ0VDZvRkJPZkhCMTgzQ3NfT002bGJ2UQ?oc=5",
+                "Published": "Thu, 21 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "NVIDIA Announces Financial Results for First Quarter Fiscal 2027 - NVIDIA Newsroom",
+                "Link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPdC1rUGZycU5DWDhBdkJvNTYyeGl1d0lyV2J2VFlRRkdNZno4d0dWRE1QbHNGc2JOQ1NqUkNQZXA2XzMtTUp6d1hwOVc1RXhsY0p5WnpPX3NCcTFYYjNYS0dOeUlnYXNwWTlBQkNhT016MUZIeUx6b2d5VUJYLTFOSnBIRFY1U2Q2X3hBTmdlY2VwNUlHYlJ1eDJZSFZOZ1RJ?oc=5",
+                "Published": "Wed, 20 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia stock\u2019s been getting cheaper. Time to buy? - Yahoo Finance UK",
+                "Link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxONllRWUNORVFyUWJ0R0YtYlFsWkU5RFoySkpYUjN5SlVEV21Jdi14aDZ4RUUwLWdvSHRlbndoX1FpYklMU2pZT2ZGcUs2V0ctX1RQN3Ixd21HQVEwTHMwOU03cG1PRGZuTGxzZmFHckktMWtGODR0ZTNKUjRiU1Z3Y0xmNGpVVDZtSXc?oc=5",
+                "Published": "Mon, 15 Jun 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "AMD Shares Fall 8% as Elon Musk Commits to Nvidia Chips for SpaceX - WSJ",
+                "Link": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBFaGtxOHFMdFctcDd6TTgzZndpV0U1QUFGRV9nbFdxcVZDemlTTW80ZmZTOWxXT0N1ZUJYM3ByQ3Z1ZGF3d1E5S2FjRlp3dzBicVRtaGNBMUV5V1BEWUFfZ2lwaE9kck1xYlNYTENuTnFlMEFkcHlwRGpxYlY1UQ?oc=5",
+                "Published": "Tue, 04 Aug 2026 22:24:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "NVDA Stock Looks 'Remarkably Cheap', Says Wall Street After Beat-And-Raise Q1 \u2014 Analyst Sees Nvidia Market Cap Soaring Past $10 Trillion - Stocktwits",
+                "Link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNa0FheVlBTThLMGlhbGNzdGdUSnQtSEY5cmh0U1JQa01DbTlscWx4eTJUWWxqd0hMejlpOEtiU2o3OGdZa2lta3FZN19BZFk0TnlZOFFFbWUwNXRzMUd5OUNWalZmVnMzQUlfWmI3UUtLYV83WlI3VTFQUC1LUEVtUDVHX08xRmljRHJJLUM5b1pPbUp2bzdsa05HN0FKY1JaSWFpOVFFZ21JaVVhOUdZLTNaV1BFejAzZlRzTGRkbHU2NUtUMUtOWUNyTjktaTZoUXc?oc=5",
+                "Published": "Fri, 07 Aug 2026 10:53:07 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia fails to dazzle investors despite lifting dividends - Financial Times",
+                "Link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOM21vdkhJd05LRTlKc2JHcFhHdm5fSldfc18zSmUtZXAzRXE0UW1DYXlib1pJckhhdWtPY0JKNG9KdmNFOEJSQ0RYZ09BbktPSGNFdzNKQnJyLWU1aDdfS1VmdG5lNW1Vdm54REdLVjNHODJ1V3VWbDhzcTRpSURBRm5mSnk?oc=5",
+                "Published": "Thu, 21 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Nvidia earnings preview: Will Nvidia become the first $6 trillion company? - XTB.com",
+                "Link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9xWm9VRF9rdHNJRE5pU00zZVV5dFp4V0VhYmNqWFcwR2J3aWEwS2tJM3BublIzX2I0cDV4Vms5dG1GWTczcnA1Ym5TNV80aF85emE4OWRDSGlpZXJjY0NSaWFnRy1OY3ItM0lJdkpJay15UQ?oc=5",
+                "Published": "Wed, 20 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Ahead of Earnings, Is Nvidia Stock a Buy, a Sell, or Fairly Valued? - Morningstar",
+                "Link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxONlV1Nmx0aHkxYi1ncmZlU29HOWMxdkZCMEJpUm5ZUEM0eTlBXzdRWkJ5OHFiZ3BoQXN4VDNmNEhSSzVkZ3FFcnlMbVVUR2ZQMG5FRE9WeExGMEpNRnJlaExYUFFNeGFtYWtjRzlVS1RhNXNidUFnb2IxRmpEWEpSNWhjZlFnLXBkd3NBdER5YWthWWdRVnVRYzhLTHluZ3AyZklrTQ?oc=5",
+                "Published": "Thu, 14 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "NVIDIA earnings preview: Exceptional results are assumed - The Armchair Trader",
+                "Link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQdW0zSUNLc1dVQ3ctQS1zMEMtdWFpanFRa2xNam5vWU85YzhDOGNKUWlyV1RzMm5WdDdWblBtVnNfSXNvLWZkSEFBS19TUUd6QXNFeWl4MEpLaXhaV0NhV1FxUTFFWHA5d1lvM0lObXM4UTFTV1NfWGxOOVRBaXZ4ZTdnQXN0Y3YtNDlzd1A2X3k?oc=5",
+                "Published": "Tue, 19 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "NVIDIA CFO Will Post Written Q2 Commentary After Results - Stock Titan",
+                "Link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPN1FhNzZMT3lXYnJGQi12OGNpRFVZbURjY0otNzVuVlVrX0RYejc3Vm1zXzlNV1NMWWV3c3IzZE8tblVva05OdTVaY3AzTG1fbGk3RFRreU5DeE1WUzFLbklsUzQ0YTA5X2lPVzUyV0hSMDRUSTdUV2dwYktYcDFmcGxnRjFhTEd0YUg2WnduX3FzU1BLQWRrczNBNHNHNjZYeVNSMkY3RkpoaDd5SDJ2aQ?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT"
+            }
+        ],
+        "Financial Data": {
+            "Company": "NVIDIA Corporation",
+            "Sector": "Technology",
+            "Industry": "Semiconductors",
+            "Market Cap": 5424535306240,
+            "Revenue Growth": 0.852,
+            "Earnings Growth": 2.145,
+            "Profit Margin": 0.62966,
+            "Operating Margin": 0.65596,
+            "Forward PE": 17.37413,
+            "Trailing PE": 34.244648,
+            "PEG": 0.62,
+            "Price To Book": 27.75217,
+            "ROE": 1.14288,
+            "ROIC": null,
+            "Beta": 2.215,
+            "Dividend Yield": 0.45
+        },
+        "SEC Filings": {
+            "Ticker": "NVDA",
+            "Timestamp": "2026-08-09T19:24:44.482672",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-02",
+                    "Report Date": "2026-06-28",
+                    "Accession Number": "0001045810-26-000060",
+                    "Document": "nvda-20260628.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000060/nvda-20260628.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-30",
+                    "Report Date": "2026-06-24",
+                    "Accession Number": "0001045810-26-000056",
+                    "Document": "nvda-20260624.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000056/nvda-20260624.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-18",
+                    "Report Date": "2026-06-15",
+                    "Accession Number": "0001193125-26-275783",
+                    "Document": "d48176d8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000119312526275783/d48176d8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-05-20",
+                    "Report Date": "2026-04-26",
+                    "Accession Number": "0001045810-26-000052",
+                    "Document": "nvda-20260426.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000052/nvda-20260426.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-20",
+                    "Report Date": "2026-05-20",
+                    "Accession Number": "0001045810-26-000051",
+                    "Document": "nvda-20260520.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000051/nvda-20260520.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "13F-HR",
+                    "Filing Date": "2026-05-15",
+                    "Report Date": "2026-03-31",
+                    "Accession Number": "0001045810-26-000042",
+                    "Document": "xslForm13F_X02/primary_doc.xml",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000042/xslForm13F_X02/primary_doc.xml",
+                    "Type": "Institutional Holdings"
+                },
+                {
+                    "Form": "DEF 14A",
+                    "Filing Date": "2026-05-12",
+                    "Report Date": "2026-06-24",
+                    "Accession Number": "0001045810-26-000036",
+                    "Document": "nvda-20260512.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000036/nvda-20260512.htm",
+                    "Type": "Proxy Statement"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-08",
+                    "Report Date": "2026-05-07",
+                    "Accession Number": "0001045810-26-000028",
+                    "Document": "nvda-20260507.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000028/nvda-20260507.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-04-27",
+                    "Report Date": "2026-04-24",
+                    "Accession Number": "0001045810-26-000026",
+                    "Document": "nvda-20260424.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000026/nvda-20260424.htm",
+                    "Type": "Current Report"
+                }
+            ],
+            "Filing Count": 9
+        },
+        "News Relevance": {
+            "checked": 30,
+            "accepted": 15,
+            "rejected": 15,
+            "company": "NVIDIA Corporation"
+        }
+    },
+    "Evidence": {
+        "Ticker": "NVDA",
+        "Company": null,
+        "Generated At": "2026-08-09T18:24:44.483194+00:00",
+        "Status": "COMPLETE",
+        "Summary": {
+            "Total Evidence Items": 0,
+            "Quantitative Evidence": 0,
+            "Market Evidence": 0,
+            "External Event Evidence": 0,
+            "Model Evidence": 0
+        },
+        "Evidence": {
+            "Fundamentals": [],
+            "Valuation": [],
+            "Expected Returns": [],
+            "Catalysts": []
+        },
+        "Sources": [],
+        "Output Path": "data/research/evidence/NVDA.json"
+    },
+    "Profile": {
+        "Ticker": "NVDA",
+        "Company Name": "NVIDIA Corporation",
+        "Short Name": "NVIDIA Corporation",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "City": "Santa Clara",
+        "Website": "https://www.nvidia.com",
+        "Employees": 42000,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Jen-Hsun  Huang",
+                "age": 62,
+                "title": "Co-Founder, CEO & Director",
+                "yearBorn": 1963,
+                "fiscalYear": 2026,
+                "totalPay": 11543318,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Colette M. Kress",
+                "age": 58,
+                "title": "Executive VP & CFO",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1514979,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Debora  Shoquist",
+                "age": 70,
+                "title": "Executive Vice President of Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 1382223,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Timothy S. Teter J.D.",
+                "age": 58,
+                "title": "Executive VP, General Counsel & Secretary",
+                "yearBorn": 1967,
+                "fiscalYear": 2026,
+                "totalPay": 1363896,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Ajay K. Puri",
+                "age": 70,
+                "title": "Executive Vice President of Worldwide Field Operations",
+                "yearBorn": 1955,
+                "fiscalYear": 2026,
+                "totalPay": 2298337,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Chris A. Malachowsky",
+                "title": "Co-Founder",
+                "fiscalYear": 2026,
+                "totalPay": 320000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Scott C. Gawel",
+                "age": 54,
+                "title": "Chief Accounting Officer",
+                "yearBorn": 1971,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Prof. William J. Dally Ph.D.",
+                "age": 64,
+                "title": "Chief Scientist & Senior VP of Research",
+                "yearBorn": 1961,
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Toshiya  Hari",
+                "title": "Vice President of Investor Relations & Strategic Finance",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Mylene  Mangalindan",
+                "title": "Vice President of Corporate Communications",
+                "fiscalYear": 2026,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "NVIDIA Corporation operates as a data center scale AI infrastructure company in the United States, Taiwan, China, Hong Kong, Europe, and internationally. It operates through Compute & Networking, and Graphics segments. The Compute & Networking segment provides data center accelerated computing and networking platforms and artificial intelligence solutions and software, and automotive platforms and autonomous and electric vehicle solutions, including software. The Graphics segment offers GeForce GPUs for gaming and PCs; Quadro/NVIDIA RTX GPUs for enterprise workstation graphics. The company's products are used in gaming, professional visualization, data center, and automotive markets. It sells its products to original equipment manufacturers, original device manufacturers, system integrators and distributors, independent software vendors, cloud service providers, add-in board manufacturers, distributors, automotive manufacturers and tier-1 automotive suppliers, and other ecosystem participants. NVIDIA Corporation was incorporated in 1993 and is headquartered in Santa Clara, California.",
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "NVIDIA Corporation",
+        "Symbol": "NVDA",
+        "Exchange": "NMS",
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 42000,
+        "Market Cap": 5424535306240,
+        "Enterprise Value": 5379473801216,
+        "Revenue": 253491003392,
+        "Net Income": 159612993536,
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.62,
+        "Price to Book": 27.75217,
+        "Price to Sales": 21.39932,
+        "Dividend Yield": 0.45,
+        "Beta": 2.215,
+        "52 Week High": 236.54,
+        "52 Week Low": 164.07,
+        "Current Price": 223.96,
+        "Previous Close": 218.99
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 90,
+        "Revenue History": {
+            "2026-01-31 00:00:00": 215938000000.0,
+            "2025-01-31 00:00:00": 130497000000.0,
+            "2024-01-31 00:00:00": 60922000000.0,
+            "2023-01-31 00:00:00": 26974000000.0
+        },
+        "Revenue CAGR": 100.04509499443964,
+        "Net Income History": {
+            "2026-01-31 00:00:00": 120067000000.0,
+            "2025-01-31 00:00:00": 72880000000.0,
+            "2024-01-31 00:00:00": 29760000000.0,
+            "2023-01-31 00:00:00": 4368000000.0
+        },
+        "Earnings CAGR": 201.79613706779188,
+        "Operating Cash Flow": {
+            "2026-01-31 00:00:00": 102718000000.0,
+            "2025-01-31 00:00:00": 64089000000.0,
+            "2024-01-31 00:00:00": 28090000000.0,
+            "2023-01-31 00:00:00": 5641000000.0
+        },
+        "Free Cash Flow": {
+            "2026-01-31 00:00:00": 96676000000.0,
+            "2025-01-31 00:00:00": 60853000000.0,
+            "2024-01-31 00:00:00": 27021000000.0,
+            "2023-01-31 00:00:00": 3808000000.0
+        },
+        "Profit Margin": 0.62966,
+        "Operating Margin": 0.65596,
+        "ROIC": null,
+        "Total Debt": 11040000000.0,
+        "Cash": 10605000000.0,
+        "Net Debt": 435000000.0,
+        "Strengths": [
+            "Strong multi-year revenue growth.",
+            "Strong multi-year earnings growth.",
+            "The company generates positive operating cash flow.",
+            "The company generates positive free cash flow.",
+            "Strong net profit margin.",
+            "Strong operating margin."
+        ],
+        "Weaknesses": [
+            "The company has net debt."
+        ],
+        "Summary": "Financial fundamentals are exceptionally strong."
+    },
+    "Moat Analysis": {
+        "Moat Score": 85,
+        "Classification": "WIDE MOAT",
+        "Gross Margin": 0.74144995,
+        "Operating Margin": 0.65596,
+        "ROE": 1.14288,
+        "ROIC": null,
+        "Strengths": [
+            "Very strong gross margins suggest significant pricing power or intellectual-property advantages.",
+            "Strong operating margins indicate attractive economics.",
+            "High return on equity.",
+            "Very large scale can provide meaningful competitive advantages."
+        ],
+        "Weaknesses": [],
+        "Summary": "The available financial evidence suggests a strong and potentially durable competitive advantage."
+    },
+    "Industry Analysis": {
+        "Industry Score": 95,
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Assessment": "EXCELLENT",
+        "Strengths": [
+            "Sector: Technology",
+            "Industry: Semiconductors",
+            "The company has exceptional scale within its market.",
+            "Revenue growth is strong.",
+            "Operating profitability is strong.",
+            "High gross margins suggest strong economics."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company operates in the Semiconductors industry within the Technology sector. The current industry/competitive assessment is EXCELLENT."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 90,
+        "Sector": "Technology",
+        "Industry": "Semiconductors",
+        "Peers": [
+            {
+                "Ticker": "AMD",
+                "Company": "Advanced Micro Devices, Inc.",
+                "Market Cap": 789073100800,
+                "PE": 123.306114,
+                "Forward PE": 31.265461,
+                "Revenue Growth": 0.501,
+                "Profit Margin": 0.15577,
+                "Operating Margin": 0.1725,
+                "ROE": 0.10196,
+                "ROIC": null
+            },
+            {
+                "Ticker": "AVGO",
+                "Company": "Broadcom Inc.",
+                "Market Cap": 2035102646272,
+                "PE": 71.41236,
+                "Forward PE": 21.901974,
+                "Revenue Growth": 0.479,
+                "Profit Margin": 0.38848,
+                "Operating Margin": 0.48988,
+                "ROE": 0.37280998,
+                "ROIC": null
+            },
+            {
+                "Ticker": "QCOM",
+                "Company": "QUALCOMM Incorporated",
+                "Market Cap": 176252993536,
+                "PE": 19.184,
+                "Forward PE": 16.35283,
+                "Revenue Growth": -0.04,
+                "Profit Margin": 0.21013,
+                "Operating Margin": 0.18528,
+                "ROE": 0.33754003,
+                "ROIC": null
+            },
+            {
+                "Ticker": "INTC",
+                "Company": "Intel Corporation",
+                "Market Cap": 512722567168,
+                "PE": null,
+                "Forward PE": 49.354008,
+                "Revenue Growth": 0.254,
+                "Profit Margin": -0.19794,
+                "Operating Margin": 0.12189999,
+                "ROE": -0.10715,
+                "ROIC": null
+            },
+            {
+                "Ticker": "MU",
+                "Company": "Micron Technology, Inc.",
+                "Market Cap": 991121571840,
+                "PE": 19.841059,
+                "Forward PE": 5.659457,
+                "Revenue Growth": 3.457,
+                "Profit Margin": 0.55906,
+                "Operating Margin": 0.80370003,
+                "ROE": 0.66638,
+                "ROIC": null
+            }
+        ],
+        "Subject Company": {
+            "Ticker": "NVDA",
+            "Company": "NVIDIA Corporation",
+            "Market Cap": 5424535306240,
+            "PE": 34.244648,
+            "Forward PE": 17.37413,
+            "Revenue Growth": 0.852,
+            "Profit Margin": 0.62966,
+            "Operating Margin": 0.65596,
+            "ROE": 1.14288,
+            "ROIC": null
+        },
+        "Valuation Rank": 3,
+        "Growth Rank": 2,
+        "Profitability Rank": 1,
+        "Assessment": "The company compares favourably with its selected peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 95,
+        "Assessment": "STRONG",
+        "Earnings Date": "None",
+        "Positive Surprises": 20,
+        "Negative Surprises": 1,
+        "Trailing PE": 34.244648,
+        "Forward PE": 17.37413,
+        "Revenue Growth": 0.852,
+        "Earnings Growth": 2.145,
+        "Strengths": [
+            "The company has frequently exceeded recent EPS estimates.",
+            "Forward valuation is below trailing valuation, suggesting expected earnings growth."
+        ],
+        "Weaknesses": [],
+        "Catalysts": [
+            "Continued earnings beats could support positive sentiment.",
+            "Strong revenue growth provides support for future earnings expansion.",
+            "Strong earnings growth is a positive fundamental catalyst."
+        ],
+        "Risks": [],
+        "Summary": "Earnings intelligence is currently strong. The system identified 20 recent positive earnings surprises and 1 negative surprises."
+    },
+    "Overall Score": 68.9,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Business Quality": 86.7,
+    "Valuation": 50,
+    "Technical": 74.83,
+    "Risk": 58.0,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 100,
+        "Profitability": 100,
+        "Balance Sheet": 60,
+        "Business Quality": 86.7,
+        "Confidence": 85,
+        "Strengths": [
+            "Excellent long-term revenue growth",
+            "High profitability"
+        ],
+        "Weaknesses": [],
+        "Summary": "The business demonstrates exceptional financial quality with strong growth, profitability and balance sheet metrics."
+    },
+    "Valuation Analysis": {
+        "PE": 34.244648,
+        "Forward PE": 17.37413,
+        "PEG": 0.62,
+        "Price to Sales": 21.39932,
+        "Price to Book": 27.75217,
+        "Valuation Score": 50,
+        "Confidence": 80,
+        "Strengths": [
+            "Attractive forward earnings valuation",
+            "PEG indicates attractive growth valuation"
+        ],
+        "Weaknesses": [
+            "Very expensive relative to revenue",
+            "High Price/Book multiple"
+        ],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Status": "COMPLETE",
+        "Reason": "Multi-horizon momentum, trend, drawdown and persistence are combined as technical context.",
+        "Data Points": 251,
+        "Momentum": 72.76,
+        "Moving Average": 85.87,
+        "Drawdown": 84.36,
+        "Trend Persistence": 48.33,
+        "Support Resistance": 57.41,
+        "Volume Confirmation": 37.95,
+        "Technical Score": 74.83,
+        "Return 20d": 0.061623,
+        "Return 60d": 0.015586,
+        "Return 120d": 0.226591,
+        "Return 252d": null,
+        "Current Price": 223.9600067138672,
+        "Moving Average 20": 206.817,
+        "Moving Average 50": 206.0487,
+        "Moving Average 200": 193.7999,
+        "Drawdown From 252d High": -0.048863,
+        "Support Level": 190.01,
+        "Resistance Level": 235.4656,
+        "Range Position": 0.746883,
+        "Volume Ratio 20d To 60d": 0.8423,
+        "Fibonacci Window Low": 164.9777,
+        "Fibonacci Window High": 235.4656,
+        "Fibonacci Levels": {
+            "23.6%": 218.8304,
+            "38.2%": 208.5392,
+            "50.0%": 200.2216,
+            "61.8%": 191.9041,
+            "78.6%": 180.0621
+        },
+        "Nearest Fibonacci Level": "23.6%",
+        "Distance To Nearest Fibonacci Level": 0.022904,
+        "Fibonacci Note": "Fibonacci levels are descriptive range context only and are not a standalone predictive allocation signal."
+    },
+    "Risk Analysis": {
+        "Risk Score": 58.0,
+        "Beta": 2.215,
+        "Annualized Volatility": 0.3667,
+        "Downside Volatility": 0.2259,
+        "Maximum Drawdown": -0.202144,
+        "Debt to Cash": 1.041,
+        "Risk Components": [
+            {
+                "factor": "beta",
+                "impact": "HIGH",
+                "reason": "Beta exceeds 2.0."
+            },
+            {
+                "factor": "debt_to_cash",
+                "impact": "LOW",
+                "reason": "Debt exceeds cash."
+            },
+            {
+                "factor": "volatility",
+                "impact": "LOW",
+                "reason": "Annualised volatility exceeds 25%."
+            },
+            {
+                "factor": "maximum_drawdown",
+                "impact": "LOW",
+                "reason": "Observed drawdown exceeds 15%."
+            }
+        ],
+        "Method": "BETA_BALANCE_SHEET_VOLATILITY_DOWNSIDE_AND_DRAWDOWN_CONTEXT"
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "1 Long-Term Dividend ETF Built to Outlast Any Market Cycle Over 20 Years",
+            "Beware of Bad Investing Advice on Your Socials -- Like These 3 Money Myths",
+            "Want to Become a Stock Market Millionaire? History Says This Investment Can Get You There.",
+            "AppLovin Revenue Jumped 53%. So Why Did the Stock Just Plunge 20%?",
+            "Micron Has Surged 207% This Year. Brace for a Steep Pullback.",
+            "1 Popular Cryptocurrency to Buy Before Its Next Massive Rally, According to 1 Wall Street Bull",
+            "Why AdaptHealth Stock Plummeted This Week",
+            "Rivian Is Worth $23 Billion With the R2 Just Ramping. Where Will the Stock Be in 3 Years?",
+            "Why Usana Health Sciences Stock Plummeted This Week",
+            "This 1 Number Says Michael Saylor\u2019s Bitcoin Sales Are About to End"
+        ],
+        "Catalysts": [
+            "1 Long-Term Dividend ETF Built to Outlast Any Market Cycle Over 20 Years",
+            "Beware of Bad Investing Advice on Your Socials -- Like These 3 Money Myths",
+            "Want to Become a Stock Market Millionaire? History Says This Investment Can Get You There.",
+            "AppLovin Revenue Jumped 53%. So Why Did the Stock Just Plunge 20%?",
+            "Micron Has Surged 207% This Year. Brace for a Steep Pullback.",
+            "1 Popular Cryptocurrency to Buy Before Its Next Massive Rally, According to 1 Wall Street Bull",
+            "Why AdaptHealth Stock Plummeted This Week",
+            "Rivian Is Worth $23 Billion With the R2 Just Ramping. Where Will the Stock Be in 3 Years?",
+            "Why Usana Health Sciences Stock Plummeted This Week",
+            "This 1 Number Says Michael Saylor\u2019s Bitcoin Sales Are About to End"
+        ],
+        "Events": [
+            {
+                "headline": "1 Long-Term Dividend ETF Built to Outlast Any Market Cycle Over 20 Years",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Beware of Bad Investing Advice on Your Socials -- Like These 3 Money Myths",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Want to Become a Stock Market Millionaire? History Says This Investment Can Get You There.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "AppLovin Revenue Jumped 53%. So Why Did the Stock Just Plunge 20%?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Micron Has Surged 207% This Year. Brace for a Steep Pullback.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "1 Popular Cryptocurrency to Buy Before Its Next Massive Rally, According to 1 Wall Street Bull",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why AdaptHealth Stock Plummeted This Week",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Rivian Is Worth $23 Billion With the R2 Just Ramping. Where Will the Stock Be in 3 Years?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Why Usana Health Sciences Stock Plummeted This Week",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "This 1 Number Says Michael Saylor\u2019s Bitcoin Sales Are About to End",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 65,
+        "Confidence": 75,
+        "Strengths": [
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [],
+        "Summary": "Management quality appears satisfactory.",
+        "Insider Ownership": 0.03991,
+        "Institutional Ownership": 0.65789,
+        "Employees": 42000
+    },
+    "Strengths": [
+        "Excellent business quality",
+        "Positive recent news"
+    ],
+    "Weaknesses": [
+        "Elevated investment risk"
+    ],
+    "Summary": "The company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.",
+    "Report": "============================================================\nInvestment Report: NVDA\n============================================================\n\nOverall Rating : \u2605\u2605\u2605\u2606\u2606  HOLD\nOverall Score  : 68.9\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nThe company demonstrates excellent business fundamentals. Recent news flow has been supportive. Investment risk is above average.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 86.7\nValuation        : 50\nTechnical        : 74.83\nRisk             : 58.0\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 1 Long-Term Dividend ETF Built to Outlast Any Market Cycle Over 20 Years\n\u2022 Beware of Bad Investing Advice on Your Socials -- Like These 3 Money Myths\n\u2022 Want to Become a Stock Market Millionaire? History Says This Investment Can Get You There.\n\u2022 AppLovin Revenue Jumped 53%. So Why Did the Stock Just Plunge 20%?\n\u2022 Micron Has Surged 207% This Year. Brace for a Steep Pullback.\n\n============================================================",
+    "Catalysts": [
+        "1 Long-Term Dividend ETF Built to Outlast Any Market Cycle Over 20 Years",
+        "Beware of Bad Investing Advice on Your Socials -- Like These 3 Money Myths",
+        "Want to Become a Stock Market Millionaire? History Says This Investment Can Get You There.",
+        "AppLovin Revenue Jumped 53%. So Why Did the Stock Just Plunge 20%?",
+        "Micron Has Surged 207% This Year. Brace for a Steep Pullback.",
+        "1 Popular Cryptocurrency to Buy Before Its Next Massive Rally, According to 1 Wall Street Bull",
+        "Why AdaptHealth Stock Plummeted This Week",
+        "Rivian Is Worth $23 Billion With the R2 Just Ramping. Where Will the Stock Be in 3 Years?",
+        "Why Usana Health Sciences Stock Plummeted This Week",
+        "This 1 Number Says Michael Saylor\u2019s Bitcoin Sales Are About to End"
+    ],
+    "Headlines": [
+        "1 Long-Term Dividend ETF Built to Outlast Any Market Cycle Over 20 Years",
+        "Beware of Bad Investing Advice on Your Socials -- Like These 3 Money Myths",
+        "Want to Become a Stock Market Millionaire? History Says This Investment Can Get You There.",
+        "AppLovin Revenue Jumped 53%. So Why Did the Stock Just Plunge 20%?",
+        "Micron Has Surged 207% This Year. Brace for a Steep Pullback.",
+        "1 Popular Cryptocurrency to Buy Before Its Next Massive Rally, According to 1 Wall Street Bull",
+        "Why AdaptHealth Stock Plummeted This Week",
+        "Rivian Is Worth $23 Billion With the R2 Just Ramping. Where Will the Stock Be in 3 Years?",
+        "Why Usana Health Sciences Stock Plummeted This Week",
+        "This 1 Number Says Michael Saylor\u2019s Bitcoin Sales Are About to End"
+    ],
+    "Investment Committee": {
+        "Committee Score": 50.0,
+        "Factor Score": 50.0,
+        "Expected Return Score": 50.0,
+        "Expected Return": 0.0,
+        "Expected Return Confidence": 50.0,
+        "Expected Return Analysis": null,
+        "Recommendation": "REDUCE / AVOID",
+        "Confidence": 78.0,
+        "Adaptive Weights": {
+            "Business Quality": 0.14285714285714285,
+            "Financial Strength": 0.14285714285714285,
+            "Valuation": 0.09523809523809523,
+            "Growth": 0.14285714285714285,
+            "Profitability": 0.14285714285714285,
+            "Momentum": 0.14285714285714285,
+            "Risk": 0.09523809523809523,
+            "Size": 0.023809523809523808,
+            "Balance Sheet": 0.07142857142857142,
+            "Dividend": 0.0
+        },
+        "Factor Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Specialist Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Learning Enabled": false,
+        "Strengths": [],
+        "Concerns": [
+            "Expected return is limited at 0.0%."
+        ],
+        "Summary": "The Investment Committee assigns 50.0/100 and recommends REDUCE / AVOID. Expected return is 0.0% over 252 days. Confidence is 78.0%."
+    },
+    "Position Sizing": {
+        "Allocation": 0.0,
+        "Allocation %": 0.0,
+        "Max Position %": 10.0,
+        "Min Position %": 1.0,
+        "Max Sector %": 25.0
+    },
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": []
+    }
+}

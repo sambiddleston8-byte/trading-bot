@@ -1,0 +1,834 @@
+{
+    "Ticker": "AAPL",
+    "Research": {
+        "Ticker": "AAPL",
+        "Timestamp": "2026-08-09T19:24:36.339858",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "Apple and Amazon report rising revenues as investors turn on some tech stocks - The Guardian",
+                "Link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOaFZHR2RMeDVCeEU3N3BMb0pTaXRFRkFlb2xRYW9fWjEyNnhPV3ZQWkZXVlN5LVpPUms2LVhLd2FfbkhBbDEzM1RuanJoNTlGSk9aajJoX3hlNlg5UExodWJPWHZYRnF6aXplX0Z4SjlLdGxQbWJsa0w5bXNYT0JmYUpGLUpoR1NKRHViX1NhUjc?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple's OpenAI Lawsuit, Earnings, Senator's Stock Sales and more - Apple (NASDAQ:AAPL) - Benzinga",
+                "Link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPUHpuc2lqeklGX0RGTDF4Zl9KTFpXd0VvdDlMMTRCMnRrSVFNYnhTNkdralozYVZCTXNsLW1OSWdQLTc1RHhfeGdiaU5RRUtBRGJ6dGt5TnVnUU4tNWt1cFhWNzd5Z2MxQ3NlSUVKQ1hWcTlPdXVWNzhXdjFoYnJMcGlSVEZqemhrNlhUaFpES1dicFplMTJlLWdrNE4xMzgzb2tZZ3YzVQ?oc=5",
+                "Published": "Sun, 09 Aug 2026 11:01:13 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple Slides After Supply Shortages Hurt Sales Forecast - Bloomberg.com",
+                "Link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQWXkwcFhMQnEyUjhWdnFFallUTU5tTktyQVZxMzNUQnhMOVEzZ25iM3VhLUxTQkZrZDF1M28wLXZPUDZfcFMzdTFpMXY5QzJPenNTTnkyS0xJam9SNjdRZUwxYUFaaEpnUXRMbzhWU01hMjE1NjBzeWlEOVNxRzJhZUNYMUk2dlBaSmtRS1FTSlR3Ym4tZzcyeVBLQ2ltSlRyQmkxQWdoQUNjRW8?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple stock tumbles despite strong earnings, bucking Nasdaq trend - internationalfinance.com",
+                "Link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOLUp4eUlmTmlfSTR5VnJqZ014aFp3c0twdkZPblZZM3B4X2FsQkpWN0hkeURLcllaU0VTR0t3R2dRcVFQSFo2bHlweUo5TDBHWjhvRXc4UmNDcGZjalJQZDQyMjA4dmtLOFY3aUh0UlA1TWJWX3IzenhybUpVOVcyd096bXFFRU1pVXV3aHp3RWphd21wVmlja2UtY2U3Uk85T0dmbjl1ZlcxTUFLQXc?oc=5",
+                "Published": "Tue, 04 Aug 2026 00:00:13 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple Stock Falls As iPhone Maker Guides Below Views - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPakdzc3FIcUxlZkI1TmFFdEk0VUZLSC1sMDc1RjlPeTZvVUhxNTdLM01SUTRlM3VhVVN0dm0xSEt6aTBiZ1QzREMxUy1xX1ZicE83bUZsVmFsMHdsQjlNcWtTdC03SGt3YnVfa1BDbENrLTZCRXNJU0V6LWRueDEzREY1am05ektqZUxr?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "AAPL Stock Drops 7% After-Hours \u2014 Apple's Q3 China Sales Slow, Tim Cook Flags Memory Supply Constraints Affecting Q4 Revenue - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxON0IwbTE2QmJhSUV0ejlFUGIwalBvLWNpYktGQVI3Rk90YkRzNkY3WDFYbURERnhsZ2p1WnhCbW1SMTMxMFB0aFJkaTY3VXVSeE8wUGZkN0huZ0tvQkdNano3NjBYVTNJYUkzZ1ZGTE01WFFtVFFWc0ctallzcFR2T0h1X1FCS3NubDUydEp1d09lenc?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "AAPL Stock Gets Downgrades As Wall Street Sees Memory Inflation Pressures Persisting For 'Several More Quarters' - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBZVVNNZ1JmU3h2VWhSa2VtSkdROGJEQzJDbWNrRTdUSFBRcElRYl9VWFRQWU1KbFJzVmdmTG9xanc2ZGU0NGxWa0tEdkJxREdUQWJZYnd0NFdyUVg5ZUowTFFHbXhwajFfSEVZ?oc=5",
+                "Published": "Tue, 04 Aug 2026 15:00:06 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple disappoints with forecast dogged by supply chain struggles - Reuters",
+                "Link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPanFaaGdUMnRidmVSWXhQVXVDeG9fazRla240ZEFBdmhIcGJINkVvUVRhb1d0NGx2cEluMnlxYWdjVWpSWmJLbDdiWXE1LVVxVGR0Zm9yeVVfS1Z5RFN1cDB2M0ZRelQ2MnFhZHlfdm9ySHREOFhJVFFRc2xOMUowdzVISlY4aHpoQWRKYzcwN3ZQNV9mSFV6T3FPYjdobDFOdmF3WVRzODk5Z0Z0WF9mSW5xZS1IVXlM?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple stock falls on weak guidance despite earnings beat - eciks.org",
+                "Link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE02emNrXzhCa3cyUEhJUVlMZTBzd0ZTQ0dIVmFvZ3pzQzNoejZDajdwMHJyTXotYjZGRkpnT0lqMEhaaFBxRTNfTmN4QkQ0anpqMlFEVGk5M2o5WnV1OHc?oc=5",
+                "Published": "Fri, 31 Jul 2026 20:15:49 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple Stock Hits Record High Before Fiscal Q3 Earnings - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNQW56aHhzWW44Z2lueHZfd0Y1N0J2VGxSR3NGLUhFZ2lsZTZWcC1XSlZ3emU3NkRSa1N5S2JBS3dPU1dCOUZ2MS1CeER0MTlUcUVzSEFjOWhkeXZiNU02UUF1OENaRGhrN2U2N1JyblJtaS1RcmtfaFlFUEFXcmlGRTF1ckloSnlfSFhMUzRlS1YweFh6UEFJY3llWU9rZw?oc=5",
+                "Published": "Mon, 27 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple stock falls on weak revenue forecast as CEO Tim Cook flags 'increasing impact' from memory shortage - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxNUlBuUW9uS2NyYUZJTFhqWUJYLVA3UllKZThEbzFtRm1yTHdVMXR3aERlYjM4cElURlRhNFNxdlFGWF9VaDNPZ1ZlSXNqTVo3ZHpzcTB6SHVLbDdjOC0yUWd2WWl3NjR4NlhmR21xUnlYbGRGc3dDb09lNWFiZGlXUGluRWNkOTY0eTdIeEltSlYxYm5KMHBXRURTNkJNX1Nhbjl0bFd5ZHZvYkxYaGpJTGZZZXU0dWhjeW83ZHE0Q2hYeUZ1MWJUSTVOUU9ZbTgtellWTXdsa2lQb1RJMldlcjcyOHptMTZuNWRTVUkxYnMzZGlCaHc?oc=5",
+                "Published": "Fri, 31 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Tim Cook\u2019s last earnings call comes at momentous time for Apple with stock at record - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQMXhGU05CbnhQN0RVNFBHS3M3ZE9Tdm9MR3BocTMwMFlNOHVZSnczcEUyNWRlblpqbk9mMlhJZjBMTEdYajZxZl90aWcxeTFNNlZ3NWxtVUNMajdWbDAxb1pFV21mZk9NMW9NaW1YREpfTnV0NDh2N19hRGxPR1ducTdfNHB6eEJrTXowVXZuOUxXRGpYcmE0d3labnViajZsMEHSAacBQVVfeXFMUE1HcWhFbFFyZzBTYUQ0c1d3TDBjZXdoWmszU1Q4SGRCcFVKSWJKdnNKRlI4Qjh0MXljTks0REtLXzR0ZFpBRHdmMFQ3N2QwYUdjZHZOQmVhS1VlZnBDYXZDZFFFSkszVnFaUmV2bGwxV1g4cUFZZW1oYS1aLW11UWZoakI5NGZFUU1DYm92cHdZazZxTWtxM1pWblAtajZndFE4UzFsb1U?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "AAPL Stock Slides 6% On Forecast Miss: Retail Mood Turns Dim But Traders Urge A Closer Look - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxPbUhWenJTMHlmQWI4VEtjbVF3Ql9QTkJHOVdFdldXU09abUhmcEdWNmhKMXRZZk5ReFkyXzVGcWtxWTlacnpoSWZFdFNiSFJ0aTVmLVQ1dEVxaGdwbklYV2p5UzlFRVFfNlNORjRSejBicE9GcjNuREU3MHRYZWR1TGh3Q2Ewb1dRaDZxMjB2MkwtX19TTXY4WVl6OFpCbW9LTjg2WXEtSm1vTnNTSnpoNUgyd2NMR1p1cXk5d1ZqTEY1eE5zXzd6SlFBclQwZk5PZnFUcWZ2bmtBaFFHMUI4Ny1Wcw?oc=5",
+                "Published": "Fri, 31 Jul 2026 02:13:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "AAPL: Apple Stock Tumbles 8% on Weak Outlook, Margin Squeeze. Earnings Were Solid. - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxQU0cxY2ptMDRDZ1NPdUM3RFNkUmRzTmxJZUFpdDFfVzRxazhWLV9Ec3M5UHg1ZlRCWjVhUGRBYnRMcHVfQXlqMjJQTUdTRGNnQ0p2SGI5T1paT0dJYUttYzRGUl9wZUw0amV4WE42RjU4MjBnUVJqY1pNOUZhVUkyVDVqV2tqZzV3d2JCVHFoNXJsMGk4ajc2cGNXd2h1X25SV0VnRGtfMHJfdU5SMFJjVVVBNTB6am9tR2VJS2ExYUUyUG96a0N4cnBWTmRUcTYzRGVhNUlB?oc=5",
+                "Published": "Fri, 31 Jul 2026 07:00:00 GMT"
+            }
+        ],
+        "Financial Data": {
+            "Company": "Apple Inc.",
+            "Sector": "Technology",
+            "Industry": "Consumer Electronics",
+            "Market Cap": 4572794322944,
+            "Revenue Growth": 0.164,
+            "Earnings Growth": 0.287,
+            "Profit Margin": 0.27618998,
+            "Operating Margin": 0.32623002,
+            "Forward PE": 32.93679,
+            "Trailing PE": 35.97359,
+            "PEG": 2.53,
+            "Price To Book": 42.57201,
+            "ROE": 1.4875101,
+            "ROIC": null,
+            "Beta": 1.086,
+            "Dividend Yield": 0.34
+        },
+        "SEC Filings": {
+            "Ticker": "AAPL",
+            "Timestamp": "2026-08-09T19:24:37.729403",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-07-31",
+                    "Report Date": "2026-06-27",
+                    "Accession Number": "0000320193-26-000020",
+                    "Document": "aapl-20260627.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-30",
+                    "Report Date": "2026-07-30",
+                    "Accession Number": "0000320193-26-000018",
+                    "Document": "aapl-20260730.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000018/aapl-20260730.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-05-01",
+                    "Report Date": "2026-03-28",
+                    "Accession Number": "0000320193-26-000013",
+                    "Document": "aapl-20260328.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-04-30",
+                    "Report Date": "2026-04-30",
+                    "Accession Number": "0000320193-26-000011",
+                    "Document": "aapl-20260430.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000011/aapl-20260430.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-04-20",
+                    "Report Date": "2026-04-17",
+                    "Accession Number": "0001140361-26-015711",
+                    "Document": "ef20071035_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000114036126015711/ef20071035_8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-02-24",
+                    "Report Date": "2026-02-24",
+                    "Accession Number": "0001140361-26-006577",
+                    "Document": "ef20060722_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000114036126006577/ef20060722_8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-01-30",
+                    "Report Date": "2025-12-27",
+                    "Accession Number": "0000320193-26-000006",
+                    "Document": "aapl-20251227.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-01-29",
+                    "Report Date": "2026-01-29",
+                    "Accession Number": "0000320193-26-000005",
+                    "Document": "aapl-20260129.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000005/aapl-20260129.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "DEF 14A",
+                    "Filing Date": "2026-01-08",
+                    "Report Date": "2026-02-24",
+                    "Accession Number": "0001308179-26-000008",
+                    "Document": "aapl014016-def14a.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000130817926000008/aapl014016-def14a.htm",
+                    "Type": "Proxy Statement"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-01-02",
+                    "Report Date": "2025-12-30",
+                    "Accession Number": "0001140361-26-000199",
+                    "Document": "ef20060722_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000114036126000199/ef20060722_8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2025-12-05",
+                    "Report Date": "2025-12-04",
+                    "Accession Number": "0001140361-25-044561",
+                    "Document": "ef20060722_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/320193/000114036125044561/ef20060722_8k.htm",
+                    "Type": "Current Report"
+                }
+            ],
+            "Filing Count": 11
+        },
+        "News Relevance": {
+            "checked": 30,
+            "accepted": 14,
+            "rejected": 16,
+            "company": "Apple Inc."
+        }
+    },
+    "Evidence": {
+        "Ticker": "AAPL",
+        "Company": null,
+        "Generated At": "2026-08-09T18:24:37.730136+00:00",
+        "Status": "COMPLETE",
+        "Summary": {
+            "Total Evidence Items": 0,
+            "Quantitative Evidence": 0,
+            "Market Evidence": 0,
+            "External Event Evidence": 0,
+            "Model Evidence": 0
+        },
+        "Evidence": {
+            "Fundamentals": [],
+            "Valuation": [],
+            "Expected Returns": [],
+            "Catalysts": []
+        },
+        "Sources": [],
+        "Output Path": "data/research/evidence/AAPL.json"
+    },
+    "Profile": {
+        "Ticker": "AAPL",
+        "Company Name": "Apple Inc.",
+        "Short Name": "Apple Inc.",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Technology",
+        "Industry": "Consumer Electronics",
+        "Country": "United States",
+        "City": "Cupertino",
+        "Website": "https://www.apple.com",
+        "Employees": 150000,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Timothy D. Cook",
+                "age": 64,
+                "title": "CEO & Director",
+                "yearBorn": 1961,
+                "fiscalYear": 2025,
+                "totalPay": 16759518,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Kevan  Parekh",
+                "age": 53,
+                "title": "Senior VP & CFO",
+                "yearBorn": 1972,
+                "fiscalYear": 2025,
+                "totalPay": 4034174,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Sabih  Khan",
+                "age": 58,
+                "title": "Senior VP & Chief Operating Officer",
+                "yearBorn": 1967,
+                "fiscalYear": 2025,
+                "totalPay": 5021905,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Deirdre  O'Brien",
+                "age": 58,
+                "title": "Senior Vice President of Retail & People",
+                "yearBorn": 1967,
+                "fiscalYear": 2025,
+                "totalPay": 5037867,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Katherine L. Adams",
+                "age": 61,
+                "title": "Senior VP of Government Affairs & Secretary",
+                "yearBorn": 1964,
+                "fiscalYear": 2025,
+                "totalPay": 5022482,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Ben  Borders",
+                "age": 44,
+                "title": "Principal Accounting Officer",
+                "yearBorn": 1981,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Suhasini  Chandramouli",
+                "title": "Director of Investor Relations",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Jennifer G. Newstead J.D.",
+                "age": 55,
+                "title": "Senior VP & General Counsel",
+                "yearBorn": 1970,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Kristin Huguet Quayle",
+                "title": "Vice President of Worldwide Communications",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Greg  Joswiak",
+                "title": "Senior Vice President of Worldwide Marketing",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide. The company offers iPhone, a line of smartphones; Mac, a line of personal computers; iPad, a line of multi-purpose tablets; and wearables, home, and accessories comprising AirPods, Apple Vision Pro, Apple TV, Apple Watch, Beats products, and HomePod, as well as Apple branded and third-party accessories. It also provides AppleCare support and cloud services; and operates various platforms, including the App Store that allows customers to discover and download applications and digital content, such as books, music, video, games, and podcasts, as well as advertising services include third-party licensing arrangements and its own advertising platforms. In addition, the company offers various subscription-based services, such as Apple Arcade, a game subscription service; Apple Fitness+, a personalized fitness service; Apple Music, which offers users a curated listening experience with on-demand radio stations; Apple News+, a subscription news and magazine service; Apple TV, which offers original content and live sports; Apple Card, a co-branded credit card; and Apple Pay, a cashless payment service, as well as licenses its intellectual property. The company serves consumers, and small and mid-sized businesses; and the education, enterprise, and government markets. It distributes third-party applications for its products through the App Store. The company also sells its products through its retail and online stores, and direct sales force; and third-party cellular network carriers and resellers. The company was formerly known as Apple Computer, Inc. and changed its name to Apple Inc. in January 2007. Apple Inc. was founded in 1976 and is headquartered in Cupertino, California.",
+        "Market Cap": 4572794322944,
+        "Enterprise Value": 4594739445760,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "Apple Inc.",
+        "Symbol": "AAPL",
+        "Exchange": "NMS",
+        "Sector": "Technology",
+        "Industry": "Consumer Electronics",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 150000,
+        "Market Cap": 4572794322944,
+        "Enterprise Value": 4594739445760,
+        "Revenue": 466822987776,
+        "Net Income": 128929996800,
+        "PE": 35.97359,
+        "Forward PE": 32.93679,
+        "PEG": 2.53,
+        "Price to Book": 42.57201,
+        "Price to Sales": 9.795564,
+        "Dividend Yield": 0.34,
+        "Beta": 1.086,
+        "52 Week High": 344.57,
+        "52 Week Low": 223.78,
+        "Current Price": 313.33,
+        "Previous Close": 312.40997
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 40,
+        "Revenue History": {
+            "2025-09-30 00:00:00": 416161000000.0,
+            "2024-09-30 00:00:00": 391035000000.0,
+            "2023-09-30 00:00:00": 383285000000.0,
+            "2022-09-30 00:00:00": 394328000000.0
+        },
+        "Revenue CAGR": 1.8125357434793932,
+        "Net Income History": {
+            "2025-09-30 00:00:00": 112010000000.0,
+            "2024-09-30 00:00:00": 93736000000.0,
+            "2023-09-30 00:00:00": 96995000000.0,
+            "2022-09-30 00:00:00": 99803000000.0
+        },
+        "Earnings CAGR": 3.9212592033254,
+        "Operating Cash Flow": {
+            "2025-09-30 00:00:00": 111482000000.0,
+            "2024-09-30 00:00:00": 118254000000.0,
+            "2023-09-30 00:00:00": 110543000000.0,
+            "2022-09-30 00:00:00": 122151000000.0
+        },
+        "Free Cash Flow": {
+            "2025-09-30 00:00:00": 98767000000.0,
+            "2024-09-30 00:00:00": 108807000000.0,
+            "2023-09-30 00:00:00": 99584000000.0,
+            "2022-09-30 00:00:00": 111443000000.0
+        },
+        "Profit Margin": 0.27618998,
+        "Operating Margin": 0.32623002,
+        "ROIC": null,
+        "Total Debt": 98657000000.0,
+        "Cash": 35934000000.0,
+        "Net Debt": 62723000000.0,
+        "Strengths": [
+            "The company generates positive operating cash flow.",
+            "The company generates positive free cash flow.",
+            "Strong net profit margin.",
+            "Strong operating margin."
+        ],
+        "Weaknesses": [
+            "Revenue growth is relatively weak.",
+            "Earnings growth is relatively weak.",
+            "The company has net debt."
+        ],
+        "Summary": "Financial fundamentals show significant weaknesses."
+    },
+    "Moat Analysis": {
+        "Moat Score": 78,
+        "Classification": "NARROW MOAT",
+        "Gross Margin": 0.48653,
+        "Operating Margin": 0.32623002,
+        "ROE": 1.4875101,
+        "ROIC": null,
+        "Strengths": [
+            "Healthy gross margins.",
+            "Strong operating margins indicate attractive economics.",
+            "High return on equity.",
+            "Very large scale can provide meaningful competitive advantages.",
+            "Large organisational scale may support significant operational advantages."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company appears to possess some meaningful competitive advantages, although they may not be exceptionally durable."
+    },
+    "Industry Analysis": {
+        "Industry Score": 83,
+        "Sector": "Technology",
+        "Industry": "Consumer Electronics",
+        "Assessment": "EXCELLENT",
+        "Strengths": [
+            "Sector: Technology",
+            "Industry: Consumer Electronics",
+            "The company has exceptional scale within its market.",
+            "Operating profitability is strong."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company operates in the Consumer Electronics industry within the Technology sector. The current industry/competitive assessment is EXCELLENT."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 50,
+        "Sector": "Technology",
+        "Industry": "Consumer Electronics",
+        "Peers": [],
+        "Subject Company": {
+            "Ticker": "AAPL",
+            "Company": "Apple Inc.",
+            "Market Cap": 4572794322944,
+            "PE": 35.97359,
+            "Forward PE": 32.93679,
+            "Revenue Growth": 0.164,
+            "Profit Margin": 0.27618998,
+            "Operating Margin": 0.32623002,
+            "ROE": 1.4875101,
+            "ROIC": null
+        },
+        "Valuation Rank": null,
+        "Growth Rank": null,
+        "Profitability Rank": null,
+        "Assessment": "The company does not currently stand out strongly against its peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 85,
+        "Assessment": "STRONG",
+        "Earnings Date": "None",
+        "Positive Surprises": 22,
+        "Negative Surprises": 1,
+        "Trailing PE": 35.97359,
+        "Forward PE": 32.93679,
+        "Revenue Growth": 0.164,
+        "Earnings Growth": 0.287,
+        "Strengths": [
+            "The company has frequently exceeded recent EPS estimates.",
+            "Forward valuation is below trailing valuation, suggesting expected earnings growth."
+        ],
+        "Weaknesses": [],
+        "Catalysts": [
+            "Continued earnings beats could support positive sentiment.",
+            "Strong earnings growth is a positive fundamental catalyst."
+        ],
+        "Risks": [],
+        "Summary": "Earnings intelligence is currently strong. The system identified 22 recent positive earnings surprises and 1 negative surprises."
+    },
+    "Overall Score": 58.8,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Business Quality": 56.7,
+    "Valuation": 30,
+    "Technical": 70.92,
+    "Risk": 81.0,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 40,
+        "Profitability": 100,
+        "Balance Sheet": 30,
+        "Business Quality": 56.7,
+        "Confidence": 85,
+        "Strengths": [
+            "High profitability"
+        ],
+        "Weaknesses": [
+            "Weak long-term revenue growth",
+            "High debt relative to cash"
+        ],
+        "Summary": "The business demonstrates mixed financial quality with both strengths and weaknesses."
+    },
+    "Valuation Analysis": {
+        "PE": 35.97359,
+        "Forward PE": 32.93679,
+        "PEG": 2.53,
+        "Price to Sales": 9.795564,
+        "Price to Book": 42.57201,
+        "Valuation Score": 30,
+        "Confidence": 80,
+        "Strengths": [],
+        "Weaknesses": [
+            "High P/E ratio",
+            "High Price/Book multiple"
+        ],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Status": "COMPLETE",
+        "Reason": "Multi-horizon momentum, trend, drawdown and persistence are combined as technical context.",
+        "Data Points": 251,
+        "Momentum": 72.27,
+        "Moving Average": 74.77,
+        "Drawdown": 74.83,
+        "Trend Persistence": 56.67,
+        "Support Resistance": 52.64,
+        "Volume Confirmation": 51.31,
+        "Technical Score": 70.92,
+        "Return 20d": -0.006311,
+        "Return 60d": 0.062856,
+        "Return 120d": 0.226127,
+        "Return 252d": null,
+        "Current Price": 313.3299865722656,
+        "Moving Average 20": 323.4315,
+        "Moving Average 50": 309.7854,
+        "Moving Average 200": 279.1313,
+        "Drawdown From 252d High": -0.078658,
+        "Support Level": 275.15,
+        "Resistance Level": 340.08,
+        "Range Position": 0.588018,
+        "Volume Ratio 20d To 60d": 0.9843,
+        "Fibonacci Window Low": 224.2655,
+        "Fibonacci Window High": 340.08,
+        "Fibonacci Levels": {
+            "23.6%": 312.7478,
+            "38.2%": 295.8389,
+            "50.0%": 282.1728,
+            "61.8%": 268.5066,
+            "78.6%": 249.0498
+        },
+        "Nearest Fibonacci Level": "23.6%",
+        "Distance To Nearest Fibonacci Level": 0.001858,
+        "Fibonacci Note": "Fibonacci levels are descriptive range context only and are not a standalone predictive allocation signal."
+    },
+    "Risk Analysis": {
+        "Risk Score": 81.0,
+        "Beta": 1.086,
+        "Annualized Volatility": 0.25,
+        "Downside Volatility": 0.1846,
+        "Maximum Drawdown": -0.137985,
+        "Debt to Cash": 2.7455,
+        "Risk Components": [
+            {
+                "factor": "beta",
+                "impact": "LOW",
+                "reason": "Beta exceeds 1.0."
+            },
+            {
+                "factor": "debt_to_cash",
+                "impact": "MEDIUM",
+                "reason": "Debt exceeds cash by more than two times."
+            }
+        ],
+        "Method": "BETA_BALANCE_SHEET_VOLATILITY_DOWNSIDE_AND_DRAWDOWN_CONTEXT"
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "Forget VFIAX: Vanguard Sells You the Same S&P 500 Fund Without the $3,000 Toll, or the $75 Fee Fidelity Charges to Buy It",
+            "Apple tests China's CXMT memory chips for iPhones and MacBooks, WSJ reports",
+            "Apple CEO Tim Cook Predicts a \"100-Year\" Flood. Here Are 2 Stocks Primed to Cash In.",
+            "Apple Added About $1.5 Trillion in Market Value in a Year. Here's What $10,000 Invested a Decade Ago Is Worth Now.",
+            "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+            "Bank of America revamps Apple stock price target after earnings",
+            "Apple says Mac users in China can connect to Alibaba's Qwen AI service",
+            "Dan Ives Says We're in the \"3rd Inning\" of the AI Revolution. Is Nvidia Stock Still a Buy After the Pullback?"
+        ],
+        "Catalysts": [
+            "Forget VFIAX: Vanguard Sells You the Same S&P 500 Fund Without the $3,000 Toll, or the $75 Fee Fidelity Charges to Buy It",
+            "Apple tests China's CXMT memory chips for iPhones and MacBooks, WSJ reports",
+            "Apple CEO Tim Cook Predicts a \"100-Year\" Flood. Here Are 2 Stocks Primed to Cash In.",
+            "Apple Added About $1.5 Trillion in Market Value in a Year. Here's What $10,000 Invested a Decade Ago Is Worth Now.",
+            "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+            "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+            "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+            "Bank of America revamps Apple stock price target after earnings",
+            "Apple says Mac users in China can connect to Alibaba's Qwen AI service",
+            "Dan Ives Says We're in the \"3rd Inning\" of the AI Revolution. Is Nvidia Stock Still a Buy After the Pullback?"
+        ],
+        "Events": [
+            {
+                "headline": "Forget VFIAX: Vanguard Sells You the Same S&P 500 Fund Without the $3,000 Toll, or the $75 Fee Fidelity Charges to Buy It",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Apple tests China's CXMT memory chips for iPhones and MacBooks, WSJ reports",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Apple CEO Tim Cook Predicts a \"100-Year\" Flood. Here Are 2 Stocks Primed to Cash In.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Apple Added About $1.5 Trillion in Market Value in a Year. Here's What $10,000 Invested a Decade Ago Is Worth Now.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Bank of America revamps Apple stock price target after earnings",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Apple says Mac users in China can connect to Alibaba's Qwen AI service",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Dan Ives Says We're in the \"3rd Inning\" of the AI Revolution. Is Nvidia Stock Still a Buy After the Pullback?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 55,
+        "Confidence": 75,
+        "Strengths": [
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [
+            "Very low insider ownership"
+        ],
+        "Summary": "Management quality raises some concerns.",
+        "Insider Ownership": 0.01647,
+        "Institutional Ownership": 0.66289,
+        "Employees": 150000
+    },
+    "Strengths": [
+        "Positive recent news"
+    ],
+    "Weaknesses": [
+        "Premium valuation"
+    ],
+    "Summary": "Recent news flow has been supportive. Valuation appears demanding.",
+    "Report": "============================================================\nInvestment Report: AAPL\n============================================================\n\nOverall Rating : \u2605\u2605\u2606\u2606\u2606  WEAK\nOverall Score  : 58.8\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nRecent news flow has been supportive. Valuation appears demanding.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 56.7\nValuation        : 30\nTechnical        : 70.92\nRisk             : 81.0\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 Forget VFIAX: Vanguard Sells You the Same S&P 500 Fund Without the $3,000 Toll, or the $75 Fee Fidelity Charges to Buy It\n\u2022 Apple tests China's CXMT memory chips for iPhones and MacBooks, WSJ reports\n\u2022 Apple CEO Tim Cook Predicts a \"100-Year\" Flood. Here Are 2 Stocks Primed to Cash In.\n\u2022 Apple Added About $1.5 Trillion in Market Value in a Year. Here's What $10,000 Invested a Decade Ago Is Worth Now.\n\u2022 How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?\n\n============================================================",
+    "Catalysts": [
+        "Forget VFIAX: Vanguard Sells You the Same S&P 500 Fund Without the $3,000 Toll, or the $75 Fee Fidelity Charges to Buy It",
+        "Apple tests China's CXMT memory chips for iPhones and MacBooks, WSJ reports",
+        "Apple CEO Tim Cook Predicts a \"100-Year\" Flood. Here Are 2 Stocks Primed to Cash In.",
+        "Apple Added About $1.5 Trillion in Market Value in a Year. Here's What $10,000 Invested a Decade Ago Is Worth Now.",
+        "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+        "Bank of America revamps Apple stock price target after earnings",
+        "Apple says Mac users in China can connect to Alibaba's Qwen AI service",
+        "Dan Ives Says We're in the \"3rd Inning\" of the AI Revolution. Is Nvidia Stock Still a Buy After the Pullback?"
+    ],
+    "Headlines": [
+        "Forget VFIAX: Vanguard Sells You the Same S&P 500 Fund Without the $3,000 Toll, or the $75 Fee Fidelity Charges to Buy It",
+        "Apple tests China's CXMT memory chips for iPhones and MacBooks, WSJ reports",
+        "Apple CEO Tim Cook Predicts a \"100-Year\" Flood. Here Are 2 Stocks Primed to Cash In.",
+        "Apple Added About $1.5 Trillion in Market Value in a Year. Here's What $10,000 Invested a Decade Ago Is Worth Now.",
+        "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+        "VGT Puts 39 Cents of Every Dollar Into Just 3 Stocks. The Pairing That Fixes It Without Selling",
+        "Berkshire Hathaway Just Did Something It Hasn\u2019t Done in More Than 3 Years",
+        "Bank of America revamps Apple stock price target after earnings",
+        "Apple says Mac users in China can connect to Alibaba's Qwen AI service",
+        "Dan Ives Says We're in the \"3rd Inning\" of the AI Revolution. Is Nvidia Stock Still a Buy After the Pullback?"
+    ],
+    "Investment Committee": {
+        "Committee Score": 50.0,
+        "Factor Score": 50.0,
+        "Expected Return Score": 50.0,
+        "Expected Return": 0.0,
+        "Expected Return Confidence": 50.0,
+        "Expected Return Analysis": null,
+        "Recommendation": "REDUCE / AVOID",
+        "Confidence": 78.0,
+        "Adaptive Weights": {
+            "Business Quality": 0.14285714285714285,
+            "Financial Strength": 0.14285714285714285,
+            "Valuation": 0.09523809523809523,
+            "Growth": 0.14285714285714285,
+            "Profitability": 0.14285714285714285,
+            "Momentum": 0.14285714285714285,
+            "Risk": 0.09523809523809523,
+            "Size": 0.023809523809523808,
+            "Balance Sheet": 0.07142857142857142,
+            "Dividend": 0.0
+        },
+        "Factor Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Specialist Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Learning Enabled": false,
+        "Strengths": [],
+        "Concerns": [
+            "Expected return is limited at 0.0%."
+        ],
+        "Summary": "The Investment Committee assigns 50.0/100 and recommends REDUCE / AVOID. Expected return is 0.0% over 252 days. Confidence is 78.0%."
+    },
+    "Position Sizing": {
+        "Allocation": 0.0,
+        "Allocation %": 0.0,
+        "Max Position %": 10.0,
+        "Min Position %": 1.0,
+        "Max Sector %": 25.0
+    },
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": [
+            {
+                "Metric": "Overall Score",
+                "Previous": 57.0,
+                "Current": 58.8,
+                "Change": 1.8,
+                "Direction": "improved"
+            },
+            {
+                "Metric": "Technical",
+                "Previous": 70.0,
+                "Current": 70.92,
+                "Change": 0.9,
+                "Direction": "improved"
+            },
+            {
+                "Metric": "Risk",
+                "Previous": 70,
+                "Current": 81.0,
+                "Change": 11.0,
+                "Direction": "improved"
+            }
+        ]
+    }
+}

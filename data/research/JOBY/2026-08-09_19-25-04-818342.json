@@ -1,0 +1,800 @@
+{
+    "Ticker": "JOBY",
+    "Research": {
+        "Ticker": "JOBY",
+        "Timestamp": "2026-08-09T19:25:03.042709",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "Joby Aviation's Next Earnings Report on Aug. 5 Could Send the Stock Plummeting. Here's Why. - The Motley Fool",
+                "Link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxON1dGMkpPcjY3ZGZxWGY3ZmxMSDhkM1ZpR2xsRHlUTXBtRDNpcFp3YmdqVjAwQ0FDaHp1dWkwUDkwSGhRYk8wOWh3Q183bC1LemlGbm5BYm9ZRzdKaDJTSDlOT0J4WU5DMWlPR2VYOUpwV0s2WUZjVkN1OTNwdDhmV0FpU2xsQnRTZGJNcG5oM2pOWk5HN2EzUWZQdnhocjVPZjJGajZwMEdHc3U0RUhnaGVLaEpyY1JXMjFVSTIydWdUYlBK?oc=5",
+                "Published": "Mon, 03 Aug 2026 20:15:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby expects Texas air taxi flights in September, targets passengers in 2026 - Stock Titan",
+                "Link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOYUR4ZUxXT3E3dEFmbnZfYXh3STJ2bmF5YnBEWlBSUHJxVExGaS1DTlFaRjRBRDhYekQ1Slhrbl9yMHRuelh2Y3hzcUYxRXpVU2U1N2xETExYOXhUUWxDYmV5R0NjVG9VU2QwMXg5bVZSbHkwMUJJLWxpVXROaHBMbUJRaUFiSHg4U0FPbWtFZEg3UzFZbU1uRi1iUHo1dw?oc=5",
+                "Published": "Wed, 05 Aug 2026 20:05:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby Stock Gains Ahead Of Earnings, Investors Eye eVTOL Progress And Government Contracts - Stocktwits",
+                "Link": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxObDZhenZjdDNLYWU5U0VxLWtrNEp5cG8zQXREbmxfQXhxR1RxNXZBUTV2SmhmbFJRd09UeUNvbkctRW14ZWNCb2E4MGdaeDByeEZodkxoNC1ONGxpZ2hfMFZyOFB1bmJadC1wUVFhMjRTS3lwNXJEUlRPeGFYanRzNHROandSb2xscnNKRURnQTV4dEllMTJLYnVzZk1VQlRjTk1MZk93UEkwYXNoM1JzQktpVjZQSkdKLXd2cTNxMHBnNzFybmFYd0dJWTc2TzhweHBrTW9RQWZTd3UzeWJwQWln?oc=5",
+                "Published": "Sat, 08 Aug 2026 10:11:54 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby Aviation shares climb following Q2 results; hefty 53-times sales valuation stays dependent on certification - TechStock\u00b2",
+                "Link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxObThyZFoyX2RwR3BDZkh1MUFLVks3UDYyek1PTHFSSFNHbElPNTMwU2c1TzR6RXBlalRKSnhfZjN5N0pTSG5aalJtdFo3N3I4a3RHX2NYbXNIU3RfMzd1X1ZRRFJMdy1ucDZXWVNpRW4tcVc2cDNJVXI3OVZIZGotdGZidFk1b3ZBbHd5aThLMVNSRmtrZWJMUUNKY0lMT19XOG1YZ01VM3E1eV9IS1FrRlNNUjhWS3U5a2RJcTlHZEp0Y3lzWEozSlI5Uk4?oc=5",
+                "Published": "Thu, 06 Aug 2026 17:40:39 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby soars 19% after earnings: is air taxi launch finally near? - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNN0Zvc3dtU0Q0czZ5RGdsa2xKbE1XN3Z6VWFlTGs5SjkyUDRrbXlzdTNYVGdHVHRKY1hNeG81YzVKbWNmWF9sYVpxak0wYWlrZklTMFVwdm0tX2RWdjFtdE5Fd1ZIWmxDbE8wMDhXcWU1b3Zhd3lOUy1wVkxiY0dXUGNoWkJMdnktV3dlNFgwQkZjaXVzX3pvUkZzZXdHeU5TdG9Mc0N0aXR1Q0hRRjBfNXFXT0p1Y1hX?oc=5",
+                "Published": "Wed, 06 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby Aviation, Inc. (JOBY) Reports Q1 Loss, Beats Revenue Estimates - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQVkQzNTFtWXRmelYweGVLZXJncGdwWDZzdjZaWU50M1ZEbTdST0ZuRXp4cWRPU3BYaGZZQnNLc3ZZWVdVWW1IQnhtUmtuR0dYZGZzQ003dGpyNEdwSHZjLTN2b3BqWUM4WTZCdFdYX1k3aVVlN21tM3ZuZTE4ZHRqejVwd0VFYXEzdmpCRm42MXhGOVI3dERpSGVNMA?oc=5",
+                "Published": "Tue, 05 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "How JOBY Stock Rises 8x To $70 - Trefis",
+                "Link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQd005cXN6N0x6UDBLZWxRRXlENG9pV29rdU1RUk9FOHRmeVNGZVBZdUhDR01GZ01PS0RscVNJalZXVXUyb012M1IwSVpFbEl1cnhjZ3QtemYxbEZ0Vjc1ckpUTWpFaHAzWWZpcng1aVBNbHVzRFprNWJGSHctSWtsNXU0bHpLLXFLRDllZFVxZ0gzVlJu?oc=5",
+                "Published": "Tue, 28 Apr 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby's electric air taxi company sets Aug. 5 results webcast - Stock Titan",
+                "Link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPS21kcFpLSDgxMlBnYy1INnVPTUpUY1U3MjhWNmFFNm5DQlZkb0YwT3VzQzJqMlpfTjZybzhWWDBaS2hKWE0yVUFSRFYtdmhRVmFITlFFY3hWNjJPZVR0OVNzc0J4ZXRaa0dVZGNqZzBCems3WHpEekhOTVM4TTJlVjNDRDhBYzdtd09nOU9XUGJvSmZ1dVRzRnVGTnZnTW9LdEI2cVM3OGdvdWpB?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby Keeps Losing Money\u2014and the Stock Keeps Rising - Barron's",
+                "Link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPNVRxNzJjQU1XWDFKTm96RUtGQWcyMVg4bmF4LTRKUG1UZmVNY2FIaVNnQjQwTXJWTHBMdEpJV1lTOEhKLXIzSEN4UWJCMWNIUDI4V3BEc2U1NmU4bzBPV2ZadVVuX3YtdXZkTkpCcC1fZHdUOS1ndmtFZWV4OHJ1NTBB?oc=5",
+                "Published": "Wed, 06 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Why Joby Aviation Stock Is Up 75% in 2025 - TIKR.com",
+                "Link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5SUlNqa0ZpNXQzQW9SOW9BTjRFeEltay1OM2JDY2dTTXllUzU0dlFnQ2owTlRPaDkwaFMtLVZaUFl6TGFJM2I5VDRlRUw3b0Q4ZmY2Zl9kWjQ0Z0E2UTNqeERNNVk4SFlfNVIwZVJVaVFzWHY3MjRuSk5kSQ?oc=5",
+                "Published": "Thu, 25 Dec 2025 08:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby Aviation stock falls as Virgin partnership raises revenue questions - TechStock\u00b2",
+                "Link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNZy0tbjNUd0w3ZXEyOVBjVi1OYURFVGRab0VmT1FHWTdxR3FlTTFoNFFJdTh2d25ULXNLc2ZEWWJrazItRkxHYUJ5eGZEZGpwM1VJRThpOXo3MlNwVFR2WmIwLTB2Y3VKb1Z4N0NLTmxFOG9zTUJlYTZsWnBQREVRQ2ltUlBWOFhMWlpYUlg5aHUxNnlFZXkyYQ?oc=5",
+                "Published": "Fri, 24 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby Reports Fourth Quarter 2025 Financial Results - Business Wire",
+                "Link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxObVlrcUhDZnRKZFNhTjlIb3NxVnpXUW5FOWVSOVJ2WjdRU1dkNWlJdVh4VnJxV1NiZG13ZzlGQTdQZGVkd3hmUDNKcFEzNVRXejVZdmYxMjVXNnVYTnhEeVExUndZeHhhUUpNbjdVaUk4WEZrbWtKSHZrekN1bExaVENCVmg5eFRXWVRETUdHWEF6cGpGWXpVQUNOWUY2WXNlY1ExTHZrNUtoUkE?oc=5",
+                "Published": "Wed, 25 Feb 2026 08:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby Aviation tops revenue estimates while spending drives deeper net loss (JOBY:NYSE) - Seeking Alpha",
+                "Link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxOUlFVV0M2VmttOGpWUV9pQUJHN0J1ZVhaQXlJQjlKRXhlUDg2X0g0bGV1OGtxUjlyR0M5UTBGMTQta0d1djR2a3h3RWp2SmE0M3pDamJBdHhpU0hYWW1wWE9iZW45NDYwUlloZzY2YWdKNk1VVk9USG96ZThkWFlKSDVJcmhFWlBEN20tOFdPd0hGWUVtbV9wNmlsdmNGZ2I0N0E0TXpKU1RRU2xOMTVKUWFR?oc=5",
+                "Published": "Tue, 05 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Why Did Joby Aviation Stock Fly Today? - The Motley Fool",
+                "Link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNb1ZKOGNLTmJYdlBDYXp2aFJmemdOSmZpcWVUQ1VkU0c3R1p4NW9xUm9tZXEwWGpKRDJLU3A2aU42a0tFaUo5NWZSTkx4aHNWb1I2R3cxUHk4aEZlcVEyWDZsbjRkS0ZGN1hBRHJCaVByaG1vY0ZSN0ZqcDdfT2Q5WHMyVDlIeFVobllaSg?oc=5",
+                "Published": "Wed, 06 May 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Joby Aviation Burns $500 Million a Year and Tonight One Number Decides Its Fate - 24/7 Wall St.",
+                "Link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPM0RiWko5ZkhZaXMzSmFZeXM4dmVtN21fMFN2MHcxWGpzN0NfOXRXSXBZSkZFVGRZOWdHQmNTOU8tWThyb1N2XzgtanVlc1hZdVU1akpuSjB5dFk0clBlRDdjQlVVM09kUFNHMUxOTkRZbXF5OFFBRmJHYk4yc0V2NGVqSTNEUHZveFBlRHp2czdwLXRjNzROcERVc3p1ZHozc1AxV1BES092am9XR0x0U1BpWTVyNDJFNDg0WmhkUQ?oc=5",
+                "Published": "Wed, 25 Feb 2026 08:00:00 GMT"
+            }
+        ],
+        "Financial Data": {
+            "Company": "Joby Aviation, Inc.",
+            "Sector": "Industrials",
+            "Industry": "Airports & Air Services",
+            "Market Cap": 8546033664,
+            "Revenue Growth": 2574.933,
+            "Earnings Growth": null,
+            "Profit Margin": 0.0,
+            "Operating Margin": -6.75181,
+            "Forward PE": -13.3953495,
+            "Trailing PE": null,
+            "PEG": null,
+            "Price To Book": 4.328657,
+            "ROE": -0.65902,
+            "ROIC": null,
+            "Beta": 2.698,
+            "Dividend Yield": null
+        },
+        "SEC Filings": {
+            "Ticker": "JOBY",
+            "Timestamp": "2026-08-09T19:25:04.010087",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-08-06",
+                    "Report Date": "2026-06-30",
+                    "Accession Number": "0001819848-26-000435",
+                    "Document": "joby-20260630.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819848/000181984826000435/joby-20260630.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-08-05",
+                    "Report Date": "2026-08-05",
+                    "Accession Number": "0001819848-26-000432",
+                    "Document": "joby-20260805.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819848/000181984826000432/joby-20260805.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-28",
+                    "Report Date": "2026-07-28",
+                    "Accession Number": "0001819848-26-000427",
+                    "Document": "joby-20260728.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819848/000181984826000427/joby-20260728.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-30",
+                    "Report Date": "2026-06-29",
+                    "Accession Number": "0001819848-26-000378",
+                    "Document": "joby-20260629.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819848/000181984826000378/joby-20260629.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-04",
+                    "Report Date": "2026-06-02",
+                    "Accession Number": "0001819848-26-000369",
+                    "Document": "joby-20260602.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1819848/000181984826000369/joby-20260602.htm",
+                    "Type": "Current Report"
+                }
+            ],
+            "Filing Count": 5
+        },
+        "News Relevance": {
+            "checked": 30,
+            "accepted": 15,
+            "rejected": 15,
+            "company": "Joby Aviation, Inc."
+        }
+    },
+    "Evidence": {
+        "Ticker": "JOBY",
+        "Company": null,
+        "Generated At": "2026-08-09T18:25:04.010342+00:00",
+        "Status": "COMPLETE",
+        "Summary": {
+            "Total Evidence Items": 0,
+            "Quantitative Evidence": 0,
+            "Market Evidence": 0,
+            "External Event Evidence": 0,
+            "Model Evidence": 0
+        },
+        "Evidence": {
+            "Fundamentals": [],
+            "Valuation": [],
+            "Expected Returns": [],
+            "Catalysts": []
+        },
+        "Sources": [],
+        "Output Path": "data/research/evidence/JOBY.json"
+    },
+    "Profile": {
+        "Ticker": "JOBY",
+        "Company Name": "Joby Aviation, Inc.",
+        "Short Name": "Joby Aviation, Inc.",
+        "Exchange": "NYQ",
+        "Quote Type": "EQUITY",
+        "Sector": "Industrials",
+        "Industry": "Airports & Air Services",
+        "Country": "United States",
+        "City": "Santa Cruz",
+        "Website": "https://www.jobyaviation.com",
+        "Employees": 2559,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Paul Cahill Sciarra",
+                "age": 44,
+                "title": "Executive Chairman of the Board",
+                "yearBorn": 1981,
+                "fiscalYear": 2025,
+                "totalPay": 50000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. JoeBen  Bevirt",
+                "age": 51,
+                "title": "Founder, CEO, Chief Architect, President & Director",
+                "yearBorn": 1974,
+                "fiscalYear": 2025,
+                "totalPay": 661433,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Rodrigo  Brumana",
+                "age": 50,
+                "title": "Chief Financial Officer",
+                "yearBorn": 1975,
+                "fiscalYear": 2025,
+                "totalPay": 681003,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Bonny W. Simi",
+                "age": 63,
+                "title": "President of Operations",
+                "yearBorn": 1962,
+                "fiscalYear": 2025,
+                "totalPay": 600933,
+                "exercisedValue": 5489972,
+                "unexercisedValue": 3028676
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Kate  DeHoff J.D.",
+                "age": 48,
+                "title": "Chief Legal Officer & Corporate Secretary",
+                "yearBorn": 1977,
+                "fiscalYear": 2025,
+                "totalPay": 679079,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Sergei  Novikov",
+                "age": 55,
+                "title": "Corporate Controller, Acting Principal Accounting Officer & Treasurer",
+                "yearBorn": 1970,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Teresa J. Thuruthiyil",
+                "title": "Head of Investor Relations",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Gregory J. Bowles",
+                "age": 49,
+                "title": "Chief Policy Officer",
+                "yearBorn": 1976,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Eric  Allison Ph.D.",
+                "age": 48,
+                "title": "Chief Product Officer",
+                "yearBorn": 1977,
+                "fiscalYear": 2025,
+                "totalPay": 436116,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Robert S. Wiesenthal",
+                "age": 58,
+                "title": "Founder and CEO of BLADE Air Mobility, Inc.",
+                "yearBorn": 1967,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "Joby Aviation, Inc., an air mobility company, engages in research, develop, test, manufacture, and sale of electric vertical takeoff and landing aircraft in the United States, Japan, Europe, and internationally. The company offers facilitation of passenger transportation via helicopter or fixed wing aircraft. It is also involved in the provision of government flight services, customer demonstration, and engineering services; and exhibition activities. Joby Aviation, Inc. was founded in 2009 and is headquartered in Santa Cruz, California.",
+        "Market Cap": 8546033664,
+        "Enterprise Value": 7029920256,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "Joby Aviation, Inc.",
+        "Symbol": "JOBY",
+        "Exchange": "NYQ",
+        "Sector": "Industrials",
+        "Industry": "Airports & Air Services",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 2559,
+        "Market Cap": 8546033664,
+        "Enterprise Value": 7029920256,
+        "Revenue": 116295000,
+        "Net Income": -878155008,
+        "PE": null,
+        "Forward PE": -13.3953495,
+        "PEG": null,
+        "Price to Book": 4.328657,
+        "Price to Sales": 73.485825,
+        "Dividend Yield": null,
+        "Beta": 2.698,
+        "52 Week High": 19.98,
+        "52 Week Low": 6.63,
+        "Current Price": 8.64,
+        "Previous Close": 8.23
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 50,
+        "Revenue History": {
+            "2025-12-31 00:00:00": 53425000.0,
+            "2024-12-31 00:00:00": 136000.0,
+            "2023-12-31 00:00:00": 1032000.0,
+            "2022-12-31 00:00:00": 0.0
+        },
+        "Revenue CAGR": null,
+        "Net Income History": {
+            "2025-12-31 00:00:00": -929842000.0,
+            "2024-12-31 00:00:00": -608034000.0,
+            "2023-12-31 00:00:00": -513050000.0,
+            "2022-12-31 00:00:00": -258043000.0
+        },
+        "Earnings CAGR": null,
+        "Operating Cash Flow": {
+            "2025-12-31 00:00:00": -509893000.0,
+            "2024-12-31 00:00:00": -436267000.0,
+            "2023-12-31 00:00:00": -313831000.0,
+            "2022-12-31 00:00:00": -235925000.0
+        },
+        "Free Cash Flow": {
+            "2025-12-31 00:00:00": -563811000.0,
+            "2024-12-31 00:00:00": -476884000.0,
+            "2023-12-31 00:00:00": -344428000.0,
+            "2022-12-31 00:00:00": -290815000.0
+        },
+        "Profit Margin": 0.0,
+        "Operating Margin": -6.75181,
+        "ROIC": null,
+        "Total Debt": 36825000.0,
+        "Cash": 240810000.0,
+        "Net Debt": -203985000.0,
+        "Strengths": [
+            "The company has a net cash position."
+        ],
+        "Weaknesses": [
+            "Operating cash flow is negative.",
+            "Free cash flow is negative.",
+            "Low net profit margin.",
+            "Low operating margin."
+        ],
+        "Summary": "Financial fundamentals are mixed."
+    },
+    "Moat Analysis": {
+        "Moat Score": 37,
+        "Classification": "NO CLEAR MOAT",
+        "Gross Margin": 0.34289002,
+        "Operating Margin": -6.75181,
+        "ROE": -0.65902,
+        "ROIC": null,
+        "Strengths": [],
+        "Weaknesses": [
+            "Low operating margins may indicate competitive pressure.",
+            "Low return on equity."
+        ],
+        "Summary": "The available financial evidence does not provide strong evidence of a durable moat."
+    },
+    "Industry Analysis": {
+        "Industry Score": 55,
+        "Sector": "Industrials",
+        "Industry": "Airports & Air Services",
+        "Assessment": "NEUTRAL",
+        "Strengths": [
+            "Sector: Industrials",
+            "Industry: Airports & Air Services",
+            "Revenue growth is strong."
+        ],
+        "Weaknesses": [
+            "Operating profitability is relatively weak."
+        ],
+        "Summary": "The company operates in the Airports & Air Services industry within the Industrials sector. The current industry/competitive assessment is NEUTRAL."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 50,
+        "Sector": "Industrials",
+        "Industry": "Airports & Air Services",
+        "Peers": [],
+        "Subject Company": {
+            "Ticker": "JOBY",
+            "Company": "Joby Aviation, Inc.",
+            "Market Cap": 8546033664,
+            "PE": null,
+            "Forward PE": -13.3953495,
+            "Revenue Growth": 2574.933,
+            "Profit Margin": 0.0,
+            "Operating Margin": -6.75181,
+            "ROE": -0.65902,
+            "ROIC": null
+        },
+        "Valuation Rank": null,
+        "Growth Rank": null,
+        "Profitability Rank": null,
+        "Assessment": "The company does not currently stand out strongly against its peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 65,
+        "Assessment": "POSITIVE",
+        "Earnings Date": "None",
+        "Positive Surprises": 10,
+        "Negative Surprises": 7,
+        "Trailing PE": null,
+        "Forward PE": -13.3953495,
+        "Revenue Growth": 2574.933,
+        "Earnings Growth": null,
+        "Strengths": [
+            "The company has frequently exceeded recent EPS estimates."
+        ],
+        "Weaknesses": [
+            "The company has frequently missed recent EPS estimates."
+        ],
+        "Catalysts": [
+            "Continued earnings beats could support positive sentiment.",
+            "Strong revenue growth provides support for future earnings expansion."
+        ],
+        "Risks": [
+            "Further earnings disappointments could pressure the shares."
+        ],
+        "Summary": "Earnings intelligence is currently positive. The system identified 10 recent positive earnings surprises and 7 negative surprises."
+    },
+    "Overall Score": 46.9,
+    "Rating": "\u2605\u2606\u2606\u2606\u2606  SELL",
+    "Business Quality": 50.0,
+    "Valuation": 50,
+    "Technical": 24.1,
+    "Risk": 35.0,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 50.0,
+        "Profitability": 0,
+        "Balance Sheet": 100,
+        "Business Quality": 50.0,
+        "Confidence": 85,
+        "Strengths": [
+            "Very strong net cash position"
+        ],
+        "Weaknesses": [
+            "Weak profitability"
+        ],
+        "Summary": "The business demonstrates relatively weak financial quality."
+    },
+    "Valuation Analysis": {
+        "PE": null,
+        "Forward PE": -13.3953495,
+        "PEG": null,
+        "Price to Sales": 73.485825,
+        "Price to Book": 4.328657,
+        "Valuation Score": 50,
+        "Confidence": 80,
+        "Strengths": [
+            "Attractive forward earnings valuation"
+        ],
+        "Weaknesses": [
+            "Very expensive relative to revenue"
+        ],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Status": "COMPLETE",
+        "Reason": "Multi-horizon momentum, trend, drawdown and persistence are combined as technical context.",
+        "Data Points": 251,
+        "Momentum": 30.93,
+        "Moving Average": 20.44,
+        "Drawdown": 0.0,
+        "Trend Persistence": 40.0,
+        "Support Resistance": 45.57,
+        "Volume Confirmation": 62.76,
+        "Technical Score": 24.1,
+        "Return 20d": 0.119171,
+        "Return 60d": -0.176358,
+        "Return 120d": -0.127273,
+        "Return 252d": null,
+        "Current Price": 8.640000343322754,
+        "Moving Average 20": 7.5315,
+        "Moving Average 50": 8.7496,
+        "Moving Average 200": 11.1703,
+        "Drawdown From 252d High": -0.558508,
+        "Support Level": 6.65,
+        "Resistance Level": 12.3,
+        "Range Position": 0.352212,
+        "Volume Ratio 20d To 60d": 1.1689,
+        "Fibonacci Window Low": 6.65,
+        "Fibonacci Window High": 19.57,
+        "Fibonacci Levels": {
+            "23.6%": 16.5209,
+            "38.2%": 14.6346,
+            "50.0%": 13.11,
+            "61.8%": 11.5854,
+            "78.6%": 9.4149
+        },
+        "Nearest Fibonacci Level": "78.6%",
+        "Distance To Nearest Fibonacci Level": -0.089687,
+        "Fibonacci Note": "Fibonacci levels are descriptive range context only and are not a standalone predictive allocation signal."
+    },
+    "Risk Analysis": {
+        "Risk Score": 35.0,
+        "Beta": 2.698,
+        "Annualized Volatility": 0.7272,
+        "Downside Volatility": 0.4211,
+        "Maximum Drawdown": -0.660194,
+        "Debt to Cash": 0.1529,
+        "Risk Components": [
+            {
+                "factor": "beta",
+                "impact": "HIGH",
+                "reason": "Beta exceeds 2.0."
+            },
+            {
+                "factor": "volatility",
+                "impact": "HIGH",
+                "reason": "Annualised volatility exceeds 60%."
+            },
+            {
+                "factor": "maximum_drawdown",
+                "impact": "HIGH",
+                "reason": "Observed drawdown exceeds 40%."
+            }
+        ],
+        "Method": "BETA_BALANCE_SHEET_VOLATILITY_DOWNSIDE_AND_DRAWDOWN_CONTEXT"
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "What Does Oklo (OKLO) Leadership Overhaul Mean As Commercialization Nears?",
+            "Joby Aviation (JOBY) Stock Stays Rich Following Fresh Vertiport Network News",
+            "Joby Aviation (JOBY) Could Be 19% Undervalued After Opening Its Texas Facility",
+            "Joby Aviation (JOBY) Is Up 20.8% After Raising 2026 Outlook And Expanding Texas Operations Hub",
+            "Loar Q2 Earnings Call Highlights",
+            "Joby Aviation Q2 Earnings Call Highlights",
+            "JOBY Shares Gain 5.5% Since Second-Quarter 2026 Revenues Beat",
+            "The Strongest Case For Joby Aviation Stock Is Already Flying Passengers",
+            "Joby CEO: Aviation's Biggest Disruption Since Jet Engine Is Here",
+            "Thomas Gnau: Joby reports stronger quarter, shrinking net loss, generating Blade business revenue"
+        ],
+        "Catalysts": [
+            "What Does Oklo (OKLO) Leadership Overhaul Mean As Commercialization Nears?",
+            "Joby Aviation (JOBY) Stock Stays Rich Following Fresh Vertiport Network News",
+            "Joby Aviation (JOBY) Could Be 19% Undervalued After Opening Its Texas Facility",
+            "Joby Aviation (JOBY) Is Up 20.8% After Raising 2026 Outlook And Expanding Texas Operations Hub",
+            "Loar Q2 Earnings Call Highlights",
+            "Joby Aviation Q2 Earnings Call Highlights",
+            "JOBY Shares Gain 5.5% Since Second-Quarter 2026 Revenues Beat",
+            "The Strongest Case For Joby Aviation Stock Is Already Flying Passengers",
+            "Joby CEO: Aviation's Biggest Disruption Since Jet Engine Is Here",
+            "Thomas Gnau: Joby reports stronger quarter, shrinking net loss, generating Blade business revenue"
+        ],
+        "Events": [
+            {
+                "headline": "What Does Oklo (OKLO) Leadership Overhaul Mean As Commercialization Nears?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Joby Aviation (JOBY) Stock Stays Rich Following Fresh Vertiport Network News",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Joby Aviation (JOBY) Could Be 19% Undervalued After Opening Its Texas Facility",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Joby Aviation (JOBY) Is Up 20.8% After Raising 2026 Outlook And Expanding Texas Operations Hub",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Loar Q2 Earnings Call Highlights",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Joby Aviation Q2 Earnings Call Highlights",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "JOBY Shares Gain 5.5% Since Second-Quarter 2026 Revenues Beat",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "The Strongest Case For Joby Aviation Stock Is Already Flying Passengers",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Joby CEO: Aviation's Biggest Disruption Since Jet Engine Is Here",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Thomas Gnau: Joby reports stronger quarter, shrinking net loss, generating Blade business revenue",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 70,
+        "Confidence": 75,
+        "Strengths": [
+            "High insider ownership"
+        ],
+        "Weaknesses": [],
+        "Summary": "Management quality appears satisfactory.",
+        "Insider Ownership": 0.32404998,
+        "Institutional Ownership": 0.42546,
+        "Employees": 2559
+    },
+    "Strengths": [
+        "Positive recent news"
+    ],
+    "Weaknesses": [
+        "Elevated investment risk"
+    ],
+    "Summary": "Recent news flow has been supportive. Investment risk is above average.",
+    "Report": "============================================================\nInvestment Report: JOBY\n============================================================\n\nOverall Rating : \u2605\u2606\u2606\u2606\u2606  SELL\nOverall Score  : 46.9\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nRecent news flow has been supportive. Investment risk is above average.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 50.0\nValuation        : 50\nTechnical        : 24.1\nRisk             : 35.0\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 What Does Oklo (OKLO) Leadership Overhaul Mean As Commercialization Nears?\n\u2022 Joby Aviation (JOBY) Stock Stays Rich Following Fresh Vertiport Network News\n\u2022 Joby Aviation (JOBY) Could Be 19% Undervalued After Opening Its Texas Facility\n\u2022 Joby Aviation (JOBY) Is Up 20.8% After Raising 2026 Outlook And Expanding Texas Operations Hub\n\u2022 Loar Q2 Earnings Call Highlights\n\n============================================================",
+    "Catalysts": [
+        "What Does Oklo (OKLO) Leadership Overhaul Mean As Commercialization Nears?",
+        "Joby Aviation (JOBY) Stock Stays Rich Following Fresh Vertiport Network News",
+        "Joby Aviation (JOBY) Could Be 19% Undervalued After Opening Its Texas Facility",
+        "Joby Aviation (JOBY) Is Up 20.8% After Raising 2026 Outlook And Expanding Texas Operations Hub",
+        "Loar Q2 Earnings Call Highlights",
+        "Joby Aviation Q2 Earnings Call Highlights",
+        "JOBY Shares Gain 5.5% Since Second-Quarter 2026 Revenues Beat",
+        "The Strongest Case For Joby Aviation Stock Is Already Flying Passengers",
+        "Joby CEO: Aviation's Biggest Disruption Since Jet Engine Is Here",
+        "Thomas Gnau: Joby reports stronger quarter, shrinking net loss, generating Blade business revenue"
+    ],
+    "Headlines": [
+        "What Does Oklo (OKLO) Leadership Overhaul Mean As Commercialization Nears?",
+        "Joby Aviation (JOBY) Stock Stays Rich Following Fresh Vertiport Network News",
+        "Joby Aviation (JOBY) Could Be 19% Undervalued After Opening Its Texas Facility",
+        "Joby Aviation (JOBY) Is Up 20.8% After Raising 2026 Outlook And Expanding Texas Operations Hub",
+        "Loar Q2 Earnings Call Highlights",
+        "Joby Aviation Q2 Earnings Call Highlights",
+        "JOBY Shares Gain 5.5% Since Second-Quarter 2026 Revenues Beat",
+        "The Strongest Case For Joby Aviation Stock Is Already Flying Passengers",
+        "Joby CEO: Aviation's Biggest Disruption Since Jet Engine Is Here",
+        "Thomas Gnau: Joby reports stronger quarter, shrinking net loss, generating Blade business revenue"
+    ],
+    "Investment Committee": {
+        "Committee Score": 50.0,
+        "Factor Score": 50.0,
+        "Expected Return Score": 50.0,
+        "Expected Return": 0.0,
+        "Expected Return Confidence": 50.0,
+        "Expected Return Analysis": null,
+        "Recommendation": "REDUCE / AVOID",
+        "Confidence": 78.0,
+        "Adaptive Weights": {
+            "Business Quality": 0.14285714285714285,
+            "Financial Strength": 0.14285714285714285,
+            "Valuation": 0.09523809523809523,
+            "Growth": 0.14285714285714285,
+            "Profitability": 0.14285714285714285,
+            "Momentum": 0.14285714285714285,
+            "Risk": 0.09523809523809523,
+            "Size": 0.023809523809523808,
+            "Balance Sheet": 0.07142857142857142,
+            "Dividend": 0.0
+        },
+        "Factor Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Specialist Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Learning Enabled": false,
+        "Strengths": [],
+        "Concerns": [
+            "Expected return is limited at 0.0%."
+        ],
+        "Summary": "The Investment Committee assigns 50.0/100 and recommends REDUCE / AVOID. Expected return is 0.0% over 252 days. Confidence is 78.0%."
+    },
+    "Position Sizing": {
+        "Allocation": 0.0,
+        "Allocation %": 0.0,
+        "Max Position %": 10.0,
+        "Min Position %": 1.0,
+        "Max Sector %": 25.0
+    },
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": [
+            {
+                "Metric": "Overall Score",
+                "Previous": 50.8,
+                "Current": 46.9,
+                "Change": -3.9,
+                "Direction": "deteriorated"
+            },
+            {
+                "Metric": "Technical",
+                "Previous": 35.0,
+                "Current": 24.1,
+                "Change": -10.9,
+                "Direction": "deteriorated"
+            },
+            {
+                "Metric": "Risk",
+                "Previous": 50,
+                "Current": 35.0,
+                "Change": -15.0,
+                "Direction": "deteriorated"
+            },
+            {
+                "Metric": "Rating",
+                "Previous": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+                "Current": "\u2605\u2606\u2606\u2606\u2606  SELL",
+                "Change": null,
+                "Direction": "changed"
+            }
+        ]
+    }
+}
