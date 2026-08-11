@@ -34,6 +34,22 @@ def test_recovery_failure_returns_blocked_status(monkeypatch):
     assert result["scan"] is None
 
 
+def test_persistence_failure_returns_blocked_status(monkeypatch):
+    def verify(_root, _pipeline):
+        def fail_persistence(_self, **_kwargs):
+            raise OSError("simulated persistence failure")
+
+        monkeypatch.setattr(PortfolioDecisionTransaction, "persist", fail_persistence)
+        result = PortfolioConstructionService.construct()
+
+        assert result["status"] == "BLOCKED"
+        assert result["failure_code"] == "PERSISTENCE_FAILED"
+        assert "simulated persistence failure" in result["reason"]
+        assert result["portfolio"] is not None
+
+    with_test_paths(verify)
+
+
 def pipeline_record(ticker: str, risk_score: float = 75.0) -> dict:
     return {
         "ticker": ticker,

@@ -86,6 +86,14 @@ def test_repeat_persist_reuses_original_snapshot(tmp_path):
     assert not duplicate.exists()
     assert len(ledger.verify()) == 1
 
+    with pytest.raises(LedgerIntegrityError, match="different content"):
+        transaction.persist(
+            transaction_id="PORT-RECOVERY-001",
+            portfolio={**portfolio, "holdings": [{"ticker": "AAPL"}]},
+            snapshot_path=duplicate,
+            ledger_entries=[ledger_entry()],
+        )
+
 
 def test_fresh_transaction_rejects_duplicate_decision_ids(tmp_path):
     ledger = InvestmentDecisionLedger(tmp_path / "decisions.jsonl")

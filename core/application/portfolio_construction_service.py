@@ -508,12 +508,21 @@ class PortfolioConstructionService:
                 }
             )
 
-        persistence = transaction.persist(
-            transaction_id=portfolio["portfolio_id"],
-            portfolio=portfolio,
-            snapshot_path=cls.next_proposed_update_path(),
-            ledger_entries=ledger_entries,
-        )
+        try:
+            persistence = transaction.persist(
+                transaction_id=portfolio["portfolio_id"],
+                portfolio=portfolio,
+                snapshot_path=cls.next_proposed_update_path(),
+                ledger_entries=ledger_entries,
+            )
+        except (LedgerIntegrityError, OSError, ValueError, KeyError, TypeError) as exc:
+            return {
+                "status": "BLOCKED",
+                "failure_code": "PERSISTENCE_FAILED",
+                "scan": scan,
+                "portfolio": portfolio,
+                "reason": f"Portfolio decision persistence failed: {exc}",
+            }
         path = persistence["snapshot_path"]
         ledger_records = persistence["ledger_records"]
 
