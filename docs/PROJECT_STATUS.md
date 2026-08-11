@@ -8,7 +8,7 @@ real-money trading remains disabled.
 
 ## Current phase
 
-Phase 2 — Codex-builder and Claude-challenger development system.
+Phase 3 — AWS/cloud architecture (design only; nothing deployed).
 
 ## Completed
 
@@ -44,6 +44,9 @@ Phase 2 — Codex-builder and Claude-challenger development system.
 - Codex remains the bounded-change builder; Claude remains the read-only
   adversarial challenger for high-value reviews.
 - Frontier-model review is explicitly skipped for routine mechanical work.
+- Phase 3 AWS architecture issue #3 documented a low-cost, paper-only pilot;
+  Claude challenged its persistence, scheduling, access and cost boundaries, and
+  all High/Medium findings were resolved in the design.
 - Keep AWS execution blocked until transactional persistence replaces the local
   two-file snapshot/ledger sequence.
 
@@ -56,7 +59,7 @@ Phase 2 — Codex-builder and Claude-challenger development system.
 
 ## Next action
 
-Use the Phase 2 workflow for the first Phase 3 architecture issue: define the
-lowest-cost AWS target, transactional storage boundary, Docker packaging and
-paper-only safety gates. Do not deploy or start unattended operation during the
-architecture issue.
+Challenge the proposed Phase 3 architecture under issue #3, then merge the
+approved design. The following implementation issue should add local Docker and
+PostgreSQL adapters/tests only; AWS purchasing and deployment remain separate
+and require explicit user approval.
