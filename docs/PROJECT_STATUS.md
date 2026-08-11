@@ -59,7 +59,7 @@ Phase 3 — AWS/cloud architecture (design only; nothing deployed).
 
 ## Next action
 
-Challenge the proposed Phase 3 architecture under issue #3, then merge the
-approved design. The following implementation issue should add local Docker and
-PostgreSQL adapters/tests only; AWS purchasing and deployment remain separate
-and require explicit user approval.
+Review the local-only Docker/PostgreSQL foundation under issue #5. PostgreSQL
+remains non-authoritative until both portfolio write paths use the repository
+contract and comparison/integration tests pass. Docker installation, AWS choices,
+purchasing and deployment remain separate and require explicit user approval.
