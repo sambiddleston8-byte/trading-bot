@@ -34,8 +34,11 @@ Phase 1 — Foundation, audit and decision ledger.
 
 ## Still required before Phase 2
 
-- Commit and re-review the Phase 1 hardening separately from generated data.
-- Resolve atomic portfolio/ledger persistence before unattended AWS operation.
+- Resolve or formally accept the documented medium/low findings before broader
+  automation: atomic portfolio/ledger persistence, cached-research Git
+  provenance, UI error handling, ledger batching, and portfolio-ID hardening.
+- Keep AWS execution blocked until transactional persistence replaces the local
+  two-file snapshot/ledger sequence.
 
 ## Safety invariants
 
@@ -46,6 +49,6 @@ Phase 1 — Foundation, audit and decision ledger.
 
 ## Next action
 
-Commit the isolated Phase 1 hardening, then have Claude Code re-review the new
-commit read-only. Phase 2 may begin only after the remaining findings are either
-fixed or explicitly accepted as pre-AWS constraints.
+Use the Phase 2 Codex-builder / Claude-challenger workflow on the next isolated
+feature branch. Do not begin AWS deployment or unattended operation until the
+remaining persistence and provenance constraints are closed.
