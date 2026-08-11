@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 
 from core.application.portfolio_construction_service import PortfolioConstructionService
+from core.portfolio_decision_transaction import PortfolioDecisionTransaction
 from core.research.master_portfolio_decision_engine import MasterPortfolioDecisionEngine
 
 
@@ -18,6 +19,19 @@ SECTORS = (
     "Materials",
     "Consumer Staples",
 )
+
+
+def test_recovery_failure_returns_blocked_status(monkeypatch):
+    def fail_recovery(_self):
+        raise OSError("corrupt pending journal")
+
+    monkeypatch.setattr(PortfolioDecisionTransaction, "recover_pending", fail_recovery)
+    result = PortfolioConstructionService.construct()
+
+    assert result["status"] == "BLOCKED"
+    assert result["failure_code"] == "RECOVERY_FAILED"
+    assert "corrupt pending journal" in result["reason"]
+    assert result["scan"] is None
 
 
 def pipeline_record(ticker: str, risk_score: float = 75.0) -> dict:

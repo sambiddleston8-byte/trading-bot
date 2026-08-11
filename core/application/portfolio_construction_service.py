@@ -17,6 +17,7 @@ from core.research.investment_research_pipeline import InvestmentResearchPipelin
 from core.decision_ledger import (
     InvestmentDecision,
     InvestmentDecisionLedger,
+    LedgerIntegrityError,
     ModelVersion,
     current_git_revision,
 )
@@ -386,7 +387,16 @@ class PortfolioConstructionService:
     ) -> dict[str, Any]:
         ledger = InvestmentDecisionLedger(cls.DECISION_LEDGER_PATH)
         transaction = PortfolioDecisionTransaction(ledger, portfolio_class)
-        transaction.recover_pending()
+        try:
+            transaction.recover_pending()
+        except (LedgerIntegrityError, OSError, ValueError, KeyError, TypeError) as exc:
+            return {
+                "status": "BLOCKED",
+                "failure_code": "RECOVERY_FAILED",
+                "scan": None,
+                "portfolio": None,
+                "reason": f"Pending portfolio transaction recovery failed: {exc}",
+            }
         scan = cls.research_scan()
         readiness = cls.portfolio_readiness(scan, target_holdings)
         target_holdings = readiness["constructible_holdings"]

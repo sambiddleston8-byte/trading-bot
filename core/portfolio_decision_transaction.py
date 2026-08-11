@@ -54,7 +54,6 @@ class PortfolioDecisionTransaction:
             indent=2,
             sort_keys=True,
             ensure_ascii=False,
-            default=str,
         ).encode("utf-8")
         descriptor = os.open(temporary, os.O_CREAT | os.O_TRUNC | os.O_WRONLY, 0o600)
         try:
@@ -89,11 +88,16 @@ class PortfolioDecisionTransaction:
         os.replace(temporary, path)
         self._fsync_directory(path.parent)
 
-    def _recover_unlocked(self, journal_path: Path) -> dict[str, Any]:
+    def _recover_unlocked(
+        self,
+        journal_path: Path,
+        *,
+        allow_existing: bool = True,
+    ) -> dict[str, Any]:
         journal = json.loads(journal_path.read_text(encoding="utf-8"))
         records = self.ledger.append_batch(
             journal["ledger_entries"],
-            allow_existing=True,
+            allow_existing=allow_existing,
         )
         snapshot_path = Path(journal["snapshot_path"])
         self._save_snapshot(journal["portfolio"], snapshot_path)
@@ -140,13 +144,24 @@ class PortfolioDecisionTransaction:
             committed_path = self.directory / f"{transaction_id}.committed.json"
             if committed_path.exists():
                 committed = json.loads(committed_path.read_text(encoding="utf-8"))
+                if (
+                    committed["portfolio"] != portfolio
+                    or committed["ledger_entries"] != ledger_entries
+                ):
+                    raise LedgerIntegrityError(
+                        f"Transaction ID {transaction_id} already exists with different content."
+                    )
                 records = self.ledger.append_batch(
                     committed["ledger_entries"],
                     allow_existing=True,
                 )
-                self._save_snapshot(portfolio, snapshot_path)
+                committed_snapshot_path = Path(committed["snapshot_path"])
+                self._save_snapshot(
+                    committed["portfolio"],
+                    committed_snapshot_path,
+                )
                 return {
-                    "snapshot_path": snapshot_path,
+                    "snapshot_path": committed_snapshot_path,
                     "ledger_records": records,
                     "transaction_path": committed_path,
                 }
@@ -160,4 +175,4 @@ class PortfolioDecisionTransaction:
                     "ledger_entries": ledger_entries,
                 },
             )
-            return self._recover_unlocked(pending_path)
+            return self._recover_unlocked(pending_path, allow_existing=False)

@@ -35,6 +35,8 @@ Phase 1 — Foundation, audit and decision ledger.
   appends implemented with failure-injection coverage.
 - New cached research records capture their source Git revision; legacy records
   remain explicitly `UNKNOWN` rather than inheriting a later revision.
+- Claude's focused transaction review identified three actionable recovery and
+  idempotence gaps; all were repaired with targeted regression coverage.
 
 ## Still required before Phase 2
 

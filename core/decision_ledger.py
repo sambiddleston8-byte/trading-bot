@@ -304,8 +304,15 @@ class InvestmentDecisionLedger:
             previous_hash = existing[-1]["record_hash"] if existing else GENESIS_HASH
             resolved: list[dict[str, Any]] = []
             new_records: list[dict[str, Any]] = []
+            seen_pending_ids: set[str] = set()
             for entry in pending:
                 resolved_id = entry.get("decision_id") or f"DEC-{uuid4().hex.upper()}"
+                resolved_id_text = str(resolved_id)
+                if resolved_id_text in seen_pending_ids:
+                    raise LedgerIntegrityError(
+                        f"Decision ID {resolved_id} appears more than once in the batch."
+                    )
+                seen_pending_ids.add(resolved_id_text)
                 versions = [
                     version.as_dict() if isinstance(version, ModelVersion) else dict(version)
                     for version in entry.get("model_versions", [])
@@ -324,7 +331,7 @@ class InvestmentDecisionLedger:
                     "decision_payload": entry["decision_payload"],
                     "execution_mode": "RECORD_ONLY",
                 }
-                prior = existing_by_id.get(str(resolved_id))
+                prior = existing_by_id.get(resolved_id_text)
                 if prior is not None:
                     prior_comparable = {
                         key: value
@@ -342,7 +349,7 @@ class InvestmentDecisionLedger:
                 previous_hash = record["record_hash"]
                 new_records.append(record)
                 resolved.append(record)
-                existing_by_id[str(resolved_id)] = record
+                existing_by_id[resolved_id_text] = record
 
             if new_records:
                 encoded = "".join(
