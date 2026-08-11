@@ -41,6 +41,9 @@ def pipeline_record(ticker: str, risk_score: float = 75.0) -> dict:
             "investment_case_score": 78.0,
             "decision": "BUY",
             "decision_reason": "Synthetic test candidate clears the research gate.",
+            "bull_case": "Synthetic upside case.",
+            "bear_case": "Synthetic downside case.",
+            "catalysts": ["Synthetic catalyst"],
         },
         "research": {
             "thesis_challenge": {
@@ -130,6 +133,11 @@ def test_real_services_construct_and_risk_review_a_diversified_portfolio():
         assert result["portfolio"]["risk_review"]["Pass"] is True
         assert sum(item["weight"] for item in result["portfolio"]["holdings"]) == 1.0
         assert max(result["portfolio"]["sector_weights"].values()) <= 0.15
+        for record in result["ledger_records"]:
+            payload = record["decision_payload"]
+            assert payload["bull_case"] == "Synthetic upside case."
+            assert payload["bear_case"] == "Synthetic downside case."
+            assert payload["catalysts"] == ["Synthetic catalyst"]
 
     with_test_paths(verify)
 

@@ -195,28 +195,36 @@ class InvestmentDecisionLedger:
         This is an explicit recovery operation, never an automatic mutation.
         A malformed line anywhere except the tail remains an integrity error.
         """
-        if not self.path.exists():
-            return None
-        raw = self.path.read_bytes()
-        if not raw or raw.endswith(b"\n"):
-            return None
-        complete_end = raw.rfind(b"\n") + 1
-        prefix = raw[:complete_end]
-        tail = raw[complete_end:]
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        lock_path = self.path.with_suffix(self.path.suffix + ".lock")
+        lock_descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
         try:
-            json.loads(tail.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError):
-            backup = self.path.with_suffix(self.path.suffix + ".incomplete-tail")
-            backup.write_bytes(tail)
-            descriptor = os.open(self.path, os.O_WRONLY | os.O_TRUNC)
+            fcntl.flock(lock_descriptor, fcntl.LOCK_EX)
+            if not self.path.exists():
+                return None
+            raw = self.path.read_bytes()
+            if not raw or raw.endswith(b"\n"):
+                return None
+            complete_end = raw.rfind(b"\n") + 1
+            prefix = raw[:complete_end]
+            tail = raw[complete_end:]
             try:
-                os.write(descriptor, prefix)
-                os.fsync(descriptor)
-            finally:
-                os.close(descriptor)
-            self.verify()
-            return backup
-        return None
+                json.loads(tail.decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                backup = self.path.with_suffix(self.path.suffix + ".incomplete-tail")
+                backup.write_bytes(tail)
+                descriptor = os.open(self.path, os.O_WRONLY | os.O_TRUNC)
+                try:
+                    os.write(descriptor, prefix)
+                    os.fsync(descriptor)
+                finally:
+                    os.close(descriptor)
+                self.verify()
+                return backup
+            return None
+        finally:
+            fcntl.flock(lock_descriptor, fcntl.LOCK_UN)
+            os.close(lock_descriptor)
 
     @staticmethod
     def _record_hash(record_without_hash: dict[str, Any]) -> str:
