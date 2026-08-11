@@ -47,3 +47,22 @@ A draft pull request may be marked ready only when:
 7. no broker credential, order routing or real-money mode is introduced.
 
 Only the user may authorise marking a pull request ready or merging it.
+
+## Repeatable operating sequence
+
+1. Open an `Investment platform change` issue and complete its objective,
+   evidence, cheapest-implementation, risk and acceptance fields.
+2. Create one `codex/` feature branch for that issue. Codex implements only the
+   bounded objective and runs the smallest relevant deterministic tests.
+3. Open a draft pull request using the repository template. Generated research
+   outputs remain excluded or separately classified.
+4. If the issue requires frontier review, give Claude the issue requirements and
+   exact commit/PR diff read-only. Claude reports evidence-backed findings; it
+   does not edit the builder's working files.
+5. Codex fixes valid findings or records a reasoned disagreement. Critical and
+   High findings cannot be accepted as debt.
+6. Run automated tests and update the PR checklist and risk register.
+7. The user alone authorises `Ready for review` and merge.
+
+The issue form is `.github/ISSUE_TEMPLATE/investment-platform-change.yml`; the
+promotion checklist is `.github/pull_request_template.md`.
