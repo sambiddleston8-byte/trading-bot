@@ -16,11 +16,11 @@ import json
 import os
 from pathlib import Path
 import subprocess
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 from uuid import uuid4
 
 
-LEDGER_SCHEMA_VERSION = "1.0"
+LEDGER_SCHEMA_VERSION = "1.1"
 GENESIS_HASH = "0" * 64
 
 
@@ -40,6 +40,17 @@ def _canonical_json(value: Any) -> str:
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def canonical_timestamp(value: str | datetime) -> str:
+    """Return one timezone-aware UTC representation for hashing and storage."""
+    try:
+        resolved = value if isinstance(value, datetime) else datetime.fromisoformat(value)
+    except (TypeError, ValueError) as error:
+        raise ValueError(f"Invalid timestamp: {value}") from error
+    if resolved.tzinfo is None or resolved.utcoffset() is None:
+        raise ValueError("Investment timestamps must include an explicit timezone.")
+    return resolved.astimezone(timezone.utc).isoformat()
 
 
 def current_git_revision(project_root: Path | None = None) -> str:
@@ -74,6 +85,21 @@ class ModelVersion:
             "prompt_version": self.prompt_version,
             "parameters": self.parameters,
         }
+
+
+def normalize_model_version(
+    version: ModelVersion | Mapping[str, Any],
+) -> dict[str, Any]:
+    if isinstance(version, ModelVersion):
+        return version.as_dict()
+    return ModelVersion(
+        component=str(version.get("component") or ""),
+        version=str(version.get("version") or ""),
+        provider=str(version.get("provider") or "rules-based"),
+        model=version.get("model"),
+        prompt_version=version.get("prompt_version"),
+        parameters=dict(version.get("parameters") or {}),
+    ).as_dict()
 
 
 @dataclass(frozen=True)
@@ -261,6 +287,8 @@ class InvestmentDecisionLedger:
         git_revision: str | None = None,
         decided_at: str | None = None,
         decision_id: str | None = None,
+        execution_mode: str = "RECORD_ONLY",
+        supersedes_decision_id: str | None = None,
     ) -> dict[str, Any]:
         return self.append_batch(
             [{
@@ -273,6 +301,8 @@ class InvestmentDecisionLedger:
                 "git_revision": git_revision,
                 "decided_at": decided_at,
                 "decision_id": decision_id,
+                "execution_mode": execution_mode,
+                "supersedes_decision_id": supersedes_decision_id,
             }]
         )[0]
 
@@ -314,14 +344,22 @@ class InvestmentDecisionLedger:
                     )
                 seen_pending_ids.add(resolved_id_text)
                 versions = [
-                    version.as_dict() if isinstance(version, ModelVersion) else dict(version)
+                    normalize_model_version(version)
                     for version in entry.get("model_versions", [])
                 ]
+                execution_mode = str(
+                    entry.get("execution_mode") or "RECORD_ONLY"
+                ).upper()
+                if execution_mode not in {"RECORD_ONLY", "PAPER_ONLY"}:
+                    raise ValueError(f"Unsupported execution mode: {execution_mode}")
                 comparable = {
                     "schema_version": LEDGER_SCHEMA_VERSION,
                     "decision_id": resolved_id,
-                    "decided_at": entry.get("decided_at") or _utc_now(),
-                    "data_as_of": entry["data_as_of"],
+                    "supersedes_decision_id": entry.get("supersedes_decision_id"),
+                    "decided_at": canonical_timestamp(
+                        entry.get("decided_at") or _utc_now()
+                    ),
+                    "data_as_of": canonical_timestamp(entry["data_as_of"]),
                     "ticker": str(entry["ticker"]).strip().upper(),
                     "decision": str(entry["decision"]).strip().upper(),
                     "portfolio_version": entry.get("portfolio_version"),
@@ -329,7 +367,7 @@ class InvestmentDecisionLedger:
                     or current_git_revision(self.path.parent),
                     "model_versions": versions,
                     "decision_payload": entry["decision_payload"],
-                    "execution_mode": "RECORD_ONLY",
+                    "execution_mode": execution_mode,
                 }
                 prior = existing_by_id.get(resolved_id_text)
                 if prior is not None:

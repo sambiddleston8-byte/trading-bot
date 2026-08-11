@@ -5,5 +5,11 @@ from core.persistence.portfolio_repository import (
     PortfolioChange,
     PortfolioRepository,
 )
+from core.persistence.postgres_portfolio_repository import PostgresPortfolioRepository
 
-__all__ = ["PersistedPortfolioChange", "PortfolioChange", "PortfolioRepository"]
+__all__ = [
+    "PersistedPortfolioChange",
+    "PortfolioChange",
+    "PortfolioRepository",
+    "PostgresPortfolioRepository",
+]

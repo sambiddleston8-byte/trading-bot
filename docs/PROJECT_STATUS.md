@@ -8,7 +8,7 @@ real-money trading remains disabled.
 
 ## Current phase
 
-Phase 3 — AWS/cloud architecture (design only; nothing deployed).
+Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
 
 ## Completed
 
@@ -37,6 +37,14 @@ Phase 3 — AWS/cloud architecture (design only; nothing deployed).
   remain explicitly `UNKNOWN` rather than inheriting a later revision.
 - Claude's focused transaction review identified three actionable recovery and
   idempotence gaps; all were repaired with targeted regression coverage.
+- Local Docker Desktop now runs the Streamlit web app and PostgreSQL on
+  localhost only; research and monitoring workers remain manual and disabled.
+- The initial PostgreSQL schema and ten audit/persistence tables were verified.
+- Issue #7 adds a non-authoritative transactional PostgreSQL repository with
+  cross-backend hash parity, concurrent retry safety, explicit UTC timestamps,
+  exact replay checks and live-database rollback tests.
+- Claude's issue #7 challenge review found hash, concurrency, replay and audit
+  metadata gaps; all High/Medium findings were repaired and regression-tested.
 
 ## Phase 2 work
 
@@ -59,7 +67,7 @@ Phase 3 — AWS/cloud architecture (design only; nothing deployed).
 
 ## Next action
 
-Review the local-only Docker/PostgreSQL foundation under issue #5. PostgreSQL
-remains non-authoritative until both portfolio write paths use the repository
-contract and comparison/integration tests pass. Docker installation, AWS choices,
-purchasing and deployment remain separate and require explicit user approval.
+Review the transactional PostgreSQL repository under issue #7. PostgreSQL
+remains non-authoritative until both portfolio write paths are connected in
+comparison mode and their outputs agree. AWS choices, purchasing and deployment
+remain separate and require explicit user approval.
