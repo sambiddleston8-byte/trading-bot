@@ -1,0 +1,761 @@
+{
+    "Ticker": "MSFT",
+    "Research": {
+        "Ticker": "MSFT",
+        "Timestamp": "2026-08-09T19:26:54.399871",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "Microsoft Stock Forecast: Is Spending $190 Billion on AI Infrastructure in 2026 \u2014 Is MSFT a Buy at $452? - TradingKey",
+                "Link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPSzQzUHo1QjF5QktqWDB4dWJVLXhIYldVYlQ5TW14ai12WG0yQlhGcjUxSW5ZMHBtZExmNkMzVXBqd3E1Wk1vcjBsQlhDelBZQXNLQWtfTDhIZUdGVjRKYXNjZUw5RlFlMmpsNUE3Y3AxWGJIYnlVcUs3Ym1JX21CSTZfT1FkSEdHR0FjTW1MSXkyYWNicXV1Zm1nZ1VUNm1ydHMwbVl3TExqaVpjQTl3QzBaZV8tTVRtN3RmX3dGSWVTdjl6NmQtN0NNNGNwV0E?oc=5",
+                "Published": "Sun, 09 Aug 2026 00:35:33 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "MSFT Stock Gains 25% In 3 Days: Report Says New Xbox 360 Games Could Come To Windows PCs - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPT3BRak5ZNVp0aVQ5SzRpblhGSEVjd0x6QmhqVEJVR3dwakRHMndLcFlFdmt5TUZMX3doMDRjMENsbTlNZU1WMElIbVF2UlNoZnhlbmxMbFhZM202ZlRzOXNjU2R5YTI4MDZMLUVEdlpFV0QwY3dFMzd3Yjl4VENoeHJqMXVwRUd2Q1ZWWFBvTG1uanF5QWN5TkwwRU5MOEFQOFFjWUx6RjYyTDByMVprZl96dUREMEVkYU5EMVI1bjJ2c1hhZi0tdHBpckx2Yk5pdzJ0SktWZUw0WUVnQ3pZ?oc=5",
+                "Published": "Tue, 04 Aug 2026 05:11:51 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "No Hangover: Revisiting Microsoft One Week After Earnings - The Globe and Mail",
+                "Link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxNMDRtTUgwazZGSkdtQlJmeU1QMHpGTU9PQktqd2V1Y05OWWV6MFZDUmFOWTYyajRUM3N5NS1GTXBWR0F0RS01SnNFUFhSLTdKZzlMTEJWZXpVaWJHVk5Id0w2OE5zVlNPLUQybTFDaU10UTZmVndmODJhZ2VJVllXS1MyM1I4cEhCNmFPaTlPamlYVDdsOGZxaEdZYUlCYkxTUC14YnMtQ0pDQi1GME1jR2tZM0JUVTV6UkREbzhGLWRweVBZZkRDb1pRbjU3b0NDR1ZfeTVQd3piQnc?oc=5",
+                "Published": "Fri, 07 Aug 2026 12:40:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Microsoft Stock Breaks Out Into Buy Zone. Here\u2019s Why. - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNMWR6UndlZ0hmRGlxbHBqdzIwcEJxVHBZSHRRRURqOVI2cEJBeWh1UW5CM0dyQmo3ZFRucmpOaDV4aERDRURIakFoRXd1SmNZZS1YWEV1OWJmMFlaWjJDZ2k4MlFZZUI3dWlScW1kSFJvblpYclQ1ZkFVZDBnV1ZTNVNXNEpHaXJuUGFGZXRFSGdYQnp0UnZyclk1TXMtdw?oc=5",
+                "Published": "Mon, 03 Aug 2026 20:44:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "MSFT Stock Soars After Results: CFO Dismisses AI Overcapacity Narrative, Says Can Rein In Spending If Demand Changes - Stocktwits",
+                "Link": "https://news.google.com/rss/articles/CBMiigJBVV95cUxNZGh2MUotZUdqam1tQ2UtbFVpWTUzb2Q2TFZVLWFVMEtRS21ZTkNoQlNNd0xaWnBkUDVINnEwRGpHS1EzSmd2YmZVVW9RMjB0N3FGVXpnaGplNUxlcS1DUlMzdFltdklzbFAzbmlzSkxqZkhjbkFJbE9LbDhhTnVTY2ZYa1BpelI4VG45OGkzMVFkR1JNXzVPbmFvU19YSVh3elJaVFUwTUlsVjJtb2ZxblljWDd0MFpyX3lZdm9SemxBWE1CTm1xTDNEMms0RGxiZ29PbHd6QlhHLTRUenBLaVN6bXlLem5qT29xM1A3cWN4bThKaEdRVkRlZXZoLVRoSWRNUUVRRWg3UQ?oc=5",
+                "Published": "Sat, 08 Aug 2026 13:29:58 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Microsoft jumps 8% as it boosts capital spending plans, citing demand - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOZU9Obm5HZ1F4R21heXF0SGxzZlNjYVdZTVZGdXAzUzBHN1RUNi1LbnlPNHJicnEwNkxrSC1TTlBGdGhlWnR1YmNJM3dmTllxLUhpd0xmZmxsTzJmOS1WT3Y2ZWJlcXdJR2FialN0bUFaVjVWaUlxUG5BQjctWlZJNNIBhgFBVV95cUxQbGJXX29pOG1DQmVtVnhleVN5WHF3eWZSSjNUNUYyZGo0el9jUFRZYVZKZC1qTFNPVnNUUG9GM08yd3dXRUNydUx6S1JTam5UNzhldmxzd1hSREk4dENLaF9TOUx0UC1hd0Q5b2FoSGdiZlc1T3RjUnZuMnhkRWNnVkRYc0xPdw?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Going Into Earnings, Is Microsoft Stock a Buy, a Sell, or Fairly Valued? - Morningstar",
+                "Link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQUzNBTkhXakNuQnR3aHhOd3NWbWhRZnlkVEcwc2lEQm0ybFJ4U0NQaS1wMG9JODBtbi1XdEw4T0VlRF9oTEcwYzJIMlBCTW0zV0FMdTQwQWVXbTF6QzJQS043UXNTWTVzTm5sejA4S2dZTnBQNnVKOVNSOFBHZUl5REhwMWZIWm1CR0RfTFEyZ3U2Vlh4ZTdEcWtaaHAxSTVEbExpZnJxMkJzTWNyZml3?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Microsoft (NASDAQ: MSFT) Stock Price Rockets 24.6% In July On Azure Growth And Blowout Earnings - foreignpolicyjournal.com",
+                "Link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNZEw1RHBVaE9JZ2hHUlU2aTZRUzRpS1A4V1VtbXRrdHZRd3dhQUUxcGJqVVJNSkNLTVFCUHUzYlJhcDdMcUswWDNFMjVtcGZTZEpwLWhiN2xiRHpFZDBxYXBrbHpPUDVWaDZkc203RzhsYjRGSHdZaW1sOWI3MXpzal9iMER1RmJZMU9PMFVSbm1BOXZoT2dPaGxBSTZwM3N4ZDM3c0RpcnR6U1U5LXA4cnJqb2VheDlSX0lZR0dQdnRoZmkwTkZBNHlHVERQZkJmX2FCa25pZw?oc=5",
+                "Published": "Wed, 05 Aug 2026 20:33:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Microsoft's Next Earnings Report on July 29 Could Send the Stock Soaring. Here's Why. - The Motley Fool",
+                "Link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQZmpqRXhRUnRuUTVSeVI0c01lejBzSGNVbzBoWF94Rks4ZmFnZnF2RjZuRE81b1FOc20wN2g5UkdaTXUtOGE4T1dTcHZ3bVF2dEVMTmI3ZENaWW9ZWVdrQTUtYnVlZEFOTTdzMFZ6S1QwWlRzZno1VzJ1ZGZMajY5ZkkyQlBlMFpVQ01Xa0lkbW16RWxGMkZWYVRsekw0WThNVldaa0w0SHh4WlhKTnN6UEdsRENwdDU3MzJBU28zam5OZw?oc=5",
+                "Published": "Sun, 26 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "MSFT Stock Rises Premarket Ahead Of Q4 Results: CapEx, Azure Growth In Focus - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMingFBVV95cUxPeE45c3ZhVEl4dTlpVG9XbTRZckYxSUhLMmthd2NGWVVCUkJ4aEhfbDJWY0JHQV9ZVmRiYl9wb2lRN2RxYzhXaTl5V1hIWlZsTVAxMng0WWJ6NGNPcHJnb1VjSjNsUTF0YUkzRzB5SndhR0RuOFVQXzlURkpEVzl3alVYa2t0Smt0cU5yLUtjOHhrNmdFaHdLVUdvTVVaZw?oc=5",
+                "Published": "Wed, 29 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Microsoft Stock Runs Into Resistance With Earnings Next; Is Microsoft A Sell Now? - Investor's Business Daily",
+                "Link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBKTC1wUGxuWV90UG41WjMyX0dmMkx6OW05RUVqeVZkYkZWUm11RXQ4TlluOEFQaFVxRG9fU0syenVXZlFrdVZIOUQ4UEVfQ0R2SGt2a2N6QmxOSll4SGhQVXJ3REZLczQ?oc=5",
+                "Published": "Tue, 28 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "MSFT Stock Jumps 3% After-Hours \u2014 Lower-Than-Expected Q4 Capex, Strong Azure Sales Boost Sentiment - Stocktwits",
+                "Link": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxNYU5qYV81UzJiVFpaNzE4ZzlDM0NjU1RzYlNRZG9leDNzRWN0LUlkWDlJY3NseEpwVXdqN1VRZ29ENVdZMk02RkI4UE5PWWpzdUFkWU1TSnlhUkdHVkpPN3hhNGJnN3RlVlRidG1fa08tR3Z5OE1EYnlLcGM5UzgtV2VZY01KSHZUZkp5LUtQRUk2UGxkT1JNc2FMLTlkdk5yRXlBMEZnX1pOVDQxZkg5N0xqY0stSW52eVItWFVvZmVVbC1YVm5Da0pYWGVab01aZExONTZFUW1vVWNMSkVrQTBWY3lKeXoxMUN5ZVNJYw?oc=5",
+                "Published": "Fri, 07 Aug 2026 02:24:06 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Microsoft Stock Before Q4 Earnings: Buy Now or Wait for Results? - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOUDZIUE8tcWRLQTl6TXF6ek5TdzZYMk5EbmVwcmtTS1VoTllmQWlqMWRtLTJSUHBRT2xuRDZIRXNUbzlGbVFwbnhPZ1dpWFZJNU13NWIyV0hmVEo4MlNySWhJeTUtYm9vTlBnNDFTX2ZtdFFxTkZXbWE0emp0aUQ5M1FkNGt3b3pqWk0xTlYxWW5ObnV4OUNvMjR2Rjc?oc=5",
+                "Published": "Fri, 24 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Microsoft (MSFT) Reports Next Week: Wall Street Expects Earnings Growth - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMingFBVV95cUxQYXVFQWpveEM5V1ZieWgtUm9GMUJVTE5Wb2dtSGhVRDBmekU3bW5qNUhCaDBJc2tReVVycEFzdkFIYUJNVUNjdjRqM2F1QVZ1VnM0UFprdk1PZHZZdS1hUFBsRFd2V0dRZGhROHl3S0tPWWF6cy02ODJudWlPTXJINHNhVXZuTE1RQmZMYjZ0VHlydTdzR0kyd3JxM0NMUQ?oc=5",
+                "Published": "Wed, 22 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "MSFT Stock Faces A Bigger Test Than Earnings, Gene Munster Says \u2014 Why The \u2018Bot Boogeyman\u2019 Won\u2019t Go Away - TradingView",
+                "Link": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxONjNYWW5xcjZUVWhBbFlRSjlwU0VsUThhbHFReW92UEJMemNaZXlSSVVDOE1DLUw5dUNoXzRKYmZYZXd6V3dSR0hjNnhvOU9vZU81cEdJaHA4YXdXYnhZc3BWVGNWbkFqTDJVWE5wY0RGblp4LWk0anRQSG11OTBaMlNSOWc0UzM5dTYzeXZoTWkyOVRaZnpHSS1veW9oN09DVnFmRXhZVGRnQzhEenhGbXdYM3BmMl9TaXVEMlFVRjZkVFpNVko4bXRwNFRaNTh2UEZrU0E0bm91UmhvaEhJM1JZTkRZekRPVWdId0dtRkY?oc=5",
+                "Published": "Tue, 28 Jul 2026 22:31:19 GMT"
+            }
+        ],
+        "Financial Data": {
+            "Company": "Microsoft Corporation",
+            "Sector": "Technology",
+            "Industry": "Software - Infrastructure",
+            "Market Cap": 3712698548224,
+            "Revenue Growth": 0.177,
+            "Earnings Growth": 0.317,
+            "Profit Margin": 0.40305,
+            "Operating Margin": 0.45111,
+            "Forward PE": 21.299555,
+            "Trailing PE": 27.854595,
+            "PEG": 1.63,
+            "Price To Book": 8.394023,
+            "ROE": 0.34039003,
+            "ROIC": null,
+            "Beta": 1.099,
+            "Dividend Yield": 0.73
+        },
+        "SEC Filings": {
+            "Ticker": "MSFT",
+            "Timestamp": "2026-08-09T19:26:55.213679",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "10-K",
+                    "Filing Date": "2026-07-29",
+                    "Report Date": "2026-06-30",
+                    "Accession Number": "0001193125-26-323660",
+                    "Document": "msft-20260630.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm",
+                    "Type": "Annual Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-29",
+                    "Report Date": "2026-07-29",
+                    "Accession Number": "0001193125-26-323632",
+                    "Document": "msft-20260729.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323632/msft-20260729.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-05",
+                    "Report Date": "2026-06-02",
+                    "Accession Number": "0001193125-26-258667",
+                    "Document": "d26760d8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/789019/000119312526258667/d26760d8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-14",
+                    "Report Date": "2026-05-13",
+                    "Accession Number": "0001193125-26-224155",
+                    "Document": "d125909d8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/789019/000119312526224155/d125909d8k.htm",
+                    "Type": "Current Report"
+                }
+            ],
+            "Filing Count": 4
+        },
+        "News Relevance": {
+            "checked": 30,
+            "accepted": 15,
+            "rejected": 15,
+            "company": "Microsoft Corporation"
+        }
+    },
+    "Evidence": {
+        "Ticker": "MSFT",
+        "Company": null,
+        "Generated At": "2026-08-09T18:26:55.214066+00:00",
+        "Status": "COMPLETE",
+        "Summary": {
+            "Total Evidence Items": 0,
+            "Quantitative Evidence": 0,
+            "Market Evidence": 0,
+            "External Event Evidence": 0,
+            "Model Evidence": 0
+        },
+        "Evidence": {
+            "Fundamentals": [],
+            "Valuation": [],
+            "Expected Returns": [],
+            "Catalysts": []
+        },
+        "Sources": [],
+        "Output Path": "data/research/evidence/MSFT.json"
+    },
+    "Profile": {
+        "Ticker": "MSFT",
+        "Company Name": "Microsoft Corporation",
+        "Short Name": "Microsoft Corporation",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Technology",
+        "Industry": "Software - Infrastructure",
+        "Country": "United States",
+        "City": "Redmond",
+        "Website": "https://www.microsoft.com",
+        "Employees": 223000,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Satya  Nadella",
+                "age": 58,
+                "title": "Chairman & CEO",
+                "yearBorn": 1967,
+                "fiscalYear": 2025,
+                "totalPay": 12251294,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Bradford L. Smith LCA",
+                "age": 66,
+                "title": "President & Vice Chairman",
+                "yearBorn": 1959,
+                "fiscalYear": 2025,
+                "totalPay": 4532750,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Amy E. Hood",
+                "age": 53,
+                "title": "Executive VP & CFO",
+                "yearBorn": 1972,
+                "fiscalYear": 2025,
+                "totalPay": 4444191,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Takeshi  Numoto",
+                "age": 54,
+                "title": "Executive VP & Chief Marketing Officer",
+                "yearBorn": 1971,
+                "fiscalYear": 2025,
+                "totalPay": 2871250,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Judson B. Althoff",
+                "age": 52,
+                "title": "Executive VP & CEO of Commercial Business",
+                "yearBorn": 1973,
+                "fiscalYear": 2025,
+                "totalPay": 4490115,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Carolina  Dybeck Happe",
+                "age": 53,
+                "title": "Executive VP & COO",
+                "yearBorn": 1972,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Alice L. Jolla",
+                "age": 59,
+                "title": "Corporate VP & Chief Accounting Officer",
+                "yearBorn": 1966,
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Matthew  Kerner",
+                "title": "CTO & Corporate VP of Worldwide Sales and Solutions",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Jonathan  Neilson",
+                "title": "Vice President of Investor Relations",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Jonathan M. Palmer",
+                "title": "Corporate Vice President & Chief Legal Officer",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "Microsoft Corporation, a technology company, develops and supports a portfolio of technology solutions for individuals and businesses worldwide. It operates through three segments: Productivity and Business Processes, Intelligent Cloud, and More Personal Computing. The Productivity and Business Processes segment offers Microsoft 365 Commercial, Enterprise Mobility + Security, Power BI, Exchange, SharePoint, Microsoft Teams, Microsoft 365 Security and Compliance, Microsoft 365 Copilot, and Windows Commercial on-premises and Office licensed on-premises. This segment also provides Microsoft 365 Consumer products and cloud services; LinkedIn, including talent solutions, marketing solutions, subscriptions, and sales solutions; Dynamics 365, a set of cloud-based applications; and on-premises ERP and CRM applications. The Intelligent Cloud segment offers server products and cloud services; cloud and AI consumption-based services, GitHub cloud services, health and life sciences cloud services, as well as virtual desktop offerings, and other cloud services; SQL Server, Windows Server, Visual Studio, System Center, and related client access licenses; and enterprise support services, industry solutions, Microsoft partner network, and learning experience. The More Personal Computing segment provides Windows OEM licensing and devices comprising Surface and PC accessories; XBOX hardware, and XBOX first- and third-party content and services; XBOX Game Pass and other subscriptions; XBOX Cloud Gaming, advertising, and other cloud services; and search advertising consisting of Bing, Copilot, Microsoft News, Microsoft Edge, and third-party affiliates. It sells its products through partners and retail networks. The company was founded in 1975 and is headquartered in Redmond, Washington.",
+        "Market Cap": 3712698548224,
+        "Enterprise Value": 3764668596224,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "Microsoft Corporation",
+        "Symbol": "MSFT",
+        "Exchange": "NMS",
+        "Sector": "Technology",
+        "Industry": "Software - Infrastructure",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 223000,
+        "Market Cap": 3712698548224,
+        "Enterprise Value": 3764668596224,
+        "Revenue": 331839012864,
+        "Net Income": 133748998144,
+        "PE": 27.854595,
+        "Forward PE": 21.299555,
+        "PEG": 1.63,
+        "Price to Book": 8.394023,
+        "Price to Sales": 11.188252,
+        "Dividend Yield": 0.73,
+        "Beta": 1.099,
+        "52 Week High": 553.72,
+        "52 Week Low": 349.2,
+        "Current Price": 499.99,
+        "Previous Close": 499.86
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 85,
+        "Revenue History": {
+            "2026-06-30 00:00:00": 331839000000.0,
+            "2025-06-30 00:00:00": 281724000000.0,
+            "2024-06-30 00:00:00": 245122000000.0,
+            "2023-06-30 00:00:00": 211915000000.0
+        },
+        "Revenue CAGR": 16.12397915820203,
+        "Net Income History": {
+            "2026-06-30 00:00:00": 133749000000.0,
+            "2025-06-30 00:00:00": 101832000000.0,
+            "2024-06-30 00:00:00": 88136000000.0,
+            "2023-06-30 00:00:00": 72361000000.0
+        },
+        "Earnings CAGR": 22.723762407374192,
+        "Operating Cash Flow": {
+            "2026-06-30 00:00:00": 182935000000.0,
+            "2025-06-30 00:00:00": 136162000000.0,
+            "2024-06-30 00:00:00": 118548000000.0,
+            "2023-06-30 00:00:00": 87582000000.0
+        },
+        "Free Cash Flow": {
+            "2026-06-30 00:00:00": 66987000000.0,
+            "2025-06-30 00:00:00": 71611000000.0,
+            "2024-06-30 00:00:00": 74071000000.0,
+            "2023-06-30 00:00:00": 59475000000.0
+        },
+        "Profit Margin": 0.40305,
+        "Operating Margin": 0.45111,
+        "ROIC": null,
+        "Total Debt": 56826000000.0,
+        "Cash": 20935000000.0,
+        "Net Debt": 35891000000.0,
+        "Strengths": [
+            "Strong multi-year revenue growth.",
+            "Strong multi-year earnings growth.",
+            "The company generates positive operating cash flow.",
+            "The company generates positive free cash flow.",
+            "Strong net profit margin.",
+            "Strong operating margin."
+        ],
+        "Weaknesses": [
+            "The company has net debt."
+        ],
+        "Summary": "Financial fundamentals are exceptionally strong."
+    },
+    "Moat Analysis": {
+        "Moat Score": 85,
+        "Classification": "WIDE MOAT",
+        "Gross Margin": 0.67944,
+        "Operating Margin": 0.45111,
+        "ROE": 0.34039003,
+        "ROIC": null,
+        "Strengths": [
+            "Very strong gross margins suggest significant pricing power or intellectual-property advantages.",
+            "Strong operating margins indicate attractive economics.",
+            "High return on equity.",
+            "Very large scale can provide meaningful competitive advantages.",
+            "Large organisational scale may support significant operational advantages."
+        ],
+        "Weaknesses": [],
+        "Summary": "The available financial evidence suggests a strong and potentially durable competitive advantage."
+    },
+    "Industry Analysis": {
+        "Industry Score": 88,
+        "Sector": "Technology",
+        "Industry": "Software - Infrastructure",
+        "Assessment": "EXCELLENT",
+        "Strengths": [
+            "Sector: Technology",
+            "Industry: Software - Infrastructure",
+            "The company has exceptional scale within its market.",
+            "Operating profitability is strong.",
+            "High gross margins suggest strong economics."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company operates in the Software - Infrastructure industry within the Technology sector. The current industry/competitive assessment is EXCELLENT."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 50,
+        "Sector": "Technology",
+        "Industry": "Software - Infrastructure",
+        "Peers": [],
+        "Subject Company": {
+            "Ticker": "MSFT",
+            "Company": "Microsoft Corporation",
+            "Market Cap": 3712698548224,
+            "PE": 27.854595,
+            "Forward PE": 21.299555,
+            "Revenue Growth": 0.177,
+            "Profit Margin": 0.40305,
+            "Operating Margin": 0.45111,
+            "ROE": 0.34039003,
+            "ROIC": null
+        },
+        "Valuation Rank": null,
+        "Growth Rank": null,
+        "Profitability Rank": null,
+        "Assessment": "The company does not currently stand out strongly against its peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 85,
+        "Assessment": "STRONG",
+        "Earnings Date": "None",
+        "Positive Surprises": 22,
+        "Negative Surprises": 1,
+        "Trailing PE": 27.854595,
+        "Forward PE": 21.299555,
+        "Revenue Growth": 0.177,
+        "Earnings Growth": 0.317,
+        "Strengths": [
+            "The company has frequently exceeded recent EPS estimates.",
+            "Forward valuation is below trailing valuation, suggesting expected earnings growth."
+        ],
+        "Weaknesses": [],
+        "Catalysts": [
+            "Continued earnings beats could support positive sentiment.",
+            "Strong earnings growth is a positive fundamental catalyst."
+        ],
+        "Risks": [],
+        "Summary": "Earnings intelligence is currently strong. The system identified 22 recent positive earnings surprises and 1 negative surprises."
+    },
+    "Overall Score": 60.2,
+    "Rating": "\u2605\u2605\u2606\u2606\u2606  WEAK",
+    "Business Quality": 52.7,
+    "Valuation": 50,
+    "Technical": 76.32,
+    "Risk": 66.0,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 80,
+        "Profitability": 48.1,
+        "Balance Sheet": 30,
+        "Business Quality": 52.7,
+        "Confidence": 85,
+        "Strengths": [
+            "Strong long-term revenue growth"
+        ],
+        "Weaknesses": [
+            "Weak profitability",
+            "High debt relative to cash"
+        ],
+        "Summary": "The business demonstrates relatively weak financial quality."
+    },
+    "Valuation Analysis": {
+        "PE": 27.854595,
+        "Forward PE": 21.299555,
+        "PEG": 1.63,
+        "Price to Sales": 11.188252,
+        "Price to Book": 8.394023,
+        "Valuation Score": 50,
+        "Confidence": 80,
+        "Strengths": [],
+        "Weaknesses": [],
+        "Summary": "Shares appear expensive based on current valuation metrics."
+    },
+    "Technical Analysis": {
+        "Status": "COMPLETE",
+        "Reason": "Multi-horizon momentum, trend, drawdown and persistence are combined as technical context.",
+        "Data Points": 251,
+        "Momentum": 91.62,
+        "Moving Average": 70.61,
+        "Drawdown": 77.03,
+        "Trend Persistence": 53.33,
+        "Support Resistance": 75.1,
+        "Volume Confirmation": 46.58,
+        "Technical Score": 76.32,
+        "Return 20d": 0.298338,
+        "Return 60d": 0.228813,
+        "Return 120d": 0.251412,
+        "Return 252d": null,
+        "Current Price": 499.989990234375,
+        "Moving Average 20": 423.8355,
+        "Moving Average 50": 407.012,
+        "Moving Average 200": 431.8308,
+        "Drawdown From 252d High": -0.071787,
+        "Support Level": 352.83,
+        "Resistance Level": 499.86,
+        "Range Position": 1.000884,
+        "Volume Ratio 20d To 60d": 0.9587,
+        "Fibonacci Window Low": 352.83,
+        "Fibonacci Window High": 538.6586,
+        "Fibonacci Levels": {
+            "23.6%": 494.803,
+            "38.2%": 467.6721,
+            "50.0%": 445.7443,
+            "61.8%": 423.8165,
+            "78.6%": 392.5973
+        },
+        "Nearest Fibonacci Level": "23.6%",
+        "Distance To Nearest Fibonacci Level": 0.010374,
+        "Fibonacci Note": "Fibonacci levels are descriptive range context only and are not a standalone predictive allocation signal."
+    },
+    "Risk Analysis": {
+        "Risk Score": 66.0,
+        "Beta": 1.099,
+        "Annualized Volatility": 0.3216,
+        "Downside Volatility": 0.2068,
+        "Maximum Drawdown": -0.344984,
+        "Debt to Cash": 2.7144,
+        "Risk Components": [
+            {
+                "factor": "beta",
+                "impact": "LOW",
+                "reason": "Beta exceeds 1.0."
+            },
+            {
+                "factor": "debt_to_cash",
+                "impact": "MEDIUM",
+                "reason": "Debt exceeds cash by more than two times."
+            },
+            {
+                "factor": "volatility",
+                "impact": "LOW",
+                "reason": "Annualised volatility exceeds 25%."
+            },
+            {
+                "factor": "maximum_drawdown",
+                "impact": "MEDIUM",
+                "reason": "Observed drawdown exceeds 25%."
+            }
+        ],
+        "Method": "BETA_BALANCE_SHEET_VOLATILITY_DOWNSIDE_AND_DRAWDOWN_CONTEXT"
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "Microsoft Sits 12% Below Its High After the Largest One-Day Market Value Gain on Record. Here's What History Suggests Comes Next.",
+            "'Very little to like': Wall Street assesses surprise July jobs report as stocks jump",
+            "How Much Do You Need Invested by 50 to Retire on Dividends at 60?",
+            "This Trillion-Dollar AI Stock Offers Better Quantum Computing Exposure Than IonQ, Rigetti, or D-Wave at a Multi-Year Valuation Low",
+            "Geron (GERN) Is Up 14.7% After Issuing First RYTELO Revenue Guide And Narrowing Losses - Has The Bull Case Changed?",
+            "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+            "Moonshot AI's 2.8 Trillion Parameter Model Just Became the First From China to Top a Major Coding Benchmark",
+            "Doximity (DOCS) Is Up 31.0% After Raising Revenue Outlook On Clinical AI Adoption - Has The Bull Case Changed?",
+            "Microsoft Shows the \"Magnificent Seven\" What AI Investment Looks Like",
+            "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner"
+        ],
+        "Catalysts": [
+            "Microsoft Sits 12% Below Its High After the Largest One-Day Market Value Gain on Record. Here's What History Suggests Comes Next.",
+            "'Very little to like': Wall Street assesses surprise July jobs report as stocks jump",
+            "How Much Do You Need Invested by 50 to Retire on Dividends at 60?",
+            "This Trillion-Dollar AI Stock Offers Better Quantum Computing Exposure Than IonQ, Rigetti, or D-Wave at a Multi-Year Valuation Low",
+            "Geron (GERN) Is Up 14.7% After Issuing First RYTELO Revenue Guide And Narrowing Losses - Has The Bull Case Changed?",
+            "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+            "Moonshot AI's 2.8 Trillion Parameter Model Just Became the First From China to Top a Major Coding Benchmark",
+            "Doximity (DOCS) Is Up 31.0% After Raising Revenue Outlook On Clinical AI Adoption - Has The Bull Case Changed?",
+            "Microsoft Shows the \"Magnificent Seven\" What AI Investment Looks Like",
+            "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner"
+        ],
+        "Events": [
+            {
+                "headline": "Microsoft Sits 12% Below Its High After the Largest One-Day Market Value Gain on Record. Here's What History Suggests Comes Next.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "'Very little to like': Wall Street assesses surprise July jobs report as stocks jump",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "How Much Do You Need Invested by 50 to Retire on Dividends at 60?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "This Trillion-Dollar AI Stock Offers Better Quantum Computing Exposure Than IonQ, Rigetti, or D-Wave at a Multi-Year Valuation Low",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Geron (GERN) Is Up 14.7% After Issuing First RYTELO Revenue Guide And Narrowing Losses - Has The Bull Case Changed?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Moonshot AI's 2.8 Trillion Parameter Model Just Became the First From China to Top a Major Coding Benchmark",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Doximity (DOCS) Is Up 31.0% After Raising Revenue Outlook On Clinical AI Adoption - Has The Bull Case Changed?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Microsoft Shows the \"Magnificent Seven\" What AI Investment Looks Like",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 55,
+        "Confidence": 75,
+        "Strengths": [
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [
+            "Very low insider ownership"
+        ],
+        "Summary": "Management quality raises some concerns.",
+        "Insider Ownership": 0.00087,
+        "Institutional Ownership": 0.75991994,
+        "Employees": 223000
+    },
+    "Strengths": [
+        "Positive recent news"
+    ],
+    "Weaknesses": [],
+    "Summary": "Recent news flow has been supportive.",
+    "Report": "============================================================\nInvestment Report: MSFT\n============================================================\n\nOverall Rating : \u2605\u2605\u2606\u2606\u2606  WEAK\nOverall Score  : 60.2\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nRecent news flow has been supportive.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 52.7\nValuation        : 50\nTechnical        : 76.32\nRisk             : 66.0\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 Microsoft Sits 12% Below Its High After the Largest One-Day Market Value Gain on Record. Here's What History Suggests Comes Next.\n\u2022 'Very little to like': Wall Street assesses surprise July jobs report as stocks jump\n\u2022 How Much Do You Need Invested by 50 to Retire on Dividends at 60?\n\u2022 This Trillion-Dollar AI Stock Offers Better Quantum Computing Exposure Than IonQ, Rigetti, or D-Wave at a Multi-Year Valuation Low\n\u2022 Geron (GERN) Is Up 14.7% After Issuing First RYTELO Revenue Guide And Narrowing Losses - Has The Bull Case Changed?\n\n============================================================",
+    "Catalysts": [
+        "Microsoft Sits 12% Below Its High After the Largest One-Day Market Value Gain on Record. Here's What History Suggests Comes Next.",
+        "'Very little to like': Wall Street assesses surprise July jobs report as stocks jump",
+        "How Much Do You Need Invested by 50 to Retire on Dividends at 60?",
+        "This Trillion-Dollar AI Stock Offers Better Quantum Computing Exposure Than IonQ, Rigetti, or D-Wave at a Multi-Year Valuation Low",
+        "Geron (GERN) Is Up 14.7% After Issuing First RYTELO Revenue Guide And Narrowing Losses - Has The Bull Case Changed?",
+        "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+        "Moonshot AI's 2.8 Trillion Parameter Model Just Became the First From China to Top a Major Coding Benchmark",
+        "Doximity (DOCS) Is Up 31.0% After Raising Revenue Outlook On Clinical AI Adoption - Has The Bull Case Changed?",
+        "Microsoft Shows the \"Magnificent Seven\" What AI Investment Looks Like",
+        "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner"
+    ],
+    "Headlines": [
+        "Microsoft Sits 12% Below Its High After the Largest One-Day Market Value Gain on Record. Here's What History Suggests Comes Next.",
+        "'Very little to like': Wall Street assesses surprise July jobs report as stocks jump",
+        "How Much Do You Need Invested by 50 to Retire on Dividends at 60?",
+        "This Trillion-Dollar AI Stock Offers Better Quantum Computing Exposure Than IonQ, Rigetti, or D-Wave at a Multi-Year Valuation Low",
+        "Geron (GERN) Is Up 14.7% After Issuing First RYTELO Revenue Guide And Narrowing Losses - Has The Bull Case Changed?",
+        "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+        "Moonshot AI's 2.8 Trillion Parameter Model Just Became the First From China to Top a Major Coding Benchmark",
+        "Doximity (DOCS) Is Up 31.0% After Raising Revenue Outlook On Clinical AI Adoption - Has The Bull Case Changed?",
+        "Microsoft Shows the \"Magnificent Seven\" What AI Investment Looks Like",
+        "Tenable (TENB) Widens Its AI Security Net Just As Profits Turn A Corner"
+    ],
+    "Investment Committee": {
+        "Committee Score": 50.0,
+        "Factor Score": 50.0,
+        "Expected Return Score": 50.0,
+        "Expected Return": 0.0,
+        "Expected Return Confidence": 50.0,
+        "Expected Return Analysis": null,
+        "Recommendation": "REDUCE / AVOID",
+        "Confidence": 78.0,
+        "Adaptive Weights": {
+            "Business Quality": 0.14285714285714285,
+            "Financial Strength": 0.14285714285714285,
+            "Valuation": 0.09523809523809523,
+            "Growth": 0.14285714285714285,
+            "Profitability": 0.14285714285714285,
+            "Momentum": 0.14285714285714285,
+            "Risk": 0.09523809523809523,
+            "Size": 0.023809523809523808,
+            "Balance Sheet": 0.07142857142857142,
+            "Dividend": 0.0
+        },
+        "Factor Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Specialist Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Learning Enabled": false,
+        "Strengths": [],
+        "Concerns": [
+            "Expected return is limited at 0.0%."
+        ],
+        "Summary": "The Investment Committee assigns 50.0/100 and recommends REDUCE / AVOID. Expected return is 0.0% over 252 days. Confidence is 78.0%."
+    },
+    "Position Sizing": {
+        "Allocation": 0.0,
+        "Allocation %": 0.0,
+        "Max Position %": 10.0,
+        "Min Position %": 1.0,
+        "Max Sector %": 25.0
+    },
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": []
+    }
+}

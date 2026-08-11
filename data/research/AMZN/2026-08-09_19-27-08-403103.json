@@ -1,0 +1,853 @@
+{
+    "Ticker": "AMZN",
+    "Research": {
+        "Ticker": "AMZN",
+        "Timestamp": "2026-08-09T19:27:05.863802",
+        "Sources": [
+            "Google News",
+            "Yahoo Finance",
+            "SEC"
+        ],
+        "News": [
+            {
+                "Source": "Google News",
+                "Title": "Amazon.com Announces Second Quarter Results - Amazon Investor Relations",
+                "Link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOZExYaC1BN1dHSmNVeXVxYjdmTVB1Mk9zQTkta2hBZUJKc2FuTWhmNmdPRngzcFF3MUtNc1U4ODBEc2wxYmVoVWZIemI1c1E1elh5OGs2N2RhUHZzdnN6S3RNUDlsYmZSQWpsdWgtSlVrRm9xWkVsZ2RhQ3pxbjRWeGdqMlJmM1g3WUZacmU5U0xVSkdpQklvRHdyU1JwWkhySEN0NW0xOWdabFZ5eFRn?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Is Amazon Stock a Smart Buy Now Given Its AI Strategy and AWS Growth Potential? - TradingKey",
+                "Link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPd3BNdk13VFlvVE9NM1B4cUNVaGtzcktFaDJ3NVVld2xXd3NYNUc4QW13SE9seVZUMi1fU0Fic3drb1J0b1daWk1oekZQbnVTcEk1Q1JKT1FGX1QyMkFZME5UTGlxamtPaThsdnF3WXl1c2ltdkNzdXFvUndKaHJ0djZ4bjBLT3p4SHdvVDl4d3pGaXpaRWVwUkIxY2hHTG5NMF9FVTdMbzBGM1l6NzVFdExwSnlpX2dfZFk4RzJOQnZLVVhpUktCZzQ5dVByS3JZc0JsQ2Y4UQ?oc=5",
+                "Published": "Sun, 09 Aug 2026 05:56:09 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon tops $3 trillion market cap as stock continues post-earnings surge - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5qVDNrbTdTYVBLTUV3RXFZZkVrT21nWE9DRXJwcFQtYmtYTTlZSlAxNGM3aUxBTVVSTVVrY3hIdkpIeWcyMENiWUExbEdhR1BtRXNJb3lsZlFJdWZNcEdaaW11Wk9rdk51aUZmSTd2Sl9ZakZILWlpWUNHS2lmYVnSAYQBQVVfeXFMUERiZ2wtdTI0YjRhUDl6RnVkNmhtYWFKYUVEWkRXR1FySll6Y0czZ2FuUm5ITjZGUFF2UFZxSlU3Yk10Y2tiRnlBNmpBR09KQmNuVmZfMXA2b0p6U0kwcmxsSThUUWVHUWQ3ekJOV1l6RTYtU2xfODhFb0kwRlAxT2EtOXFr?oc=5",
+                "Published": "Mon, 03 Aug 2026 15:05:10 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Apple and Amazon report rising revenues as investors turn on some tech stocks - The Guardian",
+                "Link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOaFZHR2RMeDVCeEU3N3BMb0pTaXRFRkFlb2xRYW9fWjEyNnhPV3ZQWkZXVlN5LVpPUms2LVhLd2FfbkhBbDEzM1RuanJoNTlGSk9aajJoX3hlNlg5UExodWJPWHZYRnF6aXplX0Z4SjlLdGxQbWJsa0w5bXNYT0JmYUpGLUpoR1NKRHViX1NhUjc?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon Reports Fifth Straight Quarter of Cloud Sales Growth - Bloomberg.com",
+                "Link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOcWRYZGJicTNSejFMQXZLTnBzS21ENDVSZDc4T2FHdDZUUk11X2c3cURqYnV6ekNRVmZKbXFPQkVoa2hlUGt3VDFCdUNOYjYwQnZkS3E2azFybTNrdWlieGlpbWhnQllCdUlUMnFCY05qdUoyRkotYWFqTDlhRllDaTFtWVZmREpPdXJ4QWxOcDUwaXhINHBzaC1rMEZ5R0d5Z0lHNnRVTWxIeUFOS1ZF?oc=5",
+                "Published": "Fri, 31 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon increases AI infrastructure spending to $220bn this year - Financial Times",
+                "Link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQYzJLMGFEaU1ZUFlOOHhFMXVsMzVBU05TS1hQWFctYXRFNlFHSEFCV3VCS1pXVC1EQi1POUV6eEpuMmNtWTRaMzlhSGtmbmVjTXhWTmlrSVVGTlBkc1dzanNQTk9MUHpZV1ZvLVlweTNNTXVvN2Q5ZmlIRnVtRy0xcjFjelI?oc=5",
+                "Published": "Fri, 31 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Going Into Earnings, Is Amazon Stock a Buy, a Sell, or Fairly Valued? - Morningstar",
+                "Link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQYVhlWkV1eFFZaGlyQVJZQjNONzRicU5DR0xkVHRYXzFRX3BFTm5vWGVfTF9ZcURwMkJhXzNnci1xOXBUV1FNSUZ4VzNLSGltWjcweFFwT0NaNEM0R01XaE55TXF2NkpENjJ6RjdDQkNFQTJaU2NIbXZKZjAzZm13M3NSM1N0Nm1vRDRqT3I1VFI0b21fcC0zSnNZNmxjOEVqakh0LTNnNmdWRUE?oc=5",
+                "Published": "Mon, 27 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon Shares Jump as Cloud Sales\u2014and Spending\u2014Accelerate - WSJ",
+                "Link": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBDRDVENVllMTNvS05QVHdsMUdKbDB2NjRFRGxTWmNjUkFaYTFfeVBvTDQyN3NSR2lpR0xHejZSX1VtR0wxeTN2S1RKYWlZclI0SkRoY1VBNW1vdXd0dkxxei1RRnlnMkNjMzJZYm01SjBxSURRWmNzTVBEWQ?oc=5",
+                "Published": "Thu, 30 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon Stock Just Hit a Major Hurdle Ahead of Earnings - Yahoo Finance",
+                "Link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQY3dZTHNoV0k2TDJXVTdMRXBpWGlqdEw0MS1BMDFxcDVsX0xGN3lHQTk5R0FMNFVfVkhXVHlZWkZJQnlJWG1mbGs4aUhRRGlBMUM3dE1DdktWS2NWRUJ1MUowcm9MOUpLSjFrVHI1LTRDaTRFTzdzRjdoMVhmX3k3cHhvRWdnX0lNQ292eHFkTmplWS1URXp3?oc=5",
+                "Published": "Sun, 26 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon Could Soon Surpass Nvidia and Become The World's Most Profitable Company. 2030 Profits Could Exceed $500 Billion. - 24/7 Wall St.",
+                "Link": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxOYXdocHBlb2x3LTZkOWVlaXNmRTVFejhWSUZWN18xTnhaU3hETmFpX1dHcng0ak1VdzlDUS05b0NaemJsU1kwT2hUYnR6WVpMTEdBOWFpdFdud1FrdlZMU1QwR1VfOEoyUXFILWZ5TWg3QnBSWW5QLV8zdmQwTU82amRJdVoxeTJpS09uWUktZEJJVm95aFRMcmZMQUFoWWdsdlRhNzhrZDZUTGhtTktQY3g3NDRaclNRYnlWbVhraC1EMHZvT2o2Rk80a05zMmtuMkFUbHVQeHRxWEljTWZnZEIxcGh1VnhEUktrdlctOW1ZQQ?oc=5",
+                "Published": "Tue, 04 Aug 2026 16:33:06 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon lifts investment plans after strong cloud sales; shares jump - Reuters",
+                "Link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOY0xqQmlIUXJydk1wNzhibDVjTzVaekhCb3A1NWs2cm1aQUVtWU5tVEswRkhpdjE4Z3hzVk5MbmtBWUYtdnlPT3Q5a3lDRUdYd0prRnJhWXBqN1dpTVB3N0dFQW1oUGZYWHgyX19maWlvQkNKWnpBXzNCSUdKcThxdWxGTkhoTVZsOHdGZENlMXZHb1NnYzY2Y2ZBRVVkVURPd0pKeHZVb2ZjNzNGMnpTLUNWeE8?oc=5",
+                "Published": "Fri, 31 Jul 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon (AMZN) Shares Skyrocket, What You Need To Know - StockStory",
+                "Link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPTEV1Q3JISEd4a0d6ODFnLUlqS25maEdKbXV3Unh6Ym11ajdqN2xUQUFlazVLclZ3dDN0cXRnQzc3c1NTV0w4d0lWRFRTS0JVdzBpU195cGQtUmhNd21PUFB4YTRHcFVMdklvbmhGZFVvTDBHZEQyWTJDLUJVbjZTMkJPa2FPajUtUGFtVHJ4RXczelozN3hfVENwMldVT0xfR21wc0lUVHRYT0E0WjRSdy1B?oc=5",
+                "Published": "Fri, 31 Jul 2026 15:25:52 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon Stock Price Forecast: Can Shares Keep Rising After Market Cap Hits $3 Trillion for First Time? - TradingKey",
+                "Link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOR0gtajJSbjM3NV93N25KeHhrdTlQUUNhc0M3bTdoVDEtV2stT0xlY1I0SldhSnZiYzl2UEo1NUlYWF9UU013ejBtZ0JQeVExYUdsZHd0emVrYU9Da2FPajlGU1ZmTGZGZHp5SjJlejRYdUI3d3hkd25NWkF6US1Bdmc3WDFmV1hvVVljRTh6LVJCZm10WFhzS3BlLTFWSGphclcyZlo2ZjdvbWo2Uk1XeVV3M004d2FzMmo3eEdURlQ3MnduaTdLNUs1UC03T0o3M1RLUGFmZDQzMnVKUHBTY1RGZnI?oc=5",
+                "Published": "Sun, 09 Aug 2026 03:37:48 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Stocks making the biggest moves midday: Palantir, Amazon, SpaceX, Sandisk, Snap & more - CNBC",
+                "Link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNMkEydnA2SDNxU25xUXdXRkowbElia3dGRF95dDMyQTNkMzYyWmJOOVlyc3k1NzRpUEVZVjF2cTZlWm1mNWJCbGNFeFdkQ1RLa0pxU2dWRkhnakVHTXNUcjlfM21NcXFEZmN4UWpJWkhHNVFnWjBPbGdiNEw5MDlmVjgySFlCNDM1NUNQWHdkQ25jOTkyWUFFSkljZ212WGdvTWc?oc=5",
+                "Published": "Tue, 04 Aug 2026 16:59:49 GMT"
+            },
+            {
+                "Source": "Google News",
+                "Title": "Amazon.com Announces First Quarter Results - Amazon Investor Relations",
+                "Link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxOU0Q2ZUxLQTRVZWJCMFlBMU5jbDF0cGlEakF1bi12M24xY2JIR3c1VndtOF91R2pXOVdrNGJRb1lHX1FnMHZfRlBZdmtaM1BGZndTYmZ6ZXUxOVdGN3Y4UFFpNWRSS1JyRGxCSGdDc3B1emtIMXRmc3BYTlg4c1MzbElPVWxqZWItYVhQaG5XblgwV2t1ZC1MaENVdUpScWhrOE1mOHlPUTlTOFNON1pFQkQ3ZG9TMDE5NC1hcS13?oc=5",
+                "Published": "Wed, 29 Apr 2026 07:00:00 GMT"
+            },
+            {
+                "Source": "Yahoo Finance",
+                "Title": "Jeff Bezos breaks his own Amazon record",
+                "Link": "https://finance.yahoo.com/markets/stocks/articles/jeff-bezos-breaks-own-amazon-140700871.html",
+                "Published": "2026-08-09T14:07:00Z"
+            }
+        ],
+        "Financial Data": {
+            "Company": "Amazon.com, Inc.",
+            "Sector": "Consumer Cyclical",
+            "Industry": "Internet Retail",
+            "Market Cap": 2960627335168,
+            "Revenue Growth": 0.196,
+            "Earnings Growth": 2.423,
+            "Profit Margin": 0.1744,
+            "Operating Margin": 0.13689,
+            "Forward PE": 26.569765,
+            "Trailing PE": 22.08206,
+            "PEG": 1.46,
+            "Price To Book": 5.365549,
+            "ROE": 0.30558002,
+            "ROIC": null,
+            "Beta": 1.454,
+            "Dividend Yield": null
+        },
+        "SEC Filings": {
+            "Ticker": "AMZN",
+            "Timestamp": "2026-08-09T19:27:06.847954",
+            "Source": "SEC",
+            "Filings": [
+                {
+                    "Form": "13F-HR",
+                    "Filing Date": "2026-08-06",
+                    "Report Date": "2026-06-30",
+                    "Accession Number": "0001104659-26-092052",
+                    "Document": "xslForm13F_X02/primary_doc.xml",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926092052/xslForm13F_X02/primary_doc.xml",
+                    "Type": "Institutional Holdings"
+                },
+                {
+                    "Form": "10-Q",
+                    "Filing Date": "2026-07-31",
+                    "Report Date": "2026-06-30",
+                    "Accession Number": "0001018724-26-000026",
+                    "Document": "amzn-20260630.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/amzn-20260630.htm",
+                    "Type": "Quarterly Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-30",
+                    "Report Date": "2026-07-30",
+                    "Accession Number": "0001018724-26-000024",
+                    "Document": "amzn-20260730.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260730.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-07-09",
+                    "Report Date": "2026-07-09",
+                    "Accession Number": "0001104659-26-082293",
+                    "Document": "tm2619352d4_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926082293/tm2619352d4_8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-12",
+                    "Report Date": "2026-06-12",
+                    "Accession Number": "0001104659-26-073562",
+                    "Document": "tm2613616d5_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926073562/tm2613616d5_8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-06-10",
+                    "Report Date": "2026-06-08",
+                    "Accession Number": "0001104659-26-072140",
+                    "Document": "tm2613616d4_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926072140/tm2613616d4_8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "8-K",
+                    "Filing Date": "2026-05-22",
+                    "Report Date": "2026-05-20",
+                    "Accession Number": "0001104659-26-065717",
+                    "Document": "tm2614288d1_8k.htm",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926065717/tm2614288d1_8k.htm",
+                    "Type": "Current Report"
+                },
+                {
+                    "Form": "13F-HR",
+                    "Filing Date": "2026-05-05",
+                    "Report Date": "2026-03-31",
+                    "Accession Number": "0001104659-26-055638",
+                    "Document": "xslForm13F_X02/primary_doc.xml",
+                    "URL": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926055638/xslForm13F_X02/primary_doc.xml",
+                    "Type": "Institutional Holdings"
+                }
+            ],
+            "Filing Count": 8
+        },
+        "News Relevance": {
+            "checked": 30,
+            "accepted": 16,
+            "rejected": 14,
+            "company": "Amazon.com, Inc."
+        }
+    },
+    "Evidence": {
+        "Ticker": "AMZN",
+        "Company": null,
+        "Generated At": "2026-08-09T18:27:06.848329+00:00",
+        "Status": "COMPLETE",
+        "Summary": {
+            "Total Evidence Items": 0,
+            "Quantitative Evidence": 0,
+            "Market Evidence": 0,
+            "External Event Evidence": 0,
+            "Model Evidence": 0
+        },
+        "Evidence": {
+            "Fundamentals": [],
+            "Valuation": [],
+            "Expected Returns": [],
+            "Catalysts": []
+        },
+        "Sources": [],
+        "Output Path": "data/research/evidence/AMZN.json"
+    },
+    "Profile": {
+        "Ticker": "AMZN",
+        "Company Name": "Amazon.com, Inc.",
+        "Short Name": "Amazon.com, Inc.",
+        "Exchange": "NMS",
+        "Quote Type": "EQUITY",
+        "Sector": "Consumer Cyclical",
+        "Industry": "Internet Retail",
+        "Country": "United States",
+        "City": "Seattle",
+        "Website": "https://www.amazon.com",
+        "Employees": 1595000,
+        "CEO": [
+            {
+                "maxAge": 1,
+                "name": "Mr. Jeffrey P. Bezos",
+                "age": 61,
+                "title": "Founder & Executive Chairman",
+                "yearBorn": 1964,
+                "fiscalYear": 2025,
+                "totalPay": 1681840,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Andrew R. Jassy",
+                "age": 57,
+                "title": "President, CEO & Director",
+                "yearBorn": 1968,
+                "fiscalYear": 2025,
+                "totalPay": 2069861,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Brian T. Olsavsky",
+                "age": 61,
+                "title": "Senior VP & CFO",
+                "yearBorn": 1964,
+                "fiscalYear": 2025,
+                "totalPay": 372000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. David A. Zapolsky J.D.",
+                "age": 61,
+                "title": "Senior VP and Chief Global Affairs & Legal Officer",
+                "yearBorn": 1964,
+                "fiscalYear": 2025,
+                "totalPay": 372000,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Douglas J. Herrington",
+                "age": 58,
+                "title": "Chief Executive Officer of Worldwide Amazon Stores",
+                "yearBorn": 1967,
+                "fiscalYear": 2025,
+                "totalPay": 425365,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Matthew S. Garman",
+                "age": 48,
+                "title": "Chief Executive Officer of Amazon Web Series",
+                "yearBorn": 1977,
+                "fiscalYear": 2025,
+                "totalPay": 617281,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Ms. Shelley L. Reynolds",
+                "age": 60,
+                "title": "VP, Worldwide Controller & Principal Accounting Officer",
+                "yearBorn": 1965,
+                "fiscalYear": 2025,
+                "totalPay": 163200,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Dr. Werner  Vogels",
+                "title": "Chief Technology Officer",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Mr. Dave  Fildes",
+                "title": "Vice President of Investor Relations",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            },
+            {
+                "maxAge": 1,
+                "name": "Drew  Herdener",
+                "title": "Senior Vice President of Communications & Corporate Responsibility",
+                "fiscalYear": 2025,
+                "exercisedValue": 0,
+                "unexercisedValue": 0
+            }
+        ],
+        "Business Summary": "Amazon.com, Inc. engages in the retail sale of consumer products, advertising, and subscriptions service through online and physical stores in North America and internationally. The company operates through three segments: North America, International, and Amazon Web Services (AWS). It also manufactures and sells electronic devices, including Kindle, fire tablets, fire TVs, echo, ring, blink, and eero; and develops and produces media content. In addition, the company offers programs that enable sellers to sell their products in its stores; and programs that allow authors, independent publishers, musicians, filmmakers, Twitch streamers, skill and app developers, and others to publish and sell content. Further, it provides compute, storage, Artificial intelligence, database, analytics, machine learning, and other services, as well as advertising services through programs, such as sponsored ads, display, and video advertising. Additionally, the company offers Amazon Prime, a membership program. The company's products offered through its stores include merchandise and content purchased for resale and products offered by third-party sellers. It serves consumers, sellers, developers, enterprises, content creators, advertisers, and employees. The company was incorporated in 1994 and is headquartered in Seattle, Washington.",
+        "Market Cap": 2960627335168,
+        "Enterprise Value": 3089274241024,
+        "Currency": "USD"
+    },
+    "Metrics": {
+        "Company": "Amazon.com, Inc.",
+        "Symbol": "AMZN",
+        "Exchange": "NMS",
+        "Sector": "Consumer Cyclical",
+        "Industry": "Internet Retail",
+        "Country": "United States",
+        "Currency": "USD",
+        "Employees": 1595000,
+        "Market Cap": 2960627335168,
+        "Enterprise Value": 3089274241024,
+        "Revenue": 775680032768,
+        "Net Income": 135281000448,
+        "PE": 22.08206,
+        "Forward PE": 26.569765,
+        "PEG": 1.46,
+        "Price to Book": 5.365549,
+        "Price to Sales": 3.8168151,
+        "Dividend Yield": null,
+        "Beta": 1.454,
+        "52 Week High": 287.2,
+        "52 Week Low": 196.0,
+        "Current Price": 274.48,
+        "Previous Close": 272.26
+    },
+    "Financial Intelligence": {
+        "Financial Intelligence Score": 60,
+        "Revenue History": {
+            "2025-12-31 00:00:00": 716924000000.0,
+            "2024-12-31 00:00:00": 637959000000.0,
+            "2023-12-31 00:00:00": 574785000000.0,
+            "2022-12-31 00:00:00": 513983000000.0
+        },
+        "Revenue CAGR": 11.731283601806396,
+        "Net Income History": {
+            "2025-12-31 00:00:00": 77670000000.0,
+            "2024-12-31 00:00:00": 59248000000.0,
+            "2023-12-31 00:00:00": 30425000000.0,
+            "2022-12-31 00:00:00": -2722000000.0
+        },
+        "Earnings CAGR": null,
+        "Operating Cash Flow": {
+            "2025-12-31 00:00:00": 139514000000.0,
+            "2024-12-31 00:00:00": 115877000000.0,
+            "2023-12-31 00:00:00": 84946000000.0,
+            "2022-12-31 00:00:00": 46752000000.0
+        },
+        "Free Cash Flow": {
+            "2025-12-31 00:00:00": 7695000000.0,
+            "2024-12-31 00:00:00": 32878000000.0,
+            "2023-12-31 00:00:00": 32217000000.0,
+            "2022-12-31 00:00:00": -16893000000.0
+        },
+        "Profit Margin": 0.1744,
+        "Operating Margin": 0.13689,
+        "ROIC": null,
+        "Total Debt": 152987000000.0,
+        "Cash": 86810000000.0,
+        "Net Debt": 66177000000.0,
+        "Strengths": [
+            "The company generates positive operating cash flow.",
+            "The company generates positive free cash flow."
+        ],
+        "Weaknesses": [
+            "The company has net debt."
+        ],
+        "Summary": "Financial fundamentals are mixed."
+    },
+    "Moat Analysis": {
+        "Moat Score": 68,
+        "Classification": "NARROW MOAT",
+        "Gross Margin": 0.5077,
+        "Operating Margin": 0.13689,
+        "ROE": 0.30558002,
+        "ROIC": null,
+        "Strengths": [
+            "Healthy gross margins.",
+            "High return on equity.",
+            "Very large scale can provide meaningful competitive advantages.",
+            "Large organisational scale may support significant operational advantages."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company appears to possess some meaningful competitive advantages, although they may not be exceptionally durable."
+    },
+    "Industry Analysis": {
+        "Industry Score": 78,
+        "Sector": "Consumer Cyclical",
+        "Industry": "Internet Retail",
+        "Assessment": "STRONG",
+        "Strengths": [
+            "Sector: Consumer Cyclical",
+            "Industry: Internet Retail",
+            "The company has exceptional scale within its market.",
+            "High gross margins suggest strong economics."
+        ],
+        "Weaknesses": [],
+        "Summary": "The company operates in the Internet Retail industry within the Consumer Cyclical sector. The current industry/competitive assessment is STRONG."
+    },
+    "Competitor Analysis": {
+        "Competitive Score": 75,
+        "Sector": "Consumer Cyclical",
+        "Industry": "Internet Retail",
+        "Peers": [
+            {
+                "Ticker": "BABA",
+                "Company": "Alibaba Group Holding Limited",
+                "Market Cap": 307782549504,
+                "PE": 19.694786,
+                "Forward PE": 14.157659,
+                "Revenue Growth": 0.029,
+                "Profit Margin": 0.1012,
+                "Operating Margin": 0.0101499995,
+                "ROE": 0.092159994,
+                "ROIC": null
+            },
+            {
+                "Ticker": "MELI",
+                "Company": "MercadoLibre, Inc.",
+                "Market Cap": 92303155200,
+                "PE": 49.502174,
+                "Forward PE": 31.638702,
+                "Revenue Growth": 0.498,
+                "Profit Margin": 0.052950002,
+                "Operating Margin": 0.06716,
+                "ROE": 0.27504,
+                "ROIC": null
+            },
+            {
+                "Ticker": "SHOP",
+                "Company": "Shopify Inc.",
+                "Market Cap": 195016638464,
+                "PE": 101.72484,
+                "Forward PE": 62.27505,
+                "Revenue Growth": 0.337,
+                "Profit Margin": 0.1453,
+                "Operating Margin": 0.17555,
+                "ROE": 0.15543,
+                "ROIC": null
+            },
+            {
+                "Ticker": "JD",
+                "Company": "JD.com, Inc.",
+                "Market Cap": 44525985792,
+                "PE": 24.065695,
+                "Forward PE": 7.7620287,
+                "Revenue Growth": 0.049,
+                "Profit Margin": 0.0104600005,
+                "Operating Margin": 0.01206,
+                "ROE": 0.06004,
+                "ROIC": null
+            }
+        ],
+        "Subject Company": {
+            "Ticker": "AMZN",
+            "Company": "Amazon.com, Inc.",
+            "Market Cap": 2960627335168,
+            "PE": 22.08206,
+            "Forward PE": 26.569765,
+            "Revenue Growth": 0.196,
+            "Profit Margin": 0.1744,
+            "Operating Margin": 0.13689,
+            "ROE": 0.30558002,
+            "ROIC": null
+        },
+        "Valuation Rank": 2,
+        "Growth Rank": 3,
+        "Profitability Rank": 1,
+        "Assessment": "The company compares favourably with its selected peers."
+    },
+    "Earnings Analysis": {
+        "Earnings Score": 60,
+        "Assessment": "NEUTRAL",
+        "Earnings Date": "None",
+        "Positive Surprises": 19,
+        "Negative Surprises": 4,
+        "Trailing PE": 22.08206,
+        "Forward PE": 26.569765,
+        "Revenue Growth": 0.196,
+        "Earnings Growth": 2.423,
+        "Strengths": [
+            "The company has frequently exceeded recent EPS estimates."
+        ],
+        "Weaknesses": [
+            "The company has frequently missed recent EPS estimates."
+        ],
+        "Catalysts": [
+            "Continued earnings beats could support positive sentiment.",
+            "Strong earnings growth is a positive fundamental catalyst."
+        ],
+        "Risks": [
+            "Further earnings disappointments could pressure the shares.",
+            "Forward valuation is above trailing valuation."
+        ],
+        "Summary": "Earnings intelligence is currently neutral. The system identified 19 recent positive earnings surprises and 4 negative surprises."
+    },
+    "Overall Score": 68.1,
+    "Rating": "\u2605\u2605\u2605\u2606\u2606  HOLD",
+    "Business Quality": 59.0,
+    "Valuation": 70,
+    "Technical": 78.14,
+    "Risk": 78.0,
+    "News": 70,
+    "Catalyst": 60,
+    "Business Analysis": {
+        "Growth": 80,
+        "Profitability": 37.1,
+        "Balance Sheet": 60,
+        "Business Quality": 59.0,
+        "Confidence": 85,
+        "Strengths": [
+            "Strong long-term revenue growth"
+        ],
+        "Weaknesses": [
+            "Weak profitability"
+        ],
+        "Summary": "The business demonstrates mixed financial quality with both strengths and weaknesses."
+    },
+    "Valuation Analysis": {
+        "PE": 22.08206,
+        "Forward PE": 26.569765,
+        "PEG": 1.46,
+        "Price to Sales": 3.8168151,
+        "Price to Book": 5.365549,
+        "Valuation Score": 70,
+        "Confidence": 80,
+        "Strengths": [
+            "PEG indicates attractive growth valuation",
+            "Reasonable Price/Sales ratio"
+        ],
+        "Weaknesses": [],
+        "Summary": "Valuation appears broadly reasonable with a balanced mix of attractive and expensive metrics."
+    },
+    "Technical Analysis": {
+        "Status": "COMPLETE",
+        "Reason": "Multi-horizon momentum, trend, drawdown and persistence are combined as technical context.",
+        "Data Points": 251,
+        "Momentum": 79.48,
+        "Moving Average": 85.15,
+        "Drawdown": 89.25,
+        "Trend Persistence": 45.0,
+        "Support Resistance": 60.01,
+        "Volume Confirmation": 48.59,
+        "Technical Score": 78.14,
+        "Return 20d": 0.118774,
+        "Return 60d": 0.032578,
+        "Return 120d": 0.380754,
+        "Return 252d": null,
+        "Current Price": 274.4800109863281,
+        "Moving Average 20": 251.5925,
+        "Moving Average 50": 247.507,
+        "Moving Average 200": 236.5366,
+        "Drawdown From 252d High": -0.033589,
+        "Support Level": 226.65,
+        "Resistance Level": 284.02,
+        "Range Position": 0.833711,
+        "Volume Ratio 20d To 60d": 0.983,
+        "Fibonacci Window Low": 198.79,
+        "Fibonacci Window High": 284.02,
+        "Fibonacci Levels": {
+            "23.6%": 263.9057,
+            "38.2%": 251.4621,
+            "50.0%": 241.405,
+            "61.8%": 231.3479,
+            "78.6%": 217.0292
+        },
+        "Nearest Fibonacci Level": "23.6%",
+        "Distance To Nearest Fibonacci Level": 0.038525,
+        "Fibonacci Note": "Fibonacci levels are descriptive range context only and are not a standalone predictive allocation signal."
+    },
+    "Risk Analysis": {
+        "Risk Score": 78.0,
+        "Beta": 1.454,
+        "Annualized Volatility": 0.3445,
+        "Downside Volatility": 0.1862,
+        "Maximum Drawdown": -0.217362,
+        "Debt to Cash": 1.7623,
+        "Risk Components": [
+            {
+                "factor": "beta",
+                "impact": "LOW",
+                "reason": "Beta exceeds 1.0."
+            },
+            {
+                "factor": "debt_to_cash",
+                "impact": "LOW",
+                "reason": "Debt exceeds cash."
+            },
+            {
+                "factor": "volatility",
+                "impact": "LOW",
+                "reason": "Annualised volatility exceeds 25%."
+            },
+            {
+                "factor": "maximum_drawdown",
+                "impact": "LOW",
+                "reason": "Observed drawdown exceeds 15%."
+            }
+        ],
+        "Method": "BETA_BALANCE_SHEET_VOLATILITY_DOWNSIDE_AND_DRAWDOWN_CONTEXT"
+    },
+    "News Analysis": {
+        "News Score": 70,
+        "Catalyst Score": 60,
+        "Headlines": [
+            "Jeff Bezos breaks his own Amazon record",
+            "3 Artificial Intelligence (AI) Stocks to Load Up On in August",
+            "Walmart (WMT) Stock Price Prediction: Where Our Price Target Sees the Stock Going Over the Next 12 Months",
+            "Nvidia CEO Jensen Huang Told Investors in Seoul to \"Buy at a Discount\" During the Recent AI Stock Sell-Off. Here's Whether His Call Has Paid Off.",
+            "Micron (MU) Secures Strategic Auto Deals and AI Momentum to Offset Cyclical Pressures",
+            "My 3 Favorite Value Stocks to Buy Right Now",
+            "Earnings beats ease concerns over record U.S. stock rally - WSJ",
+            "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+            "Jeff Bezos' Amazon Stock Surged 14% After a Blowout Earnings Beat, Adding $25 Billion to His Fortune. Is the Stock Still a Buy After the Rally?",
+            "SK Telecom Q2 Earnings Call Highlights"
+        ],
+        "Catalysts": [
+            "Jeff Bezos breaks his own Amazon record",
+            "3 Artificial Intelligence (AI) Stocks to Load Up On in August",
+            "Walmart (WMT) Stock Price Prediction: Where Our Price Target Sees the Stock Going Over the Next 12 Months",
+            "Nvidia CEO Jensen Huang Told Investors in Seoul to \"Buy at a Discount\" During the Recent AI Stock Sell-Off. Here's Whether His Call Has Paid Off.",
+            "Micron (MU) Secures Strategic Auto Deals and AI Momentum to Offset Cyclical Pressures",
+            "My 3 Favorite Value Stocks to Buy Right Now",
+            "Earnings beats ease concerns over record U.S. stock rally - WSJ",
+            "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+            "Jeff Bezos' Amazon Stock Surged 14% After a Blowout Earnings Beat, Adding $25 Billion to His Fortune. Is the Stock Still a Buy After the Rally?",
+            "SK Telecom Q2 Earnings Call Highlights"
+        ],
+        "Events": [
+            {
+                "headline": "Jeff Bezos breaks his own Amazon record",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "3 Artificial Intelligence (AI) Stocks to Load Up On in August",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Walmart (WMT) Stock Price Prediction: Where Our Price Target Sees the Stock Going Over the Next 12 Months",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Nvidia CEO Jensen Huang Told Investors in Seoul to \"Buy at a Discount\" During the Recent AI Stock Sell-Off. Here's Whether His Call Has Paid Off.",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Micron (MU) Secures Strategic Auto Deals and AI Momentum to Offset Cyclical Pressures",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "My 3 Favorite Value Stocks to Buy Right Now",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Earnings beats ease concerns over record U.S. stock rally - WSJ",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "Jeff Bezos' Amazon Stock Surged 14% After a Blowout Earnings Beat, Adding $25 Billion to His Fortune. Is the Stock Still a Buy After the Rally?",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            },
+            {
+                "headline": "SK Telecom Q2 Earnings Call Highlights",
+                "category": "news",
+                "sentiment": "neutral",
+                "impact": 3
+            }
+        ],
+        "Negative Headlines": 0,
+        "Positive Headlines": 0
+    },
+    "Management Analysis": {
+        "Management Score": 75,
+        "Confidence": 75,
+        "Strengths": [
+            "Meaningful insider ownership",
+            "Strong institutional ownership"
+        ],
+        "Weaknesses": [],
+        "Summary": "Management quality appears satisfactory.",
+        "Insider Ownership": 0.088690005,
+        "Institutional Ownership": 0.68084,
+        "Employees": 1595000
+    },
+    "Strengths": [
+        "Positive recent news"
+    ],
+    "Weaknesses": [],
+    "Summary": "Recent news flow has been supportive.",
+    "Report": "============================================================\nInvestment Report: AMZN\n============================================================\n\nOverall Rating : \u2605\u2605\u2605\u2606\u2606  HOLD\nOverall Score  : 68.1\n\nSECTION 1 - INVESTMENT THESIS\n----------------------------------------\nRecent news flow has been supportive.\n\nSECTION 2 - SCORE BREAKDOWN\n----------------------------------------\nBusiness Quality : 59.0\nValuation        : 70\nTechnical        : 78.14\nRisk             : 78.0\nNews             : 70\nCatalysts        : 60\n\nSECTION 3 - KEY CATALYSTS\n----------------------------------------\n\u2022 Jeff Bezos breaks his own Amazon record\n\u2022 3 Artificial Intelligence (AI) Stocks to Load Up On in August\n\u2022 Walmart (WMT) Stock Price Prediction: Where Our Price Target Sees the Stock Going Over the Next 12 Months\n\u2022 Nvidia CEO Jensen Huang Told Investors in Seoul to \"Buy at a Discount\" During the Recent AI Stock Sell-Off. Here's Whether His Call Has Paid Off.\n\u2022 Micron (MU) Secures Strategic Auto Deals and AI Momentum to Offset Cyclical Pressures\n\n============================================================",
+    "Catalysts": [
+        "Jeff Bezos breaks his own Amazon record",
+        "3 Artificial Intelligence (AI) Stocks to Load Up On in August",
+        "Walmart (WMT) Stock Price Prediction: Where Our Price Target Sees the Stock Going Over the Next 12 Months",
+        "Nvidia CEO Jensen Huang Told Investors in Seoul to \"Buy at a Discount\" During the Recent AI Stock Sell-Off. Here's Whether His Call Has Paid Off.",
+        "Micron (MU) Secures Strategic Auto Deals and AI Momentum to Offset Cyclical Pressures",
+        "My 3 Favorite Value Stocks to Buy Right Now",
+        "Earnings beats ease concerns over record U.S. stock rally - WSJ",
+        "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+        "Jeff Bezos' Amazon Stock Surged 14% After a Blowout Earnings Beat, Adding $25 Billion to His Fortune. Is the Stock Still a Buy After the Rally?",
+        "SK Telecom Q2 Earnings Call Highlights"
+    ],
+    "Headlines": [
+        "Jeff Bezos breaks his own Amazon record",
+        "3 Artificial Intelligence (AI) Stocks to Load Up On in August",
+        "Walmart (WMT) Stock Price Prediction: Where Our Price Target Sees the Stock Going Over the Next 12 Months",
+        "Nvidia CEO Jensen Huang Told Investors in Seoul to \"Buy at a Discount\" During the Recent AI Stock Sell-Off. Here's Whether His Call Has Paid Off.",
+        "Micron (MU) Secures Strategic Auto Deals and AI Momentum to Offset Cyclical Pressures",
+        "My 3 Favorite Value Stocks to Buy Right Now",
+        "Earnings beats ease concerns over record U.S. stock rally - WSJ",
+        "How Many of the Largest Companies Do You Own -- and Should You Own More or Fewer?",
+        "Jeff Bezos' Amazon Stock Surged 14% After a Blowout Earnings Beat, Adding $25 Billion to His Fortune. Is the Stock Still a Buy After the Rally?",
+        "SK Telecom Q2 Earnings Call Highlights"
+    ],
+    "Investment Committee": {
+        "Committee Score": 50.0,
+        "Factor Score": 50.0,
+        "Expected Return Score": 50.0,
+        "Expected Return": 0.0,
+        "Expected Return Confidence": 50.0,
+        "Expected Return Analysis": null,
+        "Recommendation": "REDUCE / AVOID",
+        "Confidence": 78.0,
+        "Adaptive Weights": {
+            "Business Quality": 0.14285714285714285,
+            "Financial Strength": 0.14285714285714285,
+            "Valuation": 0.09523809523809523,
+            "Growth": 0.14285714285714285,
+            "Profitability": 0.14285714285714285,
+            "Momentum": 0.14285714285714285,
+            "Risk": 0.09523809523809523,
+            "Size": 0.023809523809523808,
+            "Balance Sheet": 0.07142857142857142,
+            "Dividend": 0.0
+        },
+        "Factor Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Specialist Scores": {
+            "Business Quality": 50.0,
+            "Financial Strength": 50.0,
+            "Valuation": 50.0,
+            "Growth": 50.0,
+            "Profitability": 50.0,
+            "Momentum": 50.0,
+            "Risk": 50.0,
+            "Size": 50.0,
+            "Balance Sheet": 50.0,
+            "Dividend": 50.0
+        },
+        "Learning Enabled": false,
+        "Strengths": [],
+        "Concerns": [
+            "Expected return is limited at 0.0%."
+        ],
+        "Summary": "The Investment Committee assigns 50.0/100 and recommends REDUCE / AVOID. Expected return is 0.0% over 252 days. Confidence is 78.0%."
+    },
+    "Position Sizing": {
+        "Allocation": 0.0,
+        "Allocation %": 0.0,
+        "Max Position %": 10.0,
+        "Min Position %": 1.0,
+        "Max Sector %": 25.0
+    },
+    "Research Comparison": {
+        "Has Previous": true,
+        "Changes": []
+    }
+}
