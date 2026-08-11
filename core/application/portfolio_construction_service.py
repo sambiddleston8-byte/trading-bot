@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,6 +13,12 @@ from core.application.portfolio_risk_review_service import PortfolioRiskReviewSe
 from core.application.portfolio_benchmark_service import PortfolioBenchmarkService
 from core.research.research_contract import ResearchContract
 from core.research.master_portfolio_decision_engine import MasterPortfolioDecisionEngine
+from core.research.investment_research_pipeline import InvestmentResearchPipeline
+from core.decision_ledger import (
+    InvestmentDecision,
+    InvestmentDecisionLedger,
+    ModelVersion,
+)
 
 
 class PortfolioConstructionService:
@@ -22,10 +29,27 @@ class PortfolioConstructionService:
     PIPELINE_DIRECTORY = PROJECT_ROOT / "data" / "research" / "pipeline"
     UNIVERSE_PATH = PROJECT_ROOT / "data" / "research" / "universe" / "both.json"
     PORTFOLIO_DIRECTORY = PROJECT_ROOT / "data" / "research" / "portfolios"
+    DECISION_LEDGER_PATH = PROJECT_ROOT / "data" / "decision_ledger.jsonl"
 
     @staticmethod
     def timestamp() -> str:
         return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+    @classmethod
+    def portfolio_snapshot_id(cls, portfolio: dict[str, Any]) -> str:
+        material = {
+            "created_at": portfolio.get("created_at"),
+            "holdings": [
+                {"ticker": item.get("ticker"), "weight": item.get("weight")}
+                for item in portfolio.get("holdings", [])
+            ],
+        }
+        digest = hashlib.sha256(
+            json.dumps(material, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()[:12].upper()
+        timestamp = str(portfolio.get("created_at") or cls.timestamp())
+        compact = "".join(character for character in timestamp if character.isdigit())[:14]
+        return f"PORT-{compact}-{digest}"
 
     @staticmethod
     def confidence_label(value: float | None) -> str:
@@ -250,6 +274,9 @@ class PortfolioConstructionService:
                     "master_decision": canonical.get("master_decision", {}),
                     "diagnostics": canonical.get("diagnostics", {}),
                     "monitoring_conditions": canonical.get("monitoring_conditions", []),
+                    "decision_reason": canonical.get("decision_reason"),
+                    "data_as_of": raw.get("completed_at") or raw.get("started_at"),
+                    "research_pipeline_version": raw.get("pipeline_version"),
                     "audit": canonical.get("audit", {}),
                     "record_path": str(path),
                 }
@@ -373,6 +400,9 @@ class PortfolioConstructionService:
         portfolio["cash_policy"] = cash_policy
         portfolio["construction_readiness"] = readiness
         portfolio["benchmark"] = PortfolioBenchmarkService.disclosure(portfolio)
+        portfolio.setdefault("created_at", datetime.now(timezone.utc).isoformat())
+        portfolio.setdefault("version", getattr(portfolio_class, "VERSION", "UNKNOWN"))
+        portfolio["portfolio_id"] = cls.portfolio_snapshot_id(portfolio)
 
         risk_review = risk_reviewer.review(portfolio)
         portfolio["risk_review"] = risk_review
@@ -387,6 +417,43 @@ class PortfolioConstructionService:
             }
 
         path = cls.save_proposed_update(portfolio, portfolio_class)
+        ledger = InvestmentDecisionLedger(cls.DECISION_LEDGER_PATH)
+        ledger_records = []
+        for holding in portfolio.get("holdings", []):
+            decision = InvestmentDecision.from_canonical(holding, holding=holding)
+            versions = [
+                ModelVersion(
+                    component="research_pipeline",
+                    version=str(
+                        holding.get("research_pipeline_version")
+                        or InvestmentResearchPipeline.VERSION
+                    ),
+                ),
+                ModelVersion(
+                    component="research_contract",
+                    version=ResearchContract.VERSION,
+                ),
+                ModelVersion(
+                    component="master_portfolio_decision",
+                    version=MasterPortfolioDecisionEngine.VERSION,
+                ),
+                ModelVersion(
+                    component="portfolio",
+                    version=str(portfolio.get("version") or "UNKNOWN"),
+                ),
+            ]
+            ledger_records.append(
+                ledger.append_investment_decision(
+                    decision,
+                    model_versions=versions,
+                    data_as_of=str(
+                        holding.get("data_as_of")
+                        or scan.get("created_at")
+                    ),
+                    portfolio_version=portfolio["portfolio_id"],
+                    decision_id=f"{portfolio['portfolio_id']}-{decision.ticker}",
+                )
+            )
 
         return {
             "status": "CONSTRUCTED",
@@ -394,4 +461,6 @@ class PortfolioConstructionService:
             "portfolio": portfolio,
             "path": path,
             "readiness": readiness,
+            "ledger_path": cls.DECISION_LEDGER_PATH,
+            "ledger_records": ledger_records,
         }

@@ -9,6 +9,8 @@ class ResearchContract:
     The scanner and portfolio layers consume this normalized form.
     """
 
+    VERSION = "1.3"
+
     @staticmethod
     def mapping(value):
 
@@ -291,7 +293,7 @@ class ResearchContract:
 
         return {
             "contract_version":
-                "1.3",
+                cls.VERSION,
 
             "ticker":
                 result.get(

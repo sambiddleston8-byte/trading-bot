@@ -93,6 +93,7 @@ def test_constructs_from_saved_records():
     original_pipeline = PortfolioConstructionService.PIPELINE_DIRECTORY
     original_universe = PortfolioConstructionService.UNIVERSE_PATH
     original_portfolios = PortfolioConstructionService.PORTFOLIO_DIRECTORY
+    original_ledger = PortfolioConstructionService.DECISION_LEDGER_PATH
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         pipeline = root / "pipeline"
@@ -110,6 +111,7 @@ def test_constructs_from_saved_records():
         PortfolioConstructionService.PIPELINE_DIRECTORY = pipeline
         PortfolioConstructionService.UNIVERSE_PATH = universe
         PortfolioConstructionService.PORTFOLIO_DIRECTORY = root / "portfolios"
+        PortfolioConstructionService.DECISION_LEDGER_PATH = root / "decision_ledger.jsonl"
         result = PortfolioConstructionService.construct(
             5,
             portfolio_class=FakePortfolio,
@@ -119,9 +121,12 @@ def test_constructs_from_saved_records():
         assert result["path"].exists()
         assert result["portfolio"]["holdings"][0]["confidence_label"] == "STRONG"
         assert result["readiness"]["ready"] is True
+        assert len(result["ledger_records"]) == 5
+        assert result["ledger_path"].exists()
     PortfolioConstructionService.PIPELINE_DIRECTORY = original_pipeline
     PortfolioConstructionService.UNIVERSE_PATH = original_universe
     PortfolioConstructionService.PORTFOLIO_DIRECTORY = original_portfolios
+    PortfolioConstructionService.DECISION_LEDGER_PATH = original_ledger
 
 
 def test_readiness_explains_the_construction_shortfall():

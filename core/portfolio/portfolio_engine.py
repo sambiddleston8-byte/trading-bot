@@ -1420,6 +1420,14 @@ class PortfolioEngine:
                             [],
                         ),
 
+                    "decision_reason": item.get("decision_reason"),
+
+                    "data_as_of": item.get("data_as_of"),
+
+                    "research_pipeline_version": item.get(
+                        "research_pipeline_version"
+                    ),
+
                     "position_sizing": cls.position_sizing_detail(item),
 
                     "reasoning":

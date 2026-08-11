@@ -88,6 +88,7 @@ def with_test_paths(callback):
         PortfolioConstructionService.PIPELINE_DIRECTORY,
         PortfolioConstructionService.UNIVERSE_PATH,
         PortfolioConstructionService.PORTFOLIO_DIRECTORY,
+        PortfolioConstructionService.DECISION_LEDGER_PATH,
     )
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
@@ -107,12 +108,14 @@ def with_test_paths(callback):
         PortfolioConstructionService.PIPELINE_DIRECTORY = pipeline
         PortfolioConstructionService.UNIVERSE_PATH = universe
         PortfolioConstructionService.PORTFOLIO_DIRECTORY = root / "portfolios"
+        PortfolioConstructionService.DECISION_LEDGER_PATH = root / "decision_ledger.jsonl"
         callback(root, pipeline)
 
     (
         PortfolioConstructionService.PIPELINE_DIRECTORY,
         PortfolioConstructionService.UNIVERSE_PATH,
         PortfolioConstructionService.PORTFOLIO_DIRECTORY,
+        PortfolioConstructionService.DECISION_LEDGER_PATH,
     ) = original
 
 

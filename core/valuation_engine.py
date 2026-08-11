@@ -18,13 +18,14 @@ class ValuationEngine:
         forecast_years=5,
         default_wacc=0.09,
         default_terminal_growth=0.03,
+        output_directory="data/research/valuation",
     ):
 
         self.forecast_years = forecast_years
         self.default_wacc = default_wacc
         self.default_terminal_growth = default_terminal_growth
 
-        self.output_directory = "data/research/valuation"
+        self.output_directory = str(output_directory)
 
         os.makedirs(
             self.output_directory,
