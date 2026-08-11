@@ -4,11 +4,14 @@ from core.fundamental_analysis_engine import (
 from core.valuation_engine import (
     ValuationEngine,
 )
+import pytest
+
 from core.investment_decision_engine import (
     InvestmentDecisionEngine,
 )
 
 
+@pytest.mark.live_data
 def test_nvda_investment_pipeline(tmp_path):
 
     symbol = "NVDA"
