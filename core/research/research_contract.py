@@ -352,6 +352,12 @@ class ResearchContract:
                     result.get("completed_at"),
                 ),
 
+            "research_git_revision":
+                cls.first_value(
+                    result.get("source_git_revision"),
+                    "UNKNOWN",
+                ),
+
             "bull_case":
                 synthesis.get("bull_case"),
 

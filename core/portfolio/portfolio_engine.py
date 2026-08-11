@@ -1434,6 +1434,11 @@ class PortfolioEngine:
                         "research_pipeline_version"
                     ),
 
+                    "research_git_revision": item.get(
+                        "research_git_revision",
+                        "UNKNOWN",
+                    ),
+
                     "position_sizing": cls.position_sizing_detail(item),
 
                     "reasoning":

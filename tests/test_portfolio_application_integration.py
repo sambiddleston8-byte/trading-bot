@@ -25,6 +25,7 @@ def pipeline_record(ticker: str, risk_score: float = 75.0) -> dict:
         "ticker": ticker,
         "status": "COMPLETE",
         "completed_at": "2026-08-11T12:00:00+00:00",
+        "source_git_revision": "research-commit-123",
         "core": {
             "fundamental": {},
             "valuation": {},
@@ -133,11 +134,20 @@ def test_real_services_construct_and_risk_review_a_diversified_portfolio():
         assert result["portfolio"]["risk_review"]["Pass"] is True
         assert sum(item["weight"] for item in result["portfolio"]["holdings"]) == 1.0
         assert max(result["portfolio"]["sector_weights"].values()) <= 0.15
+        assert result["transaction_path"].exists()
         for record in result["ledger_records"]:
             payload = record["decision_payload"]
             assert payload["bull_case"] == "Synthetic upside case."
             assert payload["bear_case"] == "Synthetic downside case."
             assert payload["catalysts"] == ["Synthetic catalyst"]
+            research_version = next(
+                version
+                for version in record["model_versions"]
+                if version["component"] == "research_pipeline"
+            )
+            assert research_version["parameters"]["source_git_revision"] == (
+                "research-commit-123"
+            )
 
     with_test_paths(verify)
 

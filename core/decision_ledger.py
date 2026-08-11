@@ -262,50 +262,108 @@ class InvestmentDecisionLedger:
         decided_at: str | None = None,
         decision_id: str | None = None,
     ) -> dict[str, Any]:
+        return self.append_batch(
+            [{
+                "ticker": ticker,
+                "decision": decision,
+                "decision_payload": decision_payload,
+                "model_versions": model_versions,
+                "data_as_of": data_as_of,
+                "portfolio_version": portfolio_version,
+                "git_revision": git_revision,
+                "decided_at": decided_at,
+                "decision_id": decision_id,
+            }]
+        )[0]
+
+    def append_batch(
+        self,
+        entries: Iterable[dict[str, Any]],
+        *,
+        allow_existing: bool = False,
+    ) -> list[dict[str, Any]]:
+        """Append a portfolio's decisions under one writer lock.
+
+        ``allow_existing`` is reserved for transaction recovery. Existing IDs
+        are accepted only when their immutable content matches exactly.
+        """
+        pending = [dict(entry) for entry in entries]
+        if not pending:
+            return []
         self.path.parent.mkdir(parents=True, exist_ok=True)
         lock_path = self.path.with_suffix(self.path.suffix + ".lock")
         lock_descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
         try:
             fcntl.flock(lock_descriptor, fcntl.LOCK_EX)
             existing = self.verify()
-            resolved_decision_id = decision_id or f"DEC-{uuid4().hex.upper()}"
-            if any(item.get("decision_id") == resolved_decision_id for item in existing):
-                raise LedgerIntegrityError(
-                    f"Decision ID {resolved_decision_id} already exists."
-                )
-            previous_hash = existing[-1]["record_hash"] if existing else GENESIS_HASH
-            versions = [
-                version.as_dict() if isinstance(version, ModelVersion) else dict(version)
-                for version in model_versions
-            ]
-            material = {
-                "schema_version": LEDGER_SCHEMA_VERSION,
-                "decision_id": resolved_decision_id,
-                "decided_at": decided_at or _utc_now(),
-                "data_as_of": data_as_of,
-                "ticker": ticker.strip().upper(),
-                "decision": decision.strip().upper(),
-                "portfolio_version": portfolio_version,
-                "git_revision": git_revision or current_git_revision(self.path.parent),
-                "model_versions": versions,
-                "decision_payload": decision_payload,
-                "execution_mode": "RECORD_ONLY",
-                "previous_hash": previous_hash,
+            existing_by_id = {
+                str(item.get("decision_id")): item
+                for item in existing
+                if item.get("decision_id")
             }
-            record = {**material, "record_hash": self._record_hash(material)}
-            encoded = (_canonical_json(record) + "\n").encode("utf-8")
-            descriptor = os.open(self.path, os.O_APPEND | os.O_CREAT | os.O_WRONLY, 0o600)
-            try:
-                written = 0
-                while written < len(encoded):
-                    count = os.write(descriptor, encoded[written:])
-                    if count <= 0:
-                        raise OSError("Ledger append made no forward progress.")
-                    written += count
-                os.fsync(descriptor)
-            finally:
-                os.close(descriptor)
-            return record
+            previous_hash = existing[-1]["record_hash"] if existing else GENESIS_HASH
+            resolved: list[dict[str, Any]] = []
+            new_records: list[dict[str, Any]] = []
+            for entry in pending:
+                resolved_id = entry.get("decision_id") or f"DEC-{uuid4().hex.upper()}"
+                versions = [
+                    version.as_dict() if isinstance(version, ModelVersion) else dict(version)
+                    for version in entry.get("model_versions", [])
+                ]
+                comparable = {
+                    "schema_version": LEDGER_SCHEMA_VERSION,
+                    "decision_id": resolved_id,
+                    "decided_at": entry.get("decided_at") or _utc_now(),
+                    "data_as_of": entry["data_as_of"],
+                    "ticker": str(entry["ticker"]).strip().upper(),
+                    "decision": str(entry["decision"]).strip().upper(),
+                    "portfolio_version": entry.get("portfolio_version"),
+                    "git_revision": entry.get("git_revision")
+                    or current_git_revision(self.path.parent),
+                    "model_versions": versions,
+                    "decision_payload": entry["decision_payload"],
+                    "execution_mode": "RECORD_ONLY",
+                }
+                prior = existing_by_id.get(str(resolved_id))
+                if prior is not None:
+                    prior_comparable = {
+                        key: value
+                        for key, value in prior.items()
+                        if key not in {"previous_hash", "record_hash"}
+                    }
+                    if not allow_existing or prior_comparable != comparable:
+                        raise LedgerIntegrityError(
+                            f"Decision ID {resolved_id} already exists."
+                        )
+                    resolved.append(prior)
+                    continue
+                material = {**comparable, "previous_hash": previous_hash}
+                record = {**material, "record_hash": self._record_hash(material)}
+                previous_hash = record["record_hash"]
+                new_records.append(record)
+                resolved.append(record)
+                existing_by_id[str(resolved_id)] = record
+
+            if new_records:
+                encoded = "".join(
+                    _canonical_json(record) + "\n" for record in new_records
+                ).encode("utf-8")
+                descriptor = os.open(
+                    self.path,
+                    os.O_APPEND | os.O_CREAT | os.O_WRONLY,
+                    0o600,
+                )
+                try:
+                    written = 0
+                    while written < len(encoded):
+                        count = os.write(descriptor, encoded[written:])
+                        if count <= 0:
+                            raise OSError("Ledger append made no forward progress.")
+                        written += count
+                    os.fsync(descriptor)
+                finally:
+                    os.close(descriptor)
+            return resolved
         finally:
             fcntl.flock(lock_descriptor, fcntl.LOCK_UN)
             os.close(lock_descriptor)

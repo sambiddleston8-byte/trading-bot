@@ -54,10 +54,20 @@ decision and portfolio-policy versions. Phase 1 now records these separately.
 
 ### Non-atomic portfolio and ledger persistence
 
-The approved portfolio snapshot is saved before its holding decisions are added
-to the ledger. A disk failure between those steps could leave an unmatched
-snapshot or a partial set of holding records. Before unattended operation, use a
-transactional outbox or a single atomic portfolio-decision batch record.
+Phase 2 adds a durable local transaction journal and an idempotent, locked ledger
+batch. A failure between the ledger batch and snapshot rename leaves a pending
+journal that the next construction attempt completes without duplicating
+decisions. Failure-injection tests cover this recovery path. This provides
+recoverable local consistency, but it is not a substitute for a database
+transaction. Before unattended AWS operation, migrate the journal/outbox and
+portfolio/decision writes to transactional managed storage.
+
+### Cached-research source provenance
+
+New research artifacts now record the Git revision that generated them, and the
+portfolio ledger preserves that revision separately from the later decision
+revision. Historical artifacts created before this change remain explicitly
+`UNKNOWN`; the system does not falsely attribute them to the current checkout.
 
 ### Dependency reproducibility
 

@@ -31,6 +31,10 @@ Phase 1 — Foundation, audit and decision ledger.
   `dbe3720`; its confirmed high-priority findings were repaired and covered by
   tests (writer locking, interrupted-tail recovery, strict data cutoffs, and
   thesis/catalyst field propagation).
+- Recoverable portfolio/ledger transaction journaling and idempotent batch
+  appends implemented with failure-injection coverage.
+- New cached research records capture their source Git revision; legacy records
+  remain explicitly `UNKNOWN` rather than inheriting a later revision.
 
 ## Still required before Phase 2
 

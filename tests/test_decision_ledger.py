@@ -56,6 +56,30 @@ def test_records_are_appended_and_hash_chained(tmp_path):
     assert [item["decision_id"] for item in ledger.verify()] == ["DEC-001", "DEC-002"]
 
 
+def test_batch_recovery_is_idempotent_but_rejects_changed_content(tmp_path):
+    ledger = InvestmentDecisionLedger(tmp_path / "decisions.jsonl")
+    entry = {
+        "ticker": "NVDA",
+        "decision": "BUY",
+        "decision_payload": {"confidence": 72},
+        "model_versions": [ModelVersion(component="portfolio", version="0.7")],
+        "data_as_of": "2026-08-11T12:00:00+00:00",
+        "portfolio_version": "PORT-001",
+        "git_revision": "abc123",
+        "decided_at": "2026-08-11T12:01:00+00:00",
+        "decision_id": "DEC-BATCH-001",
+    }
+
+    first = ledger.append_batch([entry])
+    recovered = ledger.append_batch([entry], allow_existing=True)
+
+    assert recovered == first
+    assert len(ledger.verify()) == 1
+    changed = {**entry, "decision": "SELL"}
+    with pytest.raises(LedgerIntegrityError, match="already exists"):
+        ledger.append_batch([changed], allow_existing=True)
+
+
 def test_tampering_is_detected_before_another_append(tmp_path):
     path = tmp_path / "decisions.jsonl"
     ledger = InvestmentDecisionLedger(path)

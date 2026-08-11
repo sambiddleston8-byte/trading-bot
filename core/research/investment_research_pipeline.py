@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+from core.decision_ledger import current_git_revision
 from core.research.research_contract import ResearchContract
 
 
@@ -1184,6 +1185,9 @@ class InvestmentResearchPipeline:
 
             "pipeline_version":
                 cls.VERSION,
+
+            "source_git_revision":
+                current_git_revision(Path(__file__).resolve().parents[2]),
 
             "started_at":
                 started_at,
