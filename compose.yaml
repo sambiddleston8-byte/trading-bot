@@ -1,0 +1,69 @@
+name: trading-bot-local
+
+services:
+  postgres:
+    image: postgres:17.10-alpine3.23
+    environment:
+      POSTGRES_DB: trading_bot
+      POSTGRES_USER: trading_bot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trading_bot -d trading_bot"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+    environment:
+      DATABASE_URL: postgresql://trading_bot:${POSTGRES_PASSWORD}@postgres:5432/trading_bot
+      PERSISTENCE_MODE: local-files
+    ports:
+      - "127.0.0.1:8501:8501"
+    volumes:
+      - app_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  research-cycle:
+    build:
+      context: .
+    command: ["python", "scripts/run_portfolio_research_cycle.py"]
+    environment:
+      DATABASE_URL: postgresql://trading_bot:${POSTGRES_PASSWORD}@postgres:5432/trading_bot
+      PERSISTENCE_MODE: local-files
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: ["manual"]
+    volumes:
+      - app_data:/app/data
+    restart: "no"
+
+  portfolio-monitor:
+    build:
+      context: .
+    command: ["python", "scripts/run_portfolio_monitor.py"]
+    environment:
+      DATABASE_URL: postgresql://trading_bot:${POSTGRES_PASSWORD}@postgres:5432/trading_bot
+      PERSISTENCE_MODE: local-files
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: ["manual"]
+    volumes:
+      - app_data:/app/data
+    restart: "no"
+
+volumes:
+  app_data:
+  postgres_data:
