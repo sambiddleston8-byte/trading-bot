@@ -11,6 +11,7 @@ def test_research_contract():
     result = {
         "ticker": "TEST",
         "status": "COMPLETE",
+        "source_git_revision": "research-commit-123",
         "core": {
             "valuation": {
                 "Current Price": 100.0,
@@ -79,6 +80,7 @@ def test_research_contract():
     assert canonical["monitoring_conditions"] == [
         "A material deterioration in expected returns would trigger review.",
     ]
+    assert canonical["research_git_revision"] == "research-commit-123"
 
     assert (
         UniverseScanner

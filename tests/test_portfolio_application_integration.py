@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 
 from core.application.portfolio_construction_service import PortfolioConstructionService
+from core.portfolio_decision_transaction import PortfolioDecisionTransaction
 from core.research.master_portfolio_decision_engine import MasterPortfolioDecisionEngine
 
 
@@ -20,10 +21,41 @@ SECTORS = (
 )
 
 
+def test_recovery_failure_returns_blocked_status(monkeypatch):
+    def fail_recovery(_self):
+        raise OSError("corrupt pending journal")
+
+    monkeypatch.setattr(PortfolioDecisionTransaction, "recover_pending", fail_recovery)
+    result = PortfolioConstructionService.construct()
+
+    assert result["status"] == "BLOCKED"
+    assert result["failure_code"] == "RECOVERY_FAILED"
+    assert "corrupt pending journal" in result["reason"]
+    assert result["scan"] is None
+
+
+def test_persistence_failure_returns_blocked_status(monkeypatch):
+    def verify(_root, _pipeline):
+        def fail_persistence(_self, **_kwargs):
+            raise OSError("simulated persistence failure")
+
+        monkeypatch.setattr(PortfolioDecisionTransaction, "persist", fail_persistence)
+        result = PortfolioConstructionService.construct()
+
+        assert result["status"] == "BLOCKED"
+        assert result["failure_code"] == "PERSISTENCE_FAILED"
+        assert "simulated persistence failure" in result["reason"]
+        assert result["portfolio"] is not None
+
+    with_test_paths(verify)
+
+
 def pipeline_record(ticker: str, risk_score: float = 75.0) -> dict:
     return {
         "ticker": ticker,
         "status": "COMPLETE",
+        "completed_at": "2026-08-11T12:00:00+00:00",
+        "source_git_revision": "research-commit-123",
         "core": {
             "fundamental": {},
             "valuation": {},
@@ -40,6 +72,9 @@ def pipeline_record(ticker: str, risk_score: float = 75.0) -> dict:
             "investment_case_score": 78.0,
             "decision": "BUY",
             "decision_reason": "Synthetic test candidate clears the research gate.",
+            "bull_case": "Synthetic upside case.",
+            "bear_case": "Synthetic downside case.",
+            "catalysts": ["Synthetic catalyst"],
         },
         "research": {
             "thesis_challenge": {
@@ -88,6 +123,7 @@ def with_test_paths(callback):
         PortfolioConstructionService.PIPELINE_DIRECTORY,
         PortfolioConstructionService.UNIVERSE_PATH,
         PortfolioConstructionService.PORTFOLIO_DIRECTORY,
+        PortfolioConstructionService.DECISION_LEDGER_PATH,
     )
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
@@ -107,12 +143,14 @@ def with_test_paths(callback):
         PortfolioConstructionService.PIPELINE_DIRECTORY = pipeline
         PortfolioConstructionService.UNIVERSE_PATH = universe
         PortfolioConstructionService.PORTFOLIO_DIRECTORY = root / "portfolios"
+        PortfolioConstructionService.DECISION_LEDGER_PATH = root / "decision_ledger.jsonl"
         callback(root, pipeline)
 
     (
         PortfolioConstructionService.PIPELINE_DIRECTORY,
         PortfolioConstructionService.UNIVERSE_PATH,
         PortfolioConstructionService.PORTFOLIO_DIRECTORY,
+        PortfolioConstructionService.DECISION_LEDGER_PATH,
     ) = original
 
 
@@ -126,6 +164,20 @@ def test_real_services_construct_and_risk_review_a_diversified_portfolio():
         assert result["portfolio"]["risk_review"]["Pass"] is True
         assert sum(item["weight"] for item in result["portfolio"]["holdings"]) == 1.0
         assert max(result["portfolio"]["sector_weights"].values()) <= 0.15
+        assert result["transaction_path"].exists()
+        for record in result["ledger_records"]:
+            payload = record["decision_payload"]
+            assert payload["bull_case"] == "Synthetic upside case."
+            assert payload["bear_case"] == "Synthetic downside case."
+            assert payload["catalysts"] == ["Synthetic catalyst"]
+            research_version = next(
+                version
+                for version in record["model_versions"]
+                if version["component"] == "research_pipeline"
+            )
+            assert research_version["parameters"]["source_git_revision"] == (
+                "research-commit-123"
+            )
 
     with_test_paths(verify)
 

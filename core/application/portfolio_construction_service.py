@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,6 +13,15 @@ from core.application.portfolio_risk_review_service import PortfolioRiskReviewSe
 from core.application.portfolio_benchmark_service import PortfolioBenchmarkService
 from core.research.research_contract import ResearchContract
 from core.research.master_portfolio_decision_engine import MasterPortfolioDecisionEngine
+from core.research.investment_research_pipeline import InvestmentResearchPipeline
+from core.decision_ledger import (
+    InvestmentDecision,
+    InvestmentDecisionLedger,
+    LedgerIntegrityError,
+    ModelVersion,
+    current_git_revision,
+)
+from core.portfolio_decision_transaction import PortfolioDecisionTransaction
 
 
 class PortfolioConstructionService:
@@ -22,10 +32,27 @@ class PortfolioConstructionService:
     PIPELINE_DIRECTORY = PROJECT_ROOT / "data" / "research" / "pipeline"
     UNIVERSE_PATH = PROJECT_ROOT / "data" / "research" / "universe" / "both.json"
     PORTFOLIO_DIRECTORY = PROJECT_ROOT / "data" / "research" / "portfolios"
+    DECISION_LEDGER_PATH = PROJECT_ROOT / "data" / "decision_ledger.jsonl"
 
     @staticmethod
     def timestamp() -> str:
         return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+    @classmethod
+    def portfolio_snapshot_id(cls, portfolio: dict[str, Any]) -> str:
+        material = {
+            "created_at": portfolio.get("created_at"),
+            "holdings": [
+                {"ticker": item.get("ticker"), "weight": item.get("weight")}
+                for item in portfolio.get("holdings", [])
+            ],
+        }
+        digest = hashlib.sha256(
+            json.dumps(material, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()[:12].upper()
+        timestamp = str(portfolio.get("created_at") or cls.timestamp())
+        compact = "".join(character for character in timestamp if character.isdigit())[:14]
+        return f"PORT-{compact}-{digest}"
 
     @staticmethod
     def confidence_label(value: float | None) -> str:
@@ -79,6 +106,17 @@ class PortfolioConstructionService:
             path = cls.PORTFOLIO_DIRECTORY / f"{stem}_{sequence}.json"
             sequence += 1
         portfolio_class.save(portfolio, path=path)
+        return path
+
+    @classmethod
+    def next_proposed_update_path(cls) -> Path:
+        cls.PORTFOLIO_DIRECTORY.mkdir(parents=True, exist_ok=True)
+        stem = f"research_portfolio_{cls.timestamp()}"
+        path = cls.PORTFOLIO_DIRECTORY / f"{stem}.json"
+        sequence = 1
+        while path.exists():
+            path = cls.PORTFOLIO_DIRECTORY / f"{stem}_{sequence}.json"
+            sequence += 1
         return path
 
     @classmethod
@@ -250,6 +288,16 @@ class PortfolioConstructionService:
                     "master_decision": canonical.get("master_decision", {}),
                     "diagnostics": canonical.get("diagnostics", {}),
                     "monitoring_conditions": canonical.get("monitoring_conditions", []),
+                    "decision_reason": canonical.get("decision_reason"),
+                    "bull_case": canonical.get("bull_case"),
+                    "bear_case": canonical.get("bear_case"),
+                    "catalysts": canonical.get("catalysts", []),
+                    "data_as_of": canonical.get("data_as_of") or raw.get("started_at"),
+                    "research_pipeline_version": raw.get("pipeline_version"),
+                    "research_git_revision": canonical.get(
+                        "research_git_revision",
+                        "UNKNOWN",
+                    ),
                     "audit": canonical.get("audit", {}),
                     "record_path": str(path),
                 }
@@ -337,6 +385,18 @@ class PortfolioConstructionService:
         portfolio_class: type[PortfolioEngine] = PortfolioEngine,
         risk_reviewer: type[PortfolioRiskReviewService] = PortfolioRiskReviewService,
     ) -> dict[str, Any]:
+        ledger = InvestmentDecisionLedger(cls.DECISION_LEDGER_PATH)
+        transaction = PortfolioDecisionTransaction(ledger, portfolio_class)
+        try:
+            transaction.recover_pending()
+        except (LedgerIntegrityError, OSError, ValueError, KeyError, TypeError) as exc:
+            return {
+                "status": "BLOCKED",
+                "failure_code": "RECOVERY_FAILED",
+                "scan": None,
+                "portfolio": None,
+                "reason": f"Pending portfolio transaction recovery failed: {exc}",
+            }
         scan = cls.research_scan()
         readiness = cls.portfolio_readiness(scan, target_holdings)
         target_holdings = readiness["constructible_holdings"]
@@ -373,6 +433,9 @@ class PortfolioConstructionService:
         portfolio["cash_policy"] = cash_policy
         portfolio["construction_readiness"] = readiness
         portfolio["benchmark"] = PortfolioBenchmarkService.disclosure(portfolio)
+        portfolio.setdefault("created_at", datetime.now(timezone.utc).isoformat())
+        portfolio.setdefault("version", getattr(portfolio_class, "VERSION", "UNKNOWN"))
+        portfolio["portfolio_id"] = cls.portfolio_snapshot_id(portfolio)
 
         risk_review = risk_reviewer.review(portfolio)
         portfolio["risk_review"] = risk_review
@@ -386,7 +449,82 @@ class PortfolioConstructionService:
                 "reason": "Portfolio risk review blocked construction: " + " ".join(flags),
             }
 
-        path = cls.save_proposed_update(portfolio, portfolio_class)
+        missing_cutoffs = [
+            str(holding.get("ticker") or "UNKNOWN")
+            for holding in portfolio.get("holdings", [])
+            if not holding.get("data_as_of")
+        ]
+        if missing_cutoffs:
+            return {
+                "status": "BLOCKED",
+                "scan": scan,
+                "portfolio": portfolio,
+                "reason": "Decision ledger requires data_as_of for: " + ", ".join(missing_cutoffs),
+            }
+
+        ledger_entries = []
+        decided_at = datetime.now(timezone.utc).isoformat()
+        decision_git_revision = current_git_revision(cls.PROJECT_ROOT)
+        for holding in portfolio.get("holdings", []):
+            decision = InvestmentDecision.from_canonical(holding, holding=holding)
+            versions = [
+                ModelVersion(
+                    component="research_pipeline",
+                    version=str(
+                        holding.get("research_pipeline_version")
+                        or InvestmentResearchPipeline.VERSION
+                    ),
+                    parameters={
+                        "source_git_revision": holding.get(
+                            "research_git_revision",
+                            "UNKNOWN",
+                        )
+                    },
+                ),
+                ModelVersion(
+                    component="research_contract",
+                    version=ResearchContract.VERSION,
+                ),
+                ModelVersion(
+                    component="master_portfolio_decision",
+                    version=MasterPortfolioDecisionEngine.VERSION,
+                ),
+                ModelVersion(
+                    component="portfolio",
+                    version=str(portfolio.get("version") or "UNKNOWN"),
+                ),
+            ]
+            ledger_entries.append(
+                {
+                    "ticker": decision.ticker,
+                    "decision": decision.decision,
+                    "decision_payload": decision.as_payload(),
+                    "model_versions": [version.as_dict() for version in versions],
+                    "data_as_of": str(holding["data_as_of"]),
+                    "portfolio_version": portfolio["portfolio_id"],
+                    "git_revision": decision_git_revision,
+                    "decided_at": decided_at,
+                    "decision_id": f"{portfolio['portfolio_id']}-{decision.ticker}",
+                }
+            )
+
+        try:
+            persistence = transaction.persist(
+                transaction_id=portfolio["portfolio_id"],
+                portfolio=portfolio,
+                snapshot_path=cls.next_proposed_update_path(),
+                ledger_entries=ledger_entries,
+            )
+        except (LedgerIntegrityError, OSError, ValueError, KeyError, TypeError) as exc:
+            return {
+                "status": "BLOCKED",
+                "failure_code": "PERSISTENCE_FAILED",
+                "scan": scan,
+                "portfolio": portfolio,
+                "reason": f"Portfolio decision persistence failed: {exc}",
+            }
+        path = persistence["snapshot_path"]
+        ledger_records = persistence["ledger_records"]
 
         return {
             "status": "CONSTRUCTED",
@@ -394,4 +532,7 @@ class PortfolioConstructionService:
             "portfolio": portfolio,
             "path": path,
             "readiness": readiness,
+            "ledger_path": cls.DECISION_LEDGER_PATH,
+            "ledger_records": ledger_records,
+            "transaction_path": persistence["transaction_path"],
         }

@@ -4,12 +4,15 @@ from core.fundamental_analysis_engine import (
 from core.valuation_engine import (
     ValuationEngine,
 )
+import pytest
+
 from core.investment_decision_engine import (
     InvestmentDecisionEngine,
 )
 
 
-def test_nvda_investment_pipeline():
+@pytest.mark.live_data
+def test_nvda_investment_pipeline(tmp_path):
 
     symbol = "NVDA"
 
@@ -19,7 +22,7 @@ def test_nvda_investment_pipeline():
     )
 
     valuation = (
-        ValuationEngine()
+        ValuationEngine(output_directory=tmp_path / "valuation")
         .analyse(symbol)
     )
 
@@ -148,7 +151,11 @@ def test_nvda_investment_pipeline():
 
 if __name__ == "__main__":
 
-    test_nvda_investment_pipeline()
+    from pathlib import Path
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as directory:
+        test_nvda_investment_pipeline(Path(directory))
 
     print()
     print("=" * 80)

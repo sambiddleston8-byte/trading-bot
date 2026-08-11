@@ -1,7 +1,11 @@
 from bots.news.analyser import NewsAnalyser
 
-news = NewsAnalyser()
 
-result = news.analyse("AAPL")
+def main():
+    news = NewsAnalyser()
+    result = news.analyse("AAPL")
+    print(result)
 
-print(result)
+
+if __name__ == "__main__":
+    main()
