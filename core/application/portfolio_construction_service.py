@@ -22,6 +22,7 @@ from core.decision_ledger import (
     current_git_revision,
 )
 from core.portfolio_decision_transaction import PortfolioDecisionTransaction
+from core.persistence import PersistenceComparison, PortfolioChangeBuilder
 
 
 class PortfolioConstructionService:
@@ -107,6 +108,51 @@ class PortfolioConstructionService:
             sequence += 1
         portfolio_class.save(portfolio, path=path)
         return path
+
+    @classmethod
+    def persist_reallocation(
+        cls,
+        *,
+        previous_portfolio: dict[str, Any],
+        applied_result: dict[str, Any],
+        checked_at: str,
+        monitor_version: str,
+        portfolio_class: type[PortfolioEngine] = PortfolioEngine,
+    ) -> dict[str, Any]:
+        """Persist an applied paper reallocation with the same audit boundary."""
+        updated = applied_result.get("portfolio") or {}
+        applied_at = (
+            (updated.get("last_rebalance") or {}).get("applied_at")
+            or updated.get("updated_at")
+        )
+        change = PortfolioChangeBuilder.reallocation(
+            previous_portfolio=previous_portfolio,
+            updated_portfolio=updated,
+            changes=applied_result.get("changes") or [],
+            checked_at=checked_at,
+            applied_at=applied_at,
+            git_revision=current_git_revision(cls.PROJECT_ROOT),
+            monitor_version=monitor_version,
+            portfolio_version=str(updated.get("version") or portfolio_class.VERSION),
+        )
+        ledger = InvestmentDecisionLedger(cls.DECISION_LEDGER_PATH)
+        transaction = PortfolioDecisionTransaction(ledger, portfolio_class)
+        transaction.recover_pending()
+        persistence = transaction.persist(
+            transaction_id=str(change.portfolio["portfolio_id"]),
+            portfolio=dict(change.portfolio),
+            snapshot_path=cls.next_proposed_update_path(),
+            ledger_entries=[dict(item) for item in change.decisions],
+        )
+        return {
+            **persistence,
+            "change": change,
+            "portfolio": dict(change.portfolio),
+            "persistence_comparison": PersistenceComparison.persist(
+                change,
+                persistence["ledger_records"],
+            ),
+        }
 
     @classmethod
     def next_proposed_update_path(cls) -> Path:
@@ -508,6 +554,10 @@ class PortfolioConstructionService:
                 }
             )
 
+        change = PortfolioChangeBuilder.construction(portfolio, ledger_entries)
+        portfolio = dict(change.portfolio)
+        ledger_entries = [dict(item) for item in change.decisions]
+
         try:
             persistence = transaction.persist(
                 transaction_id=portfolio["portfolio_id"],
@@ -525,6 +575,7 @@ class PortfolioConstructionService:
             }
         path = persistence["snapshot_path"]
         ledger_records = persistence["ledger_records"]
+        comparison = PersistenceComparison.persist(change, ledger_records)
 
         return {
             "status": "CONSTRUCTED",
@@ -535,4 +586,5 @@ class PortfolioConstructionService:
             "ledger_path": cls.DECISION_LEDGER_PATH,
             "ledger_records": ledger_records,
             "transaction_path": persistence["transaction_path"],
+            "persistence_comparison": comparison,
         }

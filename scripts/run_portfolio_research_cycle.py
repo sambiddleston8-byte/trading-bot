@@ -57,13 +57,23 @@ def run_cycle(
     snapshot = PortfolioMonitorService.evaluate(portfolio)
     applied = PortfolioMonitorService.apply_reallocation(portfolio, snapshot)
     updated_path = None
+    persistence_comparison = {"status": "DISABLED", "mode": "local-files"}
     if applied.get("status") == "APPLIED":
-        updated_path = PortfolioConstructionService.save_proposed_update(
-            applied["portfolio"]
+        persisted = PortfolioConstructionService.persist_reallocation(
+            previous_portfolio=portfolio,
+            applied_result=applied,
+            checked_at=str(snapshot.get("checked_at")),
+            monitor_version=PortfolioMonitorService.VERSION,
         )
+        applied["portfolio"] = persisted["portfolio"]
+        updated_path = persisted["snapshot_path"]
         snapshot["reallocation_plan"] = applied["reallocation_plan"]
         snapshot["applied_portfolio_changes"] = applied["changes"]
         snapshot["applied_portfolio_path"] = str(updated_path)
+        snapshot["applied_decision_ids"] = [
+            record["decision_id"] for record in persisted["ledger_records"]
+        ]
+        persistence_comparison = persisted["persistence_comparison"]
     elif applied.get("status", "NO_CHANGE").startswith("NOT_APPLIED"):
         snapshot["reallocation_apply_status"] = applied.get("status")
         snapshot["reallocation_apply_reason"] = applied.get("reason")
@@ -76,6 +86,7 @@ def run_cycle(
         "monitoring_snapshot": snapshot_path,
         "proposed_portfolio_update": updated_path,
         "reallocation_status": applied.get("status"),
+        "persistence_comparison": persistence_comparison,
     }
 
 
@@ -104,6 +115,16 @@ def main() -> None:
         print("Holding refresh failures: " + ", ".join(result["holding_refresh_failures"]))
     print("Candidate coverage status: " + str((result["coverage"] or {}).get("status")))
     print("Reallocation status: " + str(result["reallocation_status"]))
+    comparison = result["persistence_comparison"]
+    if comparison["status"] == "MATCH":
+        print("PostgreSQL comparison: MATCH")
+    elif comparison["status"] != "DISABLED":
+        print(
+            "PostgreSQL comparison needs attention: "
+            + str(comparison.get("status"))
+            + " "
+            + str(comparison.get("mismatches") or comparison.get("reason") or "")
+        )
     print("Monitoring snapshot: " + str(result["monitoring_snapshot"]))
     if result["proposed_portfolio_update"]:
         print("Updated proposed paper portfolio: " + str(result["proposed_portfolio_update"]))
