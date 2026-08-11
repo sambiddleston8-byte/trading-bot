@@ -78,6 +78,24 @@ def test_duplicate_decision_id_is_rejected(tmp_path):
         append_example(ledger, decision_id="DEC-001")
 
 
+def test_explicit_repair_preserves_incomplete_tail_and_restores_chain(tmp_path):
+    path = tmp_path / "decisions.jsonl"
+    ledger = InvestmentDecisionLedger(path)
+    first = append_example(ledger, decision_id="DEC-001")
+    with path.open("ab") as stream:
+        stream.write(b'{"partial":')
+
+    with pytest.raises(LedgerIntegrityError, match="Invalid JSON"):
+        ledger.verify()
+
+    backup = ledger.repair_incomplete_tail()
+
+    assert backup is not None
+    assert backup.read_bytes() == b'{"partial":'
+    assert ledger.verify() == [first]
+    append_example(ledger, decision_id="DEC-002")
+
+
 def test_canonical_adapter_keeps_every_roadmap_field(tmp_path):
     decision = InvestmentDecision.from_canonical(
         {
@@ -90,6 +108,9 @@ def test_canonical_adapter_keeps_every_roadmap_field(tmp_path):
             "master_decision": {"confidence": 74.0},
             "monitoring_conditions": ["Revenue growth falls below 20%."],
             "market_signals": {"risk_components": ["High volatility"]},
+            "bull_case": "Margin expansion supports upside.",
+            "bear_case": "Demand normalisation pressures returns.",
+            "catalysts": ["Next product launch"],
         },
         holding={"weight": 0.08},
     )
@@ -110,6 +131,9 @@ def test_canonical_adapter_keeps_every_roadmap_field(tmp_path):
     assert payload["thesis_invalidation_conditions"] == [
         "Revenue growth falls below 20%."
     ]
+    assert payload["bull_case"] == "Margin expansion supports upside."
+    assert payload["bear_case"] == "Demand normalisation pressures returns."
+    assert payload["catalysts"] == ["Next product launch"]
     assert set(payload) == {
         "price_at_decision",
         "target_portfolio_weight",

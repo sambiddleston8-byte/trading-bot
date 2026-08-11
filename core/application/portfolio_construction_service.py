@@ -416,6 +416,19 @@ class PortfolioConstructionService:
                 "reason": "Portfolio risk review blocked construction: " + " ".join(flags),
             }
 
+        missing_cutoffs = [
+            str(holding.get("ticker") or "UNKNOWN")
+            for holding in portfolio.get("holdings", [])
+            if not holding.get("data_as_of")
+        ]
+        if missing_cutoffs:
+            return {
+                "status": "BLOCKED",
+                "scan": scan,
+                "portfolio": portfolio,
+                "reason": "Decision ledger requires data_as_of for: " + ", ".join(missing_cutoffs),
+            }
+
         path = cls.save_proposed_update(portfolio, portfolio_class)
         ledger = InvestmentDecisionLedger(cls.DECISION_LEDGER_PATH)
         ledger_records = []
@@ -447,8 +460,7 @@ class PortfolioConstructionService:
                     decision,
                     model_versions=versions,
                     data_as_of=str(
-                        holding.get("data_as_of")
-                        or scan.get("created_at")
+                        holding["data_as_of"]
                     ),
                     portfolio_version=portfolio["portfolio_id"],
                     decision_id=f"{portfolio['portfolio_id']}-{decision.ticker}",

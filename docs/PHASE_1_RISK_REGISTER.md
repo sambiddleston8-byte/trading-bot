@@ -28,10 +28,12 @@ credible data cutoff.
 ### Ledger durability
 
 The local JSONL ledger is append-only and hash-chained, making modification and
-reordering detectable. A filesystem owner can still truncate the final records,
-and concurrent writers are not yet coordinated. Before always-on AWS operation,
-move the ledger to a transactional database and/or immutable object retention,
-with an externally anchored chain head and one controlled writer.
+reordering detectable. Phase 1 now serialises writers with a file lock, fsyncs
+each append, and provides an explicit recovery operation for a malformed final
+partial line while preserving that tail as evidence. A filesystem owner can
+still truncate valid final records. Before always-on AWS operation, move the
+ledger to a transactional database and/or immutable object retention, with an
+externally anchored chain head and one controlled writer.
 
 ## Medium priority
 

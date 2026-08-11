@@ -27,12 +27,15 @@ Phase 1 — Foundation, audit and decision ledger.
 - Test collection side effects isolated from live research and valuation data.
 - Phase 1 architecture, data-source, deployment and investment-methodology risk
   register completed.
+- Claude Code completed a strict read-only adversarial review of commit
+  `dbe3720`; its confirmed high-priority findings were repaired and covered by
+  tests (writer locking, interrupted-tail recovery, strict data cutoffs, and
+  thesis/catalyst field propagation).
 
 ## Still required before Phase 2
 
-- Commit and review the Phase 1 change set separately from generated data.
-- Resolve local-ledger concurrency and atomic portfolio/ledger persistence before
-  unattended AWS operation.
+- Commit and re-review the Phase 1 hardening separately from generated data.
+- Resolve atomic portfolio/ledger persistence before unattended AWS operation.
 
 ## Safety invariants
 
@@ -43,6 +46,6 @@ Phase 1 — Foundation, audit and decision ledger.
 
 ## Next action
 
-Review and commit the isolated Phase 1 source changes. Then begin Phase 2 by
-installing Claude Code and using Claude as an adversarial reviewer of this
-branch; do not give it permission to modify the same files during review.
+Commit the isolated Phase 1 hardening, then have Claude Code re-review the new
+commit read-only. Phase 2 may begin only after the remaining findings are either
+fixed or explicitly accepted as pre-AWS constraints.

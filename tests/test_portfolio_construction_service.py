@@ -27,6 +27,7 @@ class FakePortfolio:
                     "ticker": item["ticker"],
                     "portfolio_conviction": item["portfolio_conviction"],
                     "research_confidence": item["research_confidence"],
+                    "data_as_of": item["data_as_of"],
                 }
                 for item in scan["ranked"][:number_of_stocks]
             ],
@@ -47,6 +48,7 @@ def pipeline_record(ticker):
     return {
         "ticker": ticker,
         "status": "COMPLETE",
+        "completed_at": "2026-08-11T12:00:00+00:00",
         "core": {
             "fundamental": {},
             "valuation": {},

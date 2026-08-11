@@ -24,6 +24,7 @@ def pipeline_record(ticker: str, risk_score: float = 75.0) -> dict:
     return {
         "ticker": ticker,
         "status": "COMPLETE",
+        "completed_at": "2026-08-11T12:00:00+00:00",
         "core": {
             "fundamental": {},
             "valuation": {},

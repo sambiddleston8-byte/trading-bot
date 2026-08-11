@@ -346,6 +346,21 @@ class ResearchContract:
                     ),
                 ),
 
+            "data_as_of":
+                cls.first_value(
+                    result.get("data_as_of"),
+                    result.get("completed_at"),
+                ),
+
+            "bull_case":
+                synthesis.get("bull_case"),
+
+            "bear_case":
+                synthesis.get("bear_case"),
+
+            "catalysts":
+                synthesis.get("catalysts") or [],
+
             "current_price":
                 cls.first_number(
                     decision_valuation.get(

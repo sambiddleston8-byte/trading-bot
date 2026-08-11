@@ -10,6 +10,7 @@ not place or route orders.
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+import fcntl
 import hashlib
 import json
 import os
@@ -116,6 +117,11 @@ class InvestmentDecision:
         risk_signals = canonical.get("market_signals") or {}
         risks = risk_signals.get("risk_components") or []
         thesis = canonical.get("decision_reason")
+        catalysts = canonical.get("catalysts") or []
+        if isinstance(catalysts, dict):
+            catalysts = catalysts.get("validated_catalysts") or catalysts.get("catalysts") or []
+        if not isinstance(catalysts, list):
+            catalysts = [catalysts]
         return cls(
             ticker=str(canonical.get("ticker") or holding.get("ticker") or "").upper(),
             decision=str(canonical.get("decision") or "UNAVAILABLE").upper(),
@@ -124,10 +130,10 @@ class InvestmentDecision:
             expected_return=canonical.get("expected_return"),
             expected_return_horizon_days=horizon_days,
             confidence=master.get("confidence") or holding.get("research_confidence"),
-            bull_case=None,
+            bull_case=canonical.get("bull_case"),
             base_case=thesis,
-            bear_case=None,
-            catalysts=[],
+            bear_case=canonical.get("bear_case"),
+            catalysts=catalysts,
             risks=list(risks) if isinstance(risks, list) else [risks],
             investment_thesis=thesis,
             thesis_invalidation_conditions=[str(item) for item in monitoring],
@@ -183,6 +189,35 @@ class InvestmentDecisionLedger:
                 records.append(record)
         return records
 
+    def repair_incomplete_tail(self) -> Path | None:
+        """Remove only a malformed final partial line, preserving a backup.
+
+        This is an explicit recovery operation, never an automatic mutation.
+        A malformed line anywhere except the tail remains an integrity error.
+        """
+        if not self.path.exists():
+            return None
+        raw = self.path.read_bytes()
+        if not raw or raw.endswith(b"\n"):
+            return None
+        complete_end = raw.rfind(b"\n") + 1
+        prefix = raw[:complete_end]
+        tail = raw[complete_end:]
+        try:
+            json.loads(tail.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            backup = self.path.with_suffix(self.path.suffix + ".incomplete-tail")
+            backup.write_bytes(tail)
+            descriptor = os.open(self.path, os.O_WRONLY | os.O_TRUNC)
+            try:
+                os.write(descriptor, prefix)
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+            self.verify()
+            return backup
+        return None
+
     @staticmethod
     def _record_hash(record_without_hash: dict[str, Any]) -> str:
         return hashlib.sha256(
@@ -219,41 +254,53 @@ class InvestmentDecisionLedger:
         decided_at: str | None = None,
         decision_id: str | None = None,
     ) -> dict[str, Any]:
-        existing = self.verify()
-        resolved_decision_id = decision_id or f"DEC-{uuid4().hex.upper()}"
-        if any(item.get("decision_id") == resolved_decision_id for item in existing):
-            raise LedgerIntegrityError(
-                f"Decision ID {resolved_decision_id} already exists."
-            )
-        previous_hash = existing[-1]["record_hash"] if existing else GENESIS_HASH
-        versions = [
-            version.as_dict() if isinstance(version, ModelVersion) else dict(version)
-            for version in model_versions
-        ]
-        material = {
-            "schema_version": LEDGER_SCHEMA_VERSION,
-            "decision_id": resolved_decision_id,
-            "decided_at": decided_at or _utc_now(),
-            "data_as_of": data_as_of,
-            "ticker": ticker.strip().upper(),
-            "decision": decision.strip().upper(),
-            "portfolio_version": portfolio_version,
-            "git_revision": git_revision or current_git_revision(self.path.parent),
-            "model_versions": versions,
-            "decision_payload": decision_payload,
-            "execution_mode": "RECORD_ONLY",
-            "previous_hash": previous_hash,
-        }
-        record = {**material, "record_hash": self._record_hash(material)}
-
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        flags = os.O_APPEND | os.O_CREAT | os.O_WRONLY
-        descriptor = os.open(self.path, flags, 0o600)
-        with os.fdopen(descriptor, "a", encoding="utf-8") as ledger:
-            ledger.write(_canonical_json(record) + "\n")
-            ledger.flush()
-            os.fsync(ledger.fileno())
-        return record
+        lock_path = self.path.with_suffix(self.path.suffix + ".lock")
+        lock_descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+        try:
+            fcntl.flock(lock_descriptor, fcntl.LOCK_EX)
+            existing = self.verify()
+            resolved_decision_id = decision_id or f"DEC-{uuid4().hex.upper()}"
+            if any(item.get("decision_id") == resolved_decision_id for item in existing):
+                raise LedgerIntegrityError(
+                    f"Decision ID {resolved_decision_id} already exists."
+                )
+            previous_hash = existing[-1]["record_hash"] if existing else GENESIS_HASH
+            versions = [
+                version.as_dict() if isinstance(version, ModelVersion) else dict(version)
+                for version in model_versions
+            ]
+            material = {
+                "schema_version": LEDGER_SCHEMA_VERSION,
+                "decision_id": resolved_decision_id,
+                "decided_at": decided_at or _utc_now(),
+                "data_as_of": data_as_of,
+                "ticker": ticker.strip().upper(),
+                "decision": decision.strip().upper(),
+                "portfolio_version": portfolio_version,
+                "git_revision": git_revision or current_git_revision(self.path.parent),
+                "model_versions": versions,
+                "decision_payload": decision_payload,
+                "execution_mode": "RECORD_ONLY",
+                "previous_hash": previous_hash,
+            }
+            record = {**material, "record_hash": self._record_hash(material)}
+            encoded = (_canonical_json(record) + "\n").encode("utf-8")
+            descriptor = os.open(self.path, os.O_APPEND | os.O_CREAT | os.O_WRONLY, 0o600)
+            try:
+                written = 0
+                while written < len(encoded):
+                    count = os.write(descriptor, encoded[written:])
+                    if count <= 0:
+                        raise OSError("Ledger append made no forward progress.")
+                    written += count
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+            return record
+        finally:
+            fcntl.flock(lock_descriptor, fcntl.LOCK_UN)
+            os.close(lock_descriptor)
 
     def append_investment_decision(
         self,

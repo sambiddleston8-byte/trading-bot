@@ -1422,6 +1422,12 @@ class PortfolioEngine:
 
                     "decision_reason": item.get("decision_reason"),
 
+                    "bull_case": item.get("bull_case"),
+
+                    "bear_case": item.get("bear_case"),
+
+                    "catalysts": item.get("catalysts", []),
+
                     "data_as_of": item.get("data_as_of"),
 
                     "research_pipeline_version": item.get(
