@@ -8,7 +8,7 @@ real-money trading remains disabled.
 
 ## Current phase
 
-Phase 1 — Foundation, audit and decision ledger.
+Phase 2 — Codex-builder and Claude-challenger development system.
 
 ## Completed
 
@@ -38,11 +38,12 @@ Phase 1 — Foundation, audit and decision ledger.
 - Claude's focused transaction review identified three actionable recovery and
   idempotence gaps; all were repaired with targeted regression coverage.
 
-## Still required before Phase 2
+## Phase 2 work
 
-- Resolve or formally accept the documented medium/low findings before broader
-  automation: atomic portfolio/ledger persistence, cached-research Git
-  provenance, UI error handling, ledger batching, and portfolio-ID hardening.
+- Repeatable GitHub issue and pull-request promotion templates established.
+- Codex remains the bounded-change builder; Claude remains the read-only
+  adversarial challenger for high-value reviews.
+- Frontier-model review is explicitly skipped for routine mechanical work.
 - Keep AWS execution blocked until transactional persistence replaces the local
   two-file snapshot/ledger sequence.
 
@@ -55,6 +56,7 @@ Phase 1 — Foundation, audit and decision ledger.
 
 ## Next action
 
-Use the Phase 2 Codex-builder / Claude-challenger workflow on the next isolated
-feature branch. Do not begin AWS deployment or unattended operation until the
-remaining persistence and provenance constraints are closed.
+Use the Phase 2 workflow for the first Phase 3 architecture issue: define the
+lowest-cost AWS target, transactional storage boundary, Docker packaging and
+paper-only safety gates. Do not deploy or start unattended operation during the
+architecture issue.

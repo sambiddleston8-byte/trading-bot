@@ -1,0 +1,102 @@
+name: Investment platform change
+description: Propose one bounded, testable change governed by the master roadmap.
+title: "[Change]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keep this issue bounded. Real-money trading and autonomous production
+        changes are outside scope unless the master roadmap is explicitly amended.
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Bounded objective
+      description: What single outcome should this issue deliver?
+      placeholder: Implement...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: roadmap_phase
+    attributes:
+      label: Governing roadmap phase
+      options:
+        - Phase 1 — foundation and decision ledger
+        - Phase 2 — Codex and Claude development system
+        - Phase 3 — AWS and cloud infrastructure
+        - Phase 4 — Alpaca paper trading
+        - Later phase — requires explicit scoping
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and evidence
+      description: What problem does this solve, and what evidence shows it exists?
+    validations:
+      required: true
+
+  - type: textarea
+    id: deterministic_alternative
+    attributes:
+      label: Cheapest appropriate implementation
+      description: Could deterministic Python or existing software solve this without an LLM?
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable conditions that prove the work is complete.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test and evaluation plan
+      description: Include the smallest deterministic tests and any justified live-provider check.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: investment_risks
+    attributes:
+      label: Investment-methodology risks considered
+      options:
+        - label: Look-ahead bias
+        - label: Survivorship bias
+        - label: Data leakage
+        - label: Overfitting or multiple testing
+        - label: Incorrect benchmark or attribution
+        - label: Not applicable — explain why in the issue
+
+  - type: dropdown
+    id: claude_review
+    attributes:
+      label: Claude challenger review
+      description: Use frontier review only where independent judgment adds material value.
+      options:
+        - Required — high-risk logic or architecture
+        - Required — investment or statistical methodology
+        - Not required — routine/mechanical change
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety boundary
+      options:
+        - label: This issue does not enable real-money trading.
+          required: true
+        - label: Generated research data will not be mixed into the source-code change.
+          required: true
