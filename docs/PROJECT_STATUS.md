@@ -45,6 +45,12 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
   exact replay checks and live-database rollback tests.
 - Claude's issue #7 challenge review found hash, concurrency, replay and audit
   metadata gaps; all High/Medium findings were repaired and regression-tested.
+- Issue #9 gives construction and reallocation one audited `PortfolioChange`
+  format and one local snapshot-plus-ledger transaction boundary.
+- Opt-in comparison mode shadow-writes and verifies portfolio, holdings,
+  decision IDs and hashes against PostgreSQL while `local-files` remains the
+  explicit default. Comparison mismatches/failures are surfaced by worker CLI
+  output; workers themselves remain disabled unless manually invoked.
 
 ## Phase 2 work
 
@@ -67,7 +73,7 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
 
 ## Next action
 
-Review the transactional PostgreSQL repository under issue #7. PostgreSQL
-remains non-authoritative until both portfolio write paths are connected in
-comparison mode and their outputs agree. AWS choices, purchasing and deployment
-remain separate and require explicit user approval.
+Review persistence comparison mode under issue #9. PostgreSQL remains
+non-authoritative until repeated comparison runs agree and rollback/restore is
+rehearsed. AWS choices, purchasing and deployment remain separate and require
+explicit user approval.

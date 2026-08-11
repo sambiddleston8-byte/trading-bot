@@ -9,7 +9,11 @@ import psycopg
 import pytest
 
 from core.decision_ledger import GENESIS_HASH, InvestmentDecisionLedger
-from core.persistence import PortfolioChange, PostgresPortfolioRepository
+from core.persistence import (
+    PersistenceComparison,
+    PortfolioChange,
+    PostgresPortfolioRepository,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -142,6 +146,27 @@ def test_postgres_hash_matches_local_ledger(migrated_database, tmp_path):
         ).fetchone()[0]
 
     assert postgres_hash == local_record["record_hash"]
+
+
+def test_live_comparison_mode_reports_exact_match(migrated_database, tmp_path):
+    change = _change()
+    entry = dict(change.decisions[0])
+    entry["portfolio_version"] = change.portfolio["portfolio_id"]
+    entry["git_revision"] = change.portfolio["git_revision"]
+    records = InvestmentDecisionLedger(tmp_path / "decisions.jsonl").append_batch(
+        [entry]
+    )
+    result = PersistenceComparison.persist(
+        change,
+        records,
+        mode="comparison",
+        repository=PostgresPortfolioRepository(
+            lambda: psycopg.connect(migrated_database)
+        ),
+    )
+
+    assert result["status"] == "MATCH"
+    assert result["mismatches"] == []
 
 
 def test_separate_changes_extend_one_chain(migrated_database):

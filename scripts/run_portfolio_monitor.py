@@ -59,12 +59,30 @@ def main() -> None:
     snapshot = PortfolioMonitorService.evaluate(portfolio)
     applied_update = PortfolioMonitorService.apply_reallocation(portfolio, snapshot)
     if applied_update.get("status") == "APPLIED":
-        updated_path = PortfolioConstructionService.save_proposed_update(
-            applied_update["portfolio"]
+        persisted = PortfolioConstructionService.persist_reallocation(
+            previous_portfolio=portfolio,
+            applied_result=applied_update,
+            checked_at=str(snapshot.get("checked_at")),
+            monitor_version=PortfolioMonitorService.VERSION,
         )
+        applied_update["portfolio"] = persisted["portfolio"]
+        updated_path = persisted["snapshot_path"]
         snapshot["reallocation_plan"] = applied_update["reallocation_plan"]
         snapshot["applied_portfolio_changes"] = applied_update["changes"]
         snapshot["applied_portfolio_path"] = str(updated_path)
+        snapshot["applied_decision_ids"] = [
+            record["decision_id"] for record in persisted["ledger_records"]
+        ]
+        comparison = persisted["persistence_comparison"]
+        if comparison["status"] == "MATCH":
+            print("PostgreSQL comparison: MATCH")
+        elif comparison["status"] != "DISABLED":
+            print(
+                "PostgreSQL comparison needs attention: "
+                + str(comparison.get("status"))
+                + " "
+                + str(comparison.get("mismatches") or comparison.get("reason") or "")
+            )
         print(f"Updated proposed paper portfolio: {updated_path}")
     elif applied_update.get("status", "NO_CHANGE").startswith("NOT_APPLIED"):
         snapshot["reallocation_apply_status"] = applied_update.get("status")

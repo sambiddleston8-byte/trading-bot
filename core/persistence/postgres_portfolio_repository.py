@@ -182,6 +182,35 @@ class PostgresPortfolioRepository:
         finally:
             connection.close()
 
+    def audit_change(self, portfolio_id: str) -> dict[str, Any]:
+        """Return the committed fields needed for local/PostgreSQL comparison."""
+        connection = self._connection_factory()
+        try:
+            with connection.cursor() as cursor:
+                portfolio = cursor.execute(
+                    "SELECT payload FROM portfolio_versions WHERE portfolio_id = %s",
+                    (portfolio_id,),
+                ).fetchone()
+                holdings = cursor.execute(
+                    "SELECT payload FROM portfolio_holdings WHERE portfolio_id = %s ORDER BY ticker",
+                    (portfolio_id,),
+                ).fetchall()
+                decisions = cursor.execute(
+                    """
+                    SELECT decision_id, record_hash FROM investment_decisions
+                    WHERE portfolio_id = %s ORDER BY sequence_number
+                    """,
+                    (portfolio_id,),
+                ).fetchall()
+            return {
+                "portfolio": portfolio[0] if portfolio else None,
+                "holdings": [row[0] for row in holdings],
+                "decision_ids": [row[0] for row in decisions],
+                "record_hashes": [row[1] for row in decisions],
+            }
+        finally:
+            connection.close()
+
     @staticmethod
     def _existing_result(
         *,
