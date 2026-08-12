@@ -34,3 +34,16 @@ No connector, downloader or scraper exists. A disclosure is research evidence
 only; it cannot become an automatic/copy-trading signal, connect to a broker,
 submit an order or enable live trading. Synthetic tests use no real politician
 data.
+
+## Point-in-time activity snapshots
+
+Issue #131 adds deterministic issuer-level research snapshots using only
+disclosures available by the chosen timestamp. Historical evidenced-public and
+live system-observed modes are separate. Snapshots count buys, sells, exchanges,
+unique and repeated politicians; preserve reported amount ranges; calculate
+conservative net lower/upper bounds; and disclose minimum, mean and maximum lag.
+
+Future disclosures are excluded. Committee relevance, historical politician
+reliability and subsequent abnormal returns remain explicitly unavailable until
+their own evidence foundations exist. The snapshot is one non-executable
+research factor, never a standalone recommendation or copy trade.
