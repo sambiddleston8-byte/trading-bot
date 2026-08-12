@@ -222,6 +222,14 @@ learning.
   evidence cannot regress. Backfilled evidence is labelled, no exposure or
   recommendation is calculated, and learning and track-record claims remain
   blocked.
+- Phase 5 now calculates exact post-flow sector exposure only when every
+  invested position has exactly one complete classification under the same
+  provider taxonomy/version. Provider labels are not translated; missing,
+  uncertain, duplicated, mixed-taxonomy or conflicting code/name evidence
+  blocks the result. Portfolio and invested-only sector weights reconcile with
+  cash kept separate, and use of classification evidence retrieved after the
+  valuation boundary is explicitly disclosed. No diversification judgment,
+  recommendation, return, alpha, learning update or track-record claim is made.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -271,12 +279,11 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by calculating exact sector exposure only when every invested
-position has complete classification evidence under the same provider taxonomy
-and version. Mixed, missing or uncertain classifications must fail closed and
-cash must remain a separate allocation. CAGR, volatility, Sharpe, Sortino,
-drawdown, hit rate, turnover and transaction-cost attribution remain distinct
-calculations with explicit minimum-history and methodology gates. Risk-adjusted
-alpha remains a separate model; learning and track-record claims remain blocked.
-Issue #21 remains the research-quality backlog. PostgreSQL remains
-non-authoritative and Lightsail remains only the planned future destination.
+Continue Phase 5 with the next bounded risk/performance measure selected from
+the roadmap evidence sequence. CAGR, volatility, Sharpe, Sortino, drawdown, hit
+rate, turnover and transaction-cost attribution remain distinct calculations
+with explicit minimum-history and methodology gates; none may be inferred from
+sparse milestone observations. Risk-adjusted alpha remains a separate model;
+learning and track-record claims remain blocked. Issue #21 remains the
+research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
+remains only the planned future destination.

@@ -480,3 +480,30 @@ track-record claims. The next exposure calculation must require complete
 evidence for every invested ticker under one exact provider taxonomy/version;
 missing or mixed classifications must fail closed, while cash remains a
 separate allocation.
+
+## Exact post-flow sector exposure
+
+Issue #57 converts complete sector evidence into a portfolio statistic only
+when every invested position has exactly one complete classification from the
+same provider, taxonomy and taxonomy version. Missing, uncertain, duplicated or
+mixed-taxonomy evidence blocks the entire calculation. Provider codes and
+labels remain unchanged, and conflicting code/name mappings within one
+taxonomy also fail closed.
+
+Verified position values are grouped by sector using exact rational arithmetic.
+For each sector the record reports both its weight in total post-flow portfolio
+equity and its normalized weight among invested positions. Contributions and
+withdrawals through the valuation boundary are applied to cash, exactly as in
+the concentration calculation. Cash is reported as a distinct allocation and
+is never disguised as a sector. All sector and cash weights must reconcile
+exactly to one.
+
+The append-only result immutably links its valuation, every included cash flow
+and every classification record. If any classification was retrieved only
+after the valuation boundary, the complete exposure result explicitly reports
+that it contains backfilled evidence. This is a simulated point-in-time
+allocation statistic, not a diversification judgment or recommendation. It
+calculates no return or alpha, is not risk-adjusted or annualized, remains
+ineligible for learning, and cannot be presented as a track record. No broker,
+real-money, worker, market-data-download, AWS or autonomous-learning capability
+is enabled.
