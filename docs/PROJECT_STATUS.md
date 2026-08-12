@@ -8,7 +8,9 @@ real-money trading remains disabled.
 
 ## Current phase
 
-Phase 4 — local Alpaca paper-trading boundary; nothing connected or submitted.
+Research-methodology quality gate brought forward before Phase 4 paper-broker
+connection. The Alpaca boundary remains local; nothing is connected or
+submitted.
 
 ## Completed
 
@@ -71,6 +73,12 @@ Phase 4 — local Alpaca paper-trading boundary; nothing connected or submitted.
   to their decisions and portfolio versions. The configuration accepts only
   Alpaca's official paper endpoint; it has no credentials, HTTP submission or
   live-money mode.
+- Issue #21 reviews the complete investment-research method before broker
+  submission. Local and read-only Claude reviews find that the active pipeline
+  has strong evidence and safety gates, but that existing backtests do not
+  faithfully replay that pipeline. It prioritises immutable point-in-time
+  evidence, corrected forecast confidence, removal of correlated score reuse,
+  current-pipeline historical replay and calibrated valuation assumptions.
 
 ## Phase 2 work
 
@@ -93,7 +101,8 @@ Phase 4 — local Alpaca paper-trading boundary; nothing connected or submitted.
 
 ## Next action
 
-Complete the audited Alpaca paper-order boundary under issue #19. Next, verify a
-future paper account read-only before considering any paper-order submission.
-PostgreSQL remains non-authoritative and Lightsail remains only the planned
-future destination.
+Continue the Master Roadmap's essential infrastructure with a separate,
+non-submitting execution/performance-record issue while issue #21 remains the
+ongoing research-quality backlog. Add an automated fail-closed pre-flight gate
+before any future Alpaca paper-order submission. PostgreSQL remains
+non-authoritative and Lightsail remains only the planned future destination.
