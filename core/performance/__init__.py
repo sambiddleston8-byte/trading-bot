@@ -10,6 +10,7 @@ from core.performance.downside_target_policy import DownsideTargetPolicyLedger
 from core.performance.daily_risk_statistics import DailyRiskStatisticsLedger
 from core.performance.daily_risk_free_return import DailyRiskFreeReturnLedger
 from core.performance.factor_exposure_evidence import FactorExposureEvidenceLedger
+from core.performance.fixed_horizon_round_trip import FixedHorizonRoundTripOutcomeLedger
 from core.performance.metric_readiness import PerformanceMetricReadinessGate
 from core.performance.benchmark_distribution import BenchmarkDistributionLedger
 from core.performance.benchmark_total_return import BenchmarkTotalReturnLedger
@@ -57,6 +58,7 @@ __all__ = [
     "DailyRiskStatisticsLedger",
     "DailyRiskFreeReturnLedger",
     "FactorExposureEvidenceLedger",
+    "FixedHorizonRoundTripOutcomeLedger",
     "PerformanceMetricReadinessGate",
     "BenchmarkDistributionLedger",
     "BenchmarkTotalReturnLedger",
