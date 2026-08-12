@@ -468,6 +468,10 @@ learning.
   disposition: rejected, or eligible for a future shadow test. Eligibility
   cannot start shadow testing, replace the incumbent, approve promotion,
   change code, deploy or trade.
+- Phase 6 now preregisters immutable future paper/shadow plans for eligible
+  candidates. The window, minimum complete decisions, cadence, metric and risk
+  limits are fixed before observations begin. Planning cannot start the test,
+  connect to a broker, promote, replace the incumbent, deploy or trade.
 
 ## Safety invariants
 
