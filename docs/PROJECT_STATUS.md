@@ -156,6 +156,12 @@ learning.
   until profiling and faithful point-in-time validation justify them. The
   remaining trust-critical and performance sequence is recorded in
   `docs/QUANT_VALIDITY_AND_PERFORMANCE_AUDIT.md`.
+- Simulation-to-live integrity is now a governing cross-phase roadmap
+  requirement. Paper-submission readiness adds execution-realism and data-parity
+  gates, while a separate ten-part live-promotion checklist remains incapable of
+  enabling live trading even when all evidence is reported complete. The full
+  measurement ladder and conservative execution requirements are recorded in
+  `docs/MASTER_ROADMAP_AMENDMENT_SIMULATION_TO_LIVE.md`.
 
 ## Phase 2 work
 

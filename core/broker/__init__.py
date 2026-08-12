@@ -6,6 +6,7 @@ from core.broker.alpaca_paper import (
     PaperOrderProposalLedger,
 )
 from core.broker.local_paper_execution import (
+    LiveTradingPromotionPreflight,
     LocalPaperExecutionLedger,
     PaperSubmissionPreflight,
 )
@@ -13,6 +14,7 @@ from core.broker.local_paper_execution import (
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
     "AlpacaPaperConfiguration",
+    "LiveTradingPromotionPreflight",
     "LocalPaperExecutionLedger",
     "PaperOrderProposalLedger",
     "PaperSubmissionPreflight",

@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 import pytest
 
 from core.broker import (
+    LiveTradingPromotionPreflight,
     LocalPaperExecutionLedger,
     PaperOrderProposalLedger,
     PaperSubmissionPreflight,
@@ -233,7 +234,7 @@ def test_preflight_fails_closed_when_gates_are_missing_or_open():
     missing = PaperSubmissionPreflight.evaluate()
     assert missing["status"] == "BLOCKED"
     assert missing["broker_submission_enabled"] is False
-    assert len(missing["open_gates"]) == 5
+    assert len(missing["open_gates"]) == 7
 
     partial = PaperSubmissionPreflight.evaluate({"point_in_time_availability": True})
     assert partial["status"] == "BLOCKED"
@@ -247,3 +248,20 @@ def test_even_cleared_preflight_cannot_enable_submission():
     assert result["status"] == "CLEARED"
     assert result["broker_submission_enabled"] is False
     assert result["next_authority"] == "SEPARATE_EXPLICIT_HUMAN_AUTHORIZATION_REQUIRED"
+
+
+def test_live_promotion_remains_disabled_even_when_evidence_is_complete():
+    missing = LiveTradingPromotionPreflight.evaluate()
+    assert missing["status"] == "BLOCKED"
+    assert len(missing["open_gates"]) == 10
+    assert missing["live_submission_enabled"] is False
+    assert missing["live_endpoint_supported"] is False
+
+    supplied = {key: True for key in missing["gates"]}
+    complete = LiveTradingPromotionPreflight.evaluate(supplied)
+    assert complete["status"] == "REVIEW_ELIGIBLE_ONLY"
+    assert complete["live_submission_enabled"] is False
+    assert complete["live_endpoint_supported"] is False
+    assert complete["next_authority"] == (
+        "SEPARATE_FUTURE_HUMAN_DECISION_AND_IMPLEMENTATION_REQUIRED"
+    )
