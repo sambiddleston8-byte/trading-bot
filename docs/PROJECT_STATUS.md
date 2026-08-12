@@ -240,6 +240,13 @@ learning.
   evidence can no longer rewrite or falsely invalidate history; missing,
   modified, misordered or identity-incompatible pinned support still fails
   closed. No performance claim, learning eligibility or live capability changes.
+- Phase 5 now attributes the recorded simulated entry costs already embedded in
+  verified portfolio valuations. Exact position and portfolio reconciliation
+  separates fees, adverse slippage, favourable slippage, signed net cost and
+  basis points against proposal reference notional. The result explicitly
+  prevents re-deduction and does not invent exits, spreads, market impact or
+  latency. It is not full round-trip/live-realism costing and makes no turnover,
+  return, alpha, recommendation, learning or track-record claim.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward

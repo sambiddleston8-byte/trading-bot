@@ -24,6 +24,9 @@ from core.performance.relative_total_return import RelativeTotalReturnLedger
 from core.performance.sector_classification import SectorClassificationEvidenceLedger
 from core.performance.sector_exposure import SectorExposureLedger
 from core.performance.total_return import TotalReturnLedger
+from core.performance.transaction_cost_attribution import (
+    EntryTransactionCostAttributionLedger,
+)
 
 __all__ = [
     "CorporateActionLedger",
@@ -44,4 +47,5 @@ __all__ = [
     "SectorClassificationEvidenceLedger",
     "SectorExposureLedger",
     "TotalReturnLedger",
+    "EntryTransactionCostAttributionLedger",
 ]
