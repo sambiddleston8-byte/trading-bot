@@ -2,6 +2,7 @@
 
 from core.performance.annualized_portfolio_return import AnnualizedPortfolioReturnLedger
 from core.performance.corporate_action import CorporateActionLedger
+from core.performance.complete_relative_return import CompleteFixedHorizonRelativeReturnLedger
 from core.performance.daily_market_observation import DailyMarketObservationLedger
 from core.performance.daily_portfolio_valuation import DailyPortfolioValuationLedger
 from core.performance.daily_portfolio_return import DailyPortfolioReturnLedger
@@ -50,6 +51,7 @@ from core.performance.transaction_cost_attribution import (
 __all__ = [
     "AnnualizedPortfolioReturnLedger",
     "CorporateActionLedger",
+    "CompleteFixedHorizonRelativeReturnLedger",
     "DailyMarketObservationLedger",
     "DailyPortfolioValuationLedger",
     "DailyPortfolioReturnLedger",
