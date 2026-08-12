@@ -284,6 +284,11 @@ learning.
   and the full wealth path are pinned; square roots use a declared 34-digit
   decimal context. Sharpe, Sortino, alpha, learning and track-record claims stay
   blocked.
+- Phase 5 now calculates compound annual growth rate only after the v2 gate
+  confirms a full-year horizon and one exact verified time-weighted return.
+  The immutable result pins funding, valuation, return and readiness evidence,
+  uses a declared 365.2425-day tropical-year basis and fixed 34-digit decimal
+  power context, and remains simulated, gross pre-tax and non-risk-adjusted.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -365,8 +370,8 @@ learning.
 
 ## Next action
 
-Continue Phase 5 with gated CAGR, then separately establish point-in-time
-risk-free evidence and downside-policy prerequisites before Sharpe or Sortino.
+Continue Phase 5 by separately establishing point-in-time risk-free evidence
+and downside-policy prerequisites before Sharpe or Sortino.
 Hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains

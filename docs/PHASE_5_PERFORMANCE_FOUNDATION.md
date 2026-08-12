@@ -652,6 +652,21 @@ fingerprint. It remains simulated and gross pre-tax. Sharpe, Sortino, alpha,
 recommendations, learning eligibility and track-record claims remain false;
 no broker, provider download, worker, AWS or live trading is enabled.
 
+## Gated compound annual growth rate
+
+Issue #83 calculates CAGR only when the v2 readiness gate confirms at least
+365 elapsed calendar days and exactly one verified cash-flow-neutral
+time-weighted return pinned to the same milestone valuations. The result pins
+the funding, through-horizon valuation, verified return and complete readiness
+snapshot so changed or missing evidence invalidates verification.
+
+Annualization uses a declared tropical-year basis of 365.2425 calendar days:
+`(1 + verified TWR) ** (365.2425 / elapsed days) - 1`. The return and elapsed
+time remain exact fractions; the generally irrational power is presented under
+a fixed 34-digit decimal context. It is simulated and gross pre-tax, not
+risk-adjusted alpha or a live track record. Recommendations, learning, AWS,
+broker access and all trading remain disabled.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio
