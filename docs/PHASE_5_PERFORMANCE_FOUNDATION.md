@@ -501,7 +501,9 @@ exactly to one.
 The append-only result immutably links its valuation, every included cash flow
 and every classification record. If any classification was retrieved only
 after the valuation boundary, the complete exposure result explicitly reports
-that it contains backfilled evidence. This is a simulated point-in-time
+that it contains backfilled evidence. Verification resolves these exact pinned
+IDs and hashes, so evidence appended later cannot rewrite or falsely invalidate
+an older result. This is a simulated point-in-time
 allocation statistic, not a diversification judgment or recommendation. It
 calculates no return or alpha, is not risk-adjusted or annualized, remains
 ineligible for learning, and cannot be presented as a track record. No broker,

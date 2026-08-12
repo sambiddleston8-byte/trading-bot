@@ -302,6 +302,36 @@ def test_supporting_classification_tampering_is_detected(tmp_path):
         exposure.verify()
 
 
+def test_later_backfilled_cash_flow_does_not_invalidate_pinned_result(tmp_path):
+    _, flows, classifications, exposure = ledgers(tmp_path)
+    complete_all(classifications)
+    result = calculate(exposure)
+    flows.record(
+        portfolio_version="PORT-001",
+        horizon="1_MONTH",
+        flow_type="CONTRIBUTION",
+        amount="200",
+        recorded_at="2025-02-03T17:04:00+00:00",
+    )
+    assert exposure.verify() == [result]
+
+
+def test_later_classification_does_not_invalidate_pinned_result(tmp_path):
+    _, _, classifications, exposure = ledgers(tmp_path)
+    complete_all(classifications)
+    result = calculate(exposure)
+    classify(
+        classifications,
+        "AAA",
+        "45",
+        "Technology",
+        source_input_sha256="d" * 64,
+        retrieved_at="2025-02-03T15:30:00+00:00",
+        recorded_at="2025-02-03T17:04:00+00:00",
+    )
+    assert exposure.verify() == [result]
+
+
 def test_incomplete_tail_requires_explicit_repair(tmp_path):
     _, _, classifications, exposure = ledgers(tmp_path)
     complete_all(classifications)
