@@ -6,10 +6,12 @@ from core.performance.outcome_observation import (
     OutcomeObservationLedger,
 )
 from core.performance.outcome_result import OutcomeResultLedger
+from core.performance.total_return import TotalReturnLedger
 
 __all__ = [
     "CorporateActionLedger",
     "OUTCOME_HORIZONS",
     "OutcomeObservationLedger",
     "OutcomeResultLedger",
+    "TotalReturnLedger",
 ]
