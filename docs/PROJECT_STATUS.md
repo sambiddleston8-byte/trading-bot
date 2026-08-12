@@ -228,8 +228,10 @@ learning.
   uncertain, duplicated, mixed-taxonomy or conflicting code/name evidence
   blocks the result. Portfolio and invested-only sector weights reconcile with
   cash kept separate, and use of classification evidence retrieved after the
-  valuation boundary is explicitly disclosed. No diversification judgment,
-  recommendation, return, alpha, learning update or track-record claim is made.
+  valuation boundary is explicitly disclosed. Historical results verify their
+  exact pinned support, so later evidence cannot rewrite or falsely invalidate
+  them. No diversification judgment, recommendation, return, alpha, learning
+  update or track-record claim is made.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward

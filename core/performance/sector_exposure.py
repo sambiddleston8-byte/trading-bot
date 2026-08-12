@@ -468,6 +468,116 @@ class SectorExposureLedger:
         }
         return self._append(result, allow_existing=allow_existing)
 
+    def _pinned_support(
+        self, record: Mapping[str, Any]
+    ) -> tuple[
+        dict[str, Any] | None,
+        list[dict[str, Any]],
+        list[dict[str, Any]],
+        list[str],
+    ]:
+        reasons = []
+        valuations = self.valuation_ledger.verify()
+        valuation = next(
+            (
+                item
+                for item in valuations
+                if item.get("valuation_id") == record.get("valuation_id")
+            ),
+            None,
+        )
+        if valuation is None:
+            return None, [], [], ["Pinned portfolio valuation is missing."]
+        target_at = _as_datetime(valuation["outcome_asset_price_effective_at"])
+        included_valuations = {
+            item["valuation_id"]: item
+            for item in valuations
+            if item.get("portfolio_version") == valuation.get("portfolio_version")
+            and _as_datetime(item["outcome_asset_price_effective_at"]) <= target_at
+        }
+
+        flow_ids = record.get("supporting_cash_flow_ids")
+        flow_hashes = record.get("supporting_cash_flow_hashes")
+        if not isinstance(flow_ids, list) or not isinstance(flow_hashes, list):
+            return valuation, [], [], ["Pinned cash-flow support is invalid."]
+        all_flows = self.cash_flow_ledger.verify()
+        flows_by_id = {item["flow_id"]: item for item in all_flows}
+        flows = [flows_by_id.get(flow_id) for flow_id in flow_ids]
+        if (
+            len(flow_ids) != len(set(flow_ids))
+            or len(flow_ids) != len(flow_hashes)
+            or any(item is None for item in flows)
+        ):
+            reasons.append("Pinned cash-flow support is missing or duplicated.")
+            resolved_flows: list[dict[str, Any]] = []
+        else:
+            resolved_flows = [item for item in flows if item is not None]
+            if [item["record_hash"] for item in resolved_flows] != flow_hashes:
+                reasons.append("Pinned cash-flow support hash has changed.")
+            if any(
+                item.get("valuation_id") not in included_valuations
+                or _as_datetime(item["effective_at"]) > target_at
+                for item in resolved_flows
+            ):
+                reasons.append("Pinned cash flow is outside the valuation boundary.")
+
+        evidence_ids = record.get("classification_evidence_ids")
+        evidence_hashes = record.get("classification_record_hashes")
+        if not isinstance(evidence_ids, list) or not isinstance(evidence_hashes, list):
+            return valuation, resolved_flows, [], [
+                *reasons,
+                "Pinned classification support is invalid.",
+            ]
+        all_classifications = self.classification_ledger.verify()
+        classifications_by_id = {
+            item["evidence_id"]: item for item in all_classifications
+        }
+        classifications = [
+            classifications_by_id.get(evidence_id) for evidence_id in evidence_ids
+        ]
+        if (
+            len(evidence_ids) != len(set(evidence_ids))
+            or len(evidence_ids) != len(evidence_hashes)
+            or any(item is None for item in classifications)
+        ):
+            reasons.append("Pinned classification support is missing or duplicated.")
+            resolved_classifications: list[dict[str, Any]] = []
+        else:
+            resolved_classifications = [
+                item for item in classifications if item is not None
+            ]
+            if [item["record_hash"] for item in resolved_classifications] != evidence_hashes:
+                reasons.append("Pinned classification support hash has changed.")
+
+        identity_fields = ("strategy_version", "model_versions", "git_revision")
+        if any(
+            any(item.get(field) != valuation.get(field) for field in identity_fields)
+            for item in resolved_flows
+        ):
+            reasons.append("Pinned cash flow has incompatible identity.")
+        expected_tickers = {
+            str(item.get("ticker") or "").upper()
+            for item in valuation.get("positions") or []
+        }
+        actual_tickers = {
+            str(item.get("ticker") or "").upper()
+            for item in resolved_classifications
+        }
+        if len(resolved_classifications) != len(expected_tickers) or (
+            actual_tickers != expected_tickers
+        ):
+            reasons.append("Pinned classifications must match every position exactly.")
+        if any(
+            item.get("valuation_id") != valuation.get("valuation_id")
+            or item.get("completeness_status") != "COMPLETE"
+            or item.get("provider") != record.get("provider")
+            or item.get("taxonomy_name") != record.get("taxonomy_name")
+            or item.get("taxonomy_version") != record.get("taxonomy_version")
+            for item in resolved_classifications
+        ):
+            reasons.append("Pinned classifications violate the selected taxonomy.")
+        return valuation, resolved_flows, resolved_classifications, reasons
+
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH
         seen_ids = set()
@@ -489,9 +599,7 @@ class SectorExposureLedger:
             provider = str(record.get("provider") or "")
             taxonomy = str(record.get("taxonomy_name") or "")
             taxonomy_version = str(record.get("taxonomy_version") or "")
-            valuation, flows, classifications, reasons = self._support(
-                version, horizon, provider, taxonomy, taxonomy_version
-            )
+            valuation, flows, classifications, reasons = self._pinned_support(record)
             if reasons or valuation is None:
                 raise LedgerIntegrityError(
                     f"Sector-exposure record {index} lost supporting evidence."
