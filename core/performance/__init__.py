@@ -3,6 +3,7 @@
 from core.performance.corporate_action import CorporateActionLedger
 from core.performance.daily_market_observation import DailyMarketObservationLedger
 from core.performance.daily_portfolio_valuation import DailyPortfolioValuationLedger
+from core.performance.daily_portfolio_return import DailyPortfolioReturnLedger
 from core.performance.daily_position_value import DailyPositionValueLedger
 from core.performance.factor_exposure_evidence import FactorExposureEvidenceLedger
 from core.performance.metric_readiness import PerformanceMetricReadinessGate
@@ -38,6 +39,7 @@ __all__ = [
     "CorporateActionLedger",
     "DailyMarketObservationLedger",
     "DailyPortfolioValuationLedger",
+    "DailyPortfolioReturnLedger",
     "DailyPositionValueLedger",
     "FactorExposureEvidenceLedger",
     "PerformanceMetricReadinessGate",

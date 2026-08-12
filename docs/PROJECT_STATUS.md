@@ -294,6 +294,15 @@ learning.
   rebalance state fail closed. All funding, fill, value and cash-flow support is
   pinned by ID/hash. Broker net cash, withholding and investor tax are explicitly
   not modelled; no return, metric, learning or track-record claim is made.
+- Phase 5 now links consecutive verified daily valuations into exact one-period
+  cash-flow-neutral returns. New boundary contributions/withdrawals are removed
+  before measuring investment return and then remain in ending capital, so cash
+  movements cannot masquerade as gains or losses. Flows must occur exactly at
+  the current close; intraday flows are blocked. Only adjacent weekday regular
+  sessions (with weekends skipped) qualify, while holiday intervals await
+  historical exchange-calendar evidence. Valuations and boundary flows
+  are pinned by ID/hash. Results remain gross-pre-tax, non-annualized,
+  non-risk-adjusted and ineligible for learning or track-record claims.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -343,9 +352,9 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by linking consecutive daily portfolio valuations into exact
-cash-flow-neutral daily return observations, without annualizing or inferring
-risk statistics. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate and
+Continue Phase 5 by integrating the exact daily valuation/return series with the
+metric-readiness gate, then implement only metrics whose evidence gates are
+satisfied. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate and
 turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
