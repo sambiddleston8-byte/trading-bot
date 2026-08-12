@@ -287,6 +287,13 @@ learning.
   FX needs fail closed. Fill, close and action evidence are pinned by ID/hash,
   and the result remains a position accounting value rather than a portfolio
   metric, recommendation, learning input or track record.
+- Phase 5 now aggregates complete same-close position values into an exact daily
+  portfolio valuation. Initial funding, recorded entry costs and fees, gross
+  pre-tax USD dividends, external flows, cash, position values and weights reconcile
+  exactly. Missing holdings, mixed identity, negative cash and unsupported sell/
+  rebalance state fail closed. All funding, fill, value and cash-flow support is
+  pinned by ID/hash. Broker net cash, withholding and investor tax are explicitly
+  not modelled; no return, metric, learning or track-record claim is made.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -336,10 +343,10 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by aggregating the new daily position values into an exact
-daily portfolio valuation only when every open position plus funding, paid
-dividend cash, external flows and execution state reconcile. CAGR, volatility, Sharpe, Sortino,
-drawdown, hit rate and turnover remain distinct calculations. Risk-adjusted
+Continue Phase 5 by linking consecutive daily portfolio valuations into exact
+cash-flow-neutral daily return observations, without annualizing or inferring
+risk statistics. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate and
+turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
