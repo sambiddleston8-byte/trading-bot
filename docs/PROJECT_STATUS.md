@@ -8,9 +8,9 @@ real-money trading remains disabled.
 
 ## Current phase
 
-Research-methodology quality gate brought forward before Phase 4 paper-broker
-connection. The Alpaca boundary remains local; nothing is connected or
-submitted.
+Phase 5 performance and attribution foundations. The Alpaca boundary remains
+local; nothing is connected or submitted, and results are not eligible for
+learning.
 
 ## Completed
 
@@ -107,6 +107,13 @@ submitted.
   treatment, then prompted full entry-to-outcome corporate-action coverage,
   self-contained benchmark identity and an explicit
   `entry_fee_adjusted_long_return_excl_exit` field name.
+- Issue #29 adds immutable sourced corporate-action evidence linked to verified
+  simulated fills. It distinguishes complete no-event coverage, supported cash
+  dividends/splits, unsupported events and explicit uncertainty. Dividend
+  amounts and split terms remain exact decimal strings; overlapping complete
+  evidence must agree on the economic events. It deliberately performs no
+  entitlement decision, currency conversion, share adjustment, return
+  calculation or learning update.
 
 ## Phase 2 work
 
@@ -129,9 +136,11 @@ submitted.
 
 ## Next action
 
-Continue Phase 5 by specifying sourced corporate-action and cash-distribution
-records so dividends and splits can be applied without rewriting the verified
-price-return result. Then add total-return outcomes before portfolio-level
-aggregation. Do not feed results into learning or claim a track record. Issue
-#21 remains the ongoing research-quality backlog. PostgreSQL remains
-non-authoritative and Lightsail remains only the planned future destination.
+Continue Phase 5 with a deterministic long-position total-return outcome that
+consumes verified unadjusted prices and complete corporate-action evidence. It
+must define dividend entitlement, split quantity adjustment, currency and
+payment-date treatment before calculating anything, and it must fail closed on
+uncertainty or unsupported events. Portfolio aggregation, learning and track-
+record claims remain later work. Issue #21 remains the ongoing research-quality
+backlog. PostgreSQL remains non-authoritative and Lightsail remains only the
+planned future destination.

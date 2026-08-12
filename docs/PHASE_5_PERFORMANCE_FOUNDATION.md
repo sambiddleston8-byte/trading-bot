@@ -1,6 +1,7 @@
 # Phase 5 performance and attribution foundation
 
-Status: immutable raw observations only; no performance claim or learning input
+Status: immutable observations, price returns and corporate-action evidence;
+no total-return track record or learning input
 
 Issue #25 introduces the authoritative raw-data boundary for later performance
 and attribution. It does not calculate returns, alpha, hit rate or a track
@@ -100,3 +101,35 @@ can apply the event correctly. SELL fills are also blocked because measuring
 the benefit of selling requires a separately defined avoided-loss or portfolio
 counterfactual, not the long-return formula used here. Results remain ineligible
 for automated learning.
+
+## Corporate-action evidence
+
+Issue #29 adds the separate immutable evidence needed to handle those blocked
+cases safely. Each evidence record is linked to a verified simulated fill and
+declares an inclusive interval from the fill through a later observation. It
+retains the data provider and version, retrieval time, a SHA-256 digest of the
+provider input and the exact events found.
+
+Supported event evidence preserves:
+
+- cash-dividend ex-date, optional payment date, exact per-share amount and
+  three-letter currency; and
+- stock-split effective date and exact numerator/denominator terms.
+
+Exact decimal strings are used for amounts and split terms so future
+calculations do not inherit binary floating-point rounding. Provider event IDs
+are retained for auditability, while overlapping complete coverage is compared
+using the economic event terms. Contradictory complete intervals fail closed;
+consistent longer coverage can extend an earlier record without replacing it.
+
+`NO_EVENTS`, `SUPPORTED_EVENTS_PRESENT`, `UNSUPPORTED_EVENTS_PRESENT` and
+`UNCERTAIN` are distinct states. Uncertainty must have an explicit reason, and
+unknown corporate actions are preserved as `OTHER` rather than silently
+discarded. Only complete evidence can support a future calculation, and an
+unsupported event must remain a blocker until an explicit treatment exists.
+
+This ledger does not decide dividend entitlement, reinvest dividends, adjust
+share quantities, convert currencies or calculate a return. Those rules belong
+in the next deterministic total-return slice and must consume the verified
+evidence without changing either the raw observations, the existing
+price-return result or the corporate-action record.
