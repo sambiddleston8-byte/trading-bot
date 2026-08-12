@@ -632,6 +632,26 @@ valuation IDs and hashes. Duplicate, missing, extra or mismatched return support
 blocks volatility and maximum-drawdown readiness. CAGR remains separately tied
 to its verified milestone time-weighted return and one-year elapsed horizon.
 
+## Gated daily volatility and maximum drawdown
+
+Issue #81 implements the first statistical metrics only after v2 readiness
+approves the exact authoritative daily evidence snapshot. Sample daily variance
+uses `n-1`; daily volatility is its square root, and annualized volatility uses
+a fixed square-root-of-252 regular-session convention. The exact rational mean
+and sample variance are retained, while square-root outputs use a declared
+34-digit decimal context because irrational roots cannot be represented as
+exact fractions.
+
+Maximum drawdown is calculated from a compounded wealth index built only from
+cash-flow-neutral daily returns, not from raw account equity. Each day's running
+peak, wealth and exact drawdown are retained, alongside the peak/trough dates
+and whether recovery occurred by the end of the evidence window.
+
+The result pins every daily return ID/hash and the v2 readiness evidence
+fingerprint. It remains simulated and gross pre-tax. Sharpe, Sortino, alpha,
+recommendations, learning eligibility and track-record claims remain false;
+no broker, provider download, worker, AWS or live trading is enabled.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio

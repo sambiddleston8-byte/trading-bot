@@ -277,6 +277,13 @@ learning.
   milestone density, missing pairs, extra returns or altered hashes cannot make
   volatility or drawdown appear ready. CAGR retains its separate verified TWR
   requirement.
+- Phase 5 now calculates sample daily volatility, fixed-252 annualized
+  volatility and maximum drawdown only when the v2 gate approves the exact
+  daily evidence fingerprint. Drawdown comes from a compounded cash-flow-neutral
+  wealth index rather than raw balances. Exact mean/variance/drawdown evidence
+  and the full wealth path are pinned; square roots use a declared 34-digit
+  decimal context. Sharpe, Sortino, alpha, learning and track-record claims stay
+  blocked.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -358,9 +365,9 @@ learning.
 
 ## Next action
 
-Continue Phase 5 with the first deterministic metric calculations, but only
-behind their v2 evidence gates. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate and
-turnover remain distinct calculations. Risk-adjusted
+Continue Phase 5 with gated CAGR, then separately establish point-in-time
+risk-free evidence and downside-policy prerequisites before Sharpe or Sortino.
+Hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
