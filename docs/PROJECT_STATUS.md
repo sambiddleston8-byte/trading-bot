@@ -79,6 +79,14 @@ submitted.
   faithfully replay that pipeline. It prioritises immutable point-in-time
   evidence, corrected forecast confidence, removal of correlated score reuse,
   current-pipeline historical replay and calibrated valuation assumptions.
+- Issue #23 adds deterministic local simulated-fill records derived only from
+  verified paper-order proposals. Records are append-only, hash-chained,
+  idempotent, linked to decision/portfolio/model/Git identities and explicit
+  about fees and adverse slippage. A fail-closed pre-flight reports the five
+  methodology gates but cannot enable broker submission even when they clear.
+  Claude's focused review found no functional safety defect; its boundary,
+  linkage, input-sanity and retry recommendations were added to the tests and
+  implementation.
 
 ## Phase 2 work
 
@@ -101,8 +109,9 @@ submitted.
 
 ## Next action
 
-Continue the Master Roadmap's essential infrastructure with a separate,
-non-submitting execution/performance-record issue while issue #21 remains the
-ongoing research-quality backlog. Add an automated fail-closed pre-flight gate
-before any future Alpaca paper-order submission. PostgreSQL remains
-non-authoritative and Lightsail remains only the planned future destination.
+Begin the Phase 5 performance and attribution foundation using the immutable
+decision, proposal and local simulated-fill identities. Define timestamped
+price observations and outcome horizons without yet claiming investment
+performance or connecting a broker. Issue #21 remains the ongoing
+research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
+remains only the planned future destination.
