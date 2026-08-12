@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
 
 import pandas as pd
@@ -13,6 +14,7 @@ class MarketRegimeEngine:
     VERSION = "1.0"
     BENCHMARK = "^GSPC"
     _cached_result: dict[str, Any] | None = None
+    _cached_utc_date: str | None = None
 
     def __init__(self, financial_data: FinancialDataEngine | None = None):
         self.financial_data = financial_data or FinancialDataEngine()
@@ -82,7 +84,12 @@ class MarketRegimeEngine:
         }
 
     def analyse(self, history: pd.DataFrame | None = None) -> dict[str, Any]:
-        if history is None and self.__class__._cached_result is not None:
+        utc_date = datetime.now(timezone.utc).date().isoformat()
+        if (
+            history is None
+            and self.__class__._cached_result is not None
+            and self.__class__._cached_utc_date == utc_date
+        ):
             return dict(self.__class__._cached_result)
 
         if history is None:
@@ -103,4 +110,5 @@ class MarketRegimeEngine:
         result = self.classify(history)
         if result.get("status") == "COMPLETE":
             self.__class__._cached_result = dict(result)
+            self.__class__._cached_utc_date = utc_date
         return result

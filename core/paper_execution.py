@@ -313,9 +313,9 @@ class PaperExecutionEngine:
 
             if price is None:
 
-                price = position[
-                    "Average Price"
-                ]
+                raise ValueError(
+                    f"A current price is required to value {ticker}."
+                )
 
             value += (
                 position["Quantity"]
@@ -346,9 +346,9 @@ class PaperExecutionEngine:
 
             if price is None:
 
-                price = position[
-                    "Average Price"
-                ]
+                raise ValueError(
+                    f"A current price is required to value {ticker}."
+                )
 
             values[ticker] = (
                 position["Quantity"]

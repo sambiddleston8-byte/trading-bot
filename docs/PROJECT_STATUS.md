@@ -148,6 +148,14 @@ learning.
   index membership and weights rather than a basket frozen at entry. Relative
   return, alpha, learning, portfolio-performance and track-record claims remain
   blocked.
+- A single-pass Codex/Claude quant-validity and performance audit was filtered
+  against the active architecture. Exact-horizon legacy outcomes, fail-closed
+  price valuation, same-day market-regime caching, one-snapshot walk-forward
+  data access and incomplete-universe rejection were hardened with regression
+  tests. TA-Lib, Polars, Numba, boosted-tree models and Optuna remain deferred
+  until profiling and faithful point-in-time validation justify them. The
+  remaining trust-critical and performance sequence is recorded in
+  `docs/QUANT_VALIDITY_AND_PERFORMANCE_AUDIT.md`.
 
 ## Phase 2 work
 
