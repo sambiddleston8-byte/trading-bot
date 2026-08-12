@@ -10,6 +10,7 @@ from core.orchestration.strategy_registry import CandidateStrategyRegistryLedger
 from core.orchestration.shadow_test_plan import ShadowTestPlanLedger
 from core.orchestration.shadow_test_result import ShadowTestResultLedger
 from core.orchestration.promotion_review_bundle import PromotionReviewBundleLedger
+from core.orchestration.robustness_plan import RobustnessTestPlanLedger
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -22,4 +23,5 @@ __all__ = [
     "ShadowTestPlanLedger",
     "ShadowTestResultLedger",
     "PromotionReviewBundleLedger",
+    "RobustnessTestPlanLedger",
 ]
