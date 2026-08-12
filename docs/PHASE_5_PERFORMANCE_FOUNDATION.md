@@ -596,3 +596,29 @@ or falsely invalidate history. Backfilled evidence is disclosed. This is a
 simulated descriptive statistic only: it supplies no risk label, recommendation,
 return, alpha, learning eligibility or track-record claim and enables no broker,
 real-money, worker, provider-download, AWS or autonomous-learning capability.
+
+## Performance metric readiness and observation cadence
+
+Issue #69 adds a deterministic gate that must be consulted before CAGR,
+volatility, Sharpe, Sortino, maximum drawdown, hit rate, turnover or prediction
+calibration is implemented. It calculates none of those metrics. Instead, it
+content-addresses the verified funding, valuation and time-weighted-return
+evidence and reports whether each metric's prerequisites exist.
+
+CAGR requires at least 365 elapsed calendar days and exactly one verified
+time-weighted return pinned to the same valuations. Daily-series volatility and
+maximum drawdown require at least 253 unique valuations spanning at least 365
+calendar days, with the first observation within four days of funding and no
+consecutive calendar gap above four days. This conservative policy permits
+weekends and ordinary long weekends but rejects the current sparse milestone
+series. It is versioned so future market-calendar refinement cannot silently
+rewrite the rule.
+
+Sharpe remains blocked until a point-in-time risk-free series is matched to
+each return period. Sortino remains blocked until its minimum acceptable return
+and adequate downside sample are predeclared. Hit rate, turnover and prediction
+calibration remain blocked until their independent outcome, execution and
+predeclared cohort evidence exists. An `EVIDENCE_READY` result is permission to
+implement a separately tested calculation, not a performance claim. The gate
+never annualizes a result, recommends a trade, enables learning, creates a track
+record or enables live trading.

@@ -2,6 +2,7 @@
 
 from core.performance.corporate_action import CorporateActionLedger
 from core.performance.factor_exposure_evidence import FactorExposureEvidenceLedger
+from core.performance.metric_readiness import PerformanceMetricReadinessGate
 from core.performance.benchmark_distribution import BenchmarkDistributionLedger
 from core.performance.benchmark_total_return import BenchmarkTotalReturnLedger
 from core.performance.outcome_observation import (
@@ -33,6 +34,7 @@ from core.performance.transaction_cost_attribution import (
 __all__ = [
     "CorporateActionLedger",
     "FactorExposureEvidenceLedger",
+    "PerformanceMetricReadinessGate",
     "BenchmarkDistributionLedger",
     "BenchmarkTotalReturnLedger",
     "OUTCOME_HORIZONS",
