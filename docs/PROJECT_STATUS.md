@@ -431,6 +431,16 @@ learning.
 - Keep AWS execution blocked until transactional persistence replaces the local
   two-file snapshot/ledger sequence.
 
+## Phase 6 work
+
+- Phase 6 now starts with an immutable human-approved Hermes permission and
+  resource-budget boundary. Its default state is stopped; scheduling, models,
+  network, broker, AWS, GitHub and production-rule writes are disabled. Hermes
+  cannot promote experiments, merge, deploy, change its own authority or enable
+  trading. Only future sandbox lesson/experiment proposals are permitted, and
+  registering a policy activates nothing. The legacy adaptive learning scripts
+  remain non-authoritative.
+
 ## Safety invariants
 
 - Execution remains `RECORD_ONLY` or paper-only.
