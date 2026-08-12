@@ -156,6 +156,16 @@ learning.
   this limitation remains explicit. The result is simulated and cannot claim
   risk-adjusted alpha, portfolio performance, learning eligibility or a track
   record.
+- The next Phase 5 accounting slice records immutable simulated initial funding
+  before a portfolio's proposals, then values the complete long buy-and-hold
+  proposal/fill set at one exactly aligned horizon. Remaining cash subtracts
+  recorded entry costs and adds verified gross cash dividends; positions, cash,
+  total equity, target weights and actual weights retain exact rational values.
+  Recorded entry fees and slippage are separately aggregated without counting
+  fill-price slippage twice.
+  Missing positions, timestamp misalignment, funding shortfalls and target
+  weights above 100% fail closed. External contributions/withdrawals, exits,
+  portfolio returns, alpha, learning and track-record claims remain blocked.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -196,9 +206,11 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by defining simulated portfolio aggregation, cash-flow and
-weight rules before CAGR, volatility, Sharpe, Sortino, drawdown or hit rate.
-Risk-adjusted alpha remains a separate future model; learning and track-record
-claims remain blocked. Issue #21 remains the research-quality backlog.
-PostgreSQL remains non-authoritative and Lightsail remains only the planned
-future destination.
+Continue Phase 5 by extending the aligned valuation into a time-ordered
+portfolio series with explicit contribution/withdrawal timing and
+cash-flow-neutral subperiod linking. Only after that may the platform define
+portfolio/benchmark returns and then CAGR, volatility, Sharpe, Sortino,
+drawdown, hit rate, turnover and transaction-cost attribution. Risk-adjusted
+alpha remains a separate model; learning and track-record claims remain
+blocked. Issue #21 remains the research-quality backlog. PostgreSQL remains
+non-authoritative and Lightsail remains only the planned future destination.
