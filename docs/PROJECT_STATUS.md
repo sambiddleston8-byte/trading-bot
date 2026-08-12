@@ -493,6 +493,11 @@ learning.
   look-ahead bias. Capitol Trades requires a licensed feed; official-source use
   requires a recorded terms review. No scraper, connector, automatic signal,
   broker path or trading capability exists.
+- Phase 7 now creates immutable point-in-time issuer activity snapshots from
+  verified disclosures. They count buy/sell/repeat activity, preserve uncertain
+  value ranges, calculate conservative net bounds and expose disclosure delay.
+  Future evidence is excluded and the result is never a standalone recommendation
+  or executable/copy-trading signal.
 
 ## Safety invariants
 
