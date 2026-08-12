@@ -688,6 +688,23 @@ explicit. This component does not download data or calculate period risk-free
 returns, Sharpe, Sortino or any other performance claim. Recommendations,
 learning, AWS, broker access and all trading remain disabled.
 
+## Date-matched daily risk-free returns
+
+Issue #87 links each verified daily portfolio return to final SOFR Index
+observations on that return's exact previous and current market-session dates.
+The period risk-free return is calculated as
+`current SOFR Index / previous SOFR Index - 1` using exact rational arithmetic.
+This naturally retains the New York Fed's weekend and holiday compounding; a
+Friday-to-Monday portfolio period is matched to the same three-calendar-day
+index interval rather than treated as one day.
+
+Each append-only result pins the daily portfolio return and both official index
+observations by ID and hash, preserves strategy/model/Git identity, and
+discloses whether either source observation was backfilled. Missing endpoints,
+changed evidence, non-increasing dates or invalid calculation timing fail
+closed. Excess return, Sharpe, Sortino, annualization, recommendations, learning,
+track-record claims, AWS, brokers and trading remain disabled.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio
