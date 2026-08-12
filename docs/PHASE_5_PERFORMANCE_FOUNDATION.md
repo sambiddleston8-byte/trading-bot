@@ -572,3 +572,27 @@ different factor models or units, calculate portfolio factor exposure, label a
 portfolio as risky, recommend a trade, calculate performance or alpha, update
 learning, or create a track record. No provider download, broker, real-money,
 worker, AWS or autonomous-learning capability is enabled.
+
+## Exact post-flow portfolio factor exposure
+
+Issue #67 aggregates security-level factor evidence only when every invested
+position has exactly one complete observation from the selected provider and
+factor-model version. All positions must also share the exact methodology URI
+and hash, factor effective timestamp, and ordered provider factor definitions
+and units. Missing, uncertain, duplicated or mixed evidence blocks the whole
+calculation instead of silently dropping positions or combining incomparable
+numbers.
+
+Exact position values weight each provider exposure in two deliberately named
+ways: normalized among invested positions, and scaled as a contribution to
+total post-flow portfolio equity. Contributions and withdrawals through the
+valuation boundary remain cash. Cash weight is reported separately and no cash
+factor exposure is invented, so the result is explicitly an invested-position
+exposure statistic rather than a claim about an unmodelled whole portfolio.
+
+The append-only result pins the valuation, every included cash flow and every
+factor-evidence record by ID and hash. Later legitimate evidence cannot rewrite
+or falsely invalidate history. Backfilled evidence is disclosed. This is a
+simulated descriptive statistic only: it supplies no risk label, recommendation,
+return, alpha, learning eligibility or track-record claim and enables no broker,
+real-money, worker, provider-download, AWS or autonomous-learning capability.
