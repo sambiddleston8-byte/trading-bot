@@ -1,6 +1,7 @@
 """Authoritative Phase 5 performance-observation boundaries."""
 
 from core.performance.annualized_portfolio_return import AnnualizedPortfolioReturnLedger
+from core.performance.alpha_model_policy import AlphaModelPolicyLedger
 from core.performance.corporate_action import CorporateActionLedger
 from core.performance.complete_relative_return import CompleteFixedHorizonRelativeReturnLedger
 from core.performance.daily_market_observation import DailyMarketObservationLedger
@@ -50,6 +51,7 @@ from core.performance.transaction_cost_attribution import (
 
 __all__ = [
     "AnnualizedPortfolioReturnLedger",
+    "AlphaModelPolicyLedger",
     "CorporateActionLedger",
     "CompleteFixedHorizonRelativeReturnLedger",
     "DailyMarketObservationLedger",
