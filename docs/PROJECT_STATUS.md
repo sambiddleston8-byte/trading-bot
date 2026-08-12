@@ -305,6 +305,12 @@ learning.
   SOFR risk-free return for every selected daily return. Missing, duplicate,
   extra or substituted evidence blocks readiness; later evidence beyond the
   assessed horizon does not destabilize history. The gate calculates no metric.
+- Phase 5 now calculates annualized Sharpe only after that complete paired gate
+  approves the evidence. Daily excess returns and sample variance retain exact
+  fractions; square roots and the fixed-252 annualized ratio use a declared
+  34-digit decimal context. Zero variance fails closed, both full evidence
+  chains are pinned, and Sortino, alpha, learning and track-record claims remain
+  disabled.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -386,8 +392,8 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by calculating Sharpe only for a fully paired one-year series.
-Separately establish the downside-policy prerequisites before Sortino.
+Continue Phase 5 by separately establishing the preregistered downside-target
+and adequate downside-sample prerequisites before calculating Sortino.
 Hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
