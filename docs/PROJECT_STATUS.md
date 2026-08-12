@@ -213,6 +213,15 @@ learning.
   No threshold, recommendation, return, alpha, learning or track-record claim is
   made. Sparse milestone valuations remain ineligible for volatility, Sharpe,
   Sortino or genuine maximum-drawdown claims.
+- Phase 5 now records immutable point-in-time sector-classification evidence
+  for each verified invested position before sector exposure is permitted.
+  Provider labels are preserved with their exact taxonomy/version, effective
+  date, retrieval time, source and source-input hash. Missing or placeholder
+  classifications become explicit `UNCERTAIN` records rather than an invented
+  sector; later resolution is a separate content-addressed record and complete
+  evidence cannot regress. Backfilled evidence is labelled, no exposure or
+  recommendation is calculated, and learning and track-record claims remain
+  blocked.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -262,11 +271,12 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by establishing the immutable, point-in-time portfolio exposure
-classification evidence needed for sector exposure without inferring missing
-classifications. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate, turnover
-and transaction-cost attribution remain distinct calculations with explicit
-minimum-history and methodology gates. Risk-adjusted alpha remains a separate
-model; learning and track-record claims remain blocked. Issue #21 remains the
-research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
-remains only the planned future destination.
+Continue Phase 5 by calculating exact sector exposure only when every invested
+position has complete classification evidence under the same provider taxonomy
+and version. Mixed, missing or uncertain classifications must fail closed and
+cash must remain a separate allocation. CAGR, volatility, Sharpe, Sortino,
+drawdown, hit rate, turnover and transaction-cost attribution remain distinct
+calculations with explicit minimum-history and methodology gates. Risk-adjusted
+alpha remains a separate model; learning and track-record claims remain blocked.
+Issue #21 remains the research-quality backlog. PostgreSQL remains
+non-authoritative and Lightsail remains only the planned future destination.
