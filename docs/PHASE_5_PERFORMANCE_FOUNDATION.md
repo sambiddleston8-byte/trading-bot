@@ -697,3 +697,31 @@ and every included cash flow by ID and hash. Later legitimate cash flows cannot
 rewrite history. This is still a simulated daily value, not a return, risk
 metric, recommendation, learning input or track record, and it enables no
 provider download, broker, worker, AWS or live trading.
+
+## Exact daily cash-flow-neutral return observations
+
+Issue #77 links two consecutive verified daily portfolio valuations into one
+exact period return. External contributions or withdrawals introduced between
+the closes are subtracted from the current post-flow equity before measuring
+return, then remain in the current ending capital. This prevents deposits from
+appearing as gains and withdrawals from appearing as losses.
+
+Consecutive closes must strictly increase and share portfolio, strategy, model
+and Git identity. A flow is treated as an end-of-period boundary flow only when
+its effective timestamp exactly equals the current close; intraday flows remain
+blocked pending a properly evidenced intraday/Modified-Dietz method. The
+boundary cash-flow set must equal the difference between
+the exact flow support pinned by the two valuations. Every return pins both
+valuations and those boundary flows by ID/hash, so later flows cannot rewrite
+history.
+
+V1 accepts only the next Monday-Friday regular session, skipping weekends. An
+interval containing a weekday gap—including an exchange holiday—fails closed
+until trustworthy historical exchange-calendar evidence exists. This avoids
+silently calling a multi-session observation a daily return.
+
+The result retains the upstream gross-pre-tax basis and explicitly does not
+claim broker-cash reconciliation. It is one simulated, non-annualized,
+non-risk-adjusted observation—not volatility, Sharpe, Sortino, drawdown, a
+recommendation, learning input or track record. No broker, provider download,
+worker, AWS or live trading is enabled.
