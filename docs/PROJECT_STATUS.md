@@ -148,6 +148,14 @@ learning.
   index membership and weights rather than a basket frozen at entry. Relative
   return, alpha, learning, portfolio-performance and track-record claims remain
   blocked.
+- Issue #39 calculates an immutable position-level benchmark-relative total
+  return only when verified asset and S&P gross-cash total-return results share
+  the exact fill, horizon and evidence identity. The arithmetic difference and
+  both inputs are retained as exact rational values plus readable decimals.
+  The asset includes its recorded entry fee while neither side invents an exit;
+  this limitation remains explicit. The result is simulated and cannot claim
+  risk-adjusted alpha, portfolio performance, learning eligibility or a track
+  record.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -188,12 +196,9 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by defining an explicitly labelled position-level relative
-total return from a verified simulated asset total-return result and a verified
-S&P gross cash total-return result for the exact same fill and horizon. Alpha
-remains reserved for a separately defined risk-adjusted model. After that,
-define simulated portfolio aggregation, cash-flow and weight rules before
-CAGR, volatility, Sharpe, Sortino, drawdown or hit rate. Learning and
-track-record claims remain blocked. Issue #21 remains the research-quality
-backlog. PostgreSQL remains non-authoritative and Lightsail remains only the
-planned future destination.
+Continue Phase 5 by defining simulated portfolio aggregation, cash-flow and
+weight rules before CAGR, volatility, Sharpe, Sortino, drawdown or hit rate.
+Risk-adjusted alpha remains a separate future model; learning and track-record
+claims remain blocked. Issue #21 remains the research-quality backlog.
+PostgreSQL remains non-authoritative and Lightsail remains only the planned
+future destination.
