@@ -499,6 +499,14 @@ learning.
   Future evidence is excluded and the result is never a standalone recommendation
   or executable/copy-trading signal.
 
+## Phase 8 work
+
+- Phase 8 now has a deterministic non-authoritative Obsidian Markdown exporter
+  covering all roadmap knowledge folders. Generated pages pin authoritative
+  records and hashes, are integrity-marked and cannot overwrite manual edits,
+  unmanaged pages or symlinks. No vault location, plugin or paid AI is required
+  or activated yet.
+
 ## Safety invariants
 
 - Execution remains `RECORD_ONLY` or paper-only.
