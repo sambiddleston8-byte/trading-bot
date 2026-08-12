@@ -454,6 +454,11 @@ learning.
   content-addressed. Random splits, test reuse, metric switching, optional
   stopping, automatic execution, promotion, code/rule changes, deployment and
   trading are forbidden. Registration executes nothing.
+- Phase 6 now records inert reproducible run manifests pinned to a verified
+  experiment, exact code, dataset, dependencies and runner hashes. Isolated
+  no-network execution, resource ceilings and the preregistered trial budget
+  are fixed in advance. Planning cannot execute, record a result, promote,
+  deploy, connect to a broker or trade.
 
 ## Safety invariants
 

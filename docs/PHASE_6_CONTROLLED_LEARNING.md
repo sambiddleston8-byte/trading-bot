@@ -52,3 +52,16 @@ optional stopping are forbidden. Registration runs no backtest or model, starts
 no shadow test and cannot approve promotion, change code or production rules,
 deploy or trade. A separate future result record must prove the specification
 was followed before any shadow test can be considered.
+
+## Reproducible sandbox run manifests
+
+Issue #115 adds an inert run manifest between preregistration and future
+execution. It pins the exact experiment, full Git revision, dataset manifest,
+dependency lock and runner hashes plus the isolated no-network environment,
+trial count and CPU, memory and duration ceilings. The trial count cannot exceed
+the preregistered budget.
+
+The manifest is only a plan: it cannot run code, access a provider or broker,
+record a result, start shadow testing, promote a strategy, deploy or trade. A
+future runner must prove it used this exact manifest, and a separate immutable
+result record must mechanically evaluate the preregistered rules.
