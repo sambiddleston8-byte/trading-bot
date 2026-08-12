@@ -472,6 +472,10 @@ learning.
   candidates. The window, minimum complete decisions, cadence, metric and risk
   limits are fixed before observations begin. Planning cannot start the test,
   connect to a broker, promote, replace the incumbent, deploy or trade.
+- Phase 6 now records complete immutable paper/shadow evidence after the fixed
+  window and minimum decision count. Metric and risk thresholds are evaluated
+  mechanically. Passing only permits future human review; it cannot promote,
+  replace the incumbent, deploy or trade.
 
 ## Safety invariants
 
