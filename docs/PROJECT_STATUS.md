@@ -120,6 +120,15 @@ learning.
   path that no agent can approve for itself. GitHub issues and pull requests now
   require sandbox impact and escape risks to be stated. Existing controls are
   distinguished from future AWS/Hermes controls that are not yet implemented.
+- Issue #33 adds an immutable simulated long holding-period total return from
+  verified unadjusted prices and complete corporate-action evidence. It applies
+  USD gross cash dividends without reinvestment and exact split ratios, retains
+  rational values alongside 34-digit decimal presentations, includes the
+  recorded entry fee and does not invent cash-in-lieu or an exit. Later-paid
+  dividends, uncertain/unsupported actions and ambiguous simultaneous events
+  fail closed. The S&P price return is labelled non-like-for-like context, so no
+  relative total return or alpha is claimed; results remain ineligible for
+  learning and are not a portfolio or live track record.
 
 ## Phase 2 work
 
@@ -146,11 +155,10 @@ learning.
 
 ## Next action
 
-Continue Phase 5 with a deterministic long-position total-return outcome that
-consumes verified unadjusted prices and complete corporate-action evidence. It
-must define dividend entitlement, split quantity adjustment, currency and
-payment-date treatment before calculating anything, and it must fail closed on
-uncertainty or unsupported events. Portfolio aggregation, learning and track-
-record claims remain later work. Issue #21 remains the ongoing research-quality
-backlog. PostgreSQL remains non-authoritative and Lightsail remains only the
-planned future destination.
+Continue Phase 5 by defining like-for-like benchmark total-return evidence
+before any relative-total-return or alpha calculation. Then add aggregation
+rules for a simulated portfolio, including cash flows and position weights,
+before calculating CAGR, volatility, Sharpe, Sortino, drawdown or hit rate.
+Learning and track-record claims remain blocked. Issue #21 remains the ongoing
+research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
+remains only the planned future destination.

@@ -133,3 +133,39 @@ share quantities, convert currencies or calculate a return. Those rules belong
 in the next deterministic total-return slice and must consume the verified
 evidence without changing either the raw observations, the existing
 price-return result or the corporate-action record.
+
+## Simulated long holding-period total return
+
+Issue #33 adds that bounded calculation without changing its supporting
+evidence. A result requires a verified simulated long `BUY` fill, entry and due
+unadjusted-price observations, and complete corporate-action coverage from the
+fill through the outcome timestamp. Uncertainty and relevant unsupported events
+fail closed.
+
+The first policy is deliberately narrow:
+
+- USD cash dividends only, recorded gross before withholding or tax;
+- no dividend reinvestment;
+- dividend entitlement only when the simulated fill strictly precedes the
+  ex-time;
+- dividend cash included only when the recorded payment time is no later than
+  the outcome timestamp, preventing a later calculation from importing future
+  cash into an earlier outcome;
+- sequential split quantity adjustment using the recorded numerator and
+  denominator;
+- exact rational quantities and monetary results retained alongside readable
+  34-digit decimal presentations;
+- exact simulated fractional shares retained, with no invented cash-in-lieu;
+- the recorded entry fee included and entry slippage not counted twice; and
+- no exit fee, tax, currency conversion or unrecorded exit execution invented.
+
+Simultaneous split/distribution events are blocked because the evidence does
+not define a safe ordering rule. A payment after the outcome is also blocked;
+the calculator does not value a dividend receivable without a separately
+approved valuation policy.
+
+The S&P 500 observation currently supplies only an unadjusted **price** return.
+It is retained as clearly labelled context, not subtracted from the asset total
+return. This slice therefore calculates neither relative total return nor
+alpha. Results remain simulated, position-level, ineligible for learning and
+not a portfolio or live track-record claim.
