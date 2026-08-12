@@ -65,3 +65,15 @@ The manifest is only a plan: it cannot run code, access a provider or broker,
 record a result, start shadow testing, promote a strategy, deploy or trade. A
 future runner must prove it used this exact manifest, and a separate immutable
 result record must mechanically evaluate the preregistered rules.
+
+## Mechanical sandbox experiment results
+
+Issue #117 adds an append-only result boundary pinned to the exact run manifest,
+experiment and runner-output artifact. It requires every planned trial and the
+complete preregistered out-of-sample window, then computes the metric improvement,
+drawdown degradation and turnover increase using decimal arithmetic. Direction
+is fixed by metric, and pass or rejection follows only the preregistered limits.
+
+Meeting the criteria is evidence, not permission. The result cannot start a
+shadow test, approve or apply a strategy, change production rules, deploy or
+trade. Separate future shadow evidence and human promotion gates remain required.

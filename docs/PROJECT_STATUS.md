@@ -459,6 +459,11 @@ learning.
   no-network execution, resource ceilings and the preregistered trial budget
   are fixed in advance. Planning cannot execute, record a result, promote,
   deploy, connect to a broker or trade.
+- Phase 6 now records immutable sandbox results pinned to the exact experiment,
+  run manifest and runner-output hash. It forbids incomplete trials and early
+  completion, fixes metric direction, and mechanically evaluates primary,
+  drawdown and turnover thresholds using decimal arithmetic. Passing is not
+  promotion and cannot change a rule, deploy or trade.
 
 ## Safety invariants
 
