@@ -667,6 +667,27 @@ a fixed 34-digit decimal context. It is simulated and gross pre-tax, not
 risk-adjusted alpha or a live track record. Recommendations, learning, AWS,
 broker access and all trading remain disabled.
 
+## Final official SOFR Index evidence
+
+Issue #85 establishes the point-in-time risk-free evidence boundary required
+before Sharpe ratio can be considered. The selected proxy is the New York Fed's
+official SOFR Index because it already represents compounded secured overnight
+financing across business days, weekends and holidays and supports exact custom
+period returns from index ratios.
+
+The ledger accepts the official endpoint's raw JSON response, not separately
+typed dates or values. It requires exactly one `SOFRAI` observation, derives the
+value date and exact positive eight-decimal index value from that payload,
+computes the payload hash itself, and verifies that the official HTTPS query
+requested that same date. Empty payloads therefore fail closed on weekends,
+holidays or any other non-publication date.
+
+Retrieval must occur after 15:00 New York time, conservatively beyond the New
+York Fed's same-day revision window; revised status and later backfills remain
+explicit. This component does not download data or calculate period risk-free
+returns, Sharpe, Sortino or any other performance claim. Recommendations,
+learning, AWS, broker access and all trading remain disabled.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio

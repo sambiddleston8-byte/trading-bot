@@ -30,6 +30,7 @@ from core.performance.portfolio_funding import PortfolioFundingLedger
 from core.performance.portfolio_return import TimeWeightedPortfolioReturnLedger
 from core.performance.portfolio_valuation import SimulatedPortfolioValuationLedger
 from core.performance.relative_total_return import RelativeTotalReturnLedger
+from core.performance.risk_free_index_observation import RiskFreeIndexObservationLedger
 from core.performance.sector_classification import SectorClassificationEvidenceLedger
 from core.performance.sector_exposure import SectorExposureLedger
 from core.performance.total_return import TotalReturnLedger
@@ -62,6 +63,7 @@ __all__ = [
     "TimeWeightedPortfolioReturnLedger",
     "SimulatedPortfolioValuationLedger",
     "RelativeTotalReturnLedger",
+    "RiskFreeIndexObservationLedger",
     "SectorClassificationEvidenceLedger",
     "SectorExposureLedger",
     "TotalReturnLedger",
