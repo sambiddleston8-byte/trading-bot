@@ -481,6 +481,9 @@ learning.
   deterministic tests, independent review and rollback evidence. A complete
   package still records no human decision and cannot promote, activate, deploy
   or trade.
+- Phase 6 now has a durable latched Hermes emergency stop. It denies new jobs,
+  requires running jobs to terminate, preserves evidence and exposes no resume
+  or activation operation. Unknown and inactive policies fail closed as stopped.
 
 ## Safety invariants
 

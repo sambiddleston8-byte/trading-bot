@@ -123,3 +123,14 @@ reviewer must be different identities.
 Completing the package records no decision. Promotion, incumbent or production
 changes, deployment and trading remain false and cannot be set by this ledger.
 An explicit future human decision requires a separate boundary.
+
+## Durable Hermes emergency stop
+
+Issue #127 adds a persistent, one-way stop record pinned to an immutable Hermes
+policy and its named emergency-stop identifier. Human, safety-monitor and
+system-failure sources may latch it. Once triggered, new work is denied, running
+work must terminate and evidence remains preserved.
+
+This component deliberately has no clear, resume or activation operation.
+Unknown policies and inactive policies also evaluate as stopped. A separate
+future human-controlled activation design is required before Hermes may run.
