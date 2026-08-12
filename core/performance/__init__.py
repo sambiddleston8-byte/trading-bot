@@ -36,6 +36,7 @@ from core.performance.prediction_evaluation_policy import PredictionEvaluationPo
 from core.performance.periodic_turnover import PeriodicTurnoverLedger
 from core.performance.relative_total_return import RelativeTotalReturnLedger
 from core.performance.risk_free_index_observation import RiskFreeIndexObservationLedger
+from core.performance.round_trip_execution import SimulatedRoundTripExecutionLedger
 from core.performance.sector_classification import SectorClassificationEvidenceLedger
 from core.performance.sector_exposure import SectorExposureLedger
 from core.performance.sharpe_readiness import SharpeMetricReadinessGate
@@ -76,6 +77,7 @@ __all__ = [
     "PeriodicTurnoverLedger",
     "RelativeTotalReturnLedger",
     "RiskFreeIndexObservationLedger",
+    "SimulatedRoundTripExecutionLedger",
     "SectorClassificationEvidenceLedger",
     "SectorExposureLedger",
     "SharpeMetricReadinessGate",
