@@ -208,6 +208,11 @@ unofficial methodology URLs and conflicting retries fail closed. This component
 does not download data and makes no performance, relative-return, alpha,
 learning or track-record claim.
 
+Uncertainty does not overwrite history or permanently block later resolution.
+One immutable `UNCERTAIN` record may be followed by one separately identified
+`COMPLETE` record for the same fill and horizon. A conflicting second complete
+value still fails closed, and complete evidence can never regress to uncertain.
+
 This is an attestation-style evidence boundary: it retains the provider's
 declared aggregate points and a hash of the provider input, but not individual
 S&P constituent dividend events. The ledger can prove what was recorded and
@@ -224,3 +229,29 @@ Governing references checked 2026-08-12:
 
 - [S&P DJI Index Mathematics Methodology](https://www.spglobal.com/spdji/en/methodology/article/index-mathematics-methodology/)
 - [S&P DJI explanation of price, total-return and dividend-points indices](https://www.spglobal.com/spdji/en/education/article/faq-sp-sdg-indices/)
+
+## S&P 500 gross cash total return
+
+Issue #37 adds the deterministic calculation that consumes the verified price
+observations and complete dividend-point evidence above. Its fixed formula is:
+
+`(outcome unadjusted price + gross dividend points - entry unadjusted price) /
+entry unadjusted price`
+
+The dividend points are treated as gross cash: no withholding deduction and no
+reinvestment. The result separately retains the price-return context and the
+distribution-return component, plus exact rational values and readable
+34-digit decimal presentations.
+
+The calculation refuses to append a result unless the caller explicitly
+accepts that the published dividend-point series uses the index membership,
+weights and divisor in effect on each ex-date, rather than a basket frozen at
+entry. That acceptance is recorded in the immutable result; it is not silently
+inferred. Uncertain or missing distribution evidence, adjusted prices,
+mismatched supporting hashes, an early calculation time and tampering all fail
+closed.
+
+This remains benchmark-only, simulated and ineligible for learning. It does
+not subtract the benchmark result from an asset return, calculate alpha, claim
+portfolio performance or create a track record. No market-data download,
+worker, broker or cloud path is enabled.

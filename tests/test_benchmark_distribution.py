@@ -151,6 +151,45 @@ def test_uncertainty_is_preserved_and_not_complete_evidence(tmp_path):
     assert ledger.complete_evidence(fill_id=fill["fill_id"], horizon="1_MONTH") is None
 
 
+def test_uncertain_evidence_can_resolve_to_complete_without_replacement(tmp_path):
+    ledger, fill = complete_chain(tmp_path)
+    uncertain = observe(
+        ledger,
+        fill,
+        gross_dividend_points=None,
+        completeness_status="UNCERTAIN",
+        uncertainty_reasons=["Provider coverage pending"],
+    )
+    complete = observe(
+        ledger,
+        fill,
+        gross_dividend_points="7.25",
+        retrieved_at="2025-02-04T17:30:00+00:00",
+        source_input_sha256="c" * 64,
+    )
+    assert uncertain["evidence_id"] != complete["evidence_id"]
+    assert [item["completeness_status"] for item in ledger.verify()] == [
+        "UNCERTAIN",
+        "COMPLETE",
+    ]
+    assert ledger.complete_evidence(
+        fill_id=fill["fill_id"], horizon="1_MONTH"
+    ) == complete
+
+
+def test_complete_evidence_cannot_regress_to_uncertain(tmp_path):
+    ledger, fill = complete_chain(tmp_path)
+    observe(ledger, fill)
+    with pytest.raises(LedgerIntegrityError, match="cannot regress"):
+        observe(
+            ledger,
+            fill,
+            gross_dividend_points=None,
+            completeness_status="UNCERTAIN",
+            uncertainty_reasons=["late provider doubt"],
+        )
+
+
 @pytest.mark.parametrize(
     "overrides,fragment",
     [
