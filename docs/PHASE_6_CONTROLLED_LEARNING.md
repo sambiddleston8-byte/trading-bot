@@ -111,3 +111,15 @@ the fixed metric direction, improvement, drawdown and turnover thresholds.
 A passing record is labelled as awaiting human review, never promoted. It
 cannot replace the incumbent, activate production, deploy or trade. Failed
 criteria leave the incumbent unchanged.
+
+## Human promotion-review bundle
+
+Issue #125 adds the immutable evidence package required before asking for a
+human promotion decision. It pins a passing shadow result, exact candidate Git
+revision, GitHub issue and pull request, implementation manifest, deterministic
+test evidence, independent-review evidence and rollback plan. Builder and
+reviewer must be different identities.
+
+Completing the package records no decision. Promotion, incumbent or production
+changes, deployment and trading remain false and cannot be set by this ledger.
+An explicit future human decision requires a separate boundary.

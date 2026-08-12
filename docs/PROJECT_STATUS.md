@@ -476,6 +476,11 @@ learning.
   window and minimum decision count. Metric and risk thresholds are evaluated
   mechanically. Passing only permits future human review; it cannot promote,
   replace the incumbent, deploy or trade.
+- Phase 6 now assembles immutable human-review packages containing the passing
+  shadow result, exact code and implementation identities, GitHub records,
+  deterministic tests, independent review and rollback evidence. A complete
+  package still records no human decision and cannot promote, activate, deploy
+  or trade.
 
 ## Safety invariants
 
