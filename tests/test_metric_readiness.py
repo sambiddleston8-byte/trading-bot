@@ -5,6 +5,7 @@ from core.performance.metric_readiness import (
     MAX_DAILY_CALENDAR_GAP_SECONDS,
     METRIC_READINESS_POLICY_VERSION,
     MIN_CAGR_ELAPSED_SECONDS,
+    MIN_DAILY_RETURNS,
     MIN_DAILY_SERIES_SPAN_SECONDS,
     MIN_DAILY_VALUATIONS,
     SECONDS_PER_DAY,
@@ -98,10 +99,49 @@ def verified_return(valuations, *, change_support=False):
     }
 
 
-def assess(valuations, returns=(), **overrides):
+def authoritative_daily_series():
+    values = []
+    start = datetime(2024, 1, 2, 21, tzinfo=timezone.utc)
+    end = datetime(2025, 1, 2, 21, tzinfo=timezone.utc)
+    current = start
+    while current <= end:
+        if current.weekday() < 5:
+            index = len(values) + 1
+            values.append(
+                {
+                    "valuation_id": f"DPFVAL-{index:03d}",
+                    "record_hash": f"daily-valuation-hash-{index:03d}",
+                    "portfolio_version": "PORT-001",
+                    "market_session_date": current.date().isoformat(),
+                    "effective_at": current.isoformat(),
+                    **IDENTITY,
+                }
+            )
+        current += timedelta(days=1)
+    returns = [
+        {
+            "result_id": f"DPRET-{index:03d}",
+            "record_hash": f"daily-return-hash-{index:03d}",
+            "portfolio_version": "PORT-001",
+            "previous_valuation_id": previous["valuation_id"],
+            "previous_valuation_record_hash": previous["record_hash"],
+            "current_valuation_id": current["valuation_id"],
+            "current_valuation_record_hash": current["record_hash"],
+            "current_effective_at": current["effective_at"],
+            "daily_return_calculated": True,
+            **IDENTITY,
+        }
+        for index, (previous, current) in enumerate(zip(values, values[1:]), start=1)
+    ]
+    return values, returns
+
+
+def assess(valuations, returns=(), *, daily_values=None, daily_returns=None, **overrides):
     gate = PerformanceMetricReadinessGate(
         ValuationLedgerStub(valuations, funding=overrides.pop("funding", True)),
         ReturnLedgerStub(returns),
+        ReturnLedgerStub(daily_values) if daily_values is not None else None,
+        ReturnLedgerStub(daily_returns) if daily_returns is not None else None,
     )
     values = {"portfolio_version": "PORT-001", "through_horizon": "12_MONTHS"}
     values.update(overrides)
@@ -115,8 +155,9 @@ def test_sparse_milestones_block_statistical_and_annualized_metrics():
     ]
     result = assess(values, [verified_return(values)])
     assert result["status"] == "ASSESSED"
-    assert result["valuation_observation_count"] == 2
-    assert result["periodic_return_observation_count"] == 1
+    assert result["milestone_valuation_observation_count"] == 2
+    assert result["daily_valuation_observation_count"] == 0
+    assert result["daily_return_observation_count"] == 0
     assert result["daily_cadence_ready"] is False
     assert result["metrics"]["CAGR"]["status"] == "EVIDENCE_READY"
     assert result["metrics"]["VOLATILITY"]["status"] == "BLOCKED"
@@ -127,8 +168,14 @@ def test_sparse_milestones_block_statistical_and_annualized_metrics():
 
 def test_complete_daily_history_readies_only_supported_metrics():
     values = business_day_valuations()
-    result = assess(values, [verified_return(values)])
-    assert len(values) >= 253
+    daily_values, daily_returns = authoritative_daily_series()
+    result = assess(
+        values,
+        [verified_return(values)],
+        daily_values=daily_values,
+        daily_returns=daily_returns,
+    )
+    assert len(daily_values) >= 253
     assert result["daily_cadence_ready"] is True
     assert result["maximum_observation_gap_seconds"] <= 4 * 86_400
     assert result["metrics"]["CAGR"]["status"] == "EVIDENCE_READY"
@@ -152,10 +199,16 @@ def test_cagr_requires_return_pinned_to_exact_same_valuations():
     )
 
 
-def test_duplicate_times_and_long_initial_gap_fail_daily_cadence():
+def test_duplicate_times_and_long_gap_fail_daily_cadence():
     values = business_day_valuations()
-    values[1] = {**values[1], "outcome_asset_price_effective_at": values[0]["outcome_asset_price_effective_at"]}
-    duplicate = assess(values, [verified_return(values)])
+    daily_values, daily_returns = authoritative_daily_series()
+    daily_values[1] = {**daily_values[1], "effective_at": daily_values[0]["effective_at"]}
+    duplicate = assess(
+        values,
+        [verified_return(values)],
+        daily_values=daily_values,
+        daily_returns=daily_returns,
+    )
     assert duplicate["daily_cadence_ready"] is False
     assert duplicate["unique_effective_times"] is False
     assert "duplicate" in " ".join(duplicate["metrics"]["VOLATILITY"]["reasons"])
@@ -163,17 +216,23 @@ def test_duplicate_times_and_long_initial_gap_fail_daily_cadence():
     shifted = [
         {
             **item,
-            "outcome_asset_price_effective_at": (
-                datetime.fromisoformat(item["outcome_asset_price_effective_at"])
-                + timedelta(days=8)
+            "effective_at": (
+                datetime.fromisoformat(item["effective_at"])
+                + (timedelta(days=8) if index >= 100 else timedelta(0))
             ).isoformat(),
         }
-        for item in business_day_valuations()
+        for index, item in enumerate(authoritative_daily_series()[0])
     ]
-    initial_gap = assess(shifted, [verified_return(shifted)])
-    assert initial_gap["daily_cadence_ready"] is False
-    assert "within four calendar days" in " ".join(
-        initial_gap["metrics"]["VOLATILITY"]["reasons"]
+    _, shifted_returns = authoritative_daily_series()
+    long_gap = assess(
+        values,
+        [verified_return(values)],
+        daily_values=shifted,
+        daily_returns=shifted_returns,
+    )
+    assert long_gap["daily_cadence_ready"] is False
+    assert "more than four calendar days" in " ".join(
+        long_gap["metrics"]["VOLATILITY"]["reasons"]
     )
 
 
@@ -207,10 +266,11 @@ def test_snapshot_is_content_addressed_and_no_metric_claim_is_made():
 
 
 def test_v1_policy_thresholds_are_pinned_against_silent_drift():
-    assert METRIC_READINESS_POLICY_VERSION == "portfolio-metric-readiness-v1"
+    assert METRIC_READINESS_POLICY_VERSION == "portfolio-metric-readiness-v2-authoritative-daily"
     assert SECONDS_PER_DAY == 86_400
     assert MIN_CAGR_ELAPSED_SECONDS == 365 * SECONDS_PER_DAY
     assert MIN_DAILY_VALUATIONS == 253
+    assert MIN_DAILY_RETURNS == 252
     assert MIN_DAILY_SERIES_SPAN_SECONDS == 365 * SECONDS_PER_DAY
     assert MAX_DAILY_CALENDAR_GAP_SECONDS == 4 * SECONDS_PER_DAY
 
@@ -247,4 +307,56 @@ def test_ambiguous_duplicate_returns_block_cagr():
     assert result["metrics"]["CAGR"]["status"] == "BLOCKED"
     assert "exactly one verified time-weighted return" in " ".join(
         result["metrics"]["CAGR"]["reasons"]
+    )
+
+
+def test_daily_readiness_requires_exact_return_chain_not_just_many_values():
+    values = business_day_valuations()
+    daily_values, daily_returns = authoritative_daily_series()
+    broken = [{**item} for item in daily_returns]
+    broken[100]["previous_valuation_record_hash"] = "wrong-hash"
+    result = assess(
+        values,
+        [verified_return(values)],
+        daily_values=daily_values,
+        daily_returns=broken,
+    )
+    assert result["daily_cadence_ready"] is False
+    assert "exactly pinned daily return" in " ".join(
+        result["metrics"]["VOLATILITY"]["reasons"]
+    )
+
+
+def test_generic_milestone_density_can_never_substitute_for_daily_ledgers():
+    values = business_day_valuations()
+    result = assess(values, [verified_return(values)])
+    assert len(values) >= 253
+    assert result["daily_cadence_ready"] is False
+    assert "Authoritative daily valuation and return ledgers" in " ".join(
+        result["metrics"]["VOLATILITY"]["reasons"]
+    )
+
+
+def test_daily_series_before_funding_cannot_ready_risk_metrics():
+    values = business_day_valuations()
+    daily_values, daily_returns = authoritative_daily_series()
+    daily_values[0] = {
+        **daily_values[0],
+        "effective_at": "2023-12-29T21:00:00+00:00",
+        "market_session_date": "2023-12-29",
+    }
+    daily_returns[0] = {
+        **daily_returns[0],
+        "previous_valuation_record_hash": daily_values[0]["record_hash"],
+    }
+    result = assess(
+        values,
+        [verified_return(values)],
+        daily_values=daily_values,
+        daily_returns=daily_returns,
+    )
+    assert result["metrics"]["VOLATILITY"]["status"] == "BLOCKED"
+    assert result["metrics"]["MAXIMUM_DRAWDOWN"]["status"] == "BLOCKED"
+    assert "daily valuation predates initial funding" in " ".join(
+        result["metrics"]["VOLATILITY"]["reasons"]
     )
