@@ -15,6 +15,7 @@ from core.application.portfolio_construction_service import PortfolioConstructio
 from core.application.portfolio_coverage_service import PortfolioCoverageService
 from core.application.portfolio_monitor_service import PortfolioMonitorService
 from core.application.research_service import ResearchService
+from core.operations import JobRunGuard
 
 
 def refresh_holdings(portfolio: dict[str, Any]) -> tuple[int, list[str]]:
@@ -106,10 +107,11 @@ def main() -> None:
         help="Use only for a quick monitoring check; scheduled runs should refresh current holdings.",
     )
     args = parser.parse_args()
-    result = run_cycle(
-        candidate_batch_size=args.candidate_batch_size,
-        refresh_current_holdings=not args.skip_holding_refresh,
-    )
+    with JobRunGuard("research-cycle"):
+        result = run_cycle(
+            candidate_batch_size=args.candidate_batch_size,
+            refresh_current_holdings=not args.skip_holding_refresh,
+        )
     print(f"Current holdings refreshed: {result['holdings_refreshed']}")
     if result["holding_refresh_failures"]:
         print("Holding refresh failures: " + ", ".join(result["holding_refresh_failures"]))

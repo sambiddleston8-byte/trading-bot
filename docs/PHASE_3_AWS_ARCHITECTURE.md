@@ -28,7 +28,10 @@ The repository currently contains:
 - a macOS-only opt-in launchd installer;
 - generated research and paper-portfolio JSON files under `data/`;
 - a hash-chained JSONL decision ledger and a recoverable local two-file journal;
-- no Docker image, PostgreSQL adapter or AWS infrastructure definition.
+- a local Docker image and Compose environment with manual-only worker profiles;
+- a non-authoritative PostgreSQL adapter, comparison mode and restore rehearsal;
+- a read-only preview that keeps pre-ledger snapshots `UNVALIDATED_LEGACY`;
+- no AWS infrastructure definition and no enabled unattended schedule.
 
 The local journal is appropriate crash protection for Phase 1, but it is not the
 storage mechanism for unattended cloud operation.
