@@ -34,6 +34,7 @@ from core.performance.relative_total_return import RelativeTotalReturnLedger
 from core.performance.risk_free_index_observation import RiskFreeIndexObservationLedger
 from core.performance.sector_classification import SectorClassificationEvidenceLedger
 from core.performance.sector_exposure import SectorExposureLedger
+from core.performance.sharpe_readiness import SharpeMetricReadinessGate
 from core.performance.total_return import TotalReturnLedger
 from core.performance.transaction_cost_attribution import (
     EntryTransactionCostAttributionLedger,
@@ -68,6 +69,7 @@ __all__ = [
     "RiskFreeIndexObservationLedger",
     "SectorClassificationEvidenceLedger",
     "SectorExposureLedger",
+    "SharpeMetricReadinessGate",
     "TotalReturnLedger",
     "EntryTransactionCostAttributionLedger",
 ]

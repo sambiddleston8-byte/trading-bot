@@ -705,6 +705,22 @@ changed evidence, non-increasing dates or invalid calculation timing fail
 closed. Excess return, Sharpe, Sortino, annualization, recommendations, learning,
 track-record claims, AWS, brokers and trading remain disabled.
 
+## Sharpe paired-evidence readiness
+
+Issue #89 adds a separate Sharpe readiness gate so extending risk-adjusted
+evidence cannot silently change or invalidate the existing v2 volatility and
+drawdown policy. It starts from that authoritative one-year daily-return
+approval, then requires exactly one verified matched SOFR risk-free return for
+every selected daily return.
+
+Pairing is enforced by daily-return ID and hash, exact previous/current session
+dates, and strategy/model/Git identity. Missing, duplicate, extra, changed or
+substituted support blocks readiness. Later legitimate evidence beyond the
+assessed horizon is ignored rather than making an earlier horizon unstable.
+The complete base snapshot and all paired IDs/hashes are content-addressed.
+This gate calculates no excess return, Sharpe, Sortino or other metric and
+enables no recommendation, learning, track-record claim, AWS, broker or trading.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio

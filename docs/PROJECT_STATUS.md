@@ -300,6 +300,11 @@ learning.
   matching session dates. Index-ratio arithmetic correctly retains weekend and
   holiday accrual, source backfills are disclosed, and no excess return, Sharpe,
   Sortino or other risk-adjusted metric is yet calculated.
+- Phase 5 now has a separate fail-closed Sharpe readiness gate that requires the
+  full authoritative daily series and exactly one ID/hash/date/identity-matched
+  SOFR risk-free return for every selected daily return. Missing, duplicate,
+  extra or substituted evidence blocks readiness; later evidence beyond the
+  assessed horizon does not destabilize history. The gate calculates no metric.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -381,8 +386,7 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by binding complete date-matched risk-free returns into metric
-readiness, then calculate Sharpe only for a fully paired one-year series.
+Continue Phase 5 by calculating Sharpe only for a fully paired one-year series.
 Separately establish the downside-policy prerequisites before Sortino.
 Hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
