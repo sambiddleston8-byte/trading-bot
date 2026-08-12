@@ -59,6 +59,10 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
   databases: construction and reallocation each matched PostgreSQL twice,
   producing a four-record ledger chain. The populated backup restored with
   identical hashes and row counts, and both disposable databases were removed.
+- Issue #15 adds a read-only preview for 14 pre-ledger portfolio snapshots. It
+  hashes and inventories the source files without modifying them or PostgreSQL,
+  labels every entry `UNVALIDATED_LEGACY`, and blocks promotion when immutable
+  decision evidence and audit metadata are absent.
 
 ## Phase 2 work
 
@@ -81,7 +85,8 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
 
 ## Next action
 
-Review populated synthetic validation under issue #13. PostgreSQL remains
-non-authoritative; promoting real local decisions into comparison mode is a
-separate approval gate. AWS choices, purchasing and deployment remain separate
-and require explicit user approval.
+Review the legacy portfolio preview under issue #15. PostgreSQL remains
+non-authoritative; importing even reference-only legacy copies or promoting
+real local decisions into comparison mode is a separate approval gate. AWS
+choices, purchasing and deployment remain separate and require explicit user
+approval.
