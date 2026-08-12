@@ -205,6 +205,14 @@ learning.
   evidence. Missing or misaligned evidence fails closed. The result is
   simulated, non-annualized and not risk-adjusted alpha; learning and
   track-record claims remain blocked.
+- Phase 5 now measures portfolio concentration from a verified valuation after
+  applying all external cash flows through its exact boundary as cash. Separate
+  exact cash-inclusive and invested-position HHIs prevent cash holdings or new
+  deposits from being confused with invested diversification. Largest, top-five
+  and effective-position measures retain full valuation and cash-flow lineage.
+  No threshold, recommendation, return, alpha, learning or track-record claim is
+  made. Sparse milestone valuations remain ineligible for volatility, Sharpe,
+  Sortino or genuine maximum-drawdown claims.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -254,10 +262,10 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by defining the first separately versioned portfolio risk and
-performance statistic from verified immutable returns and valuation evidence.
-CAGR, volatility, Sharpe, Sortino, drawdown, hit rate, turnover and
-transaction-cost attribution must remain distinct calculations with explicit
+Continue Phase 5 by establishing the immutable, point-in-time portfolio exposure
+classification evidence needed for sector exposure without inferring missing
+classifications. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate, turnover
+and transaction-cost attribution remain distinct calculations with explicit
 minimum-history and methodology gates. Risk-adjusted alpha remains a separate
 model; learning and track-record claims remain blocked. Issue #21 remains the
 research-quality backlog. PostgreSQL remains non-authoritative and Lightsail

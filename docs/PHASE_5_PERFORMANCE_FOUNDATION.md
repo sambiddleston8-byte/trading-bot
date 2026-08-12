@@ -427,3 +427,28 @@ live track record. CAGR, volatility, drawdown, Sharpe, Sortino, hit rate,
 turnover and transaction-cost attribution remain separate later calculations.
 No broker, real-money, worker, market-data-download, AWS or autonomous-learning
 capability is enabled.
+
+## Post-flow portfolio concentration
+
+Issue #53 measures concentration from one verified simulated portfolio
+valuation after applying every external cash flow through that exact boundary.
+Contributions and withdrawals remain cash; position values are not silently
+rescaled. Post-flow cash, total equity and all allocation weights must reconcile
+exactly.
+
+The result retains two distinct views:
+
+- cash-inclusive allocation HHI, which treats cash as an allocation; and
+- invested-position HHI, which normalizes only the invested positions to 100%.
+
+It also records the effective number of invested positions, largest and top-five
+weights in both views, and the full ordered position-weight evidence. All inputs
+and outputs remain exact rational values with readable 34-digit decimals, linked
+immutably to the valuation and every included cash-flow record.
+
+No concentration threshold, risk label or trade recommendation is inferred.
+This is a point-in-time simulated allocation statistic, not a return, alpha,
+learning result or live track record. Volatility, Sharpe, Sortino and genuine
+maximum drawdown remain blocked until sufficiently frequent and regular
+portfolio-value history exists; sparse milestone observations must not be used
+to make paper performance look more reliable than it is.
