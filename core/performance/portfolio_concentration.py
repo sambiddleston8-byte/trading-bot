@@ -14,6 +14,7 @@ from uuid import uuid4
 
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError
 from core.performance.portfolio_cash_flow import PortfolioCashFlowLedger
+from core.performance.pinned_support import resolve_pinned_records
 from core.performance.portfolio_valuation import (
     SimulatedPortfolioValuationLedger,
     _as_datetime,
@@ -404,6 +405,53 @@ class PortfolioConcentrationLedger:
         }
         return self._append(result, allow_existing=allow_existing)
 
+    def _pinned_support(
+        self, record: Mapping[str, Any]
+    ) -> tuple[dict[str, Any] | None, list[Mapping[str, Any]], list[str]]:
+        reasons = []
+        valuations = self.valuation_ledger.verify()
+        valuation = next(
+            (
+                item
+                for item in valuations
+                if item.get("valuation_id") == record.get("valuation_id")
+            ),
+            None,
+        )
+        if valuation is None:
+            return None, [], ["Pinned portfolio valuation is missing."]
+        if valuation.get("record_hash") != record.get("valuation_record_hash"):
+            reasons.append("Pinned portfolio valuation hash has changed.")
+        target_at = _as_datetime(valuation["outcome_asset_price_effective_at"])
+        included_valuation_ids = {
+            item["valuation_id"]
+            for item in valuations
+            if item.get("portfolio_version") == valuation.get("portfolio_version")
+            and _as_datetime(item["outcome_asset_price_effective_at"]) <= target_at
+        }
+        flows, flow_reasons = resolve_pinned_records(
+            self.cash_flow_ledger.verify(),
+            record.get("supporting_cash_flow_ids"),
+            record.get("supporting_cash_flow_hashes"),
+            id_field="flow_id",
+            label="cash flow",
+        )
+        reasons.extend(flow_reasons)
+        if any(
+            item.get("portfolio_version") != valuation.get("portfolio_version")
+            or item.get("valuation_id") not in included_valuation_ids
+            or _as_datetime(item["effective_at"]) > target_at
+            for item in flows
+        ):
+            reasons.append("Pinned cash flows are outside the valuation boundary.")
+        identity_fields = ("strategy_version", "model_versions", "git_revision")
+        if any(
+            any(item.get(field) != valuation.get(field) for field in identity_fields)
+            for item in flows
+        ):
+            reasons.append("Pinned concentration evidence has incompatible identity.")
+        return valuation, flows, reasons
+
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH
         seen_ids = set()
@@ -422,10 +470,11 @@ class PortfolioConcentrationLedger:
                 )
             version = str(record.get("portfolio_version") or "")
             horizon = str(record.get("horizon") or "")
-            valuation, flows, reasons = self._support(version, horizon)
+            valuation, flows, reasons = self._pinned_support(record)
             if reasons or valuation is None:
                 raise LedgerIntegrityError(
-                    f"Portfolio-concentration record {index} lost supporting evidence."
+                    f"Portfolio-concentration record {index} violates its boundary: "
+                    "pinned support is missing or incompatible."
                 )
             try:
                 economics = _economics(valuation, flows)

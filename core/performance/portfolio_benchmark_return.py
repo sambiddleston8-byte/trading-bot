@@ -13,6 +13,7 @@ from core.performance.portfolio_benchmark_valuation import (
     SimulatedPortfolioBenchmarkValuationLedger,
 )
 from core.performance.portfolio_cash_flow import PortfolioCashFlowLedger
+from core.performance.pinned_support import resolve_pinned_records
 from core.performance.portfolio_return import (
     TimeWeightedPortfolioReturnLedger,
     _as_datetime,
@@ -408,6 +409,90 @@ class TimeWeightedPortfolioBenchmarkReturnLedger(TimeWeightedPortfolioReturnLedg
         }
         return self._append(result, allow_existing=allow_existing)
 
+    def _pinned_support(
+        self, record: Mapping[str, Any]
+    ) -> tuple[
+        dict[str, Any] | None,
+        list[Mapping[str, Any]],
+        list[Mapping[str, Any]],
+        list[str],
+    ]:
+        version = str(record.get("portfolio_version") or "")
+        horizon = str(record.get("through_horizon") or "")
+        funding = self.benchmark_valuation_ledger.funding_ledger.funding_for(version)
+        reasons = []
+        if funding is None:
+            reasons.append("Pinned initial portfolio funding is missing.")
+        benchmarks, benchmark_reasons = resolve_pinned_records(
+            self.benchmark_valuation_ledger.verify(),
+            record.get("supporting_benchmark_valuation_ids"),
+            record.get("supporting_benchmark_valuation_hashes"),
+            id_field="valuation_id",
+            label="benchmark valuation",
+        )
+        flows, flow_reasons = resolve_pinned_records(
+            self.cash_flow_ledger.verify(),
+            record.get("supporting_cash_flow_ids"),
+            record.get("supporting_cash_flow_hashes"),
+            id_field="flow_id",
+            label="cash flow",
+        )
+        reasons.extend(benchmark_reasons)
+        reasons.extend(flow_reasons)
+        if not benchmarks:
+            reasons.append("Pinned benchmark valuations are missing.")
+            return funding, benchmarks, flows, reasons
+        effective_times = [
+            _as_datetime(item["outcome_benchmark_price_effective_at"])
+            for item in benchmarks
+        ]
+        if effective_times != sorted(effective_times) or len(set(effective_times)) != len(
+            effective_times
+        ):
+            reasons.append("Pinned benchmark valuations require ordered unique times.")
+        if any(
+            item.get("portfolio_version") != version
+            or item.get("outcome_asset_price_effective_at")
+            != item.get("outcome_benchmark_price_effective_at")
+            for item in benchmarks
+        ):
+            reasons.append("Pinned benchmark valuation boundaries are incompatible.")
+        if benchmarks[-1].get("horizon") != horizon:
+            reasons.append("Pinned benchmark through-horizon does not match the result.")
+        assets, asset_reasons = resolve_pinned_records(
+            self.benchmark_valuation_ledger.asset_valuation_ledger.verify(),
+            record.get("supporting_asset_valuation_ids"),
+            record.get("supporting_asset_valuation_hashes"),
+            id_field="valuation_id",
+            label="asset valuation",
+        )
+        reasons.extend(asset_reasons)
+        if len(assets) != len(benchmarks) or any(
+            benchmark.get("asset_portfolio_valuation_id") != asset.get("valuation_id")
+            or benchmark.get("asset_portfolio_valuation_hash") != asset.get("record_hash")
+            or benchmark.get("horizon") != asset.get("horizon")
+            for benchmark, asset in zip(benchmarks, assets)
+        ):
+            reasons.append("Pinned benchmark valuations lost exact asset boundaries.")
+        asset_ids = {item["valuation_id"] for item in assets}
+        if any(
+            item.get("portfolio_version") != version
+            or item.get("valuation_id") not in asset_ids
+            for item in flows
+        ):
+            reasons.append("Pinned cash flows do not match pinned asset boundaries.")
+        identity_fields = ("strategy_version", "model_versions", "git_revision")
+        reference = benchmarks[0]
+        if any(
+            any(item.get(field) != reference.get(field) for field in identity_fields)
+            for item in [*benchmarks, *assets, *flows]
+        ) or (
+            funding is not None
+            and any(funding.get(field) != reference.get(field) for field in identity_fields)
+        ):
+            reasons.append("Pinned benchmark-return evidence has incompatible identity.")
+        return funding, benchmarks, flows, reasons
+
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH
         seen_ids = set()
@@ -424,10 +509,11 @@ class TimeWeightedPortfolioBenchmarkReturnLedger(TimeWeightedPortfolioReturnLedg
                 )
             version = str(record.get("portfolio_version") or "")
             horizon = str(record.get("through_horizon") or "")
-            funding, valuations, flows, reasons = self._support(version, horizon)
+            funding, valuations, flows, reasons = self._pinned_support(record)
             if reasons or funding is None or not valuations:
                 raise LedgerIntegrityError(
-                    f"Portfolio benchmark-return record {index} lost supporting evidence."
+                    f"Portfolio benchmark-return record {index} violates its boundary: "
+                    "pinned support is missing or incompatible."
                 )
             try:
                 economics = _economics(funding, valuations, flows)

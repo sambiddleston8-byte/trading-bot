@@ -268,6 +268,15 @@ def test_supporting_cash_flow_tampering_is_detected(tmp_path):
         concentration.verify()
 
 
+def test_later_boundary_cash_flow_does_not_invalidate_pinned_concentration(
+    tmp_path,
+):
+    _, flows, concentration = ledgers(tmp_path)
+    result = calculate(concentration)
+    record_flow(flows, recorded_at="2025-02-03T17:04:00+00:00")
+    assert concentration.verify() == [result]
+
+
 def test_incomplete_tail_requires_explicit_repair(tmp_path):
     _, _, concentration = ledgers(tmp_path)
     result = calculate(concentration)

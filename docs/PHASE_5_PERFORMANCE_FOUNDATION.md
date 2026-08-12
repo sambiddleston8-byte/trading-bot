@@ -509,3 +509,21 @@ calculates no return or alpha, is not risk-adjusted or annualized, remains
 ineligible for learning, and cannot be presented as a track record. No broker,
 real-money, worker, market-data-download, AWS or autonomous-learning capability
 is enabled.
+
+## Historical support pinning across portfolio statistics
+
+A targeted Claude catch-up review found that portfolio return, matched S&P
+portfolio return and concentration records stored their exact supporting IDs
+and hashes but originally re-selected the current ledger contents during later
+verification. A legitimate valuation or boundary cash flow appended after a
+calculation could therefore make an untouched historical result appear
+corrupted.
+
+New calculations still discover all verified evidence available at calculation
+time. Once appended, however, each historical record is verified only from its
+exact stored valuation and cash-flow IDs and hashes. Pinned evidence must still
+exist, remain unmodified, preserve chronological and portfolio boundaries,
+retain compatible strategy/model/Git identity and reproduce the exact recorded
+economics. Unrelated evidence appended later can neither rewrite nor falsely
+invalidate the older result. This integrity change does not promote any result
+to learning evidence or a track record and enables no live capability.
