@@ -51,6 +51,10 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
   decision IDs and hashes against PostgreSQL while `local-files` remains the
   explicit default. Comparison mismatches/failures are surfaced by worker CLI
   output; workers themselves remain disabled unless manually invoked.
+- Issue #11 adds a manual PostgreSQL custom-format backup and isolated restore
+  rehearsal. A local rehearsal verified all ten tables, schema version, audit
+  row counts and ledger head, then removed the disposable restore database.
+  Backup files use owner-only permissions and remain outside Git.
 
 ## Phase 2 work
 
@@ -73,7 +77,7 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
 
 ## Next action
 
-Review persistence comparison mode under issue #9. PostgreSQL remains
-non-authoritative until repeated comparison runs agree and rollback/restore is
-rehearsed. AWS choices, purchasing and deployment remain separate and require
+Review the local backup/restore rehearsal under issue #11. PostgreSQL remains
+non-authoritative until repeated comparison runs with synthetic portfolio rows
+agree. AWS choices, purchasing and deployment remain separate and require
 explicit user approval.

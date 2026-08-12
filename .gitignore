@@ -15,3 +15,6 @@ venv/
 # Environment variables
 .env
 .env*.pyc
+
+# Local database backup and restore rehearsal artifacts
+data/backups/
