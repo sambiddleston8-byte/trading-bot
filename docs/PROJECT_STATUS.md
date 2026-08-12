@@ -166,6 +166,13 @@ learning.
   Missing positions, timestamp misalignment, funding shortfalls and target
   weights above 100% fail closed. External contributions/withdrawals, exits,
   portfolio returns, alpha, learning and track-record claims remain blocked.
+- Phase 5 now supports immutable simulated contributions or withdrawals only
+  immediately after a verified portfolio valuation. Mid-period flows require a
+  new exact boundary valuation and otherwise fail closed; withdrawals cannot
+  exceed simulated cash. A linked exact-rational time-weighted return removes
+  each boundary flow before measuring its subperiod and multiplies subperiod
+  growth factors. The result is non-annualized, not benchmark-relative, not
+  risk-adjusted alpha, ineligible for learning and not a live track record.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -206,11 +213,11 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by extending the aligned valuation into a time-ordered
-portfolio series with explicit contribution/withdrawal timing and
-cash-flow-neutral subperiod linking. Only after that may the platform define
-portfolio/benchmark returns and then CAGR, volatility, Sharpe, Sortino,
-drawdown, hit rate, turnover and transaction-cost attribution. Risk-adjusted
-alpha remains a separate model; learning and track-record claims remain
-blocked. Issue #21 remains the research-quality backlog. PostgreSQL remains
-non-authoritative and Lightsail remains only the planned future destination.
+Continue Phase 5 by building the like-for-like S&P 500 portfolio benchmark
+series over the exact same valuation boundaries, then calculate an explicitly
+labelled benchmark-relative portfolio return. Only after that may the platform
+define CAGR, volatility, Sharpe, Sortino, drawdown, hit rate, turnover and
+transaction-cost attribution. Risk-adjusted alpha remains a separate model;
+learning and track-record claims remain blocked. Issue #21 remains the
+research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
+remains only the planned future destination.

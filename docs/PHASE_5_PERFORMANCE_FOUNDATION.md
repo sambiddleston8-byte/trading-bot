@@ -315,3 +315,34 @@ CAGR, volatility, Sharpe, Sortino, drawdown or hit rate. It invents no exit,
 accepts no external cash flow after initial funding, remains ineligible for
 learning and cannot be presented as a track record. No broker, real-money,
 worker, market-data-download, AWS or autonomous-learning capability is enabled.
+
+## Boundary cash flows and time-weighted portfolio return
+
+The next slice turns verified portfolio valuations into a time-ordered
+simulated return series without mistaking deposits or withdrawals for
+investment performance. An external contribution or withdrawal can be recorded
+only immediately **after** a verified market valuation. The flow inherits that
+valuation's exact effective time and retains its hash, portfolio, strategy,
+model and Git identities. Mid-period cash flows are not approximated: they
+require a new valuation at the exact flow boundary and otherwise fail closed.
+
+For each period the calculation separates:
+
+- the prior period's post-flow equity;
+- the current base portfolio valuation plus all earlier external cash flows;
+- the investment return before the current boundary flow; and
+- the post-flow equity used to start the next period.
+
+The fixed subperiod formula is `pre-flow equity / previous post-flow equity -
+1`. Subperiod growth factors are multiplied to produce the cash-flow-neutral
+time-weighted return. A contribution or withdrawal after the current valuation
+therefore cannot alter the return through that boundary. Contributions remain
+as simulated cash until a separately recorded trade exists; withdrawals cannot
+exceed available simulated cash. Exact rational values and readable 34-digit
+decimals are retained for every subperiod and linked result.
+
+This is a non-annualized simulated portfolio return, not benchmark-relative
+portfolio return, risk-adjusted alpha, CAGR, volatility, Sharpe, Sortino,
+drawdown or a live track record. It remains ineligible for learning. No broker,
+real-money, worker, market-data-download, AWS or autonomous-learning capability
+is enabled.
