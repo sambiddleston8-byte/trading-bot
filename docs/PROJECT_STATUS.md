@@ -8,7 +8,7 @@ real-money trading remains disabled.
 
 ## Current phase
 
-Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
+Phase 4 — local Alpaca paper-trading boundary; nothing connected or submitted.
 
 ## Completed
 
@@ -67,6 +67,10 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
   operation. Every run receives an append-only local lifecycle history, only
   `RECORD_ONLY` or `PAPER_ONLY` modes are accepted, and a fixed global-then-job
   lock order prevents concurrent portfolio mutations. No schedule is enabled.
+- Issue #19 starts Phase 4 with append-only proposed paper-order records linked
+  to their decisions and portfolio versions. The configuration accepts only
+  Alpaca's official paper endpoint; it has no credentials, HTTP submission or
+  live-money mode.
 
 ## Phase 2 work
 
@@ -89,7 +93,7 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
 
 ## Next action
 
-Complete local unattended-job safety under issue #17. PostgreSQL remains
-non-authoritative, legacy snapshots remain archived without import, and
-Lightsail is only the planned future destination. AWS purchasing, deployment
-and scheduling remain separate and require explicit user approval.
+Complete the audited Alpaca paper-order boundary under issue #19. Next, verify a
+future paper account read-only before considering any paper-order submission.
+PostgreSQL remains non-authoritative and Lightsail remains only the planned
+future destination.
