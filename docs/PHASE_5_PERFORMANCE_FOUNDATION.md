@@ -670,3 +670,30 @@ by exact ID and hash, so later consistent coverage cannot rewrite history. This
 is a per-position accounting result, not a portfolio value, return, metric,
 recommendation, learning input or track record. It enables no provider download,
 broker, worker, AWS or live-trading capability.
+
+## Cash-reconciled daily portfolio valuation
+
+Issue #75 aggregates daily position values only when every funded proposal has
+exactly one verified long simulated fill and every fill has one value at the
+same market close. The exact cash account starts with initial funding, subtracts
+recorded fill gross value and entry fees, adds cumulative gross USD dividend
+cash once, and applies verified external contributions or withdrawals effective
+by the close. Cash, all positions and total equity must reconcile exactly.
+
+The dividend cash basis is explicitly gross and pre-tax. It is not the broker's
+net cash deposit: withholding, investor tax and broker cash-statement evidence
+are not yet modelled, so `broker_cash_reconciled` and
+`tax_and_withholding_modelled` remain false. A future net-cash layer must use
+separate receipt and tax evidence rather than silently relabelling gross cash.
+
+Every position weight and the cash weight are exact fractions whose sum must be
+one. Missing fills or position values, mixed strategy/model/Git identity,
+negative cash, and any sell or rebalancing state fail closed because lot-level
+position-state accounting is not yet implemented. Backfilled close evidence and
+corporate-action evidence obtained after the close remain explicitly disclosed.
+
+The append-only valuation pins funding, every fill, every daily position value
+and every included cash flow by ID and hash. Later legitimate cash flows cannot
+rewrite history. This is still a simulated daily value, not a return, risk
+metric, recommendation, learning input or track record, and it enables no
+provider download, broker, worker, AWS or live trading.
