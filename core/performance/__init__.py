@@ -8,6 +8,8 @@ from core.performance.outcome_observation import (
     OutcomeObservationLedger,
 )
 from core.performance.outcome_result import OutcomeResultLedger
+from core.performance.portfolio_funding import PortfolioFundingLedger
+from core.performance.portfolio_valuation import SimulatedPortfolioValuationLedger
 from core.performance.relative_total_return import RelativeTotalReturnLedger
 from core.performance.total_return import TotalReturnLedger
 
@@ -18,6 +20,8 @@ __all__ = [
     "OUTCOME_HORIZONS",
     "OutcomeObservationLedger",
     "OutcomeResultLedger",
+    "PortfolioFundingLedger",
+    "SimulatedPortfolioValuationLedger",
     "RelativeTotalReturnLedger",
     "TotalReturnLedger",
 ]

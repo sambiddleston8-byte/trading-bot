@@ -277,3 +277,41 @@ for a transparent benchmark comparison but is **not** risk-adjusted alpha,
 portfolio performance, learning evidence or a live track record. Those claims
 remain blocked. No market-data download, worker, broker, AWS or autonomous
 learning path is enabled.
+
+## Initial-funded simulated portfolio valuation
+
+The next bounded slice establishes the portfolio accounting base required by
+the Master Roadmap before any portfolio return or risk statistic can be
+reported. It records one immutable amount of simulated initial USD funding
+before the portfolio's proposed orders. The funding record locks the complete
+proposal set plus its strategy, model and Git identities. Contributions and
+withdrawals after that point are deliberately unsupported until their timing
+and time-weighting rules are defined.
+
+A portfolio valuation is appended only when every proposal for that portfolio
+version is a long `BUY`, every proposal has exactly one verified local
+simulated fill, and every fill has a verified total-return result for the same
+horizon. All positions must use the exact same asset and benchmark effective
+times. Missing holdings, duplicate tickers, misaligned timestamps, target
+weights above 100% and insufficient starting cash fail closed.
+
+The fixed cash and valuation formulas are:
+
+- `remaining cash = initial funding - recorded entry costs + gross cash dividends`;
+- `position market value = sum of outcome position values`; and
+- `total equity = remaining cash + position market value`.
+
+The result retains exact rational values for funding, entry costs, dividends,
+cash, each position, total equity, target weights and actual weights. Recorded
+entry fees and adverse/favourable slippage amounts are also aggregated for
+later transaction-cost attribution; fill-price slippage is disclosed but not
+subtracted a second time. Position
+weights use current market value divided by total equity; cash is a separate
+actual and target weight, and the exact actual weights must sum to one.
+
+This is one aligned simulated valuation, not yet a performance series. It does
+not calculate portfolio return, benchmark-relative portfolio return, alpha,
+CAGR, volatility, Sharpe, Sortino, drawdown or hit rate. It invents no exit,
+accepts no external cash flow after initial funding, remains ineligible for
+learning and cannot be presented as a track record. No broker, real-money,
+worker, market-data-download, AWS or autonomous-learning capability is enabled.
