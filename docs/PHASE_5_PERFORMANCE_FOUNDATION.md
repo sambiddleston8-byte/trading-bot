@@ -991,3 +991,26 @@ conservative asset/benchmark cost asymmetry is explicit in the result.
 This is complete simulated benchmark-relative return, not risk-adjusted alpha.
 It applies no success rule, calculates no hit rate or calibration, enables no
 learning or track-record claim, and creates or submits no order.
+
+## Preregistered risk-adjusted alpha model policy
+
+Issue #107 establishes the immutable human-decision boundary required before
+alpha can be estimated. A policy fixes one future evaluation start and end and
+one recognised daily model: CAPM using matched S&P 500 total return and SOFR,
+the official Ken French US three-factor model, or the official Ken French US
+five-factor model. The software does not choose among them.
+
+Each model fixes a consistent risk-free basis. Ken French models must use the
+official dataset's own RF series; CAPM uses the platform's matched SOFR Index
+evidence. The dependent portfolio excess return, factors and dates must form a
+complete intersection. Missing observations cannot be imputed and strategy or
+model versions cannot be pooled.
+
+The preregistered estimator is OLS with an intercept and Newey-West HAC
+inference using a fixed automatic lag formula. At least 756 daily observations
+inside a window fixed for at least 1095 calendar days are required. Daily alpha
+is the regression intercept and the declared annual presentation is the daily
+intercept times 252. Model selection after outcomes, optional stopping and
+retrospective application are forbidden. This boundary calculates no alpha,
+downloads no factor data and enables no recommendation, learning, broker, AWS
+or trading capability.

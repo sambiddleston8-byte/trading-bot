@@ -388,6 +388,13 @@ learning.
   The asset includes both recorded simulated fees; no unevidenced benchmark
   execution cost is invented. This is relative return, not alpha or a success
   score, and remains ineligible for learning or track-record claims.
+- Phase 5 now has an immutable human-preregistered risk-adjusted-alpha policy
+  boundary. It supports CAPM with matched S&P/SOFR, official Ken French US
+  three-factor or official five-factor models without selecting one. A fixed
+  future start/end window, consistent risk-free basis, 756-observation floor,
+  complete date intersection, OLS intercept and Newey-West HAC inference are
+  locked before results. Model shopping, optional stopping, imputation and
+  cross-version pooling are forbidden. No alpha or factor download occurs yet.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -445,6 +452,7 @@ choices before registration or aggregation. Turnover is a distinct verified
 calculation. Complete fixed-horizon simulated outcomes now exist but remain
 unaggregated until the human policy choices are registered; complete matched
 benchmark-relative evidence is also ready for the recommended rule. Risk-adjusted
-alpha remains a separate model; learning and track-record claims remain blocked.
+alpha now has a preregistration boundary but still requires the user's model and
+future-window choice; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
