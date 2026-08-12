@@ -15,6 +15,7 @@ from uuid import uuid4
 
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 from core.performance.portfolio_cash_flow import PortfolioCashFlowLedger
+from core.performance.pinned_support import resolve_pinned_records
 from core.performance.portfolio_valuation import SimulatedPortfolioValuationLedger
 
 
@@ -364,6 +365,70 @@ class TimeWeightedPortfolioReturnLedger:
         }
         return self._append(result, allow_existing=allow_existing)
 
+    def _pinned_support(
+        self, record: Mapping[str, Any]
+    ) -> tuple[
+        dict[str, Any] | None,
+        list[Mapping[str, Any]],
+        list[Mapping[str, Any]],
+        list[str],
+    ]:
+        version = str(record.get("portfolio_version") or "")
+        horizon = str(record.get("through_horizon") or "")
+        funding = self.valuation_ledger.funding_ledger.funding_for(version)
+        reasons = []
+        if funding is None:
+            reasons.append("Pinned initial portfolio funding is missing.")
+        valuations, valuation_reasons = resolve_pinned_records(
+            self.valuation_ledger.verify(),
+            record.get("supporting_valuation_ids"),
+            record.get("supporting_valuation_hashes"),
+            id_field="valuation_id",
+            label="portfolio valuation",
+        )
+        flows, flow_reasons = resolve_pinned_records(
+            self.cash_flow_ledger.verify(),
+            record.get("supporting_cash_flow_ids"),
+            record.get("supporting_cash_flow_hashes"),
+            id_field="flow_id",
+            label="cash flow",
+        )
+        reasons.extend(valuation_reasons)
+        reasons.extend(flow_reasons)
+        if not valuations:
+            reasons.append("Pinned portfolio valuations are missing.")
+            return funding, valuations, flows, reasons
+        effective_times = [
+            _as_datetime(item["outcome_asset_price_effective_at"])
+            for item in valuations
+        ]
+        if effective_times != sorted(effective_times) or len(set(effective_times)) != len(
+            effective_times
+        ):
+            reasons.append("Pinned portfolio valuations must have ordered unique times.")
+        if any(item.get("portfolio_version") != version for item in valuations):
+            reasons.append("Pinned portfolio valuations have the wrong portfolio.")
+        if valuations[-1].get("horizon") != horizon:
+            reasons.append("Pinned through-horizon valuation does not match the result.")
+        valuation_ids = {item["valuation_id"] for item in valuations}
+        if any(
+            item.get("portfolio_version") != version
+            or item.get("valuation_id") not in valuation_ids
+            for item in flows
+        ):
+            reasons.append("Pinned cash flows do not match pinned valuation boundaries.")
+        identity_fields = ("strategy_version", "model_versions", "git_revision")
+        reference = valuations[0]
+        if any(
+            any(item.get(field) != reference.get(field) for field in identity_fields)
+            for item in [*valuations, *flows]
+        ) or (
+            funding is not None
+            and any(funding.get(field) != reference.get(field) for field in identity_fields)
+        ):
+            reasons.append("Pinned return evidence has incompatible identity.")
+        return funding, valuations, flows, reasons
+
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH
         seen_ids = set()
@@ -380,10 +445,11 @@ class TimeWeightedPortfolioReturnLedger:
                 )
             version = str(record.get("portfolio_version") or "")
             horizon = str(record.get("through_horizon") or "")
-            funding, valuations, flows, reasons = self._support(version, horizon)
+            funding, valuations, flows, reasons = self._pinned_support(record)
             if reasons or funding is None or not valuations:
                 raise LedgerIntegrityError(
-                    f"Portfolio-return record {index} lost supporting evidence."
+                    f"Portfolio-return record {index} violates its boundary: "
+                    "pinned support is missing or incompatible."
                 )
             try:
                 economics = _economics(funding, valuations, flows)

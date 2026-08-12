@@ -285,6 +285,37 @@ def test_rehashed_portfolio_return_tampering_is_detected(tmp_path, changes):
         returns.verify()
 
 
+def test_later_boundary_cash_flow_does_not_invalidate_pinned_return(tmp_path):
+    _, flows, returns = ledgers(tmp_path)
+    result = calculate(returns)
+    flows.record(
+        portfolio_version="PORT-001",
+        horizon="1_MONTH",
+        flow_type="CONTRIBUTION",
+        amount="100",
+        recorded_at="2025-02-03T17:03:00+00:00",
+    )
+    assert returns.verify() == [result]
+
+
+def test_later_intermediate_valuation_does_not_invalidate_pinned_return(tmp_path):
+    valuations, _, returns = ledgers(tmp_path)
+    result = calculate(returns)
+    inserted = dict(valuations.values[0])
+    inserted.update(
+        {
+            "valuation_id": "PVAL-2-WEEKS",
+            "record_hash": "valuation-inserted-hash",
+            "horizon": "2_WEEKS",
+            "horizon_label": "2 weeks",
+            "outcome_asset_price_effective_at": "2025-01-16T16:00:00+00:00",
+            "calculated_at": "2025-02-03T17:03:00+00:00",
+        }
+    )
+    valuations.values.append(inserted)
+    assert returns.verify() == [result]
+
+
 def test_incomplete_return_tail_requires_explicit_repair(tmp_path):
     _, _, returns = ledgers(tmp_path)
     result = calculate(returns)

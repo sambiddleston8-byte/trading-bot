@@ -232,6 +232,14 @@ learning.
   exact pinned support, so later evidence cannot rewrite or falsely invalidate
   them. No diversification judgment, recommendation, return, alpha, learning
   update or track-record claim is made.
+- A targeted Claude catch-up review identified a High historical-integrity
+  pattern in asset portfolio return, matched-S&P portfolio return and portfolio
+  concentration verification. Those ledgers now resolve an existing result
+  from the exact valuation and cash-flow IDs/hashes it originally recorded,
+  instead of re-selecting current time-range membership. Later legitimate
+  evidence can no longer rewrite or falsely invalidate history; missing,
+  modified, misordered or identity-incompatible pinned support still fails
+  closed. No performance claim, learning eligibility or live capability changes.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
