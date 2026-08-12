@@ -878,3 +878,25 @@ claim broker-cash reconciliation. It is one simulated, non-annualized,
 non-risk-adjusted observation—not volatility, Sharpe, Sortino, drawdown, a
 recommendation, learning input or track record. No broker, provider download,
 worker, AWS or live trading is enabled.
+
+## Verified periodic gross turnover
+
+Issue #97 measures trading activity only between two consecutive authoritative
+daily portfolio valuations. The interval is open at the previous valuation and
+closed at the current valuation. Its fill set must exactly equal the new fill
+IDs introduced by the current valuation, so the initial deployment at or before
+the first valuation is excluded rather than being mislabelled as ongoing
+turnover.
+
+The numerator is exact gross two-way activity: absolute BUY notional plus
+absolute SELL notional. BUY and SELL totals, counts and recorded execution fees
+are disclosed separately. The denominator is the exact average of the two
+positive boundary equity values. The result is a non-annualized period ratio;
+it does not claim a complete round trip, broker-cash reconciliation, tax
+modelling, a recommendation, learning eligibility or a track record.
+
+Both valuations and every interval fill are pinned by ID and hash. Mixed
+strategy/model/Git identity, missing or extra fills, changed support and invalid
+economics fail closed. A verified zero-trade interval produces zero turnover.
+This evidence component submits no order and enables no broker, provider
+download, worker, AWS or live trading.
