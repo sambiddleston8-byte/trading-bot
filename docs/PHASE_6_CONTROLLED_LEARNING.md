@@ -21,3 +21,18 @@ or experiment proposals for human review.
 
 Preregistering a policy does not activate Hermes, schedule work or invoke any
 model. Separate future implementation and human activation gates are required.
+
+## Evidence-backed sandbox lesson proposals
+
+Issue #111 adds an append-only proposal record for controlled-learning lessons.
+Every proposal pins between one and 100 verified complete fixed-horizon outcomes
+by ID and hash. It must separate an observed result from a suspected cause,
+state uncertainty, provide a falsifiable hypothesis, propose an experiment and
+name the result that would disconfirm the hypothesis.
+
+The proposal begins unapproved. It cannot claim causality, validate itself,
+execute an experiment, change code, weights, investment rules, permissions,
+deployment or trading, or apply a lesson. Human, Codex and Claude Code provenance
+is supported. Hermes provenance is explicitly rejected while Hermes remains
+inactive; a future verified activation boundary is required before it can author
+proposals. Recording a proposal invokes no model and performs no experiment.

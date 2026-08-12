@@ -440,6 +440,13 @@ learning.
   trading. Only future sandbox lesson/experiment proposals are permitted, and
   registering a policy activates nothing. The legacy adaptive learning scripts
   remain non-authoritative.
+- Phase 6 now records immutable evidence-backed sandbox lesson proposals. Each
+  pins verified complete outcomes and requires a suspected cause, uncertainty,
+  falsifiable hypothesis, experiment and disconfirming result. A proposal cannot
+  validate or apply itself, alter rules/weights/code/permissions, promote,
+  deploy or trade. Hermes provenance is blocked while Hermes remains inactive;
+  human, Codex or Claude Code may author traceable proposals without invoking a
+  model as part of the record operation.
 
 ## Safety invariants
 
