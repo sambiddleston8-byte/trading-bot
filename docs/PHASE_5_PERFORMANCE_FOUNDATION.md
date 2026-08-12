@@ -169,3 +169,58 @@ It is retained as clearly labelled context, not subtracted from the asset total
 return. This slice therefore calculates neither relative total return nor
 alpha. Results remain simulated, position-level, ineligible for learning and
 not a portfolio or live track-record claim.
+
+## Like-for-like S&P 500 distribution evidence
+
+Issue #35 records the missing benchmark distribution evidence without yet
+calculating a benchmark return. S&P DJI's standard Total Return Index reinvests
+dividends, while the first asset policy above holds dividends as cash. The
+platform therefore does not treat that reinvested series as automatically
+like-for-like.
+
+Instead, each due horizon can receive immutable S&P 500 gross ordinary cash
+dividend **points** covering exactly the open-start, closed-end benchmark price
+interval `(entry, outcome]`. The fixed policy is USD, no withholding deduction
+and no reinvestment. A future cash benchmark return can combine these points
+with the already verified unadjusted S&P price levels under an explicit formula.
+
+Published dividend points use the index membership, weights and divisor in
+effect on each ex-date; they do not represent a basket frozen at the entry
+date. That composition drift can matter over longer horizons. The evidence
+therefore records `CURRENT_INDEX_WEIGHTS_NOT_FROZEN_AT_ENTRY` explicitly, and a
+future relative-return calculation must deliberately accept or reject that
+benchmark approximation before producing a result.
+
+Every evidence record retains:
+
+- links and hashes for its verified entry and outcome observations;
+- exact period endpoints and same-UTC-market-date alignment to the asset at
+  both entry and outcome;
+- exact decimal dividend points, including valid zero-point intervals;
+- complete or explicitly uncertain status;
+- provider, provider version, retrieval/backfill status and source-input hash;
+  and
+- official S&P methodology name, version, HTTPS URI and document hash.
+
+The methodology definition itself receives a deterministic hash. Adjusted
+prices, mismatched market dates, incomplete horizons, negative points,
+unofficial methodology URLs and conflicting retries fail closed. This component
+does not download data and makes no performance, relative-return, alpha,
+learning or track-record claim.
+
+This is an attestation-style evidence boundary: it retains the provider's
+declared aggregate points and a hash of the provider input, but not individual
+S&P constituent dividend events. The ledger can prove what was recorded and
+detect later inconsistency; by itself it cannot independently reconstruct or
+cross-check every ex-date inside the provider's declared `(entry, outcome]`
+window. That limitation must remain visible to the future calculator.
+
+Official S&P methodology states that total-return indices reflect price changes
+plus reinvested dividend income, while dividend-points indices track dividend
+payments separately. That distinction is why this evidence boundary is kept
+separate from the reinvested total-return index.
+
+Governing references checked 2026-08-12:
+
+- [S&P DJI Index Mathematics Methodology](https://www.spglobal.com/spdji/en/methodology/article/index-mathematics-methodology/)
+- [S&P DJI explanation of price, total-return and dividend-points indices](https://www.spglobal.com/spdji/en/education/article/faq-sp-sdg-indices/)
