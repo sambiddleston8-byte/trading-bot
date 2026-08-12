@@ -546,3 +546,29 @@ Those omissions mean it is not yet a full round-trip or live-realism cost model.
 It calculates no turnover, return, alpha or recommendation, remains ineligible
 for learning and cannot be presented as a track record. No broker, real-money,
 worker, market-data-download, AWS or autonomous-learning capability is enabled.
+
+## Point-in-time security factor-exposure evidence
+
+Issue #65 establishes the evidence boundary required before portfolio factor
+exposure can be calculated. Each append-only observation links one invested
+ticker to a verified portfolio valuation and retains the provider, factor-model
+name and version, hashed methodology, factor effective time, retrieval time,
+HTTPS source and source-payload hash. Provider factor codes, names, units and
+finite decimal exposure values are preserved without translation, with exact
+rational representations for later deterministic aggregation.
+
+Complete evidence must contain a non-empty set of uniquely coded and named
+factors and no uncertainty. Unusable or missing evidence is recorded as
+`UNCERTAIN` with reasons and no asserted exposures. An uncertain observation
+may resolve through a separately identified complete record; complete evidence
+cannot regress to uncertain, and conflicting complete observations cannot
+coexist for the same valuation, ticker and factor-model version. A correction
+requires an explicit new model version or a future supersession mechanism.
+Evidence retrieved after the valuation boundary is explicitly labelled as
+backfilled.
+
+This component records security-level source evidence only. It does not combine
+different factor models or units, calculate portfolio factor exposure, label a
+portfolio as risky, recommend a trade, calculate performance or alpha, update
+learning, or create a track record. No provider download, broker, real-money,
+worker, AWS or autonomous-learning capability is enabled.

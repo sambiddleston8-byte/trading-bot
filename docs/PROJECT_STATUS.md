@@ -247,6 +247,14 @@ learning.
   prevents re-deduction and does not invent exits, spreads, market impact or
   latency. It is not full round-trip/live-realism costing and makes no turnover,
   return, alpha, recommendation, learning or track-record claim.
+- Phase 5 now records immutable point-in-time security factor-exposure evidence
+  linked to verified invested positions. Provider model/version, hashed
+  methodology, effective/retrieval times, source hashes and exact decimal factor
+  values are retained without translating factor definitions or units. Missing
+  evidence becomes explicit uncertainty, later resolution is append-only and
+  backfill is labelled. Competing complete records for one valuation/security/
+  model version are rejected. No portfolio factor aggregation, recommendation,
+  performance, alpha, learning or track-record claim is yet produced.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -296,10 +304,11 @@ learning.
 
 ## Next action
 
-Continue Phase 5 with the next bounded risk/performance measure selected from
-the roadmap evidence sequence. CAGR, volatility, Sharpe, Sortino, drawdown, hit
-rate, turnover and transaction-cost attribution remain distinct calculations
-with explicit minimum-history and methodology gates; none may be inferred from
+Continue Phase 5 by calculating portfolio factor exposure only when every
+invested position has exactly one complete observation under the same provider,
+factor model/version, factor definitions and units. CAGR, volatility, Sharpe,
+Sortino, drawdown, hit rate and turnover remain distinct calculations with
+explicit minimum-history and methodology gates; none may be inferred from
 sparse milestone observations. Risk-adjusted alpha remains a separate model;
 learning and track-record claims remain blocked. Issue #21 remains the
 research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
