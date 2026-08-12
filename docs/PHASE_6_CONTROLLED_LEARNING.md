@@ -100,3 +100,14 @@ selection, later extension and metric switching are forbidden.
 Planning starts nothing. Broker access, shadow observations, promotion,
 incumbent changes, deployment and trading remain disabled. A separate evidence
 record must prove the complete fixed window before human review is possible.
+
+## Complete shadow-test results
+
+Issue #123 adds an append-only paper/shadow result pinned to the exact plan and
+evidence-bundle hash. It cannot be written before the fixed window ends or below
+the minimum complete-decision count. Decimal calculations mechanically apply
+the fixed metric direction, improvement, drawdown and turnover thresholds.
+
+A passing record is labelled as awaiting human review, never promoted. It
+cannot replace the incumbent, activate production, deploy or trade. Failed
+criteria leave the incumbent unchanged.
