@@ -648,3 +648,25 @@ splits, dividends, holdings, funding, external cash flows and execution history
 at the same boundary. This component calculates no return or metric, makes no
 recommendation, enables no learning or track record, downloads no provider data
 and enables no broker, worker, AWS or live-trading capability.
+
+## Corporate-action-complete daily position value
+
+Issue #73 converts one verified daily close into an exact simulated position
+value only when complete corporate-action evidence covers the fill through that
+same close. Supported splits adjust quantity exactly. Gross USD cash dividends
+are included without reinvestment only when the fill is clearly entitled and
+payment occurred by the close. Fractional simulated shares are retained rather
+than rounded.
+
+Uncertain evidence, unsupported actions, simultaneous split/distribution
+ordering, unpaid or date-ambiguous dividends and distributions requiring FX all
+fail closed. The result reports market value and cumulative paid dividend cash
+separately as well as their gross holding value. It also discloses whether the
+close was backfilled and whether corporate-action evidence arrived after the
+close.
+
+Every append-only result pins its fill, daily close and corporate-action record
+by exact ID and hash, so later consistent coverage cannot rewrite history. This
+is a per-position accounting result, not a portfolio value, return, metric,
+recommendation, learning input or track record. It enables no provider download,
+broker, worker, AWS or live-trading capability.
