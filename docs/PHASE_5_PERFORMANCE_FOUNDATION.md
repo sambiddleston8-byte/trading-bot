@@ -452,3 +452,31 @@ learning result or live track record. Volatility, Sharpe, Sortino and genuine
 maximum drawdown remain blocked until sufficiently frequent and regular
 portfolio-value history exists; sparse milestone observations must not be used
 to make paper performance look more reliable than it is.
+
+## Point-in-time sector-classification evidence
+
+Sector exposure must not be calculated from convenient present-day labels or
+from inconsistent free-text sector names. This slice therefore records the
+classification evidence for each position before any exposure statistic is
+allowed. Every append-only record is linked to one verified portfolio
+valuation and position and retains the provider, provider taxonomy and version,
+classification effective time, retrieval time, HTTPS source and source-input
+hash.
+
+Provider sector and optional industry codes and labels are preserved exactly;
+this ledger does not silently translate `Tech`, `Technology` and `Information
+Technology` into one category. `Unknown`, `Unclassified` and equivalent
+placeholders are rejected. Evidence is either `COMPLETE`, with a sector code and
+name, or `UNCERTAIN`, with explicit reasons and no asserted classification. An
+uncertain observation may later be resolved by a separately identified complete
+record, but complete evidence cannot regress to uncertain. Evidence retrieved
+after the valuation boundary is explicitly labelled as backfilled.
+
+Classification identity is content-addressed to the source hash, effective
+date and exact provider labels, in addition to the append-only ledger hash
+chain. The component deliberately calculates no exposure, concentration,
+return, alpha or recommendation and remains ineligible for learning and
+track-record claims. The next exposure calculation must require complete
+evidence for every invested ticker under one exact provider taxonomy/version;
+missing or mixed classifications must fail closed, while cash remains a
+separate allocation.
