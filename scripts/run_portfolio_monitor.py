@@ -12,6 +12,7 @@ import argparse
 from core.application.portfolio_construction_service import PortfolioConstructionService
 from core.application.portfolio_monitor_service import PortfolioMonitorService
 from core.application.research_service import ResearchService
+from core.operations import JobRunGuard
 
 
 def refresh_holding_research(portfolio: dict) -> tuple[int, list[str]]:
@@ -46,11 +47,16 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    with JobRunGuard("portfolio-monitor"):
+        run_monitor(refresh_research=args.refresh_research)
+
+
+def run_monitor(*, refresh_research: bool = False) -> None:
     portfolio, _ = PortfolioConstructionService.latest_portfolio()
     if portfolio is None:
-        raise SystemExit("No current proposed portfolio is available to monitor.")
+        raise RuntimeError("No current proposed portfolio is available to monitor.")
 
-    if args.refresh_research:
+    if refresh_research:
         refreshed, failures = refresh_holding_research(portfolio)
         print(f"Research refreshed: {refreshed}")
         if failures:

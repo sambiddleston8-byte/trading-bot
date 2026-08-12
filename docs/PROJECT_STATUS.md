@@ -63,6 +63,10 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
   hashes and inventories the source files without modifying them or PostgreSQL,
   labels every entry `UNVALIDATED_LEGACY`, and blocks promotion when immutable
   decision evidence and audit metadata are absent.
+- Issue #17 prepares manual research and monitoring jobs for later unattended
+  operation. Every run receives an append-only local lifecycle history, only
+  `RECORD_ONLY` or `PAPER_ONLY` modes are accepted, and a fixed global-then-job
+  lock order prevents concurrent portfolio mutations. No schedule is enabled.
 
 ## Phase 2 work
 
@@ -85,8 +89,7 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
 
 ## Next action
 
-Review the legacy portfolio preview under issue #15. PostgreSQL remains
-non-authoritative; importing even reference-only legacy copies or promoting
-real local decisions into comparison mode is a separate approval gate. AWS
-choices, purchasing and deployment remain separate and require explicit user
-approval.
+Complete local unattended-job safety under issue #17. PostgreSQL remains
+non-authoritative, legacy snapshots remain archived without import, and
+Lightsail is only the planned future destination. AWS purchasing, deployment
+and scheduling remain separate and require explicit user approval.
