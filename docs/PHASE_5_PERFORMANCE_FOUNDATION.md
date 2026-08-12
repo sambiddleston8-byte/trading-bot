@@ -527,3 +527,22 @@ retain compatible strategy/model/Git identity and reproduce the exact recorded
 economics. Unrelated evidence appended later can neither rewrite nor falsely
 invalidate the older result. This integrity change does not promote any result
 to learning evidence or a track record and enables no live capability.
+
+## Recorded entry transaction-cost attribution
+
+Issue #63 attributes only the transaction-cost evidence already present in a
+verified simulated portfolio valuation. For every position it reconciles the
+proposal reference notional, simulated fill notional, recorded entry fee,
+signed fill-price slippage and fee-inclusive recorded entry cost using exact
+rational arithmetic. Adverse slippage cost and favourable slippage benefit are
+reported separately, alongside signed net cost and basis points relative to
+reference notional. Portfolio totals must reconcile exactly to the valuation.
+
+This is attribution, not another deduction: fill-price slippage is already
+embedded in the simulated fill and fees are already included in recorded entry
+cost. The result explicitly blocks double counting. It does not invent an exit,
+exit fee, separately observed bid-ask spread, market impact or latency cost.
+Those omissions mean it is not yet a full round-trip or live-realism cost model.
+It calculates no turnover, return, alpha or recommendation, remains ineligible
+for learning and cannot be presented as a track record. No broker, real-money,
+worker, market-data-download, AWS or autonomous-learning capability is enabled.
