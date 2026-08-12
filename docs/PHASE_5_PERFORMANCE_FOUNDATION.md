@@ -377,3 +377,31 @@ subperiods, calculate benchmark portfolio return, subtract the asset portfolio
 return, calculate alpha, annualize results, enable learning or create a live
 track record. No broker, real-money, worker, market-data-download, AWS or
 autonomous-learning capability is enabled.
+
+## Cash-flow-neutral S&P 500 portfolio benchmark return
+
+The matched benchmark valuations can now be linked across the exact same
+verified boundaries used by the simulated asset portfolio. Every benchmark
+valuation must retain its precise asset-valuation ID and hash, and the asset and
+benchmark effective timestamps must be identical. A missing, modified or
+misaligned side blocks the entire result.
+
+External contributions and withdrawals reuse the verified asset portfolio cash
+flow. Prior flows are held as zero-return cash in the counterfactual; a flow at
+the current boundary is applied only after measuring return through that
+boundary. The fixed formulas are:
+
+- `benchmark pre-flow equity = base benchmark equity + cumulative prior flows`;
+- `benchmark subperiod return = benchmark pre-flow equity / previous benchmark post-flow equity - 1`;
+- `benchmark post-flow equity = benchmark pre-flow equity + current boundary flow`; and
+- `linked benchmark return = product(1 + benchmark subperiod return) - 1`.
+
+Exact rational values and 34-digit decimal presentations are retained for each
+boundary and the linked result. Mid-period flows, duplicate effective times,
+non-positive equity, identity changes and lost supporting evidence fail closed.
+
+This is the simulated S&P counterfactual's own non-annualized time-weighted
+return. It does not yet subtract the asset portfolio return, calculate alpha or
+risk statistics, enable learning or form a live track record. No broker,
+real-money, worker, market-data-download, AWS or autonomous-learning capability
+is enabled.
