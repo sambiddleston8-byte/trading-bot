@@ -930,3 +930,25 @@ strategy/model/Git identity, missing or extra fills, changed support and invalid
 economics fail closed. A verified zero-trade interval produces zero turnover.
 This evidence component submits no order and enables no broker, provider
 download, worker, AWS or live trading.
+
+## Complete local simulated entry/exit round trip
+
+Issue #101 pairs exactly one verified local simulated BUY fill with one later
+verified local simulated SELL fill. Both fills must share decision, portfolio,
+security, quantity, strategy, model and Git identity. The exit must occur
+strictly after entry, and neither fill can be assigned to another round trip.
+When multiple fills otherwise qualify, deterministic FIFO matching pairs the
+oldest eligible BUY with the earliest later SELL; timestamp then fill ID breaks
+ties. A caller cannot select a more favourable combination.
+
+Exact recorded entry cost includes entry gross value and fee. Exact exit
+proceeds deduct the exit fee. Net profit/loss and return therefore include both
+recorded fees and both simulated fill prices, which already embed their recorded
+slippage. The result also discloses total fees and signed slippage for
+attribution without deducting them twice.
+
+Separate bid-ask spread, market impact, latency cost, tax/withholding and borrow
+cost are not invented and remain explicitly unmodelled. This is stronger
+evidence than the earlier entry-only outcome, but it does not itself create an
+exit proposal or fill, recommend a trade, qualify learning or claim a live
+track record. It cannot submit an order or enable broker, AWS or live trading.

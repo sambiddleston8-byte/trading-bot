@@ -369,6 +369,13 @@ learning.
   and the denominator is average boundary equity. Both valuations and every
   fill are pinned by ID/hash. It is not a complete round-trip, broker-cash, tax,
   recommendation, learning or track-record claim and cannot submit an order.
+- Phase 5 now pairs one verified local simulated BUY entry with one later
+  verified SELL exit for the same decision, security, exact quantity and
+  strategy/model/Git identity. Exact net profit/loss and return include both
+  recorded fees; fill prices already embed recorded simulated slippage. Fills
+  cannot be reused, and deterministic FIFO matching prevents favourable pair
+  selection. Spread, market impact, latency, tax and borrow costs remain
+  explicitly unmodelled, and the component cannot create or submit an order.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -423,7 +430,8 @@ future evaluation window before calculating Sortino. Continue objective Phase 5
 prerequisites that do not depend on that choice meanwhile. The hit-rate and
 calibration policy boundary now exists but requires the user's future explicit
 choices before registration or aggregation. Turnover is a distinct verified
-calculation. Risk-adjusted
+calculation. Complete simulated entry/exit evidence now exists, but a future
+fixed-horizon pairing must still connect it to prediction cohorts. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
