@@ -485,6 +485,15 @@ learning.
   requires running jobs to terminate, preserves evidence and exposes no resume
   or activation operation. Unknown and inactive policies fail closed as stopped.
 
+## Phase 7 work
+
+- Phase 7 now begins with an immutable source-neutral congressional trade
+  disclosure ledger. It separates transaction, filing, evidenced public
+  availability and system-observation times so disclosure delay cannot become
+  look-ahead bias. Capitol Trades requires a licensed feed; official-source use
+  requires a recorded terms review. No scraper, connector, automatic signal,
+  broker path or trading capability exists.
+
 ## Safety invariants
 
 - Execution remains `RECORD_ONLY` or paper-only.
