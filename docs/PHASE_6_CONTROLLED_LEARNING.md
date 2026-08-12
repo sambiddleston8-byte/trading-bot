@@ -88,3 +88,15 @@ criteria passed. The entry pins the result and exact baseline/candidate versions
 Eligibility is not activation. This boundary cannot start a shadow test, make a
 candidate the incumbent, approve promotion, change code, deploy or trade. Those
 require separate evidence and human-authorised transitions.
+
+## Preregistered shadow-test plans
+
+Issue #121 adds an inert future paper/shadow observation plan for candidates
+that passed every experiment criterion. It fixes the future window before it
+begins, requires at least 30 days and a minimum number of complete decisions,
+and inherits the experiment's metric and risk thresholds. Retrospective window
+selection, later extension and metric switching are forbidden.
+
+Planning starts nothing. Broker access, shadow observations, promotion,
+incumbent changes, deployment and trading remain disabled. A separate evidence
+record must prove the complete fixed window before human review is possible.

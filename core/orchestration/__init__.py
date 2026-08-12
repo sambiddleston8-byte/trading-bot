@@ -6,6 +6,7 @@ from core.orchestration.experiment_specification import SandboxExperimentSpecifi
 from core.orchestration.experiment_run_manifest import SandboxExperimentRunManifestLedger
 from core.orchestration.experiment_result import SandboxExperimentResultLedger
 from core.orchestration.strategy_registry import CandidateStrategyRegistryLedger
+from core.orchestration.shadow_test_plan import ShadowTestPlanLedger
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -14,4 +15,5 @@ __all__ = [
     "SandboxExperimentRunManifestLedger",
     "SandboxExperimentResultLedger",
     "CandidateStrategyRegistryLedger",
+    "ShadowTestPlanLedger",
 ]
