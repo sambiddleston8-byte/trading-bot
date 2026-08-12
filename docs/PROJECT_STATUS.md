@@ -447,6 +447,13 @@ learning.
   deploy or trade. Hermes provenance is blocked while Hermes remains inactive;
   human, Codex or Claude Code may author traceable proposals without invoking a
   model as part of the record operation.
+- Phase 6 now preregisters immutable sandbox experiment specifications pinned to
+  lessons. The full baseline/candidate change, point-in-time cutoff, future
+  out-of-sample and shadow boundaries, single primary metric, improvement and
+  risk limits, trial budget, seed and acceptance/rejection rules are
+  content-addressed. Random splits, test reuse, metric switching, optional
+  stopping, automatic execution, promotion, code/rule changes, deployment and
+  trading are forbidden. Registration executes nothing.
 
 ## Safety invariants
 

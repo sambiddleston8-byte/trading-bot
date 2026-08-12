@@ -36,3 +36,19 @@ deployment or trading, or apply a lesson. Human, Codex and Claude Code provenanc
 is supported. Hermes provenance is explicitly rejected while Hermes remains
 inactive; a future verified activation boundary is required before it can author
 proposals. Recording a proposal invokes no model and performs no experiment.
+
+## Preregistered sandbox experiment specifications
+
+Issue #113 turns an evidence-backed lesson into a testable but still inert
+experiment specification. It pins the lesson and content-addresses the complete
+specification: baseline and candidate versions, one candidate change, the
+point-in-time development-data cutoff, a future out-of-sample window of at least
+30 days, a later shadow-test boundary, one primary metric, minimum improvement,
+maximum drawdown and turnover degradation, bounded trial count, fixed seed and
+explicit acceptance/rejection rules.
+
+Random train/test splitting, out-of-sample reuse, metric substitution and
+optional stopping are forbidden. Registration runs no backtest or model, starts
+no shadow test and cannot approve promotion, change code or production rules,
+deploy or trade. A separate future result record must prove the specification
+was followed before any shadow test can be considered.
