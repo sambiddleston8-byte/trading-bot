@@ -32,6 +32,7 @@ from core.performance.portfolio_funding import PortfolioFundingLedger
 from core.performance.portfolio_return import TimeWeightedPortfolioReturnLedger
 from core.performance.portfolio_valuation import SimulatedPortfolioValuationLedger
 from core.performance.prediction_outcome_pair import PredictionOutcomePairLedger
+from core.performance.periodic_turnover import PeriodicTurnoverLedger
 from core.performance.relative_total_return import RelativeTotalReturnLedger
 from core.performance.risk_free_index_observation import RiskFreeIndexObservationLedger
 from core.performance.sector_classification import SectorClassificationEvidenceLedger
@@ -70,6 +71,7 @@ __all__ = [
     "TimeWeightedPortfolioReturnLedger",
     "SimulatedPortfolioValuationLedger",
     "PredictionOutcomePairLedger",
+    "PeriodicTurnoverLedger",
     "RelativeTotalReturnLedger",
     "RiskFreeIndexObservationLedger",
     "SectorClassificationEvidenceLedger",

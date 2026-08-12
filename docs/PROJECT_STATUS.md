@@ -354,6 +354,13 @@ learning.
   historical exchange-calendar evidence. Valuations and boundary flows
   are pinned by ID/hash. Results remain gross-pre-tax, non-annualized,
   non-risk-adjusted and ineligible for learning or track-record claims.
+- Phase 5 now calculates exact non-annualized gross two-way turnover between
+  consecutive verified daily valuations. Interval fills must exactly reconcile
+  with newly supported fill IDs; this excludes the original deployment by
+  construction. BUY and SELL notional, counts and recorded fees are separate,
+  and the denominator is average boundary equity. Both valuations and every
+  fill are pinned by ID/hash. It is not a complete round-trip, broker-cash, tax,
+  recommendation, learning or track-record claim and cannot submit an order.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -407,7 +414,7 @@ Obtain the user's explicit Sortino target choice, then preregister it for a
 future evaluation window before calculating Sortino. Continue objective Phase 5
 prerequisites that do not depend on that choice meanwhile: preregister fixed
 hit-rate and calibration cohort policies before aggregating prediction outcomes.
-Hit rate and turnover remain distinct calculations. Risk-adjusted
+Turnover is now a distinct verified calculation. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
