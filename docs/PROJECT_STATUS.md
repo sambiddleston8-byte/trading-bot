@@ -87,6 +87,14 @@ submitted.
   Claude's focused review found no functional safety defect; its boundary,
   linkage, input-sanity and retry recommendations were added to the tests and
   implementation.
+- Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
+  at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
+  linked to a verified simulated fill and preserves separate asset/benchmark
+  effective times, retrieval timing, source/version, price basis and a source
+  input hash. Later horizons require entry, cannot be recorded early and cannot
+  change price basis. Claude's statistical review prompted tighter benchmark
+  alignment, cross-horizon consistency and explicit retrieval/backfill labels.
+  The component calculates no return and makes no performance claim.
 
 ## Phase 2 work
 
@@ -109,9 +117,9 @@ submitted.
 
 ## Next action
 
-Begin the Phase 5 performance and attribution foundation using the immutable
-decision, proposal and local simulated-fill identities. Define timestamped
-price observations and outcome horizons without yet claiming investment
-performance or connecting a broker. Issue #21 remains the ongoing
-research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
-remains only the planned future destination.
+Continue Phase 5 with a deterministic return-calculation specification that
+uses only verified entry/due-horizon observations and explicitly handles fees,
+slippage, splits, dividends, benchmark alignment and missing data. Do not yet
+feed results into learning or claim a track record. Issue #21 remains the
+ongoing research-quality backlog. PostgreSQL remains non-authoritative and
+Lightsail remains only the planned future destination.
