@@ -129,6 +129,14 @@ learning.
   fail closed. The S&P price return is labelled non-like-for-like context, so no
   relative total return or alpha is claimed; results remain ineligible for
   learning and are not a portfolio or live track record.
+- Issue #35 adds immutable S&P 500 gross ordinary cash dividend-point evidence
+  over the exact `(entry, outcome]` benchmark interval. It matches the asset's
+  gross-cash/no-reinvestment policy rather than silently comparing it with the
+  standard reinvested S&P total-return index. Records require unadjusted prices,
+  same UTC market dates for asset and benchmark endpoints, exact points,
+  complete/uncertain status, provider input hashes and a hashed official S&P
+  methodology identity. No benchmark return, relative return or alpha is yet
+  calculated.
 
 ## Phase 2 work
 
@@ -155,10 +163,12 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by defining like-for-like benchmark total-return evidence
-before any relative-total-return or alpha calculation. Then add aggregation
-rules for a simulated portfolio, including cash flows and position weights,
-before calculating CAGR, volatility, Sharpe, Sortino, drawdown or hit rate.
-Learning and track-record claims remain blocked. Issue #21 remains the ongoing
-research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
-remains only the planned future destination.
+Continue Phase 5 with a deterministic benchmark cash-total-return calculation
+from verified unadjusted S&P price levels and complete gross dividend-point
+evidence. Only then calculate explicitly labelled position-level relative total
+return; alpha remains reserved for a separately defined risk-adjusted model.
+After that, define simulated portfolio aggregation, cash-flow and weight rules
+before CAGR, volatility, Sharpe, Sortino, drawdown or hit rate. Learning and
+track-record claims remain blocked. Issue #21 remains the research-quality
+backlog. PostgreSQL remains non-authoritative and Lightsail remains only the
+planned future destination.
