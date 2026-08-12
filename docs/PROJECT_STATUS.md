@@ -173,6 +173,13 @@ learning.
   each boundary flow before measuring its subperiod and multiplies subperiod
   growth factors. The result is non-annualized, not benchmark-relative, not
   risk-adjusted alpha, ineligible for learning and not a live track record.
+- Phase 5 now also values a matched-capital S&P 500 portfolio counterfactual at
+  each verified asset-portfolio horizon. Every asset position must have a
+  benchmark gross-cash result with the exact same fill and evidence identity.
+  Its recorded fee-inclusive entry-cost capital earns that benchmark return,
+  while initially uninvested funding remains cash; no benchmark cost is
+  invented. Exact position values, cash, total equity and weights reconcile,
+  but no benchmark portfolio return, relative return or alpha is yet claimed.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -213,10 +220,10 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by building the like-for-like S&P 500 portfolio benchmark
-series over the exact same valuation boundaries, then calculate an explicitly
-labelled benchmark-relative portfolio return. Only after that may the platform
-define CAGR, volatility, Sharpe, Sortino, drawdown, hit rate, turnover and
+Continue Phase 5 by linking the matched S&P portfolio valuations across the
+same external-cash-flow boundaries, then calculate an explicitly labelled
+benchmark-relative portfolio return. Only after that may the platform define
+CAGR, volatility, Sharpe, Sortino, drawdown, hit rate, turnover and
 transaction-cost attribution. Risk-adjusted alpha remains a separate model;
 learning and track-record claims remain blocked. Issue #21 remains the
 research-quality backlog. PostgreSQL remains non-authoritative and Lightsail

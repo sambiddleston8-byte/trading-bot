@@ -346,3 +346,34 @@ portfolio return, risk-adjusted alpha, CAGR, volatility, Sharpe, Sortino,
 drawdown or a live track record. It remains ineligible for learning. No broker,
 real-money, worker, market-data-download, AWS or autonomous-learning capability
 is enabled.
+
+## Matched-capital S&P 500 portfolio benchmark valuation
+
+The portfolio benchmark begins with a counterfactual valuation before any
+portfolio-relative return is calculated. Every verified simulated asset
+position is matched to its S&P 500 gross-cash total return for the exact same
+fill, horizon, price observations, strategy, model and Git identities. Missing
+or mismatched benchmark evidence blocks the entire portfolio result rather than
+silently dropping a holding.
+
+For each position, the counterfactual exposes the asset position's exact
+`recorded_entry_cost` to the matched S&P return. This amount includes the
+asset's recorded entry-fee basis, so the benchmark does not receive extra
+starting capital. No separate benchmark transaction cost is invented. Initial
+funding not used by the asset position set remains zero-return cash in the
+counterfactual. The fixed formulas are:
+
+- `benchmark position ending value = matched entry capital × (1 + S&P gross-cash return)`;
+- `benchmark cash reserve = initial funding - total matched entry capital`; and
+- `benchmark total equity = cash reserve + benchmark position ending values`.
+
+Exact rational capital, ending values, cash, total equity and weights are
+retained alongside readable 34-digit decimals. Weights must reconcile exactly
+to one. The existing S&P distribution and changing-composition acceptance
+remain inherited from each verified benchmark-return result.
+
+This is only a simulated benchmark valuation. It does not yet link benchmark
+subperiods, calculate benchmark portfolio return, subtract the asset portfolio
+return, calculate alpha, annualize results, enable learning or create a live
+track record. No broker, real-money, worker, market-data-download, AWS or
+autonomous-learning capability is enabled.
