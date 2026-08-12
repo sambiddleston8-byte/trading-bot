@@ -464,6 +464,10 @@ learning.
   completion, fixes metric direction, and mechanically evaluates primary,
   drawdown and turnover thresholds using decimal arithmetic. Passing is not
   promotion and cannot change a rule, deploy or trade.
+- Phase 6 now gives each verified experiment candidate one immutable strategy
+  disposition: rejected, or eligible for a future shadow test. Eligibility
+  cannot start shadow testing, replace the incumbent, approve promotion,
+  change code, deploy or trade.
 
 ## Safety invariants
 

@@ -77,3 +77,14 @@ is fixed by metric, and pass or rejection follows only the preregistered limits.
 Meeting the criteria is evidence, not permission. The result cannot start a
 shadow test, approve or apply a strategy, change production rules, deploy or
 trade. Separate future shadow evidence and human promotion gates remain required.
+
+## Candidate strategy disposition
+
+Issue #119 adds the first fail-closed strategy-registry boundary. Every verified
+experiment result receives one immutable disposition: rejected when any
+preregistered criterion failed, or eligible for a future shadow test when all
+criteria passed. The entry pins the result and exact baseline/candidate versions.
+
+Eligibility is not activation. This boundary cannot start a shadow test, make a
+candidate the incumbent, approve promotion, change code, deploy or trade. Those
+require separate evidence and human-authorised transitions.
