@@ -41,8 +41,15 @@ Risk notes:
 
 ## Safety and promotion gates
 
+- [ ] Affected code, data, strategy, agent and cloud sandbox layers are identified.
+- [ ] Test/experiment outputs cannot overwrite authoritative histories.
+- [ ] Resource, runtime, API and model-cost limits are defined where unattended work changes.
+- [ ] No agent can approve, merge, deploy or increase its own permissions.
+- [ ] Sandbox/shadow/backtest results are not presented as a live track record.
 - [ ] No broker credential, live-order route or real-money mode is introduced.
 - [ ] The change remains record-only or paper-only where execution is relevant.
 - [ ] Generated research outputs are excluded or separately classified.
 - [ ] Model, prompt, data and Git versions are captured where decisions are affected.
 - [ ] The user has authorised marking this PR ready and merging it.
+
+Sandbox impact and deliberately blocked capabilities:

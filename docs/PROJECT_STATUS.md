@@ -114,6 +114,12 @@ learning.
   evidence must agree on the economic events. It deliberately performs no
   entitlement decision, currency conversion, share adjustment, return
   calculation or learning update.
+- Issue #31 makes sandboxing a governing requirement across all roadmap phases.
+  It defines separate code, data, investment-strategy, agent and cloud-staging
+  layers; fixed permissions/resource limits; emergency stops; and a promotion
+  path that no agent can approve for itself. GitHub issues and pull requests now
+  require sandbox impact and escape risks to be stated. Existing controls are
+  distinguished from future AWS/Hermes controls that are not yet implemented.
 
 ## Phase 2 work
 
@@ -133,6 +139,10 @@ learning.
 - No broker credential or live-order path may be introduced in Phase 1.
 - Tests must not write into the repository's live `data/` history.
 - Existing user data changes must not be staged with Phase 1 source changes.
+- Unapproved code, data, strategies and agent actions remain inside the sandbox
+  boundary described in `docs/SANDBOX_GOVERNANCE.md`.
+- No agent may promote its own experiment, merge, deploy or increase its own
+  permissions.
 
 ## Next action
 
