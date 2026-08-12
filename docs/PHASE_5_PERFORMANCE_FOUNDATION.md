@@ -623,6 +623,15 @@ implement a separately tested calculation, not a performance claim. The gate
 never annualizes a result, recommends a trade, enables learning, creates a track
 record or enables live trading.
 
+The v2 readiness policy now binds daily-series eligibility exclusively to the
+authoritative daily portfolio valuation and daily return ledgers. Generic
+milestone valuations can never substitute, even if there are many of them.
+At least 253 daily valuations and 252 daily returns must span one year, and
+every consecutive valuation pair must have exactly one return pinned to both
+valuation IDs and hashes. Duplicate, missing, extra or mismatched return support
+blocks volatility and maximum-drawdown readiness. CAGR remains separately tied
+to its verified milestone time-weighted return and one-year elapsed horizon.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio

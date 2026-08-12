@@ -271,6 +271,12 @@ learning.
   risk-free, downside-policy, outcome, execution or cohort prerequisites rather
   than manufacturing results. The gate calculates no metric and makes no
   recommendation, learning, track-record or live-trading claim.
+- The metric-readiness gate is now v2 and uses only the authoritative daily
+  valuation/return ledgers for daily-series eligibility. It requires at least
+  253 valuations and 252 exactly pinned consecutive returns over one year;
+  milestone density, missing pairs, extra returns or altered hashes cannot make
+  volatility or drawdown appear ready. CAGR retains its separate verified TWR
+  requirement.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -352,9 +358,8 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by integrating the exact daily valuation/return series with the
-metric-readiness gate, then implement only metrics whose evidence gates are
-satisfied. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate and
+Continue Phase 5 with the first deterministic metric calculations, but only
+behind their v2 evidence gates. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate and
 turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains

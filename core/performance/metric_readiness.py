@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from datetime import datetime
 import hashlib
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping
 
+from core.performance.daily_portfolio_return import DailyPortfolioReturnLedger
+from core.performance.daily_portfolio_valuation import DailyPortfolioValuationLedger
 from core.performance.portfolio_return import TimeWeightedPortfolioReturnLedger
 from core.performance.portfolio_valuation import (
     SimulatedPortfolioValuationLedger,
@@ -14,10 +16,11 @@ from core.performance.portfolio_valuation import (
 )
 
 
-METRIC_READINESS_POLICY_VERSION = "portfolio-metric-readiness-v1"
+METRIC_READINESS_POLICY_VERSION = "portfolio-metric-readiness-v2-authoritative-daily"
 SECONDS_PER_DAY = 86_400
 MIN_CAGR_ELAPSED_SECONDS = 365 * SECONDS_PER_DAY
 MIN_DAILY_VALUATIONS = 253
+MIN_DAILY_RETURNS = 252
 MIN_DAILY_SERIES_SPAN_SECONDS = 365 * SECONDS_PER_DAY
 MAX_DAILY_CALENDAR_GAP_SECONDS = 4 * SECONDS_PER_DAY
 POLICY = {
@@ -28,9 +31,11 @@ POLICY = {
     },
     "daily_return_series": {
         "minimum_valuation_observations": MIN_DAILY_VALUATIONS,
+        "minimum_return_observations": MIN_DAILY_RETURNS,
         "minimum_calendar_span_days": 365,
         "maximum_calendar_gap_days": 4,
         "duplicate_effective_times_allowed": False,
+        "source_policy": "AUTHORITATIVE_DAILY_VALUATION_AND_RETURN_LEDGERS_ONLY",
     },
     "sharpe": "DAILY_RETURN_SERIES_PLUS_MATCHED_RISK_FREE_SERIES_REQUIRED",
     "sortino": (
@@ -68,9 +73,13 @@ class PerformanceMetricReadinessGate:
         self,
         valuation_ledger: SimulatedPortfolioValuationLedger,
         portfolio_return_ledger: TimeWeightedPortfolioReturnLedger,
+        daily_valuation_ledger: DailyPortfolioValuationLedger | None = None,
+        daily_return_ledger: DailyPortfolioReturnLedger | None = None,
     ) -> None:
         self.valuation_ledger = valuation_ledger
         self.portfolio_return_ledger = portfolio_return_ledger
+        self.daily_valuation_ledger = daily_valuation_ledger
+        self.daily_return_ledger = daily_return_ledger
 
     def assess(self, *, portfolio_version: str, through_horizon: str) -> dict[str, Any]:
         version = str(portfolio_version or "").strip()
@@ -115,10 +124,31 @@ class PerformanceMetricReadinessGate:
                 "Valuation observations do not share strategy, model and Git identity."
             )
 
-        times = [
-            _as_datetime(item["outcome_asset_price_effective_at"])
-            for item in selected
+        milestone_times = [
+            _as_datetime(item["outcome_asset_price_effective_at"]) for item in selected
         ]
+        daily_values = []
+        daily_returns = []
+        if target is not None and self.daily_valuation_ledger is not None:
+            target_at = _as_datetime(target["outcome_asset_price_effective_at"])
+            daily_values = sorted(
+                (
+                    item for item in self.daily_valuation_ledger.verify()
+                    if item.get("portfolio_version") == version
+                    and _as_datetime(item["effective_at"]) <= target_at
+                ),
+                key=lambda item: _as_datetime(item["effective_at"]),
+            )
+        if self.daily_return_ledger is not None:
+            daily_returns = [
+                item for item in self.daily_return_ledger.verify()
+                if item.get("portfolio_version") == version
+                and item.get("daily_return_calculated") is True
+                and target is not None
+                and _as_datetime(item["current_effective_at"])
+                <= _as_datetime(target["outcome_asset_price_effective_at"])
+            ]
+        times = [_as_datetime(item["effective_at"]) for item in daily_values]
         unique_times = len(times) == len(set(times))
         gaps = [
             int((current - previous).total_seconds())
@@ -127,26 +157,65 @@ class PerformanceMetricReadinessGate:
         max_gap = max(gaps) if gaps else None
         series_span = int((times[-1] - times[0]).total_seconds()) if len(times) >= 2 else 0
         initial_delay = (
-            int((times[0] - _as_datetime(funding["effective_at"])).total_seconds())
-            if funding is not None and times
+            int((milestone_times[0] - _as_datetime(funding["effective_at"])).total_seconds())
+            if funding is not None and milestone_times
             else None
         )
         if initial_delay is not None and initial_delay < 0:
             general_reasons.append("A valuation predates initial funding.")
 
         daily_reasons = []
-        if len(selected) < MIN_DAILY_VALUATIONS:
+        if self.daily_valuation_ledger is None or self.daily_return_ledger is None:
+            daily_reasons.append(
+                "Authoritative daily valuation and return ledgers are required."
+            )
+        if len(daily_values) < MIN_DAILY_VALUATIONS:
             daily_reasons.append(
                 f"Daily-series metrics require at least {MIN_DAILY_VALUATIONS} verified valuations."
+            )
+        if len(daily_returns) < MIN_DAILY_RETURNS:
+            daily_reasons.append(
+                f"Daily-series metrics require at least {MIN_DAILY_RETURNS} verified returns."
             )
         if series_span < MIN_DAILY_SERIES_SPAN_SECONDS:
             daily_reasons.append("Daily-series metrics require at least 365 calendar days of observations.")
         if not unique_times:
             daily_reasons.append("Daily-series metrics reject duplicate valuation effective times.")
-        if initial_delay is None or initial_delay > MAX_DAILY_CALENDAR_GAP_SECONDS:
-            daily_reasons.append("The first valuation must be within four calendar days of funding.")
+        if funding is not None and times and times[0] < _as_datetime(funding["effective_at"]):
+            daily_reasons.append("A daily valuation predates initial funding.")
         if max_gap is None or max_gap > MAX_DAILY_CALENDAR_GAP_SECONDS:
             daily_reasons.append("Consecutive valuations cannot be more than four calendar days apart.")
+        daily_identity = ("strategy_version", "model_versions", "git_revision")
+        if daily_values and any(
+            any(item.get(field) != daily_values[0].get(field) for field in daily_identity)
+            for item in daily_values
+        ):
+            daily_reasons.append("Daily valuations must share strategy, model and Git identity.")
+        returns_by_current = {}
+        duplicate_current = False
+        for item in daily_returns:
+            current_id = item.get("current_valuation_id")
+            if current_id in returns_by_current:
+                duplicate_current = True
+            returns_by_current[current_id] = item
+        if duplicate_current:
+            daily_reasons.append("Daily return support contains duplicate current valuations.")
+        for previous, current in zip(daily_values, daily_values[1:]):
+            item = returns_by_current.get(current.get("valuation_id"))
+            if item is None or (
+                item.get("previous_valuation_id") != previous.get("valuation_id")
+                or item.get("previous_valuation_record_hash") != previous.get("record_hash")
+                or item.get("current_valuation_record_hash") != current.get("record_hash")
+            ):
+                daily_reasons.append(
+                    "Every consecutive daily valuation pair requires one exactly pinned daily return."
+                )
+                break
+        expected_current_ids = {item.get("valuation_id") for item in daily_values[1:]}
+        if set(returns_by_current) != expected_current_ids:
+            daily_reasons.append(
+                "Daily return support must match the selected valuation interval exactly."
+            )
         daily_ready = not general_reasons and not daily_reasons
 
         all_returns = self.portfolio_return_ledger.verify()
@@ -166,8 +235,8 @@ class PerformanceMetricReadinessGate:
         ):
             twr = None
         elapsed = (
-            int((times[-1] - _as_datetime(funding["effective_at"])).total_seconds())
-            if funding is not None and times
+            int((milestone_times[-1] - _as_datetime(funding["effective_at"])).total_seconds())
+            if funding is not None and milestone_times
             else 0
         )
         cagr_reasons = list(general_reasons)
@@ -213,6 +282,10 @@ class PerformanceMetricReadinessGate:
             "valuation_record_hashes": [item.get("record_hash") for item in selected],
             "portfolio_return_ids": [item.get("result_id") for item in matching_returns],
             "portfolio_return_record_hashes": [item.get("record_hash") for item in matching_returns],
+            "daily_valuation_ids": [item.get("valuation_id") for item in daily_values],
+            "daily_valuation_record_hashes": [item.get("record_hash") for item in daily_values],
+            "daily_return_ids": [item.get("result_id") for item in daily_returns],
+            "daily_return_record_hashes": [item.get("record_hash") for item in daily_returns],
         }
         return {
             "policy_version": METRIC_READINESS_POLICY_VERSION,
@@ -221,8 +294,9 @@ class PerformanceMetricReadinessGate:
             "portfolio_version": version,
             "through_horizon": horizon,
             "general_reasons": general_reasons,
-            "valuation_observation_count": len(selected),
-            "periodic_return_observation_count": max(0, len(selected) - 1),
+            "milestone_valuation_observation_count": len(selected),
+            "daily_valuation_observation_count": len(daily_values),
+            "daily_return_observation_count": len(daily_returns),
             "unique_effective_times": unique_times,
             "elapsed_from_funding_seconds": elapsed,
             "daily_series_span_seconds": series_span,
