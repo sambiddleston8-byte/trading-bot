@@ -198,6 +198,13 @@ learning.
   identities and non-positive equity fail closed. Asset-minus-benchmark
   portfolio return, alpha, risk statistics, learning and track-record claims
   remain blocked.
+- Phase 5 now calculates the explicitly labelled arithmetic difference between
+  verified asset and matched-S&P time-weighted portfolio returns. Both exact
+  rational inputs and the difference are retained with immutable links to the
+  same funding, asset valuations, benchmark valuations and external cash-flow
+  evidence. Missing or misaligned evidence fails closed. The result is
+  simulated, non-annualized and not risk-adjusted alpha; learning and
+  track-record claims remain blocked.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -247,10 +254,11 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by calculating the explicitly labelled difference between the
-verified asset and matched S&P time-weighted portfolio returns. Only after that
-may the platform define CAGR, volatility, Sharpe, Sortino, drawdown, hit rate, turnover and
-transaction-cost attribution. Risk-adjusted alpha remains a separate model;
-learning and track-record claims remain blocked. Issue #21 remains the
+Continue Phase 5 by defining the first separately versioned portfolio risk and
+performance statistic from verified immutable returns and valuation evidence.
+CAGR, volatility, Sharpe, Sortino, drawdown, hit rate, turnover and
+transaction-cost attribution must remain distinct calculations with explicit
+minimum-history and methodology gates. Risk-adjusted alpha remains a separate
+model; learning and track-record claims remain blocked. Issue #21 remains the
 research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
 remains only the planned future destination.
