@@ -507,6 +507,15 @@ learning.
   unmanaged pages or symlinks. No vault location, plugin or paid AI is required
   or activated yet.
 
+## Phase 9 work
+
+- Phase 9 now identifies Block's open-source Buzz as the intended collaboration
+  workspace and records an immutable local-only manifest for all roadmap channels
+  plus distinct inactive Codex, Claude Code and Hermes identities. GitHub and the
+  ledgers/database remain authoritative. Buzz, its relay, dependencies, keys,
+  workflows and agents are not installed, started or connected; no identity can
+  merge, deploy, promote, access AWS/brokers or trade.
+
 ## Safety invariants
 
 - Execution remains `RECORD_ONLY` or paper-only.
