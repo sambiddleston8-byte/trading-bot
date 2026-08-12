@@ -622,3 +622,29 @@ predeclared cohort evidence exists. An `EVIDENCE_READY` result is permission to
 implement a separately tested calculation, not a performance claim. The gate
 never annualizes a result, recommends a trade, enables learning, creates a track
 record or enables live trading.
+
+## Immutable daily market-close evidence
+
+Issue #71 establishes the raw evidence boundary needed before a daily portfolio
+valuation series can exist. Each append-only record links one verified local
+simulated fill to one US market-session date and retains an exact official
+unadjusted closing price, New York effective date, retrieval and recording
+times, provider and source version, HTTPS source, source-payload hash and a
+content fingerprint. Evidence retrieved more than 72 hours after the close is
+explicitly labelled as backfilled.
+
+There can be only one observation per fill and market session under the v1
+policy. Conflicting evidence is rejected pending an explicit supersession
+design. A close cannot predate the fill, its session date must match the New
+York date of its effective timestamp, and retrieval cannot predate the close.
+The v1 component accepts only regular-session closes timestamped exactly at
+4:00 p.m. New York time. It fails closed on exchange holidays and early-close
+sessions until a trustworthy point-in-time market-calendar source is added;
+it never lets a caller relabel an intraday quote as an official close.
+
+These raw unadjusted prices are not yet daily portfolio values. A later
+calculation must require complete evidence for every open position and reconcile
+splits, dividends, holdings, funding, external cash flows and execution history
+at the same boundary. This component calculates no return or metric, makes no
+recommendation, enables no learning or track record, downloads no provider data
+and enables no broker, worker, AWS or live-trading capability.

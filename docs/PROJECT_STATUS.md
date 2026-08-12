@@ -271,6 +271,15 @@ learning.
   risk-free, downside-policy, outcome, execution or cohort prerequisites rather
   than manufacturing results. The gate calculates no metric and makes no
   recommendation, learning, track-record or live-trading claim.
+- Phase 5 now records immutable official unadjusted daily closing-price evidence
+  per verified simulated fill and US market session. Exact prices, New York
+  effective dates, provider/version, HTTPS sources, source hashes and retrieval
+  timing are retained; late backfills are labelled and conflicting same-session
+  evidence is rejected. V1 accepts only 4:00 p.m. New York regular-session
+  closes; early closes remain blocked pending historical calendar evidence. It
+  does not yet calculate a daily portfolio value or
+  metric because corporate actions, complete open-position coverage, cash flows
+  and execution history must first reconcile at the same boundary.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -320,10 +329,10 @@ learning.
 
 ## Next action
 
-Continue Phase 5 with the immutable daily portfolio-valuation observation
-boundary needed to satisfy the new cadence gate without repurposing sparse
-milestone valuations. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate and
-turnover remain distinct calculations. Risk-adjusted alpha remains a separate
-model; learning and track-record claims remain blocked. Issue #21 remains the
-research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
-remains only the planned future destination.
+Continue Phase 5 with corporate-action-complete daily portfolio valuation from
+the new raw close evidence, requiring every open position plus funding, cash
+flows and execution state to reconcile. CAGR, volatility, Sharpe, Sortino,
+drawdown, hit rate and turnover remain distinct calculations. Risk-adjusted
+alpha remains a separate model; learning and track-record claims remain blocked.
+Issue #21 remains the research-quality backlog. PostgreSQL remains
+non-authoritative and Lightsail remains only the planned future destination.
