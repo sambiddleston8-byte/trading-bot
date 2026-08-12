@@ -255,6 +255,14 @@ learning.
   backfill is labelled. Competing complete records for one valuation/security/
   model version are rejected. No portfolio factor aggregation, recommendation,
   performance, alpha, learning or track-record claim is yet produced.
+- Phase 5 now calculates exact portfolio factor exposure only when every
+  invested position has one complete observation under an identical provider,
+  factor-model version, hashed methodology, effective timestamp, definitions
+  and units. Exact position weighting is reported both among invested assets
+  and as contribution scaled to total post-flow equity. Cash remains separate
+  with no invented factor exposure; mixed or missing evidence fails closed and
+  all supporting records are pinned by ID/hash. No risk label, recommendation,
+  return, alpha, learning, track-record or live capability is produced.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -304,11 +312,9 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by calculating portfolio factor exposure only when every
-invested position has exactly one complete observation under the same provider,
-factor model/version, factor definitions and units. CAGR, volatility, Sharpe,
-Sortino, drawdown, hit rate and turnover remain distinct calculations with
-explicit minimum-history and methodology gates; none may be inferred from
+Continue Phase 5 with explicit metric-readiness and observation-cadence gates
+before implementing CAGR, volatility, Sharpe, Sortino, drawdown, hit rate or
+turnover. These remain distinct calculations and none may be inferred from
 sparse milestone observations. Risk-adjusted alpha remains a separate model;
 learning and track-record claims remain blocked. Issue #21 remains the
 research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
