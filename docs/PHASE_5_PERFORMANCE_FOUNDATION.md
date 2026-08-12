@@ -405,3 +405,25 @@ return. It does not yet subtract the asset portfolio return, calculate alpha or
 risk statistics, enable learning or form a live track record. No broker,
 real-money, worker, market-data-download, AWS or autonomous-learning capability
 is enabled.
+
+## Portfolio benchmark-relative time-weighted return
+
+The verified asset and matched-S&P portfolio returns can now be combined only
+when they retain the exact same portfolio version, through-horizon, funding,
+asset-valuation boundaries, external-cash-flow records, strategy, model and Git
+identities. The fixed formula is the arithmetic difference:
+
+`asset time-weighted portfolio return - matched S&P time-weighted portfolio return`
+
+Both return inputs and their difference are retained as exact rational values
+plus readable 34-digit decimal presentations. The comparison record immutably
+links both supporting return IDs and hashes and carries the asset and benchmark
+valuation boundaries used by those returns. Missing, modified or misaligned
+evidence fails closed.
+
+This is an explicitly labelled simulated portfolio benchmark-relative return.
+It is non-annualized and is **not** risk-adjusted alpha, learning evidence or a
+live track record. CAGR, volatility, drawdown, Sharpe, Sortino, hit rate,
+turnover and transaction-cost attribution remain separate later calculations.
+No broker, real-money, worker, market-data-download, AWS or autonomous-learning
+capability is enabled.
