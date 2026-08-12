@@ -9,6 +9,9 @@ from core.performance.outcome_observation import (
 )
 from core.performance.outcome_result import OutcomeResultLedger
 from core.performance.portfolio_cash_flow import PortfolioCashFlowLedger
+from core.performance.portfolio_benchmark_valuation import (
+    SimulatedPortfolioBenchmarkValuationLedger,
+)
 from core.performance.portfolio_funding import PortfolioFundingLedger
 from core.performance.portfolio_return import TimeWeightedPortfolioReturnLedger
 from core.performance.portfolio_valuation import SimulatedPortfolioValuationLedger
@@ -23,6 +26,7 @@ __all__ = [
     "OutcomeObservationLedger",
     "OutcomeResultLedger",
     "PortfolioCashFlowLedger",
+    "SimulatedPortfolioBenchmarkValuationLedger",
     "PortfolioFundingLedger",
     "TimeWeightedPortfolioReturnLedger",
     "SimulatedPortfolioValuationLedger",
