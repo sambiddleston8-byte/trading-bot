@@ -55,6 +55,10 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
   rehearsal. A local rehearsal verified all ten tables, schema version, audit
   row counts and ledger head, then removed the disposable restore database.
   Backup files use owner-only permissions and remain outside Git.
+- Issue #13 validates non-empty persistence using disposable synthetic
+  databases: construction and reallocation each matched PostgreSQL twice,
+  producing a four-record ledger chain. The populated backup restored with
+  identical hashes and row counts, and both disposable databases were removed.
 
 ## Phase 2 work
 
@@ -77,7 +81,7 @@ Phase 3 — local Docker/PostgreSQL foundation; nothing deployed to AWS.
 
 ## Next action
 
-Review the local backup/restore rehearsal under issue #11. PostgreSQL remains
-non-authoritative until repeated comparison runs with synthetic portfolio rows
-agree. AWS choices, purchasing and deployment remain separate and require
-explicit user approval.
+Review populated synthetic validation under issue #13. PostgreSQL remains
+non-authoritative; promoting real local decisions into comparison mode is a
+separate approval gate. AWS choices, purchasing and deployment remain separate
+and require explicit user approval.
