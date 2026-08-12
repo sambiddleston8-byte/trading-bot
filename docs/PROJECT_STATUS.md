@@ -6,6 +6,16 @@ architecture: work proceeds one phase at a time, GitHub remains the source of
 truth, deterministic software is preferred for repeatable tasks, and autonomous
 real-money trading remains disabled.
 
+AI resource allocation is also a governing cross-phase roadmap requirement.
+Deterministic tools or local models handle suitable routine work; Codex or
+Claude Code owns each bounded complex task; and high-risk changes may use one
+to build and the other to challenge. Included capacity from both paid
+subscriptions must be considered before recommending upgrades or API credits.
+The complete policy is recorded in `docs/AI_COLLABORATION.md`.
+Its controlling objective is maximum software quality per unit of AI usage and
+cost, with explicit context limits, Claude handoffs, review stop conditions and
+future usage/cost observability.
+
 ## Current phase
 
 Phase 5 performance and attribution foundations. The Alpaca boundary remains
@@ -198,9 +208,18 @@ learning.
 ## Phase 2 work
 
 - Repeatable GitHub issue and pull-request promotion templates established.
-- Codex remains the bounded-change builder; Claude remains the read-only
-  adversarial challenger for high-value reviews.
+- Codex and Claude Code may each be the bounded-change builder or independent
+  reviewer according to task fit, useful existing context and remaining
+  included subscription capacity. They do not duplicate full-repository work.
 - Frontier-model review is explicitly skipped for routine mechanical work.
+- Anthropic and OpenAI pay-as-you-go APIs are not substitutes for included
+  Claude Code or Codex capacity. Additional usage is recommended only after
+  deterministic/local options and suitable capacity in the other paid
+  subscription have been considered; reliability and safety remain mandatory.
+- Mature platform operations should move into deterministic software and
+  conventional infrastructure. Runtime AI usage will be metered by model, task,
+  tokens, cost, duration, retries and outcome where provider data permits, so
+  future allocation can be improved using evidence.
 - Phase 3 AWS architecture issue #3 documented a low-cost, paper-only pilot;
   Claude challenged its persistence, scheduling, access and cost boundaries, and
   all High/Medium findings were resolved in the design.
