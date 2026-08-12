@@ -739,6 +739,23 @@ backfilled source evidence. It remains a simulated, gross pre-tax statistic,
 not alpha, a recommendation, learning evidence or a live track record. Sortino,
 AWS, broker access and all trading remain disabled.
 
+## Preregistered Sortino downside-target policy
+
+Issue #93 establishes the immutable policy boundary needed before Sortino can
+be implemented without hindsight. It supports exactly two human-selectable
+minimum-acceptable-return bases: the exact matched daily SOFR return, or zero
+daily return. The software does not choose between them.
+
+A policy requires explicit human-decision provenance and must be recorded at
+least five minutes before its future evaluation window begins. It cannot be
+applied retrospectively to already observed results, and a different target
+cannot replace the target registered for the same portfolio/window. The v1
+statistical floor requires 252 total daily observations and at least 30 downside
+observations. The denominator policy is preregistered as the total observation
+count, preventing the system from changing Sortino conventions after seeing the
+score. This component calculates no Sortino or other metric and enables no
+recommendation, learning, track-record claim, AWS, broker or trading.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio

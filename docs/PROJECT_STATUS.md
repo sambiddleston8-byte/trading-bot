@@ -311,6 +311,11 @@ learning.
   34-digit decimal context. Zero variance fails closed, both full evidence
   chains are pinned, and Sortino, alpha, learning and track-record claims remain
   disabled.
+- Phase 5 now has an immutable human-preregistered Sortino target boundary. It
+  supports matched daily SOFR or zero daily return without selecting either,
+  requires the choice before a future evaluation window, forbids retrospective
+  application or same-window replacement, and fixes conservative floors of 252
+  total and 30 downside observations. No Sortino is yet calculated.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -392,8 +397,9 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by separately establishing the preregistered downside-target
-and adequate downside-sample prerequisites before calculating Sortino.
+Obtain the user's explicit Sortino target choice, then preregister it for a
+future evaluation window before calculating Sortino. Continue objective Phase 5
+prerequisites that do not depend on that choice meanwhile.
 Hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
