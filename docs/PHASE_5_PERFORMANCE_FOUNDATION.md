@@ -952,3 +952,24 @@ cost are not invented and remain explicitly unmodelled. This is stronger
 evidence than the earlier entry-only outcome, but it does not itself create an
 exit proposal or fill, recommend a trade, qualify learning or claim a live
 track record. It cannot submit an order or enable broker, AWS or live trading.
+
+## Complete fixed-horizon prediction outcome
+
+Issue #103 links a raw fixed-horizon prediction/outcome pair to one verified
+complete FIFO simulated round trip. The round-trip entry must be the prediction's
+original fill. Its exit timestamp must exactly equal the authoritative
+fixed-horizon asset-price timestamp, and its fill price must equal that observed
+price. This prevents selecting a more favourable exit day or price after seeing
+the result.
+
+Entry cost and split-adjusted exit quantity must reconcile exactly with the
+fixed-horizon total-return evidence. Net outcome value is recorded exit proceeds
+after its fee plus gross paid USD dividend cash. Exact net profit/loss, return
+after both execution fees, and prediction error are then retained and every
+supporting record is pinned by ID/hash.
+
+This is a complete simulated fixed-horizon outcome on the declared gross
+dividend/pre-tax basis, but separate spread, market impact, latency and tax
+limitations still flow from its round-trip support. It applies no success rule
+or cohort, calculates no hit rate/calibration, enables no learning or track
+record, and creates or submits no order.

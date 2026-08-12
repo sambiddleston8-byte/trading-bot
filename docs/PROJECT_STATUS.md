@@ -376,6 +376,12 @@ learning.
   cannot be reused, and deterministic FIFO matching prevents favourable pair
   selection. Spread, market impact, latency, tax and borrow costs remain
   explicitly unmodelled, and the component cannot create or submit an order.
+- Phase 5 now binds a raw prediction pair to its complete simulated round trip
+  only when the exit exactly matches the authoritative fixed-horizon timestamp
+  and observed price. Entry cost and split-adjusted quantity reconcile; net
+  outcome adds gross paid dividends and deducts both execution fees. Exact net
+  return and prediction error are pinned, but no success rule, cohort, hit rate,
+  calibration, learning or track-record claim is applied.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -430,8 +436,8 @@ future evaluation window before calculating Sortino. Continue objective Phase 5
 prerequisites that do not depend on that choice meanwhile. The hit-rate and
 calibration policy boundary now exists but requires the user's future explicit
 choices before registration or aggregation. Turnover is a distinct verified
-calculation. Complete simulated entry/exit evidence now exists, but a future
-fixed-horizon pairing must still connect it to prediction cohorts. Risk-adjusted
+calculation. Complete fixed-horizon simulated outcomes now exist but remain
+unaggregated until the human policy choices are registered. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
