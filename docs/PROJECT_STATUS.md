@@ -322,6 +322,14 @@ learning.
   prediction error remains exact, and every decision/result/fill is pinned.
   The raw outcome excludes an unrecorded exit execution, and no success rule,
   bucket, hit rate, aggregate calibration, learning or track record is applied.
+- Phase 5 now has an immutable human-preregistered prediction-evaluation policy
+  boundary. It fixes the future decision cohort, success rule, confidence and
+  expected-return buckets, calibration measures and conservative sample floors
+  before results are eligible. Horizons and model versions cannot be pooled,
+  all eligible outcomes must be included, and complete round-trip cost evidence
+  is required. Policy selection must predate every eligible decision, preventing
+  outcome-aware rule or bucket selection. Current entry-only outcomes therefore remain ineligible. The
+  system does not choose a rule or calculate hit rate/calibration yet.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -412,9 +420,10 @@ learning.
 
 Obtain the user's explicit Sortino target choice, then preregister it for a
 future evaluation window before calculating Sortino. Continue objective Phase 5
-prerequisites that do not depend on that choice meanwhile: preregister fixed
-hit-rate and calibration cohort policies before aggregating prediction outcomes.
-Turnover is now a distinct verified calculation. Risk-adjusted
+prerequisites that do not depend on that choice meanwhile. The hit-rate and
+calibration policy boundary now exists but requires the user's future explicit
+choices before registration or aggregation. Turnover is a distinct verified
+calculation. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
