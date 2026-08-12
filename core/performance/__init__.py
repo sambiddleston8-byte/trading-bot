@@ -12,6 +12,9 @@ from core.performance.portfolio_cash_flow import PortfolioCashFlowLedger
 from core.performance.portfolio_benchmark_valuation import (
     SimulatedPortfolioBenchmarkValuationLedger,
 )
+from core.performance.portfolio_benchmark_return import (
+    TimeWeightedPortfolioBenchmarkReturnLedger,
+)
 from core.performance.portfolio_funding import PortfolioFundingLedger
 from core.performance.portfolio_return import TimeWeightedPortfolioReturnLedger
 from core.performance.portfolio_valuation import SimulatedPortfolioValuationLedger
@@ -27,6 +30,7 @@ __all__ = [
     "OutcomeResultLedger",
     "PortfolioCashFlowLedger",
     "SimulatedPortfolioBenchmarkValuationLedger",
+    "TimeWeightedPortfolioBenchmarkReturnLedger",
     "PortfolioFundingLedger",
     "TimeWeightedPortfolioReturnLedger",
     "SimulatedPortfolioValuationLedger",
