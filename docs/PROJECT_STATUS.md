@@ -382,6 +382,12 @@ learning.
   outcome adds gross paid dividends and deducts both execution fees. Exact net
   return and prediction error are pinned, but no success rule, cohort, hit rate,
   calibration, learning or track-record claim is applied.
+- Phase 5 now subtracts the exact matched S&P 500 gross cash total return from
+  that complete fixed-horizon asset return. Fill, horizon, outcome observation
+  and full strategy/model/Git identity must match and both results are pinned.
+  The asset includes both recorded simulated fees; no unevidenced benchmark
+  execution cost is invented. This is relative return, not alpha or a success
+  score, and remains ineligible for learning or track-record claims.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -437,7 +443,8 @@ prerequisites that do not depend on that choice meanwhile. The hit-rate and
 calibration policy boundary now exists but requires the user's future explicit
 choices before registration or aggregation. Turnover is a distinct verified
 calculation. Complete fixed-horizon simulated outcomes now exist but remain
-unaggregated until the human policy choices are registered. Risk-adjusted
+unaggregated until the human policy choices are registered; complete matched
+benchmark-relative evidence is also ready for the recommended rule. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.

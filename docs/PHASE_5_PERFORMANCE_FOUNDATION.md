@@ -973,3 +973,21 @@ dividend/pre-tax basis, but separate spread, market impact, latency and tax
 limitations still flow from its round-trip support. It applies no success rule
 or cohort, calculates no hit rate/calibration, enables no learning or track
 record, and creates or submits no order.
+
+## Complete fixed-horizon benchmark-relative return
+
+Issue #105 compares the complete fixed-horizon asset outcome with the verified
+S&P 500 gross cash total return for the same entry fill, decision, horizon,
+outcome observation, strategy, models and Git revision. Both immutable inputs
+are pinned by result ID and hash. Any missing, substituted or mismatched evidence
+fails closed.
+
+The result is the exact arithmetic difference between the asset's net return
+after both recorded simulated execution fees and the benchmark's gross cash
+total return. Both sides include gross cash distributions before tax without
+reinvestment. No hypothetical benchmark execution cost is invented; that
+conservative asset/benchmark cost asymmetry is explicit in the result.
+
+This is complete simulated benchmark-relative return, not risk-adjusted alpha.
+It applies no success rule, calculates no hit rate or calibration, enables no
+learning or track-record claim, and creates or submits no order.
