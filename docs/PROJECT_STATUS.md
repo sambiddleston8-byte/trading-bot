@@ -289,6 +289,12 @@ learning.
   The immutable result pins funding, valuation, return and readiness evidence,
   uses a declared 365.2425-day tropical-year basis and fixed 34-digit decimal
   power context, and remains simulated, gross pre-tax and non-risk-adjusted.
+- Phase 5 now records immutable final New York Fed SOFR Index evidence for the
+  future risk-free return series. It parses and retains the official raw JSON,
+  binds the endpoint query to the returned date, computes the payload hash
+  internally, rejects empty/nonpublication responses, and waits until after a
+  conservative 15:00 New York revision cutoff. It calculates no Sharpe or other
+  metric and enables no provider download.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -370,8 +376,9 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by separately establishing point-in-time risk-free evidence
-and downside-policy prerequisites before Sharpe or Sortino.
+Continue Phase 5 by matching exact SOFR Index endpoints to every authoritative
+daily return period before calculating Sharpe. Separately establish the
+downside-policy prerequisites before Sortino.
 Hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
