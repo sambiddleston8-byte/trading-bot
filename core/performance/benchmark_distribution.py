@@ -18,7 +18,7 @@ from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_t
 from core.performance.outcome_observation import OutcomeObservationLedger
 
 
-BENCHMARK_DISTRIBUTION_SCHEMA_VERSION = "1.0"
+BENCHMARK_DISTRIBUTION_SCHEMA_VERSION = "1.1"
 BENCHMARK_DEFINITION_VERSION = "sp500-gross-cash-dividend-points-v1"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 CONTEMPORANEOUS_DELAY = timedelta(hours=72)
@@ -99,8 +99,10 @@ def _methodology_uri(value: Any) -> str:
     return resolved
 
 
-def _evidence_id(fill_id: str, horizon: str) -> str:
-    key = _canonical_json([fill_id, horizon, BENCHMARK_DEFINITION_VERSION])
+def _evidence_id(fill_id: str, horizon: str, completeness_status: str) -> str:
+    key = _canonical_json(
+        [fill_id, horizon, completeness_status, BENCHMARK_DEFINITION_VERSION]
+    )
     return "BDP-" + hashlib.sha256(key.encode("utf-8")).hexdigest()[:32].upper()
 
 
@@ -261,7 +263,9 @@ class BenchmarkDistributionLedger:
         record = {
             "schema_version": BENCHMARK_DISTRIBUTION_SCHEMA_VERSION,
             "definition_version": BENCHMARK_DEFINITION_VERSION,
-            "evidence_id": _evidence_id(fill_id, resolved_horizon),
+            "evidence_id": _evidence_id(
+                fill_id, resolved_horizon, completeness
+            ),
             "record_type": "BENCHMARK_DISTRIBUTION_EVIDENCE",
             "status": status,
             "performance_claim": False,
@@ -329,6 +333,7 @@ class BenchmarkDistributionLedger:
         }
         previous_hash = GENESIS_HASH
         seen_ids: set[str] = set()
+        completed_intervals: set[tuple[str, str]] = set()
         records = self.records()
         for index, record in enumerate(records, start=1):
             material = {key: value for key, value in record.items() if key != "record_hash"}
@@ -348,14 +353,14 @@ class BenchmarkDistributionLedger:
                 )
             fill_id = str(record.get("fill_id") or "")
             horizon = str(record.get("horizon") or "")
-            expected_id = _evidence_id(fill_id, horizon)
+            completeness = str(record.get("completeness_status") or "")
+            expected_id = _evidence_id(fill_id, horizon, completeness)
             try:
                 period_start = _as_datetime(record.get("period_start_at"))
                 period_end = _as_datetime(record.get("period_end_at"))
                 entry_asset_at = _as_datetime(record.get("entry_asset_at"))
                 outcome_asset_at = _as_datetime(record.get("outcome_asset_at"))
                 retrieved = _as_datetime(record.get("retrieved_at"))
-                completeness = str(record.get("completeness_status") or "")
                 reasons = sorted(
                     {
                         _required(item, "uncertainty reason")
@@ -432,6 +437,10 @@ class BenchmarkDistributionLedger:
                 and retrieved <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
                 and record.get("retrieval_mode") == expected_retrieval_mode
                 and completeness in {"COMPLETE", "UNCERTAIN"}
+                and not (
+                    completeness == "UNCERTAIN"
+                    and (fill_id, horizon) in completed_intervals
+                )
                 and ((completeness == "UNCERTAIN") == bool(reasons))
                 and record.get("uncertainty_reasons") == reasons
                 and record.get("gross_dividend_points") == points
@@ -450,6 +459,8 @@ class BenchmarkDistributionLedger:
                     f"Benchmark-distribution record {index} violates its boundary."
                 )
             seen_ids.add(expected_id)
+            if completeness == "COMPLETE":
+                completed_intervals.add((fill_id, horizon))
             previous_hash = record["record_hash"]
         return records
 
@@ -485,6 +496,16 @@ class BenchmarkDistributionLedger:
                     return existing
                 raise LedgerIntegrityError(
                     f"Benchmark-distribution evidence {evidence['evidence_id']} already exists."
+                )
+            if evidence["completeness_status"] == "UNCERTAIN" and any(
+                item["fill_id"] == evidence["fill_id"]
+                and item["horizon"] == evidence["horizon"]
+                and item["completeness_status"] == "COMPLETE"
+                for item in records
+            ):
+                raise LedgerIntegrityError(
+                    "Complete benchmark-distribution evidence cannot regress "
+                    "to UNCERTAIN."
                 )
             material = {
                 **evidence,

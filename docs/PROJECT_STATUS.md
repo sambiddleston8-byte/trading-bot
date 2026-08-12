@@ -136,7 +136,18 @@ learning.
   same UTC market dates for asset and benchmark endpoints, exact points,
   complete/uncertain status, provider input hashes and a hashed official S&P
   methodology identity. No benchmark return, relative return or alpha is yet
-  calculated.
+  calculated. An immutable uncertain record may later resolve through a
+  separately identified complete record; complete evidence cannot regress or
+  be replaced by a conflicting value.
+- Issue #37 calculates a deterministic S&P 500 gross cash total return only
+  from verified unadjusted entry/outcome prices and complete dividend-point
+  evidence. The fixed formula adds dividend points as cash without reinvestment
+  before dividing by the entry index level. Exact rational values, source
+  hashes and the separate price/distribution components are retained. A result
+  requires explicit acceptance that published dividend points follow changing
+  index membership and weights rather than a basket frozen at entry. Relative
+  return, alpha, learning, portfolio-performance and track-record claims remain
+  blocked.
 
 ## Phase 2 work
 
@@ -163,12 +174,12 @@ learning.
 
 ## Next action
 
-Continue Phase 5 with a deterministic benchmark cash-total-return calculation
-from verified unadjusted S&P price levels and complete gross dividend-point
-evidence. Only then calculate explicitly labelled position-level relative total
-return; alpha remains reserved for a separately defined risk-adjusted model.
-After that, define simulated portfolio aggregation, cash-flow and weight rules
-before CAGR, volatility, Sharpe, Sortino, drawdown or hit rate. Learning and
+Continue Phase 5 by defining an explicitly labelled position-level relative
+total return from a verified simulated asset total-return result and a verified
+S&P gross cash total-return result for the exact same fill and horizon. Alpha
+remains reserved for a separately defined risk-adjusted model. After that,
+define simulated portfolio aggregation, cash-flow and weight rules before
+CAGR, volatility, Sharpe, Sortino, drawdown or hit rate. Learning and
 track-record claims remain blocked. Issue #21 remains the research-quality
 backlog. PostgreSQL remains non-authoritative and Lightsail remains only the
 planned future destination.
