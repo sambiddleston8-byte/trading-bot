@@ -516,6 +516,15 @@ learning.
   workflows and agents are not installed, started or connected; no identity can
   merge, deploy, promote, access AWS/brokers or trade.
 
+## Phase 10 work
+
+- The Phase 10 completion audit identified and closed the planning half of a
+  missing robustness gate. Passing out-of-sample results must now preregister at
+  least two historical-period, sector and market-regime slices plus a fixed pass
+  fraction. Costs, point-in-time data, survivorship safety and no leakage are
+  mandatory. Planning cannot execute, grant shadow eligibility, promote, deploy
+  or trade; result enforcement remains the next step.
+
 ## Safety invariants
 
 - Execution remains `RECORD_ONLY` or paper-only.
