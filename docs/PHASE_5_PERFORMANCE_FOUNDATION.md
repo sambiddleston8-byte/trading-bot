@@ -255,3 +255,25 @@ This remains benchmark-only, simulated and ineligible for learning. It does
 not subtract the benchmark result from an asset return, calculate alpha, claim
 portfolio performance or create a track record. No market-data download,
 worker, broker or cloud path is enabled.
+
+## Position-level relative total return
+
+Issue #39 combines the two verified like-for-like results for the exact same
+simulated fill and horizon. The fixed formula is the arithmetic difference:
+
+`asset gross total return after recorded entry fee, excluding exit costs -
+S&P 500 gross cash total return`
+
+The calculation retains the exact rational inputs and difference, readable
+34-digit decimal presentations, and immutable links to both supporting result
+records. It fails closed if either result is missing, modified, calculated
+later than the comparison, or does not share the same fill, decision,
+portfolio, ticker, horizon, observations, strategy, model and Git identities.
+
+This result is deliberately position-level and simulated. It includes the
+asset's recorded entry fee, while the benchmark has no equivalent transaction
+cost, and it excludes any unrecorded exit execution or exit cost. It is useful
+for a transparent benchmark comparison but is **not** risk-adjusted alpha,
+portfolio performance, learning evidence or a live track record. Those claims
+remain blocked. No market-data download, worker, broker, AWS or autonomous
+learning path is enabled.
