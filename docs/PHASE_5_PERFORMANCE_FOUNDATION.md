@@ -70,3 +70,33 @@ claim performance.
 That future calculator must also handle splits, dividends and other corporate
 actions explicitly. It must not combine a raw simulated fill with an adjusted
 later price as though the two were automatically comparable.
+
+## Verified price-return outcomes
+
+Issue #27 adds the first deterministic calculation layer, deliberately limited
+to `PRICE_RETURN_ONLY`. A result is appended only when it has:
+
+- a verified long `BUY` simulated fill;
+- verified entry and due-horizon observations;
+- `UNADJUSTED_CLOSE` asset and benchmark price bases;
+- an explicitly sourced `NO_EVENTS` corporate-action check covering the full
+  period from entry through the outcome date; and
+- a calculation time at or after every supporting record.
+
+The result records the benchmark ticker plus decimal asset price return, S&P 500 price return and their
+difference. It also shows a long return after the **recorded entry fee only**.
+The simulated fill price already contains entry slippage, so slippage is
+disclosed but never added a second time. The fee-adjusted field is explicitly
+named `entry_fee_adjusted_long_return_excl_exit`; no hypothetical exit fee is
+invented.
+
+The formulas, source record hashes, calculation version, return unit and all
+decision/portfolio/model/Git identities are retained in an append-only result
+ledger. Identical retries are safe; conflicting results fail closed.
+
+This is not total return, alpha or a track record. A dividend, split or other
+corporate action blocks the calculation until a later total-return component
+can apply the event correctly. SELL fills are also blocked because measuring
+the benefit of selling requires a separately defined avoided-loss or portfolio
+counterfactual, not the long-return formula used here. Results remain ineligible
+for automated learning.

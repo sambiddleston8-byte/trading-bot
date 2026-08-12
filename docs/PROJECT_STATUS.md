@@ -95,6 +95,18 @@ submitted.
   change price basis. Claude's statistical review prompted tighter benchmark
   alignment, cross-horizon consistency and explicit retrieval/backfill labels.
   The component calculates no return and makes no performance claim.
+- Issue #27 adds immutable deterministic `PRICE_RETURN_ONLY` results for
+  verified long simulated buys. It calculates decimal asset, S&P 500 and
+  benchmark-relative price returns, plus a return after the recorded entry fee.
+  Entry slippage is disclosed but not double-counted and no exit fee is
+  invented. Missing evidence, adjusted-price bases, SELL fills and any split,
+  dividend or uncertain corporate action fail closed. Results remain explicitly
+  ineligible for learning and cannot be presented as total return, alpha or a
+  track record.
+  Claude's focused accounting review confirmed the formulas and no-double-count
+  treatment, then prompted full entry-to-outcome corporate-action coverage,
+  self-contained benchmark identity and an explicit
+  `entry_fee_adjusted_long_return_excl_exit` field name.
 
 ## Phase 2 work
 
@@ -117,9 +129,9 @@ submitted.
 
 ## Next action
 
-Continue Phase 5 with a deterministic return-calculation specification that
-uses only verified entry/due-horizon observations and explicitly handles fees,
-slippage, splits, dividends, benchmark alignment and missing data. Do not yet
-feed results into learning or claim a track record. Issue #21 remains the
-ongoing research-quality backlog. PostgreSQL remains non-authoritative and
-Lightsail remains only the planned future destination.
+Continue Phase 5 by specifying sourced corporate-action and cash-distribution
+records so dividends and splits can be applied without rewriting the verified
+price-return result. Then add total-return outcomes before portfolio-level
+aggregation. Do not feed results into learning or claim a track record. Issue
+#21 remains the ongoing research-quality backlog. PostgreSQL remains
+non-authoritative and Lightsail remains only the planned future destination.
