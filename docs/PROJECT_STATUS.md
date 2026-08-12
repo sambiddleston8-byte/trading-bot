@@ -263,6 +263,14 @@ learning.
   with no invented factor exposure; mixed or missing evidence fails closed and
   all supporting records are pinned by ID/hash. No risk label, recommendation,
   return, alpha, learning, track-record or live capability is produced.
+- Phase 5 now has a versioned, content-addressed metric-readiness gate. CAGR
+  requires at least one year and a verified return pinned to identical
+  valuations; daily volatility and maximum drawdown require at least 253 unique
+  observations over one year with no gap above four calendar days. Sharpe,
+  Sortino, hit rate, turnover and prediction calibration disclose their missing
+  risk-free, downside-policy, outcome, execution or cohort prerequisites rather
+  than manufacturing results. The gate calculates no metric and makes no
+  recommendation, learning, track-record or live-trading claim.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -312,10 +320,10 @@ learning.
 
 ## Next action
 
-Continue Phase 5 with explicit metric-readiness and observation-cadence gates
-before implementing CAGR, volatility, Sharpe, Sortino, drawdown, hit rate or
-turnover. These remain distinct calculations and none may be inferred from
-sparse milestone observations. Risk-adjusted alpha remains a separate model;
-learning and track-record claims remain blocked. Issue #21 remains the
+Continue Phase 5 with the immutable daily portfolio-valuation observation
+boundary needed to satisfy the new cadence gate without repurposing sparse
+milestone valuations. CAGR, volatility, Sharpe, Sortino, drawdown, hit rate and
+turnover remain distinct calculations. Risk-adjusted alpha remains a separate
+model; learning and track-record claims remain blocked. Issue #21 remains the
 research-quality backlog. PostgreSQL remains non-authoritative and Lightsail
 remains only the planned future destination.
