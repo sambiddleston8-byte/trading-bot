@@ -45,6 +45,9 @@ A draft pull request may be marked ready only when:
 6. generated research data is excluded or preserved on a separately classified
    data branch;
 7. no broker credential, order routing or real-money mode is introduced.
+8. affected sandbox layers, permissions, limits and promotion gates are stated;
+9. no agent can promote its own result, merge, deploy or increase its own
+   permissions.
 
 Only the user may authorise marking a pull request ready or merging it.
 
@@ -66,3 +69,5 @@ Only the user may authorise marking a pull request ready or merging it.
 
 The issue form is `.github/ISSUE_TEMPLATE/investment-platform-change.yml`; the
 promotion checklist is `.github/pull_request_template.md`.
+The cross-cutting isolation and promotion policy is
+`docs/SANDBOX_GOVERNANCE.md`.

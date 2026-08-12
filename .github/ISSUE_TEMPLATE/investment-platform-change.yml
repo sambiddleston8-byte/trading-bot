@@ -28,7 +28,13 @@ body:
         - Phase 2 — Codex and Claude development system
         - Phase 3 — AWS and cloud infrastructure
         - Phase 4 — Alpaca paper trading
-        - Later phase — requires explicit scoping
+        - Phase 5 — performance and attribution
+        - Phase 6 — Hermes and controlled learning
+        - Phase 7 — political trading research
+        - Phase 8 — Obsidian institutional memory
+        - Phase 9 — Buzz multi-agent workspace
+        - Phase 10 — controlled continuous improvement
+        - Cross-cutting — safety, sandbox or governance
     validations:
       required: true
 
@@ -88,6 +94,27 @@ body:
         - Required — high-risk logic or architecture
         - Required — investment or statistical methodology
         - Not required — routine/mechanical change
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: sandbox_layers
+    attributes:
+      label: Sandbox boundary affected
+      description: Select every affected layer and explain the active/blocked controls in the issue.
+      options:
+        - label: Code sandbox
+        - label: Data sandbox
+        - label: Investment-strategy sandbox
+        - label: Agent sandbox
+        - label: Cloud-staging sandbox
+        - label: No sandbox layer affected — explain why
+
+  - type: textarea
+    id: sandbox_controls
+    attributes:
+      label: Sandbox controls and escape risks
+      description: State permissions, limits, authoritative data boundaries, promotion gate and capabilities that remain blocked.
     validations:
       required: true
 
