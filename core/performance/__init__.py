@@ -2,6 +2,7 @@
 
 from core.performance.corporate_action import CorporateActionLedger
 from core.performance.daily_market_observation import DailyMarketObservationLedger
+from core.performance.daily_position_value import DailyPositionValueLedger
 from core.performance.factor_exposure_evidence import FactorExposureEvidenceLedger
 from core.performance.metric_readiness import PerformanceMetricReadinessGate
 from core.performance.benchmark_distribution import BenchmarkDistributionLedger
@@ -35,6 +36,7 @@ from core.performance.transaction_cost_attribution import (
 __all__ = [
     "CorporateActionLedger",
     "DailyMarketObservationLedger",
+    "DailyPositionValueLedger",
     "FactorExposureEvidenceLedger",
     "PerformanceMetricReadinessGate",
     "BenchmarkDistributionLedger",

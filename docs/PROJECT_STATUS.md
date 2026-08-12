@@ -280,6 +280,13 @@ learning.
   does not yet calculate a daily portfolio value or
   metric because corporate actions, complete open-position coverage, cash flows
   and execution history must first reconcile at the same boundary.
+- Phase 5 now converts daily close evidence into exact per-fill position values
+  only with complete corporate-action coverage through the same close. Splits
+  adjust quantity exactly and only paid gross USD dividends are included;
+  uncertain/unsupported actions, ambiguous ordering, unpaid distributions and
+  FX needs fail closed. Fill, close and action evidence are pinned by ID/hash,
+  and the result remains a position accounting value rather than a portfolio
+  metric, recommendation, learning input or track record.
 - A single-pass Codex/Claude quant-validity and performance audit was filtered
   against the active architecture. Exact-horizon legacy outcomes, fail-closed
   price valuation, same-day market-regime caching, one-snapshot walk-forward
@@ -329,9 +336,9 @@ learning.
 
 ## Next action
 
-Continue Phase 5 with corporate-action-complete daily portfolio valuation from
-the new raw close evidence, requiring every open position plus funding, cash
-flows and execution state to reconcile. CAGR, volatility, Sharpe, Sortino,
+Continue Phase 5 by aggregating the new daily position values into an exact
+daily portfolio valuation only when every open position plus funding, paid
+dividend cash, external flows and execution state reconcile. CAGR, volatility, Sharpe, Sortino,
 drawdown, hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains
