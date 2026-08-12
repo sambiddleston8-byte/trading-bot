@@ -316,6 +316,12 @@ learning.
   requires the choice before a future evaluation window, forbids retrospective
   application or same-window replacement, and fixes conservative floors of 252
   total and 30 downside observations. No Sortino is yet calculated.
+- Phase 5 now pairs each preregistered timestamped prediction to one verified
+  simulated total-return result only at its exact declared fixed horizon.
+  Confidence and return units are explicit, the decision must predate the fill,
+  prediction error remains exact, and every decision/result/fill is pinned.
+  The raw outcome excludes an unrecorded exit execution, and no success rule,
+  bucket, hit rate, aggregate calibration, learning or track record is applied.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -399,7 +405,8 @@ learning.
 
 Obtain the user's explicit Sortino target choice, then preregister it for a
 future evaluation window before calculating Sortino. Continue objective Phase 5
-prerequisites that do not depend on that choice meanwhile.
+prerequisites that do not depend on that choice meanwhile: preregister fixed
+hit-rate and calibration cohort policies before aggregating prediction outcomes.
 Hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains

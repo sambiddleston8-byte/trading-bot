@@ -756,6 +756,26 @@ count, preventing the system from changing Sortino conventions after seeing the
 score. This component calculates no Sortino or other metric and enables no
 recommendation, learning, track-record claim, AWS, broker or trading.
 
+## Immutable fixed-horizon prediction/outcome pairs
+
+Issue #95 creates the raw evidence units required before hit rate or prediction
+calibration can be defined. Each record pins one timestamped investment decision,
+its simulated fill and one verified total-return result at the decision's exact
+declared horizon. Decision data must predate the decision, and the decision must
+predate the fill, preventing post-outcome or post-entry predictions.
+
+Confidence is explicitly a 0–100 score and predicted/actual returns are decimal
+returns. The declared horizon days must exactly match a canonical fixed outcome
+horizon. Predicted return, verified actual gross total return and prediction
+error retain exact fractions. The actual outcome includes recorded entry fee
+but excludes a nonexistent exit execution and therefore remains explicitly
+incomplete as round-trip evidence.
+
+Only one pair may exist per decision/horizon. No success rule, confidence bucket,
+expected-return bucket, hit rate or aggregate calibration is applied, so later
+cohort policies cannot be selected after inspecting results. Recommendations,
+learning, track-record claims, AWS, brokers and trading remain disabled.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio
