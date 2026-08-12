@@ -1,9 +1,8 @@
 import math
 
-import yfinance as yf
-
 from core.historical_signal import HistoricalSignalEngine
 from core.backtest_results import BacktestResults
+from core.market_data_cache import MarketDataCache
 
 
 class WalkForwardBacktest:
@@ -25,6 +24,9 @@ class WalkForwardBacktest:
             BacktestResults()
         )
 
+        self.data_cache = MarketDataCache()
+        self.market_data = {}
+
     # --------------------------------
     # Historical Data
     # --------------------------------
@@ -32,32 +34,20 @@ class WalkForwardBacktest:
     def get_history(
         self,
         symbol,
-        start,
-        end,
+        start=None,
+        end=None,
     ):
 
-        try:
-
-            data = yf.Ticker(
-                symbol
-            ).history(
-                start=start,
-                end=end,
-                auto_adjust=True,
-            )
-
-            if data.empty:
-                return None
-
-            return data
-
-        except Exception as error:
-
-            print(
-                f"{symbol} failed: {error}"
-            )
-
+        data = self.market_data.get(symbol)
+        if data is None:
             return None
+
+        result = data
+        if start:
+            result = result[result.index >= start]
+        if end:
+            result = result[result.index < end]
+        return result if not result.empty else None
 
     # --------------------------------
     # Historical Signal
@@ -69,41 +59,14 @@ class WalkForwardBacktest:
         decision_date,
     ):
 
-        try:
-
-            data = yf.Ticker(
-                symbol
-            ).history(
-                period="2y",
-                end=decision_date,
-                auto_adjust=True,
-            )
-
-            if data.empty:
-                return None
-
-            signal = (
-                self.signal_engine.generate_signal(
-                    data
-                )
-            )
-
-            if signal["Signal"] == (
-                "INSUFFICIENT DATA"
-            ):
-
-                return None
-
-            return signal
-
-        except Exception as error:
-
-            print(
-                f"Signal generation failed "
-                f"for {symbol}: {error}"
-            )
-
+        data = self.get_history(symbol, end=decision_date)
+        if data is None:
             return None
+
+        signal = self.signal_engine.generate_signal(data.tail(504))
+        if signal["Signal"] == "INSUFFICIENT DATA":
+            return None
+        return signal
 
     # --------------------------------
     # Historical Decision
@@ -211,6 +174,13 @@ class WalkForwardBacktest:
         start_year=2020,
         end_year=2025,
     ):
+
+        universe = list(dict.fromkeys([*symbols, self.benchmark]))
+        self.market_data = self.data_cache.load_universe(
+            universe,
+            start=f"{start_year - 2}-01-01",
+            end=f"{end_year + 1}-01-01",
+        )
 
         results = []
 

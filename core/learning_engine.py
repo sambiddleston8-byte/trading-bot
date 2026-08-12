@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import yfinance as yf
 
@@ -212,6 +212,20 @@ class LearningEngine:
 
         return None
 
+    def get_horizon_price(self, ticker, target_date):
+        """Return the first trading close on/after an exact calendar horizon."""
+        try:
+            data = yf.Ticker(ticker).history(
+                start=target_date.date().isoformat(),
+                end=(target_date + timedelta(days=10)).date().isoformat(),
+            )
+            if data.empty:
+                return None
+            price = float(data["Close"].iloc[0])
+            return price if price > 0 else None
+        except Exception:
+            return None
+
     # --------------------------------
     # Evaluate Predictions
     # --------------------------------
@@ -269,15 +283,6 @@ class LearningEngine:
             if start_price <= 0:
                 continue
 
-            current_price = (
-                self.get_current_price(
-                    ticker
-                )
-            )
-
-            if current_price is None:
-                continue
-
             evaluated_this_record = False
 
             outcomes = record.setdefault(
@@ -309,10 +314,15 @@ class LearningEngine:
                 if elapsed_days < days:
                     continue
 
+                target_date = decision_datetime + timedelta(days=days)
+                horizon_price = self.get_horizon_price(ticker, target_date)
+                if horizon_price is None:
+                    continue
+
                 return_pct = (
 
                     (
-                        current_price
+                        horizon_price
                         / start_price
                     ) - 1
 
@@ -337,9 +347,12 @@ class LearningEngine:
 
                     "Price":
                         round(
-                            current_price,
+                            horizon_price,
                             4,
                         ),
+
+                    "Target Date":
+                        target_date.date().isoformat(),
 
                     "Return %":
                         round(

@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import yfinance as yf
 
@@ -368,13 +368,13 @@ class ExpectedReturnTracker:
                 symbol
             )
 
-            start_date = (
-                prediction_date
-            )
+            prediction_datetime = datetime.fromisoformat(str(prediction_date))
+            target_date = prediction_datetime + timedelta(days=int(horizon_days))
+            end_date = target_date + timedelta(days=10)
 
             history = ticker.history(
-                start=start_date,
-                period="2y",
+                start=target_date.date().isoformat(),
+                end=end_date.date().isoformat(),
             )
 
             if history.empty:
@@ -382,18 +382,13 @@ class ExpectedReturnTracker:
                 return None
 
             # ----------------------------------------------------
-            # We need the first available trading price after the
-            # requested horizon.
+            # Use the first trading close on or after the predetermined
+            # calendar horizon. A late evaluation job must not change the
+            # economic outcome being measured.
             # ----------------------------------------------------
 
-            if len(history) <= horizon_days:
-
-                return None
-
             price = float(
-                history["Close"].iloc[
-                    horizon_days
-                ]
+                history["Close"].iloc[0]
             )
 
             if price <= 0:

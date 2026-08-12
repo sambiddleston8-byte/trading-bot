@@ -154,9 +154,11 @@ class MarketDataCache:
         symbols,
         start="2018-01-01",
         end=None,
+        allow_partial=False,
     ):
 
         data = {}
+        failures = {}
 
         for symbol in symbols:
 
@@ -172,10 +174,19 @@ class MarketDataCache:
 
             except Exception as error:
 
+                failures[symbol] = error
+
                 print(
                     f"{symbol} failed: "
                     f"{error}"
                 )
+
+        if failures and not allow_partial:
+            failed_symbols = ", ".join(sorted(failures))
+            raise RuntimeError(
+                "Market data is incomplete; refusing to run a biased partial "
+                f"universe. Failed symbols: {failed_symbols}"
+            )
 
         return data
 
