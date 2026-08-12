@@ -776,6 +776,36 @@ expected-return bucket, hit rate or aggregate calibration is applied, so later
 cohort policies cannot be selected after inspecting results. Recommendations,
 learning, track-record claims, AWS, brokers and trading remain disabled.
 
+## Preregistered prediction-evaluation policy
+
+Issue #99 establishes the human-decision boundary required before hit rate or
+prediction calibration can be aggregated. A policy must be recorded at least
+five minutes before its future decision cohort begins. It fixes one explicit
+success rule, confidence-score bucket edges and predicted-return split points.
+A different policy cannot replace the policy registered for the same portfolio
+and future evaluation boundary.
+
+Eligibility is determined by the investment decision timestamp, not by when an
+outcome is later paired or a metric is calculated. Consequently the immutable
+policy selection precedes every eligible prediction and its eventual outcome;
+outcome knowledge at policy selection and retrospective application are both
+forbidden.
+
+Supported success rules are positive absolute return, meeting or exceeding the
+predicted return, or positive matched-benchmark-relative return. The software
+does not select among them. Confidence remains a ranking score rather than a
+claimed event probability, so probability-calibration claims are prohibited.
+Prediction errors and predicted-versus-actual cohort means are the declared
+calibration measures.
+
+Each horizon and model version must be evaluated separately. All eligible
+predictions must be included without discretionary outcome exclusion. At least
+100 total observations and 30 observations per reported cohort are required;
+smaller cohorts are suppressed. Complete round-trip cost evidence is mandatory,
+so the current entry-only raw outcomes remain ineligible for an eventual hit
+rate. This boundary calculates no metric and enables no recommendation,
+learning, track record, broker, AWS worker or trading.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio
