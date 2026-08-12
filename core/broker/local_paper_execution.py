@@ -383,6 +383,21 @@ METHODOLOGY_GATE_LABELS = {
     "single_factor_lineage": "Single-count factor lineage",
     "historical_universe_membership": "Historical universe membership",
     "active_pipeline_out_of_sample": "Active-pipeline out-of-sample validation",
+    "execution_cost_realism": "Fees, spread, slippage, latency and liquidity realism",
+    "research_execution_data_parity": "Backtest, shadow and paper data-policy parity",
+}
+
+LIVE_PROMOTION_GATE_LABELS = {
+    "sufficient_forward_paper_evidence": "Sufficient forward paper evidence",
+    "simulation_paper_reconciliation": "Backtest, shadow and paper reconciliation",
+    "live_market_data_parity": "Live market-data and corporate-action parity",
+    "broker_state_reconciliation": "Orders, fills, positions and cash reconciliation",
+    "latency_slippage_stress": "Pessimistic latency, spread and slippage stress tests",
+    "operational_resilience": "Retry, outage, stale-data and restart recovery",
+    "exposure_and_kill_switches": "Exposure caps and independently tested kill switches",
+    "independent_statistical_review": "Independent statistical and execution review",
+    "security_regulatory_tax_review": "Security, regulatory and tax review",
+    "explicit_human_capital_limit": "Explicit human-approved initial capital limit",
 }
 
 
@@ -409,4 +424,29 @@ class PaperSubmissionPreflight:
             "gates": results,
             "open_gates": open_gates,
             "note": "This check cannot submit an order or enable a broker route.",
+        }
+
+
+class LiveTradingPromotionPreflight:
+    """Describe future live-readiness evidence without enabling live trading."""
+
+    @classmethod
+    def evaluate(cls, gates: Mapping[str, bool] | None = None) -> dict[str, Any]:
+        supplied = dict(gates or {})
+        results = {
+            key: {"label": label, "passed": supplied.get(key) is True}
+            for key, label in LIVE_PROMOTION_GATE_LABELS.items()
+        }
+        open_gates = [key for key, result in results.items() if not result["passed"]]
+        return {
+            "status": "BLOCKED" if open_gates else "REVIEW_ELIGIBLE_ONLY",
+            "live_submission_enabled": False,
+            "live_endpoint_supported": False,
+            "next_authority": "SEPARATE_FUTURE_HUMAN_DECISION_AND_IMPLEMENTATION_REQUIRED",
+            "gates": results,
+            "open_gates": open_gates,
+            "note": (
+                "This evidence checklist cannot enable live trading. The repository "
+                "contains no live broker endpoint or live-order implementation."
+            ),
         }

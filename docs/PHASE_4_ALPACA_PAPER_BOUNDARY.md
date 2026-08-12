@@ -54,9 +54,27 @@ authoritative execution record introduced here.
 
 ## Paper-submission pre-flight
 
-The pre-flight reports the five trust-critical methodology gates recorded in
+The pre-flight reports seven trust-critical methodology and execution gates recorded in
 the research-methodology audit. Missing or false gates produce `BLOCKED`. Even
 when every gate is reported as cleared, the result keeps
 `broker_submission_enabled` false and requires separate explicit human
 authorization. The checker reports readiness; it has no ability to create a
 broker route.
+
+The two execution additions require realistic cost, latency and liquidity
+assumptions and consistent research/execution data policies. Paper fills must
+never be treated as proof that equivalent live fills would have occurred.
+
+## Future live-promotion boundary
+
+Real-money trading remains outside the implemented platform. A separate
+read-only readiness checklist records ten future requirements covering forward
+paper evidence, simulation-to-paper reconciliation, market-data parity, broker
+state reconciliation, pessimistic execution stress, outage recovery, exposure
+and kill controls, independent review, security/regulatory/tax review and a
+human-set initial capital limit.
+
+Even if all ten are reported complete, the result is only
+`REVIEW_ELIGIBLE_ONLY`. It cannot enable live submission, and this repository
+still supports no live endpoint. A future live capability would require a
+separate human decision, security design, implementation and review project.
