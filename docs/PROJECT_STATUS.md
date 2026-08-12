@@ -295,6 +295,11 @@ learning.
   internally, rejects empty/nonpublication responses, and waits until after a
   conservative 15:00 New York revision cutoff. It calculates no Sharpe or other
   metric and enables no provider download.
+- Phase 5 now derives an exact risk-free return for one authoritative daily
+  portfolio-return period only by pinning final SOFR Index observations on both
+  matching session dates. Index-ratio arithmetic correctly retains weekend and
+  holiday accrual, source backfills are disclosed, and no excess return, Sharpe,
+  Sortino or other risk-adjusted metric is yet calculated.
 - Phase 5 now records immutable official unadjusted daily closing-price evidence
   per verified simulated fill and US market session. Exact prices, New York
   effective dates, provider/version, HTTPS sources, source hashes and retrieval
@@ -376,9 +381,9 @@ learning.
 
 ## Next action
 
-Continue Phase 5 by matching exact SOFR Index endpoints to every authoritative
-daily return period before calculating Sharpe. Separately establish the
-downside-policy prerequisites before Sortino.
+Continue Phase 5 by binding complete date-matched risk-free returns into metric
+readiness, then calculate Sharpe only for a fully paired one-year series.
+Separately establish the downside-policy prerequisites before Sortino.
 Hit rate and turnover remain distinct calculations. Risk-adjusted
 alpha remains a separate model; learning and track-record claims remain blocked.
 Issue #21 remains the research-quality backlog. PostgreSQL remains

@@ -7,6 +7,7 @@ from core.performance.daily_portfolio_valuation import DailyPortfolioValuationLe
 from core.performance.daily_portfolio_return import DailyPortfolioReturnLedger
 from core.performance.daily_position_value import DailyPositionValueLedger
 from core.performance.daily_risk_statistics import DailyRiskStatisticsLedger
+from core.performance.daily_risk_free_return import DailyRiskFreeReturnLedger
 from core.performance.factor_exposure_evidence import FactorExposureEvidenceLedger
 from core.performance.metric_readiness import PerformanceMetricReadinessGate
 from core.performance.benchmark_distribution import BenchmarkDistributionLedger
@@ -46,6 +47,7 @@ __all__ = [
     "DailyPortfolioReturnLedger",
     "DailyPositionValueLedger",
     "DailyRiskStatisticsLedger",
+    "DailyRiskFreeReturnLedger",
     "FactorExposureEvidenceLedger",
     "PerformanceMetricReadinessGate",
     "BenchmarkDistributionLedger",
