@@ -721,6 +721,24 @@ The complete base snapshot and all paired IDs/hashes are content-addressed.
 This gate calculates no excess return, Sharpe, Sortino or other metric and
 enables no recommendation, learning, track-record claim, AWS, broker or trading.
 
+## Evidence-gated annualized Sharpe ratio
+
+Issue #91 calculates Sharpe only after the paired-evidence gate approves the
+complete one-year daily portfolio and SOFR series. Every exact daily excess
+return is `cash-flow-neutral portfolio return - matched risk-free return`.
+Sample mean and sample variance use exact rational arithmetic; daily volatility
+and the final ratio use a declared 34-digit decimal context because square roots
+are generally irrational.
+
+The annualization convention is fixed and explicit:
+`sqrt(252) * mean daily excess return / sample daily excess volatility`.
+Zero excess-return variance is undefined and fails closed rather than producing
+an infinite score. The append-only result pins both complete return chains and
+the readiness fingerprint, retains the daily excess-return path, and discloses
+backfilled source evidence. It remains a simulated, gross pre-tax statistic,
+not alpha, a recommendation, learning evidence or a live track record. Sortino,
+AWS, broker access and all trading remain disabled.
+
 ## Immutable daily market-close evidence
 
 Issue #71 establishes the raw evidence boundary needed before a daily portfolio
