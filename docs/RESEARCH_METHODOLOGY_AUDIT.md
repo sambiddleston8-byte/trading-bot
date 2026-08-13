@@ -347,6 +347,14 @@ regulatory or borrow costs. Base and pessimistic scenarios are separate; each
 pessimistic cost is at least twice base and must pass. This is a policy only:
 it generates no fill, performance result, broker request or order.
 
+Historical replay data now also has an immutable human source-approval
+boundary. Approval pins the provider/product, provider and terms URLs, exact
+terms-content hash, review reference, permitted internal uses, covered indices
+and dates, and explicit support for removals, delistings, corporate actions and
+terminal outcomes. The record cannot purchase a subscription, store a
+credential, fetch data, certify coverage, run a replay or make a performance or
+trading claim. No provider is currently approved.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;

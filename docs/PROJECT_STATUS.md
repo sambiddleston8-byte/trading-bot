@@ -181,6 +181,12 @@ learning.
   claim the source's economic interpretation is correct. The active research
   pipeline reads this canonical local ledger directly; absence of authenticated
   content fails closed and performs no network access.
+- Historical replay providers now require an immutable human approval record
+  that pins the product, terms hash/review, permitted use, index/date coverage
+  and explicit removed/delisted/corporate-action/terminal-outcome support. The
+  record cannot subscribe, store credentials, fetch data, certify completeness,
+  run a replay or grant performance/trading authority. No provider has been
+  approved yet.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
