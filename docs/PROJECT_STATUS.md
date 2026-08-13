@@ -524,6 +524,11 @@ learning.
   fraction. Costs, point-in-time data, survivorship safety and no leakage are
   mandatory. Planning cannot execute, grant shadow eligibility, promote, deploy
   or trade; result enforcement remains the next step.
+- Phase 10 now enforces every preregistered robustness slice with pinned evidence
+  and the required costs, point-in-time, survivorship and leakage controls. The
+  fixed pass fraction and every robustness dimension must pass. The strategy
+  registry can no longer advance a plain out-of-sample result; only verified
+  robustness evidence can make a candidate eligible for future shadow testing.
 
 ## Safety invariants
 
