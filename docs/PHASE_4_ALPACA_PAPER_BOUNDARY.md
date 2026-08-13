@@ -54,12 +54,23 @@ authoritative execution record introduced here.
 
 ## Paper-submission pre-flight
 
-The pre-flight reports seven trust-critical methodology and execution gates recorded in
-the research-methodology audit. Missing or false gates produce `BLOCKED`. Even
-when every gate is reported as cleared, the result keeps
-`broker_submission_enabled` false and requires separate explicit human
-authorization. The checker reports readiness; it has no ability to create a
-broker route.
+The legacy in-memory pre-flight reports seven trust-critical methodology and
+execution gates recorded in the research-methodology audit. It remains a simple
+diagnostic for compatibility, but self-asserted booleans are not authoritative
+readiness evidence.
+
+The authoritative pre-flight is now an append-only, hash-chained assessment.
+Every gate requires `PASSED` or `FAILED`, a concise evidence summary, observation
+time, HTTPS source, source SHA-256 and an exact source locator. Missing evidence,
+ambiguous booleans, reused evidence locations and future-dated observations fail
+closed. Reassessments must explicitly supersede the current assessment for the
+same strategy and move forward in time, preserving the earlier result rather
+than rewriting it.
+
+Even a complete evidence-backed assessment is labelled
+`EVIDENCE_COMPLETE_AWAITING_HUMAN_DECISION`. It keeps credentials, network
+requests, account connection, order submission and live trading false. It does
+not create a broker route and cannot authorize one.
 
 The two execution additions require realistic cost, latency and liquidity
 assumptions and consistent research/execution data policies. Paper fills must

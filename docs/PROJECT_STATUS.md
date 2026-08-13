@@ -97,6 +97,12 @@ learning.
   Claude's focused review found no functional safety defect; its boundary,
   linkage, input-sanity and retry recommendations were added to the tests and
   implementation.
+- The authoritative paper-submission methodology pre-flight is now immutable
+  and evidence-backed. Each of its seven gates pins a source hash, exact source
+  location and observation time; simple yes/no assertions remain only a legacy
+  diagnostic. Complete evidence still cannot connect an account, permit
+  credentials, make a network request, submit an order or enable live trading.
+  Reassessment preserves history through explicit forward-only supersession.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
@@ -534,6 +540,16 @@ learning.
   and safe expiry. Path escapes, symlinks, tampering, early deletion and unknown
   files fail closed. It is not yet invoked by a runner and touched no repository
   or research data.
+- Phase 10 now assigns complete simulated benchmark-relative outcomes to every
+  roadmap effectiveness dimension using pinned point-in-time evidence. Labels
+  observed after the decision remain explicit hindsight backfills and cannot
+  support effectiveness claims.
+- A deterministic read-only summary covers regime, sector, company size,
+  horizon, valuation, volatility, strategy, signal and model version. It
+  excludes backfilled labels, enforces a minimum sample floor of 30 and uses
+  exact arithmetic. Results remain descriptive: no independence, significance
+  or causal claim is inferred, and no recommendation, learning, promotion or
+  trading authority is produced.
 
 ## Safety invariants
 
