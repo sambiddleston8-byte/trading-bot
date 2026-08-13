@@ -22,6 +22,7 @@ from core.orchestration.purged_embargoed_folds import PurgedEmbargoedForwardFold
 from core.orchestration.replay_execution_policy import ReplayExecutionPolicy
 from core.orchestration.replay_execution_policy_ledger import ReplayExecutionPolicyLedger
 from core.orchestration.authenticated_replay_artifact import (
+    load_authenticated_backtest_artifact_bundle,
     load_authenticated_replay_artifact,
     load_authenticated_replay_artifact_bundle,
 )
@@ -49,6 +50,7 @@ __all__ = [
     "PurgedEmbargoedForwardFolds",
     "ReplayExecutionPolicy",
     "ReplayExecutionPolicyLedger",
+    "load_authenticated_backtest_artifact_bundle",
     "load_authenticated_replay_artifact",
     "load_authenticated_replay_artifact_bundle",
     "NextTradableMarketEvidenceLedger",
