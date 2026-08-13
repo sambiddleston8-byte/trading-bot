@@ -743,3 +743,10 @@ financials, dividend-adjusted prices and splits are available, while historical
 S&P 500/Nasdaq membership changes and symbol changes return access-denied or
 payment-required responses for the current account. FMP therefore remains supplementary and is not yet qualified
 as the sealed replay provider; see `docs/FMP_PROVIDER_ASSESSMENT.md`.
+
+Phase 5 now has a separate immutable paper-broker cash snapshot boundary. It
+distinguishes total, settled and unsettled USD cash, buying power and equity,
+stores only hashes of the account reference and source payload, and requires an
+explicitly confirmed paper environment. It neither relabels gross-pre-tax
+performance nor estimates tax, submits orders, completes reconciliation or
+enables live trading.
