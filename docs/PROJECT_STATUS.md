@@ -737,6 +737,13 @@ actions are tracked by the provider/replay/evidence sequence and
 `docs/QUANT_VALIDITY_AND_PERFORMANCE_AUDIT.md`. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
 
+Phase 3 now has a fail-closed PostgreSQL authority-cutover readiness gate. It
+requires 30 consecutive exact comparison matches, local/database decision-ledger
+count and tail-hash parity, applied migrations, a clean outbox/job state and a
+fresh successful isolated restore rehearsal. Passing only creates fingerprinted
+evidence for a later human decision; it cannot switch persistence, deploy AWS,
+authorize spending or enable trading. No real cutover certificate has passed.
+
 The configured FMP key has now been authenticated and capability-probed without
 printing secrets or financial values. Delisted companies, as-reported
 financials, dividend-adjusted prices and splits are available, while historical
