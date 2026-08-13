@@ -279,11 +279,17 @@ bankruptcy/liquidation recovery (including sourced zero recovery), or the last
 tradable value. It preserves when the outcome became public, so a replay cannot
 learn it early, and rejects mismatched outcome methods.
 
-This closes the record format, not the historical data collection. Snapshots
-remain explicitly partial, `coverage_completeness_proven` remains false, and
-survivorship-safe replay readiness remains false until a bounded coverage
-manifest proves that all membership events and all required terminal outcomes
-within its declared interval have been captured.
+This closes the record format, not the historical data collection. A bounded
+coverage certificate can now record an exact universe/date interval only when
+a pinned source explicitly attests its complete starting population and change
+log, the listed event IDs exactly equal the verified events in that interval,
+and every delisting has a verified outcome available by the retrieval cutoff.
+This is source attestation plus internal reconciliation, not independent proof
+of ground truth, so `coverage_completeness_proven` and replay readiness remain
+false. Successive certificates must be contiguous and carry the exact prior
+ending population forward, preventing a hidden gap or population reset. The
+record cannot make a global-history, performance, recommendation or trading
+claim.
 
 ### Investment-method optimisation that can continue later
 
