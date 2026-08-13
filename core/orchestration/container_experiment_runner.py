@@ -22,13 +22,14 @@ from core.orchestration.experiment_run_manifest import SandboxExperimentRunManif
 from core.performance.portfolio_valuation import _canonical_json
 
 
-POLICY_VERSION = "container-no-network-experiment-runner-v1"
+POLICY_VERSION = "container-no-network-experiment-runner-v2"
 INPUT_ROOT_MARKER = "SAM_PAT_SEALED_EXPERIMENT_INPUTS_V1\n"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 _IMAGE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*@sha256:[0-9a-f]{64}$")
 _CONTAINER_ID = re.compile(r"^[0-9a-f]{64}$")
 _CONTAINER_NAME = re.compile(r"^sam-pat-ews-[a-z0-9-]{1,80}$")
 MAX_STDOUT_BYTES = 1024 * 1024
+MAX_DECIMAL_ADJUSTED_EXPONENT = 12
 ALLOWED_RESULT_FIELDS = {
     "trials_completed", "baseline_primary_metric", "candidate_primary_metric",
     "baseline_maximum_drawdown", "candidate_maximum_drawdown",
@@ -92,6 +93,10 @@ class ContainerExperimentRunner:
         if not _IMAGE.fullmatch(self.approved_image_digest):
             raise ValueError("approved_image_digest must pin an image by SHA-256 digest")
         sandbox_root = self.workspace_manager._verified_root()
+        if "," in str(sandbox_root) or any(
+            ord(character) < 32 for character in str(sandbox_root)
+        ):
+            raise ValueError("sandbox root contains characters unsafe for a Docker bind mount")
         if (
             self.attempt_ledger_path.is_symlink()
             or self.attempt_ledger_path.parent.resolve() != sandbox_root
@@ -129,45 +134,68 @@ class ContainerExperimentRunner:
         sealed_input = _contained_file(
             sealed_input_path, self.approved_input_root, name="sealed_input"
         )
-        input_hash = hashlib.sha256(sealed_input.read_bytes()).hexdigest()
+        sealed_bytes = sealed_input.read_bytes()
+        input_hash = hashlib.sha256(sealed_bytes).hexdigest()
         if input_hash != manifest["dataset_manifest_sha256"]:
             raise ValueError("sealed input does not match the run-manifest dataset commitment")
-        self._reserve_attempt(manifest, executed)
-        workspace = self.workspace_manager.create(
-            experiment_id=manifest["experiment_id"],
-            dataset_manifest_sha256=input_hash,
-            retention_hours=retention_hours,
-            created_at=executed,
-        )
-        workspace_directory = self.workspace_manager.root / workspace["workspace_id"]
-        cidfile = workspace_directory / "container.cid"
-        container_name = f"sam-pat-{workspace['workspace_id'].lower()}"
-        if not _CONTAINER_NAME.fullmatch(container_name):
-            raise ValueError("generated Docker container name is invalid")
-        command = self._command(manifest, sealed_input, cidfile, container_name)
+        slot = self._acquire_run_slot()
         try:
+            self._reserve_attempt(manifest, executed)
+            workspace = self.workspace_manager.create(
+                experiment_id=manifest["experiment_id"],
+                dataset_manifest_sha256=input_hash,
+                retention_hours=retention_hours,
+                created_at=executed,
+            )
+            workspace_directory = self.workspace_manager.root / workspace["workspace_id"]
+            verified_input = workspace_directory / "verified-input.snapshot"
+            descriptor = os.open(
+                verified_input, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600
+            )
             try:
-                returncode, stdout, stderr = self._run_bounded(
-                    command, timeout_seconds=int(manifest["maximum_runtime_seconds"]),
-                    cidfile=cidfile, container_name=container_name,
-                )
-            except OSError as error:
-                raise RuntimeError("Docker could not start the isolated experiment") from error
-            if returncode != 0:
-                raise RuntimeError(
-                    f"isolated experiment failed with exit code {int(returncode)}"
-                )
-            result = self._result(stdout)
-            if result["trials_completed"] != int(manifest["planned_trial_count"]):
-                raise ValueError("container result must complete exactly the planned trial count")
-            output_hash = hashlib.sha256(stdout).hexdigest()
-            self._store_result(workspace_directory, manifest, result, output_hash, executed_by)
-        except BaseException:
-            self._store_failure(workspace_directory, manifest, executed_by)
-            raise
+                offset = 0
+                while offset < len(sealed_bytes):
+                    written = os.write(descriptor, sealed_bytes[offset:])
+                    if written <= 0:
+                        raise OSError("Unable to snapshot verified experiment input")
+                    offset += written
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+            os.chmod(verified_input, 0o444)
+            if hashlib.sha256(verified_input.read_bytes()).hexdigest() != input_hash:
+                raise RuntimeError("verified input snapshot integrity check failed")
+            cidfile = workspace_directory / "container.cid"
+            container_name = f"sam-pat-{workspace['workspace_id'].lower()}"
+            if not _CONTAINER_NAME.fullmatch(container_name):
+                raise ValueError("generated Docker container name is invalid")
+            command = self._command(manifest, verified_input, cidfile, container_name)
+            try:
+                try:
+                    returncode, stdout, stderr = self._run_bounded(
+                        command, timeout_seconds=int(manifest["maximum_runtime_seconds"]),
+                        cidfile=cidfile, container_name=container_name,
+                    )
+                except OSError as error:
+                    raise RuntimeError("Docker could not start the isolated experiment") from error
+                if returncode != 0:
+                    raise RuntimeError(
+                        f"isolated experiment failed with exit code {int(returncode)}"
+                    )
+                result = self._result(stdout)
+                if result["trials_completed"] != int(manifest["planned_trial_count"]):
+                    raise ValueError("container result must complete exactly the planned trial count")
+                output_hash = hashlib.sha256(stdout).hexdigest()
+                self._store_result(workspace_directory, manifest, result, output_hash, executed_by)
+            except BaseException:
+                self._store_failure(workspace_directory, manifest, executed_by)
+                raise
+            finally:
+                if cidfile.exists():
+                    cidfile.unlink()
         finally:
-            if cidfile.exists():
-                cidfile.unlink()
+            fcntl.flock(slot, fcntl.LOCK_UN)
+            os.close(slot)
         return {
             "policy_version": POLICY_VERSION,
             "status": "ISOLATED_RESULT_CAPTURED_NOT_PROMOTED",
@@ -185,6 +213,19 @@ class ContainerExperimentRunner:
             "order_submitted": False,
             "live_trading_enabled": False,
         }
+
+    def _acquire_run_slot(self) -> int:
+        """Permit one local container experiment at a time, without waiting."""
+        lock = self.workspace_manager._verified_root() / ".container-run.lock"
+        descriptor = os.open(lock, os.O_CREAT | os.O_RDWR, 0o600)
+        try:
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as error:
+            os.close(descriptor)
+            raise RuntimeError(
+                "another isolated experiment is already running"
+            ) from error
+        return descriptor
 
     def _command(
         self,
@@ -373,6 +414,8 @@ class ContainerExperimentRunner:
                 raise ValueError(f"{field} must be a finite numeric value") from error
             if not number.is_finite():
                 raise ValueError(f"{field} must be a finite numeric value")
+            if abs(number.adjusted()) > MAX_DECIMAL_ADJUSTED_EXPONENT:
+                raise ValueError(f"{field} exponent is outside the bounded numeric range")
             if field.endswith(("maximum_drawdown", "turnover")) and number < 0:
                 raise ValueError(f"{field} cannot be negative")
             value[field] = format(number, "f")

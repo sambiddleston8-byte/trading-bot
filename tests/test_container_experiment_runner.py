@@ -1,7 +1,9 @@
 import hashlib
+import fcntl
 import json
 from pathlib import Path
 import sqlite3
+import stat
 import subprocess
 
 import pytest
@@ -85,6 +87,11 @@ def test_executes_with_hard_container_isolation_and_captures_only_bounded_result
     assert timeout_seconds == 60
     assert "--memory-swap" in command and "--cidfile" in command
     assert command[command.index("--cidfile") + 1] == str(cidfile)
+    mount = command[command.index("--mount") + 1]
+    assert "verified-input.snapshot" in mount
+    assert str(sealed) not in mount
+    snapshot = Path(mount.split(",src=", 1)[1].split(",dst=", 1)[0])
+    assert stat.S_IMODE(snapshot.stat().st_mode) == 0o444
     assert result["status"] == "ISOLATED_RESULT_CAPTURED_NOT_PROMOTED"
     for field in (
         "network_allowed", "authoritative_data_write_allowed",
@@ -98,6 +105,26 @@ def test_executes_with_hard_container_isolation_and_captures_only_bounded_result
             "SELECT run_manifest_id, promotion_approved, order_submitted, live_trading_enabled FROM runner_results"
         ).fetchone()
     assert row == (manifest["run_manifest_id"], 0, 0, 0)
+
+
+def test_original_input_change_after_verification_cannot_change_mounted_snapshot(
+    tmp_path, monkeypatch
+):
+    runner, sealed, _, _ = setup(tmp_path)
+    mounted = []
+    def fake(command, **_kwargs):
+        sealed.write_bytes(b"changed after verification")
+        mount = command[command.index("--mount") + 1]
+        source = Path(mount.split(",src=", 1)[1].split(",dst=", 1)[0])
+        mounted.append(source.read_bytes())
+        value = completed()
+        return value.returncode, value.stdout, value.stderr
+    monkeypatch.setattr(runner, "_run_bounded", fake)
+    runner.run(
+        run_manifest_id="RUN-1", sealed_input_path=sealed,
+        retention_hours=24, executed_by="Codex",
+    )
+    assert mounted == [b"sealed data"]
 
 
 def test_image_and_input_must_match_preregistered_hashes(tmp_path, monkeypatch):
@@ -140,6 +167,8 @@ def test_one_attempt_only_even_after_failure_prevents_result_shopping(tmp_path, 
     ({**RESULT, "trials_completed": 1}, "planned trial count"),
     ({**RESULT, "candidate_turnover": [1]}, "scalar numeric"),
     ({**RESULT, "candidate_turnover": "NaN"}, "finite numeric"),
+    ({**RESULT, "candidate_turnover": "1E9999999"}, "bounded numeric range"),
+    ({**RESULT, "candidate_primary_metric": "1E-9999999"}, "bounded numeric range"),
     ({**RESULT, "candidate_maximum_drawdown": "-0.1"}, "cannot be negative"),
 ])
 def test_unbounded_invalid_or_partial_output_fails_closed(tmp_path, monkeypatch, payload, fragment):
@@ -267,3 +296,16 @@ def test_attempt_ledger_must_stay_in_marked_sandbox_root(tmp_path):
             approved_image_digest=IMAGE,
             attempt_ledger_path=tmp_path / "outside-attempts.jsonl",
         )
+
+
+def test_concurrent_container_run_is_rejected_without_waiting(tmp_path):
+    runner, _, sandbox, _ = setup(tmp_path)
+    lock_path = sandbox / ".container-run.lock"
+    descriptor = open(lock_path, "a+")
+    try:
+        fcntl.flock(descriptor.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(RuntimeError, match="already running"):
+            runner._acquire_run_slot()
+    finally:
+        fcntl.flock(descriptor.fileno(), fcntl.LOCK_UN)
+        descriptor.close()
