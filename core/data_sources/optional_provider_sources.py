@@ -62,7 +62,7 @@ class OptionalHTTPSource:
         except requests.RequestException as exc:
             raise OptionalProviderError(
                 f"{self.SOURCE_NAME} could not be reached."
-            ) from exc
+            ) from None
 
         if not response.ok:
             if response.status_code in {401, 402, 403}:
@@ -156,7 +156,7 @@ class AlphaVantageSource(OptionalHTTPSource):
         except requests.RequestException as exc:
             raise OptionalProviderError(
                 f"{self.SOURCE_NAME} could not be reached."
-            ) from exc
+            ) from None
         if not response.ok:
             raise OptionalProviderError(
                 f"{self.SOURCE_NAME} listing status is unavailable for the configured "
@@ -264,6 +264,121 @@ class FinancialModelingPrepSource(OptionalHTTPSource):
 
     def symbol_changes(self) -> dict[str, Any]:
         return self.query("symbol-change")
+
+
+class EODHDSource(OptionalHTTPSource):
+    """Bounded read-only probes for possible historical replay inputs."""
+
+    KEY_ENV = "EODHD_API_TOKEN"
+    SOURCE_NAME = "EODHD"
+    BASE_URL = "https://eodhd.com/api"
+    SP500_INDEX_CODE = "GSPC.INDX"
+    DELISTED_PROBE_SYMBOL = "TWTR.US"
+    DELISTED_PROBE_START = "2022-10-24"
+    DELISTED_PROBE_END = "2022-10-28"
+
+    def _query(self, path: str, **parameters: Any) -> dict[str, Any]:
+        return self.get_json(
+            f"{self.BASE_URL}/{path.lstrip('/')}",
+            params={
+                **parameters,
+                "api_token": os.getenv(self.KEY_ENV),
+                "fmt": "json",
+            },
+        )
+
+    @staticmethod
+    def _summarise_mapping_payload(
+        result: dict[str, Any], *, required_fields: set[str], error_label: str
+    ) -> dict[str, Any]:
+        payload = result.pop("payload")
+        if not isinstance(payload, dict):
+            raise OptionalProviderError(
+                f"EODHD returned an unexpected {error_label} schema."
+            )
+        fields: set[str] = set()
+        for entry in payload.values():
+            if not isinstance(entry, dict):
+                raise OptionalProviderError(
+                    f"EODHD returned an unexpected {error_label} schema."
+                )
+            entry_fields = {str(key) for key in entry}
+            if not required_fields.issubset(entry_fields):
+                raise OptionalProviderError(
+                    f"EODHD returned an unexpected {error_label} schema."
+                )
+            fields.update(entry_fields)
+        return {
+            **result,
+            "sample_record_count": len(payload),
+            "sample_field_names": sorted(fields),
+        }
+
+    def historical_sp500_membership_summary(self) -> dict[str, Any]:
+        result = self._query(
+            f"v1.1/fundamentals/{self.SP500_INDEX_CODE}",
+            filter="HistoricalTickerComponents",
+        )
+        if result.get("status") != "COMPLETE":
+            return result
+        summary = self._summarise_mapping_payload(
+            result,
+            required_fields={
+                "Code",
+                "Name",
+                "StartDate",
+                "EndDate",
+                "IsActiveNow",
+                "IsDelisted",
+            },
+            error_label="historical-membership",
+        )
+        return {**summary, "index_code": self.SP500_INDEX_CODE}
+
+    def delisted_symbol_eod_capability(self) -> dict[str, Any]:
+        result = self._query(
+            f"eod/{self.DELISTED_PROBE_SYMBOL}",
+            **{
+                "from": self.DELISTED_PROBE_START,
+                "to": self.DELISTED_PROBE_END,
+            },
+        )
+        if result.get("status") != "COMPLETE":
+            return result
+        payload = result.pop("payload")
+        if not isinstance(payload, list):
+            raise OptionalProviderError(
+                f"{self.SOURCE_NAME} returned an unexpected EOD-history schema."
+            )
+        required_fields = {
+            "date",
+            "open",
+            "high",
+            "low",
+            "close",
+            "adjusted_close",
+            "volume",
+        }
+        fields: set[str] = set()
+        for entry in payload:
+            if not isinstance(entry, dict):
+                raise OptionalProviderError(
+                    f"{self.SOURCE_NAME} returned an unexpected EOD-history schema."
+                )
+            entry_fields = {str(key) for key in entry}
+            if not required_fields.issubset(entry_fields):
+                raise OptionalProviderError(
+                    f"{self.SOURCE_NAME} returned an unexpected EOD-history schema."
+                )
+            fields.update(entry_fields)
+        return {
+            **result,
+            "symbol": self.DELISTED_PROBE_SYMBOL,
+            "start": self.DELISTED_PROBE_START,
+            "end": self.DELISTED_PROBE_END,
+            "sample_record_count": len(payload),
+            "sample_field_names": sorted(fields),
+        }
 
 
 class PolygonSource(OptionalHTTPSource):
