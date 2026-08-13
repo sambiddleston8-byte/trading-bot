@@ -109,6 +109,13 @@ def test_identical_approval_is_idempotent(tmp_path):
     assert target.approve(**retry) == first
 
 
+def test_approval_cannot_be_backdated_or_future_dated(tmp_path):
+    with pytest.raises(ValueError, match="actual append time"):
+        approve(ledger(tmp_path / "past"), approved_at="2015-01-01T00:00:00+00:00")
+    with pytest.raises(ValueError, match="actual append time"):
+        approve(ledger(tmp_path / "future"), approved_at="2035-01-01T00:00:00+00:00")
+
+
 def test_approval_cannot_bypass_or_exceed_passing_qualification(tmp_path):
     target = ledger(tmp_path)
     with pytest.raises(ValueError, match="exact verified"):

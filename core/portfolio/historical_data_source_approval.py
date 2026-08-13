@@ -160,8 +160,9 @@ class HistoricalDataSourceApprovalLedger:
         allow_existing: bool = True,
     ) -> dict[str, Any]:
         approved = _timestamp(approved_at or datetime.now(timezone.utc))
-        if approved > datetime.now(timezone.utc) + MAX_CLOCK_SKEW:
-            raise ValueError("approved_at cannot be in the future")
+        now = datetime.now(timezone.utc)
+        if not now - MAX_CLOCK_SKEW <= approved <= now + MAX_CLOCK_SKEW:
+            raise ValueError("approved_at must match the actual append time")
         start = _date(coverage_not_before)
         end = _date(coverage_not_after)
         if end <= start:
@@ -347,6 +348,8 @@ class HistoricalDataSourceApprovalLedger:
                 and record.get("qualification_id") == qualification["qualification_id"]
                 and record.get("qualification_record_hash") == qualification["record_hash"]
                 and end > start
+                # Historical records remain verifiable after the append-time
+                # freshness window has elapsed; only future-dated records fail here.
                 and approved <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
                 and isinstance(record.get("redistribution_allowed"), bool)
                 and all(record.get(field) is True for field in fixed_true)
