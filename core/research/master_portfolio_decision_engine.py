@@ -161,6 +161,10 @@ class MasterPortfolioDecisionEngine:
             reasons.append("Valuation estimate consistency is not sufficient for portfolio use.")
         if valuation_quality.get("assessment") == "FAIL":
             reasons.append("Valuation quality review has not cleared the model for portfolio use.")
+        if valuation_quality.get("portfolio_expected_return_eligible") is False:
+            reasons.append(
+                "DCF expected return lacks complete point-in-time assumption and sensitivity evidence."
+            )
         return reasons
 
     @classmethod

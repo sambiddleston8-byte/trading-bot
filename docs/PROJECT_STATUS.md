@@ -162,6 +162,17 @@ learning.
   applicable regulatory or borrowing costs. Pessimistic per-side costs are at
   least twice base and must pass. The policy generates no fill, broker request,
   performance result or trading authority.
+- DCF expected returns now require point-in-time sourced evidence for the full
+  discount-rate and terminal-growth calculation, including risk-free rate,
+  equity premium, beta, debt cost, tax and market-value capital weights. The
+  reported WACC must reproduce the evidence-derived calculation and a WACC/
+  growth sensitivity matrix is mandatory. Existing coarse 9%/3% valuations
+  remain readable but are review-only and cannot make a new active research
+  result portfolio-eligible; realised forecast accuracy remains uncalibrated.
+  A URL and well-formed hash are not accepted as proof of content: eligibility
+  remains fail-closed until a separate ledger authenticates the retrieved bytes.
+  Rate/beta sanity bounds and a substantive base-bracketing sensitivity grid are
+  also enforced.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark

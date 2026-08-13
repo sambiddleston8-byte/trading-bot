@@ -135,6 +135,23 @@ falls back to 8%.
 The DCF is useful as a transparent scenario tool, but its base expected return
 must not yet be treated as a calibrated forecast.
 
+The active valuation-quality gate now requires point-in-time evidence for the
+risk-free rate, equity risk premium, beta, debt cost, marginal tax rate,
+market-value capital weights and terminal growth. Every source is content-
+hashed and must have been retrieved by the valuation cutoff. The reported WACC
+must equal the CAPM/debt-weighted evidence calculation, terminal growth must
+match its evidence and remain below WACC, and a WACC/growth sensitivity matrix
+is mandatory. Without these inputs the legacy transparent DCF remains visible
+but its expected return is explicitly ineligible for portfolio selection and
+forecast accuracy remains uncalibrated.
+
+A syntactically valid URL and SHA-256 digest are not authenticated source
+content. Even a schema-complete assumption set remains blocked until a separate
+evidence ledger verifies the retrieved bytes against the recorded digest.
+Effective dates cannot postdate the valuation cutoff, rates and beta have
+sanity bounds, and each sensitivity axis requires at least three ordered values
+that bracket the base case while keeping every WACC above terminal growth.
+
 **Required repair:** version and date all assumptions; calculate or document the
 risk-free rate, equity premium, beta, debt cost, tax and capital weights; show a
 sensitivity matrix; derive scenario ranges from historical forecast errors and
