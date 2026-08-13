@@ -1,7 +1,7 @@
 # Phase 5 performance and attribution foundation
 
-Status: immutable observations, price returns and corporate-action evidence;
-no total-return track record or learning input
+Status: immutable observations, event-aware paper position/valuation evidence;
+no live track record or learning input
 
 Issue #25 introduces the authoritative raw-data boundary for later performance
 and attribution. It does not calculate returns, alpha, hit rate or a track
