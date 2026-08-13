@@ -938,6 +938,20 @@ interval containing a weekday gap—including an exchange holiday—fails closed
 until trustworthy historical exchange-calendar evidence exists. This avoids
 silently calling a multi-session observation a daily return.
 
+Daily portfolio valuation policy v2 also fixes the fill set at the exact
+verified session close. Only fills whose simulated `filled_at` is at or before
+that close may support the valuation; later BUY or SELL activity cannot alter
+or block the earlier result. Every included fill must belong to the proposal
+set pinned by initial funding and have exactly one same-close position value.
+SELL/rebalance accounting remains fail-closed until its separate position-state
+boundary is implemented.
+
+The local simulated `filled_at` remains a controlled replay input rather than
+an independently observed broker timestamp. This is suitable only for local
+paper/replay evidence. Before broker-paper or live-performance reliance, fill
+time must be reconciled to immutable broker evidence; backdated inputs must not
+be presented as a contemporaneous track record.
+
 The result retains the upstream gross-pre-tax basis and explicitly does not
 claim broker-cash reconciliation. It is one simulated, non-annualized,
 non-risk-adjusted observation—not volatility, Sharpe, Sortino, drawdown, a
