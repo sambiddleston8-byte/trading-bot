@@ -149,6 +149,12 @@ learning.
   binding plan, with minimum non-commission costs and at least 2x pessimistic
   stress. A real plan awaits an approved historical-universe source and a
   genuinely sealed dataset.
+- Deterministic purged and embargoed forward folds now prevent long-horizon
+  outcomes from leaking across training/test boundaries. Each observation pins
+  its decision and label-end time; overlapping training labels are purged,
+  post-test records are embargoed, windows cannot overlap and test observations
+  cannot be reused. Fold construction executes no model or replay and makes no
+  performance or promotion claim.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark

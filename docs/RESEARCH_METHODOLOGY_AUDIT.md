@@ -308,6 +308,12 @@ This is a plan boundary, not a backtest. Historical-universe source approval
 remains required, no real evaluation dataset is opened, no replay is executed,
 and no performance, paper-broker or trading authority is created.
 
+The time-aware validation boundary now also builds deterministic expanding
+forward folds from each decision time and its actual label-end time. Training
+observations whose outcomes reach the test boundary are purged, a fixed post-
+test embargo is declared, test windows cannot overlap and test observations
+cannot be reused. The fold builder trains no model and runs no replay.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;
