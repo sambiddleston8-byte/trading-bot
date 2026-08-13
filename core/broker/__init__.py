@@ -10,10 +10,14 @@ from core.broker.local_paper_execution import (
     LocalPaperExecutionLedger,
     PaperSubmissionPreflight,
 )
+from core.broker.methodology_preflight import (
+    EvidenceBackedPaperSubmissionPreflightLedger,
+)
 
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
     "AlpacaPaperConfiguration",
+    "EvidenceBackedPaperSubmissionPreflightLedger",
     "LiveTradingPromotionPreflight",
     "LocalPaperExecutionLedger",
     "PaperOrderProposalLedger",
