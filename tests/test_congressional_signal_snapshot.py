@@ -7,8 +7,8 @@ class Stub:
     def __init__(self,values):self.values=list(values)
     def verify(self):return self.values
 
-def disclosure(identifier,politician,tx,low,high,public,observed,delay=20):
-    return {"disclosure_id":identifier,"record_hash":"hash-"+identifier,"ticker":"EXM","politician_name":politician,"transaction_type":tx,"amount_min_usd":str(low),"amount_max_usd":str(high),"source":"OFFICIAL_HOUSE","historical_point_in_time_signal_at":public,"live_system_signal_at":observed,"transaction_to_public_delay_days":delay}
+def disclosure(identifier,politician,tx,low,high,public,observed,delay=20,supersedes=None):
+    return {"disclosure_id":identifier,"record_hash":"hash-"+identifier,"ticker":"EXM","politician_name":politician,"transaction_type":tx,"amount_min_usd":str(low),"amount_max_usd":str(high),"source":"OFFICIAL_HOUSE","historical_point_in_time_signal_at":public,"live_system_signal_at":observed,"transaction_to_public_delay_days":delay,"supersedes_disclosure_id":supersedes}
 VALUES=[disclosure("D1","A","PURCHASE",1001,15000,"2026-01-21T09:00:00+00:00","2026-01-21T10:00:00+00:00"),disclosure("D2","A","PURCHASE",15001,50000,"2026-02-01T09:00:00+00:00","2026-02-01T10:00:00+00:00",30),disclosure("D3","B","SALE",1001,15000,"2026-02-02T09:00:00+00:00","2026-02-02T10:00:00+00:00",10),disclosure("FUTURE","C","SALE",50000,100000,"2026-04-01T09:00:00+00:00","2026-04-01T10:00:00+00:00")]
 BASE={"ticker":"EXM","as_of":"2026-03-01T00:00:00+00:00","availability_mode":"HISTORICAL_PUBLIC_EVIDENCED","generated_by":"test","generated_at":"2026-03-02T00:00:00+00:00"}
 
@@ -29,6 +29,17 @@ def test_aggregates_only_point_in_time_evidence_conservatively(tmp_path):
 def test_live_mode_uses_actual_system_observation(tmp_path):
     result=aggregate(ledger(tmp_path),availability_mode="LIVE_SYSTEM_OBSERVED",as_of="2026-02-02T09:30:00+00:00",generated_at="2026-02-03T00:00:00+00:00")
     assert result["disclosure_ids"]==["D1","D2"] and result["availability_field"]=="live_system_signal_at"
+
+def test_amendment_replaces_original_only_after_it_becomes_available(tmp_path):
+    original=disclosure("D1","A","PURCHASE",1001,15000,"2026-01-21T09:00:00+00:00","2026-01-21T10:00:00+00:00")
+    amendment=disclosure("D1A","A","PURCHASE",1001,50000,"2026-02-10T09:00:00+00:00","2026-02-10T10:00:00+00:00",supersedes="D1")
+    before=CongressionalActivitySignalLedger(tmp_path/"before.jsonl",Stub([original,amendment]))
+    early=aggregate(before,as_of="2026-02-01T00:00:00+00:00",generated_at="2026-02-02T00:00:00+00:00")
+    assert early["disclosure_ids"]==["D1"] and early["purchase_amount_max_usd"]=="15000"
+    after=CongressionalActivitySignalLedger(tmp_path/"after.jsonl",Stub([original,amendment]))
+    late=aggregate(after,as_of="2026-03-01T00:00:00+00:00",generated_at="2026-03-02T00:00:00+00:00")
+    assert late["disclosure_ids"]==["D1A"] and late["purchase_amount_max_usd"]=="50000"
+    assert late["purchase_count"]==1 and late["repeat_purchasers"]==0
 
 @pytest.mark.parametrize("field,value,fragment",[("ticker","UNKNOWN","No verified"),("availability_mode","TRANSACTION_DATE","not supported"),("as_of","2026-04-01T00:00:00+00:00","postdate")])
 def test_invalid_snapshot_fails_closed(tmp_path,field,value,fragment):

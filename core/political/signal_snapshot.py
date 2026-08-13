@@ -16,7 +16,10 @@ from typing import Any
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 from core.performance.pinned_support import resolve_pinned_records
 from core.performance.portfolio_valuation import _canonical_json, _record_hash, _write_all
-from core.political.disclosure_ledger import CongressionalTradeDisclosureLedger
+from core.political.disclosure_ledger import (
+    CongressionalTradeDisclosureLedger,
+    current_disclosures,
+)
 
 
 SIGNAL_SCHEMA_VERSION = "1.0"
@@ -93,10 +96,10 @@ class CongressionalActivitySignalLedger:
         if generated > datetime.now(timezone.utc) + MAX_CLOCK_SKEW:
             raise ValueError("generated_at cannot be in the future")
         availability_field = "historical_point_in_time_signal_at" if mode == "HISTORICAL_PUBLIC_EVIDENCED" else "live_system_signal_at"
-        eligible = [
+        eligible = current_disclosures([
             record for record in self.disclosure_ledger.verify()
             if record.get("ticker") == symbol and _timestamp(record[availability_field]) <= cutoff
-        ]
+        ])
         eligible.sort(key=lambda item: (item[availability_field], item["disclosure_id"]))
         if not eligible:
             raise ValueError("No verified point-in-time disclosures are available for this ticker")
@@ -169,7 +172,7 @@ class CongressionalActivitySignalLedger:
                 symbol=_required(record.get("ticker"),"ticker",15).upper(); cutoff=_timestamp(record.get("as_of")); generated=_timestamp(record.get("generated_at")); mode=_required(record.get("availability_mode"),"mode",50).upper(); _required(record.get("generated_by"),"generated_by",100)
             except (TypeError,ValueError) as error: raise LedgerIntegrityError(f"Congressional-signal record {index} has invalid values.") from error
             field="historical_point_in_time_signal_at" if mode=="HISTORICAL_PUBLIC_EVIDENCED" else "live_system_signal_at" if mode=="LIVE_SYSTEM_OBSERVED" else None
-            ordered=sorted(resolved,key=lambda item:(item[field],item["disclosure_id"])) if field else []
+            ordered=sorted(current_disclosures(resolved),key=lambda item:(item[field],item["disclosure_id"])) if field else []
             if not field or any(item.get("ticker")!=symbol or _timestamp(item[field])>cutoff for item in ordered): raise LedgerIntegrityError(f"Congressional-signal record {index} includes unavailable evidence.")
             buys=[item for item in ordered if item["transaction_type"]=="PURCHASE"]; sales=[item for item in ordered if item["transaction_type"]=="SALE"]; exchanges=[item for item in ordered if item["transaction_type"]=="EXCHANGE"]
             purchase_counts=Counter(item["politician_name"] for item in buys); buy_min=sum((Decimal(item["amount_min_usd"]) for item in buys),Decimal(0)); buy_max=sum((Decimal(item["amount_max_usd"]) for item in buys),Decimal(0)); sale_min=sum((Decimal(item["amount_min_usd"]) for item in sales),Decimal(0)); sale_max=sum((Decimal(item["amount_max_usd"]) for item in sales),Decimal(0)); net_lower=buy_min-sale_max; net_upper=buy_max-sale_min
