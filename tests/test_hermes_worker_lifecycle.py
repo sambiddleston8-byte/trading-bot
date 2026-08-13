@@ -196,6 +196,19 @@ def test_enforcement_quarantines_and_latches_stop(tmp_path, monkeypatch, reason,
     assert target.verify()[-1]["state"] == "QUARANTINED"
 
 
+def test_unrelated_policy_stop_does_not_suppress_violation_enforcement(tmp_path, monkeypatch):
+    target, now, stops = setup(tmp_path)
+    clock = set_clock(monkeypatch, now)
+    run = reserve(target, now)
+    clock[0] = now + timedelta(seconds=1)
+    target.start(run["run_id"], started_at=clock[0])
+    stops.items = [{"policy_id": "HMPOL-OTHER", "stop_id": "HSTOP-OTHER"}]
+    clock[0] = now + timedelta(seconds=62)
+    result = target.enforce(checked_at=clock[0])
+    assert result["reason"] == "STALE_HEARTBEAT"
+    assert stops.items[0]["policy_id"] == "HMPOL-1"
+
+
 def test_consecutive_failures_latch_stop_and_success_resets_count(tmp_path, monkeypatch):
     target, now, _ = setup(tmp_path, failures=2, concurrency=1)
     clock = set_clock(monkeypatch, now)

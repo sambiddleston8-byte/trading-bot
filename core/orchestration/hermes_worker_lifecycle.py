@@ -298,14 +298,22 @@ class HermesWorkerLifecycleLedger:
             records = self.verify()
             latest = self._latest(records)
             stopped = self.stop_ledger.verify()
-            if stopped:
-                return {
-                    "state": "STOPPED_LATCHED", "emergency_stop_latched": True,
-                    "reason": "EMERGENCY_STOP_ALREADY_LATCHED",
-                    "stop_id": stopped[-1]["stop_id"],
-                }
-            violation = self._violation(latest, records, current)
+            stopped_policy_ids = {
+                str(item.get("policy_id") or "") for item in stopped
+            }
+            violation = self._violation(
+                latest, records, current,
+                excluded_policy_ids=stopped_policy_ids,
+            )
             if violation is None:
+                if stopped:
+                    return {
+                        "state": "STOPPED_LATCHED",
+                        "emergency_stop_latched": True,
+                        "reason": "EMERGENCY_STOP_ALREADY_LATCHED",
+                        "stop_id": stopped[-1]["stop_id"],
+                        "policy_id": stopped[-1]["policy_id"],
+                    }
                 return {"state": "WITHIN_LIMITS", "emergency_stop_latched": False}
             run, reason = violation
             activation = self._activation(run["activation_id"])
@@ -452,12 +460,15 @@ class HermesWorkerLifecycleLedger:
 
     def _violation(
         self, latest: Mapping[str, Mapping[str, Any]], records: list[dict[str, Any]],
-        current: datetime,
+        current: datetime, *, excluded_policy_ids: set[str] | None = None,
     ) -> tuple[Mapping[str, Any], str] | None:
+        excluded = excluded_policy_ids or set()
         for run in latest.values():
             if run["state"] not in ACTIVE_STATES:
                 continue
             activation = self._activation(run["activation_id"])
+            if activation["policy_id"] in excluded:
+                continue
             reservation = self._reservation(records, run["run_id"])
             if current > _timestamp(reservation["deadline"]):
                 return run, "JOB_DEADLINE_EXCEEDED"
@@ -472,6 +483,8 @@ class HermesWorkerLifecycleLedger:
             activation = self._activation(item["activation_id"])
             policy = self._policy(activation["policy_id"])
             policy_id = policy["policy_id"]
+            if policy_id in excluded:
+                continue
             if policy_id not in failure_counts:
                 failure_counts[policy_id] = 0
             if item["state"] == "SUCCEEDED":

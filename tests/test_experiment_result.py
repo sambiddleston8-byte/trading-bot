@@ -102,6 +102,18 @@ def test_concurrent_retry_appends_once(tmp_path):
     assert first == second and len(target.verify()) == 1
 
 
+def test_run_manifest_cannot_receive_a_second_contradictory_result(tmp_path):
+    target = ledger(tmp_path)
+    record(target)
+    with pytest.raises(LedgerIntegrityError, match="already has"):
+        record(
+            target,
+            completed_at="2022-07-02T00:00:00+00:00",
+            runner_output_sha256="b" * 64,
+            candidate_primary_metric="0.20",
+        )
+
+
 @pytest.mark.parametrize("changes", [
     {"candidate_primary_metric": "0.20"}, {"primary_improvement": "99"},
     {"status": "REJECTION_CRITERIA_MET"}, {"trials_completed": 4},

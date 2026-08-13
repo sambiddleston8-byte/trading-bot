@@ -19,7 +19,7 @@ from core.performance.portfolio_valuation import _canonical_json, _record_hash, 
 
 
 RESULT_SCHEMA_VERSION = "1.0"
-RESULT_POLICY_VERSION = "mechanical-preregistered-sandbox-result-v1"
+RESULT_POLICY_VERSION = "mechanical-preregistered-sandbox-result-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 LOWER_IS_BETTER = {
@@ -216,6 +216,7 @@ class SandboxExperimentResultLedger:
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH
         seen_ids = set()
+        seen_manifests = set()
         records = self.records()
         for index, record in enumerate(records, start=1):
             material = {key: value for key, value in record.items() if key != "record_hash"}
@@ -261,6 +262,7 @@ class SandboxExperimentResultLedger:
                 record.get("schema_version") == RESULT_SCHEMA_VERSION
                 and record.get("policy_version") == RESULT_POLICY_VERSION
                 and record.get("result_id") == expected_id and expected_id not in seen_ids
+                and manifest["run_manifest_id"] not in seen_manifests
                 and record.get("record_type") == "CONTROLLED_LEARNING_SANDBOX_EXPERIMENT_RESULT"
                 and record.get("status") == ("ACCEPTANCE_CRITERIA_MET" if accepted else "REJECTION_CRITERIA_MET")
                 and record.get("simulation_only") is True
@@ -294,6 +296,7 @@ class SandboxExperimentResultLedger:
             if not boundary:
                 raise LedgerIntegrityError(f"Experiment-result record {index} violates its boundary.")
             seen_ids.add(expected_id)
+            seen_manifests.add(manifest["run_manifest_id"])
             previous_hash = record["record_hash"]
         return records
 
@@ -303,6 +306,23 @@ class SandboxExperimentResultLedger:
         try:
             fcntl.flock(descriptor, fcntl.LOCK_EX)
             records = self.verify()
+            parent_result = next(
+                (
+                    item for item in records
+                    if item["run_manifest_id"] == result["run_manifest_id"]
+                ),
+                None,
+            )
+            if parent_result:
+                ignored = {"previous_hash", "record_hash"}
+                if allow_existing and (
+                    {key: value for key, value in parent_result.items() if key not in ignored}
+                    == {key: value for key, value in result.items() if key not in ignored}
+                ):
+                    return parent_result
+                raise LedgerIntegrityError(
+                    "Run manifest already has an immutable experiment result."
+                )
             existing = next((item for item in records if item["result_id"] == result["result_id"]), None)
             if existing:
                 ignored = {"previous_hash", "record_hash"}

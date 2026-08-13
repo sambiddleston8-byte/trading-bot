@@ -21,6 +21,8 @@ def setup(tmp_path):
         "assembled_at": (now - timedelta(minutes=1)).isoformat(),
         "shadow_result_id": "SHADOW-1", "candidate_strategy_version": "candidate-v2",
         "baseline_strategy_version": "incumbent-v1", "candidate_git_revision": "a" * 40,
+        "builder_identity": "Codex Builder",
+        "independent_reviewer_identity": "Claude Reviewer",
     }
     target = PromotionDecisionLedger(tmp_path / "decisions.jsonl", Stub([bundle]))
     values = {
@@ -82,6 +84,13 @@ def test_concurrent_retry_is_idempotent_and_conflicting_decision_is_blocked(tmp_
         decide(target, values, decision="REJECT_CANDIDATE")
 
 
+@pytest.mark.parametrize("decided_by", ["Codex Builder", "codex builder", "Claude Reviewer"])
+def test_builder_or_reviewer_cannot_record_human_decision(tmp_path, decided_by):
+    target, values = setup(tmp_path)
+    with pytest.raises(ValueError, match="must differ"):
+        decide(target, values, decided_by=decided_by)
+
+
 @pytest.mark.parametrize("changes", [
     {"decision": "REJECT_CANDIDATE"},
     {"status": "PRODUCTION_ACTIVE"},
@@ -96,6 +105,7 @@ def test_concurrent_retry_is_idempotent_and_conflicting_decision_is_blocked(tmp_
     {"order_submitted": True},
     {"live_trading_enabled": True},
     {"self_promotion_allowed": True},
+    {"decided_by": "Codex Builder"},
 ])
 def test_rehashed_semantic_tampering_is_detected(tmp_path, changes):
     target, values = setup(tmp_path); decide(target, values)
