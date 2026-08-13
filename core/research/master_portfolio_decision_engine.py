@@ -32,7 +32,10 @@ class MasterPortfolioDecisionEngine:
     @staticmethod
     def number(value: Any) -> float | None:
         try:
-            return None if value is None else float(value)
+            if value is None:
+                return None
+            resolved = float(value)
+            return resolved if math.isfinite(resolved) else None
         except (TypeError, ValueError):
             return None
 

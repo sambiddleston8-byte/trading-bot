@@ -120,6 +120,24 @@ def test_equal_authoritative_scores_have_deterministic_ticker_tiebreak():
     assert [item["ticker"] for item in prepared] == ["AAA", "ZZZ"]
 
 
+def test_nonfinite_numbers_cannot_enter_portfolio_ranking():
+    for field in ("current_price", "base_intrinsic_value", "expected_return"):
+        for invalid in (float("nan"), float("inf"), float("-inf")):
+            item = canonical()
+            item[field] = invalid
+            assert PortfolioEngine.eligibility_reason(item) is not None
+
+    item = canonical()
+    item["master_decision"] = {
+        "version": MasterPortfolioDecisionEngine.VERSION,
+        "status": "COMPLETE",
+        "portfolio_recommendation": "ELIGIBLE",
+        "opportunity_score": float("nan"),
+        "hard_gate_reasons": [],
+    }
+    assert PortfolioEngine.candidate_score(item) is None
+
+
 def test_sizing_may_use_risk_and_confidence_without_changing_rank():
     base = {
         "portfolio_conviction": 75,

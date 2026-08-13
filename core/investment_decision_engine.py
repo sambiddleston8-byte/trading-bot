@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from datetime import datetime, timezone
 
 
@@ -43,7 +44,7 @@ class InvestmentDecisionEngine:
 
             value = float(value)
 
-            if value != value:
+            if not math.isfinite(value):
                 return default
 
             return value

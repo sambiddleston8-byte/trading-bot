@@ -34,6 +34,24 @@ def test_failed_evidence_cannot_be_overridden_by_positive_signals():
     assert "Evidence audit" in result["hard_gate_reasons"][0]
 
 
+def test_nonfinite_authoritative_score_cannot_become_a_perfect_rank():
+    for invalid in (float("nan"), float("inf"), float("-inf")):
+        record = complete_record()
+        record["investment_case_score"] = invalid
+        result = MasterPortfolioDecisionEngine.evaluate(record)
+        assert result["opportunity_score"] == 0.0
+        assert result["portfolio_recommendation"] == "WATCHLIST"
+
+
+def test_nonfinite_expected_return_fails_closed_as_unavailable():
+    for invalid in (float("nan"), float("inf"), float("-inf")):
+        record = complete_record()
+        record["expected_return"] = invalid
+        result = MasterPortfolioDecisionEngine.evaluate(record)
+        assert result["portfolio_recommendation"] == "EXCLUDE"
+        assert "Expected return is unavailable." in result["hard_gate_reasons"]
+
+
 def test_learning_is_neutral_without_closed_outcomes():
     result = MasterPortfolioDecisionEngine.evaluate(complete_record())
     assert result["components"]["learning"]["status"] == "INSUFFICIENT_EVIDENCE"
