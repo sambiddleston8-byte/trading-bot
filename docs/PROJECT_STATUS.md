@@ -660,6 +660,12 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   commercial provider additionally requires an in-force licensed-feed contract.
   Passing permits only a separate connector review; no connector, scraper,
   download, signal or trading authority is created.
+- Phase 7 now has a point-in-time issuer-mapping boundary for future connector
+  work. It requires a stable reviewed issuer identifier, exact asset-name match,
+  effective period, knowledge timestamp and hashed evidence. Hindsight,
+  conflicting and tampered mappings fail closed. It is not connected to an
+  external source or current snapshot path and grants no recommendation or
+  trading authority.
 
 ## Phase 8 work
 
