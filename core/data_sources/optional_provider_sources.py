@@ -10,7 +10,9 @@ market history and macro context.
 """
 
 import os
-from datetime import datetime, timezone
+import csv
+from datetime import date, datetime, timezone
+from io import StringIO
 from typing import Any
 
 import requests
@@ -117,6 +119,82 @@ class AlphaVantageSource(OptionalHTTPSource):
 
     def income_statement(self, symbol: str) -> dict[str, Any]:
         return self.query("INCOME_STATEMENT", symbol)
+
+    def listing_status_summary(
+        self, *, as_of: str, state: str
+    ) -> dict[str, Any]:
+        """Return secret-safe metadata for a historical listing-status response.
+
+        Alpha Vantage returns this endpoint as CSV. The rows can contain issuer
+        facts, so this capability probe deliberately returns only the record
+        count and field names rather than copying provider data into logs.
+        """
+        try:
+            resolved_date = date.fromisoformat(str(as_of))
+        except (TypeError, ValueError) as error:
+            raise ValueError("as_of must be an ISO date") from error
+        if resolved_date < date(2010, 1, 2) or resolved_date > datetime.now(
+            timezone.utc
+        ).date():
+            raise ValueError("as_of must be between 2010-01-02 and today")
+        resolved_state = str(state).strip().lower()
+        if resolved_state not in {"active", "delisted"}:
+            raise ValueError("state must be active or delisted")
+        if not self.configured:
+            return self.unavailable()
+        try:
+            response = self.session.get(
+                self.BASE_URL,
+                params={
+                    "function": "LISTING_STATUS",
+                    "date": resolved_date.isoformat(),
+                    "state": resolved_state,
+                    "apikey": os.getenv(self.KEY_ENV),
+                },
+                timeout=20,
+            )
+        except requests.RequestException as exc:
+            raise OptionalProviderError(
+                f"{self.SOURCE_NAME} could not be reached."
+            ) from exc
+        if not response.ok:
+            raise OptionalProviderError(
+                f"{self.SOURCE_NAME} listing status is unavailable for the configured "
+                f"account (HTTP {response.status_code})."
+            )
+        prefix = response.text[:500]
+        if any(
+            marker in prefix
+            for marker in ("Error Message", "Information", "Thank you for using Alpha Vantage")
+        ):
+            raise OptionalProviderError(
+                f"{self.SOURCE_NAME} rejected the listing-status request or quota."
+            )
+        reader = csv.DictReader(StringIO(response.text))
+        fields = sorted(str(field) for field in (reader.fieldnames or []) if field)
+        required_fields = {
+            "symbol",
+            "name",
+            "exchange",
+            "assetType",
+            "ipoDate",
+            "delistingDate",
+            "status",
+        }
+        if not required_fields.issubset(fields):
+            raise OptionalProviderError(
+                f"{self.SOURCE_NAME} returned an unexpected listing-status schema."
+            )
+        record_count = sum(1 for row in reader if any(str(value or "").strip() for value in row.values()))
+        return {
+            "status": "COMPLETE",
+            "source": self.SOURCE_NAME,
+            "as_of": resolved_date.isoformat(),
+            "state": resolved_state,
+            "sample_record_count": record_count,
+            "sample_field_names": fields,
+            "retrieved_at": datetime.now(timezone.utc).isoformat(),
+        }
 
 
 class FinancialModelingPrepSource(OptionalHTTPSource):

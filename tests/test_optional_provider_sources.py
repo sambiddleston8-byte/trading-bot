@@ -1,5 +1,8 @@
 import os
 
+import pytest
+import requests
+
 from core.data_sources.optional_provider_sources import (
     AlphaVantageSource,
     FinancialModelingPrepSource,
@@ -19,6 +22,9 @@ def test_optional_sources_do_not_make_network_calls_without_credentials():
     ProviderConfiguration.load_local_environment = classmethod(lambda cls: None)
     try:
         assert AlphaVantageSource().income_statement("NVDA")["status"] == "NOT_CONFIGURED"
+        assert AlphaVantageSource().listing_status_summary(
+            as_of="2020-01-02", state="active"
+        )["status"] == "NOT_CONFIGURED"
         assert FinancialModelingPrepSource().analyst_estimates("NVDA")["status"] == "NOT_CONFIGURED"
         assert FinancialModelingPrepSource().as_reported_financials("NVDA")["status"] == "NOT_CONFIGURED"
         assert FinancialModelingPrepSource().ratings_snapshot("NVDA")["status"] == "NOT_CONFIGURED"
@@ -70,6 +76,118 @@ def test_successful_provider_response_has_a_retrieval_timestamp():
 
     assert result["status"] == "COMPLETE"
     assert result.get("retrieved_at")
+
+
+def test_alpha_vantage_listing_status_returns_metadata_not_rows_or_key():
+    captured = {}
+
+    class Response:
+        ok = True
+        text = "symbol,name,exchange,assetType,ipoDate,delistingDate,status\nAAA,Example,NASDAQ,Stock,2010-01-01,null,Active\n"
+
+    class Session:
+        @staticmethod
+        def get(url, **kwargs):
+            captured.update(url=url, **kwargs)
+            return Response()
+
+    original = os.environ.get("ALPHAVANTAGE_API_KEY")
+    os.environ["ALPHAVANTAGE_API_KEY"] = "secret-test-key"
+    try:
+        result = AlphaVantageSource(session=Session()).listing_status_summary(
+            as_of="2020-01-02", state="active"
+        )
+    finally:
+        if original is None:
+            os.environ.pop("ALPHAVANTAGE_API_KEY", None)
+        else:
+            os.environ["ALPHAVANTAGE_API_KEY"] = original
+
+    assert result["status"] == "COMPLETE"
+    assert result["sample_record_count"] == 1
+    assert result["sample_field_names"] == [
+        "assetType", "delistingDate", "exchange", "ipoDate", "name", "status", "symbol"
+    ]
+    assert "payload" not in result
+    assert "secret-test-key" not in str(result)
+    assert captured["params"] == {
+        "function": "LISTING_STATUS",
+        "date": "2020-01-02",
+        "state": "active",
+        "apikey": "secret-test-key",
+    }
+
+
+def test_alpha_vantage_listing_status_rejects_unbounded_inputs():
+    source = AlphaVantageSource()
+    for as_of, state in (("2009-12-31", "active"), ("bad", "active"), ("2020-01-02", "all")):
+        try:
+            source.listing_status_summary(as_of=as_of, state=state)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Invalid listing-status scope was accepted")
+
+
+@pytest.mark.parametrize(
+    "response,fragment",
+    [
+        (
+            type("Response", (), {"ok": False, "status_code": 403, "text": "denied"})(),
+            "unavailable",
+        ),
+        (
+            type("Response", (), {"ok": True, "status_code": 200, "text": "Information,quota exceeded\n"})(),
+            "rejected",
+        ),
+        (
+            type("Response", (), {"ok": True, "status_code": 200, "text": "symbol,name\nAAA,Example\n"})(),
+            "unexpected",
+        ),
+    ],
+)
+def test_alpha_vantage_listing_status_fails_closed_on_provider_responses(
+    response, fragment
+):
+    class Session:
+        @staticmethod
+        def get(*args, **kwargs):
+            return response
+
+    original = os.environ.get("ALPHAVANTAGE_API_KEY")
+    os.environ["ALPHAVANTAGE_API_KEY"] = "test-key"
+    try:
+        with pytest.raises(Exception, match=fragment):
+            AlphaVantageSource(session=Session()).listing_status_summary(
+                as_of="2020-01-02", state="active"
+            )
+    finally:
+        if original is None:
+            os.environ.pop("ALPHAVANTAGE_API_KEY", None)
+        else:
+            os.environ["ALPHAVANTAGE_API_KEY"] = original
+
+
+def test_alpha_vantage_listing_status_sanitizes_network_failure():
+    class Session:
+        @staticmethod
+        def get(*args, **kwargs):
+            raise requests.ConnectionError("sensitive request details")
+
+    original = os.environ.get("ALPHAVANTAGE_API_KEY")
+    os.environ["ALPHAVANTAGE_API_KEY"] = "test-key"
+    try:
+        with pytest.raises(Exception, match="could not be reached") as error:
+            AlphaVantageSource(session=Session()).listing_status_summary(
+                as_of="2020-01-02", state="delisted"
+            )
+        assert "sensitive request details" not in str(error.value)
+        assert "test-key" not in str(error.value)
+    finally:
+        if original is None:
+            os.environ.pop("ALPHAVANTAGE_API_KEY", None)
+        else:
+            os.environ["ALPHAVANTAGE_API_KEY"] = original
 
 
 def test_fmp_uses_authentication_header_and_never_query_string_key():
