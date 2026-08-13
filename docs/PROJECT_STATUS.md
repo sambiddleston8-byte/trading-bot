@@ -155,6 +155,13 @@ learning.
   post-test records are embargoed, windows cannot overlap and test observations
   cannot be reused. Fold construction executes no model or replay and makes no
   performance or promotion claim.
+- The future replay now has a deterministic execution-realism policy. It
+  forbids same-close fills and requires the next tradable observation, market
+  calendars/halts, volume participation caps, partial fills, rejections,
+  cancellations, cash/position/settlement/fractional-share constraints and
+  applicable regulatory or borrowing costs. Pessimistic per-side costs are at
+  least twice base and must pass. The policy generates no fill, broker request,
+  performance result or trading authority.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
