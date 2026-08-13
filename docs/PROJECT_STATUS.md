@@ -654,6 +654,12 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   value ranges, calculate conservative net bounds and expose disclosure delay.
   Future evidence is excluded and the result is never a standalone recommendation
   or executable/copy-trading signal.
+- Phase 7 now has a fail-closed source-activation preflight. Official House or
+  Senate automation requires pinned terms evidence and affirmative documented
+  findings for the exact use and access method. Capitol Trades or another
+  commercial provider additionally requires an in-force licensed-feed contract.
+  Passing permits only a separate connector review; no connector, scraper,
+  download, signal or trading authority is created.
 
 ## Phase 8 work
 
