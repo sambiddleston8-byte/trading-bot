@@ -14,6 +14,7 @@ from core.orchestration.robustness_plan import RobustnessTestPlanLedger
 from core.orchestration.robustness_result import RobustnessTestResultLedger
 from core.orchestration.disposable_workspace import DisposableExperimentWorkspace
 from core.orchestration.active_pipeline_replay_plan import ActivePipelineReplayPlanLedger
+from core.orchestration.purged_embargoed_folds import PurgedEmbargoedForwardFolds
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -30,4 +31,5 @@ __all__ = [
     "RobustnessTestResultLedger",
     "DisposableExperimentWorkspace",
     "ActivePipelineReplayPlanLedger",
+    "PurgedEmbargoedForwardFolds",
 ]
