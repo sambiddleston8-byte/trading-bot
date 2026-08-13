@@ -144,7 +144,7 @@ def test_failed_audit_is_rejected():
     assert score is None
 
 
-def test_warning_only_audit_is_eligible_with_a_conviction_penalty():
+def test_warning_only_audit_remains_visible_without_a_second_ranking_penalty():
     clean = make_candidate("CLEAN", 80, 0.20, "Technology")
     warning = make_candidate("WARNING", 80, 0.20, "Healthcare")
     warning["audit"].update(
@@ -159,7 +159,11 @@ def test_warning_only_audit_is_eligible_with_a_conviction_penalty():
 
     assert PortfolioEngine.eligibility_reason(warning) is None
     assert PortfolioEngine.candidate_score(warning) is not None
-    assert PortfolioEngine.candidate_score(warning) < PortfolioEngine.candidate_score(clean)
+    assert PortfolioEngine.candidate_score(warning) == PortfolioEngine.candidate_score(clean)
+    assert warning["audit"]["status"] == "PASS_WITH_WARNINGS"
+    assert PortfolioEngine.position_sizing_signal(warning) < (
+        PortfolioEngine.position_sizing_signal(clean)
+    )
 
 
 def test_avoid_and_negative_expected_return_are_rejected():
@@ -186,24 +190,25 @@ def test_missing_risk_or_technical_research_reduces_conviction():
     assert PortfolioEngine.candidate_score(candidate) is None
 
 
-def test_calibrated_scores_use_the_full_scale_without_claiming_certainty():
+def test_authoritative_opportunity_score_passes_through_full_scale():
     candidate = make_candidate("CALIBRATED", 99, 0.50, "Technology")
     candidate["master_decision"]["opportunity_score"] = 100.0
     candidate["master_decision"]["conviction_score"] = 100.0
     candidate["master_decision"]["research_confidence"] = {"score": 90.0}
 
-    assert 0 < PortfolioEngine.candidate_score(candidate) < 100.0
+    assert PortfolioEngine.candidate_score(candidate) == 100.0
 
 
-def test_decision_rating_is_explained_and_capped_below_certainty():
+def test_decision_rating_is_display_only_authoritative_score():
     candidate = make_candidate("RATING", 94, 0.30, "Technology")
     candidate["provider_evidence"] = {"completed_evidence_count": 8}
     detail = PortfolioEngine.decision_rating_detail(candidate)
 
     assert detail["maximum_score"] == 100.0
-    assert detail["score"] < 100.0
-    assert detail["formula"]["evidence_quality"] == 0.20
-    assert detail["components"]["source_breadth"] == 100.0
+    assert detail["score"] == candidate["master_decision"]["opportunity_score"]
+    assert detail["formula"] == "NO_RECALCULATION"
+    assert detail["source"] == "master_decision.opportunity_score"
+    assert detail["display_only"] is True
 
 
 def test_risk_aware_weights_differ_for_different_volatility():
