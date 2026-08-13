@@ -800,6 +800,15 @@ explicitly confirmed paper environment. It neither relabels gross-pre-tax
 performance nor estimates tax, submits orders, completes reconciliation or
 enables live trading.
 
+Daily simulated portfolio valuations now use an explicit as-of-close fill
+boundary. Future BUY or SELL fills are excluded from earlier sessions, included
+fills must come from the proposal set pinned by initial funding, and every
+included fill requires one value at the exact shared close. This removes a
+look-ahead path where later activity could previously block an earlier daily
+valuation. Simulated fill timestamps are still controlled replay inputs, not
+independently reconciled broker timestamps, and sell/rebalance position-state
+accounting remains fail-closed.
+
 Phase 4 now also has a strictly read-only Alpaca paper-account adapter. It uses
 dedicated paper-only environment variables, accepts only Alpaca's official paper
 host, returns hashed account/payload references and has no order method. Because

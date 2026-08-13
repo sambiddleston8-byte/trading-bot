@@ -63,6 +63,7 @@ def chain(
     funding_amount="1000",
     include_bbb_value=True,
     second_side="BUY",
+    second_filled_at="2025-01-02T15:02:00+00:00",
     flows=(),
     include_gross_dividend=False,
 ):
@@ -96,7 +97,7 @@ def chain(
             order_id="PORD-AAA", fill_price=101, fees=2, filled_at="2025-01-02T15:01:00+00:00"
         ),
         executions.simulate_full_fill(
-            order_id="PORD-BBB", fill_price=51, fees=1, filled_at="2025-01-02T15:02:00+00:00"
+            order_id="PORD-BBB", fill_price=51, fees=1, filled_at=second_filled_at
         ),
     ]
     closes = DailyMarketObservationLedger(tmp_path / "closes.jsonl", executions)
@@ -200,6 +201,7 @@ def test_reconciles_exact_daily_portfolio_value_and_cash(tmp_path):
     assert result["performance_metric_calculated"] is False
     assert result["learning_eligible"] is False
     assert result["track_record_claim"] is False
+    assert result["fill_inclusion_policy"] == "FILLED_AT_OR_BEFORE_EXACT_SESSION_CLOSE"
     assert result["previous_hash"] == GENESIS_HASH
     assert valuations.verify() == [result]
 
@@ -229,7 +231,7 @@ def test_missing_position_value_fails_closed(tmp_path):
     valuations, _, _, _, _ = chain(tmp_path, include_bbb_value=False)
     result = calculate(valuations)
     assert result["status"] == "NOT_CALCULABLE"
-    assert "every open fill" in " ".join(result["reasons"]).lower()
+    assert "every as-of fill" in " ".join(result["reasons"]).lower()
 
 
 def test_sell_or_rebalance_state_fails_closed(tmp_path):
@@ -237,6 +239,26 @@ def test_sell_or_rebalance_state_fails_closed(tmp_path):
     result = calculate(valuations)
     assert result["status"] == "NOT_CALCULABLE"
     assert "Sell/rebalance" in " ".join(result["reasons"])
+
+
+@pytest.mark.parametrize("future_side", ["BUY", "SELL"])
+def test_future_fill_cannot_change_or_block_prior_daily_valuation(tmp_path, future_side):
+    valuations, _, _, fills, values = chain(
+        tmp_path,
+        include_bbb_value=False,
+        second_side=future_side,
+        second_filled_at="2025-02-04T15:02:00+00:00",
+    )
+    result = calculate(valuations)
+    first_fill = next(item for item in fills if item["ticker"] == "AAA")
+    assert result["status"] == "CALCULATED"
+    assert result["supporting_fill_ids"] == [first_fill["fill_id"]]
+    assert result["supporting_position_value_ids"] == [values[0]["result_id"]]
+    assert result["total_recorded_entry_cost"] == "204"
+    assert result["remaining_cash"] == "796"
+    assert result["total_position_market_value"] == "220"
+    assert result["total_equity"] == "1016"
+    assert valuations.verify() == [result]
 
 
 def test_insufficient_funding_fails_closed(tmp_path):

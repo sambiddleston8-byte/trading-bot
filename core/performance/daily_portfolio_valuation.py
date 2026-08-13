@@ -29,8 +29,9 @@ from core.performance.portfolio_valuation import (
 
 
 DAILY_PORTFOLIO_VALUATION_SCHEMA_VERSION = "1.0"
-DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION = "cash-reconciled-daily-portfolio-value-v1"
+DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION = "cash-reconciled-daily-portfolio-value-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
+FILL_INCLUSION_POLICY = "FILLED_AT_OR_BEFORE_EXACT_SESSION_CLOSE"
 FORMULA = {
     "recorded_entry_cost": "simulated_fill_gross_value + recorded_entry_fee",
     "remaining_cash": (
@@ -223,7 +224,7 @@ class DailyPortfolioValuationLedger:
             item for item in execution_ledger.proposal_ledger.verify()
             if item.get("portfolio_version") == portfolio_version
         ]
-        fills = [
+        all_fills = [
             item for item in execution_ledger.verify()
             if item.get("portfolio_version") == portfolio_version
         ]
@@ -239,22 +240,29 @@ class DailyPortfolioValuationLedger:
             reasons.append("Verified funded portfolio proposals are missing.")
         if funding is None:
             reasons.append("Verified initial funding is missing.")
-        if not fills:
-            reasons.append("Verified simulated fills are missing.")
-        if any(item.get("side") != "BUY" for item in fills):
-            reasons.append("Sell/rebalance position-state accounting is not implemented.")
-        proposal_orders = {item["order_id"] for item in proposals}
-        fill_orders = {item["order_id"] for item in fills}
-        if proposal_orders != fill_orders or len(fills) != len(fill_orders):
-            reasons.append("Every funded proposal requires exactly one verified fill.")
-        fill_ids = {item["fill_id"] for item in fills}
-        value_fill_ids = {item["fill_id"] for item in values}
-        if value_fill_ids != fill_ids or len(values) != len(value_fill_ids):
-            reasons.append("Every open fill requires exactly one daily position value for the session.")
         effective_times = {item.get("effective_at") for item in values}
         if len(effective_times) != 1:
             reasons.append("Daily position values must share one exact close timestamp.")
         close_at = _as_datetime(next(iter(effective_times))) if len(effective_times) == 1 else None
+        fills = sorted(
+            (
+                item for item in all_fills
+                if close_at is not None and _as_datetime(item["filled_at"]) <= close_at
+            ),
+            key=lambda item: item["fill_id"],
+        )
+        if not fills:
+            reasons.append("Verified simulated fills at or before the session close are missing.")
+        if any(item.get("side") != "BUY" for item in fills):
+            reasons.append("Sell/rebalance position-state accounting is not implemented.")
+        funding_orders = set(funding.get("proposal_order_ids") or []) if funding else set()
+        fill_orders = {item["order_id"] for item in fills}
+        if not fill_orders.issubset(funding_orders) or len(fills) != len(fill_orders):
+            reasons.append("Every as-of fill must belong to the proposal set pinned by initial funding.")
+        fill_ids = {item["fill_id"] for item in fills}
+        value_fill_ids = {item["fill_id"] for item in values}
+        if value_fill_ids != fill_ids or len(values) != len(value_fill_ids):
+            reasons.append("Every as-of fill requires exactly one daily position value for the session.")
         flows = sorted(
             (
                 item for item in self.cash_flow_ledger.verify()
@@ -320,6 +328,7 @@ class DailyPortfolioValuationLedger:
             "portfolio_version": version,
             "market_session_date": session,
             "effective_at": close_at.isoformat(),
+            "fill_inclusion_policy": FILL_INCLUSION_POLICY,
             "funding_id": funding["funding_id"],
             "funding_record_hash": funding["record_hash"],
             "supporting_fill_ids": [item["fill_id"] for item in fills],
@@ -423,6 +432,7 @@ class DailyPortfolioValuationLedger:
                 and record.get("scope") == "SIMULATED_GROSS_PRE_TAX_DAILY_PORTFOLIO_VALUATION"
                 and record.get("simulation_only") is True
                 and record.get("currency") == "USD"
+                and record.get("fill_inclusion_policy") == FILL_INCLUSION_POLICY
                 and record.get("supporting_fill_ids") == [item["fill_id"] for item in fills]
                 and record.get("supporting_fill_hashes") == [item["record_hash"] for item in fills]
                 and record.get("supporting_position_value_ids") == [item["result_id"] for item in values]
