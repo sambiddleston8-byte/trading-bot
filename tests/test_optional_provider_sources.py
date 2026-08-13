@@ -5,6 +5,7 @@ import requests
 
 from core.data_sources.optional_provider_sources import (
     AlphaVantageSource,
+    EODHDSource,
     FinancialModelingPrepSource,
     FREDSource,
     PolygonSource,
@@ -16,7 +17,13 @@ from core.data_sources.provider_configuration import ProviderConfiguration
 
 
 def test_optional_sources_do_not_make_network_calls_without_credentials():
-    names = ("ALPHAVANTAGE_API_KEY", "FMP_API_KEY", "POLYGON_API_KEY", "FRED_API_KEY")
+    names = (
+        "ALPHAVANTAGE_API_KEY",
+        "FMP_API_KEY",
+        "POLYGON_API_KEY",
+        "FRED_API_KEY",
+        "EODHD_API_TOKEN",
+    )
     originals = {name: os.environ.pop(name, None) for name in names}
     original_loader = ProviderConfiguration.load_local_environment
     ProviderConfiguration.load_local_environment = classmethod(lambda cls: None)
@@ -38,6 +45,8 @@ def test_optional_sources_do_not_make_network_calls_without_credentials():
         assert PolygonSource().snapshot("NVDA")["status"] == "NOT_CONFIGURED"
         assert PolygonSource().company_news("NVDA")["status"] == "NOT_CONFIGURED"
         assert FREDSource().observations("DGS10")["status"] == "NOT_CONFIGURED"
+        assert EODHDSource().historical_sp500_membership_summary()["status"] == "NOT_CONFIGURED"
+        assert EODHDSource().delisted_symbol_eod_capability()["status"] == "NOT_CONFIGURED"
     finally:
         ProviderConfiguration.load_local_environment = original_loader
         for name, value in originals.items():
@@ -181,6 +190,7 @@ def test_alpha_vantage_listing_status_sanitizes_network_failure():
             AlphaVantageSource(session=Session()).listing_status_summary(
                 as_of="2020-01-02", state="delisted"
             )
+        assert error.value.__cause__ is None
         assert "sensitive request details" not in str(error.value)
         assert "test-key" not in str(error.value)
     finally:
@@ -265,6 +275,134 @@ def test_fmp_capability_methods_have_bounded_parameters():
     ]
     assert calls[2][1] == {"page": 2, "limit": 50}
     assert calls[3][1] == {"from": "2024-01-01", "to": "2024-01-31", "symbol": "AAPL"}
+
+
+def test_eodhd_probes_return_metadata_not_rows_prices_or_key():
+    calls = []
+    membership = {
+        "0": {
+            "Code": "AAA",
+            "Name": "Example",
+            "StartDate": "2020-01-01",
+            "EndDate": None,
+            "IsActiveNow": 1,
+            "IsDelisted": 0,
+        }
+    }
+    prices = [{
+        "date": "2022-10-24", "open": 1, "high": 2, "low": 1,
+        "close": 2, "adjusted_close": 2, "volume": 3,
+    }]
+
+    class Response:
+        ok = True
+        status_code = 200
+
+        def __init__(self, payload):
+            self.payload = payload
+
+        def json(self):
+            return self.payload
+
+    class Session:
+        @staticmethod
+        def get(url, **kwargs):
+            calls.append((url, kwargs["params"]))
+            return Response(membership if "fundamentals" in url else prices)
+
+    original = os.environ.get("EODHD_API_TOKEN")
+    os.environ["EODHD_API_TOKEN"] = "secret-test-token"
+    try:
+        source = EODHDSource(session=Session())
+        member_result = source.historical_sp500_membership_summary()
+        price_result = source.delisted_symbol_eod_capability()
+    finally:
+        if original is None:
+            os.environ.pop("EODHD_API_TOKEN", None)
+        else:
+            os.environ["EODHD_API_TOKEN"] = original
+
+    for result in (member_result, price_result):
+        assert result["status"] == "COMPLETE"
+        assert result["sample_record_count"] == 1
+        assert "payload" not in result
+        assert "secret-test-token" not in str(result)
+        assert "Example" not in str(result)
+    assert price_result["symbol"] == "TWTR.US"
+    assert calls == [
+        (
+            "https://eodhd.com/api/v1.1/fundamentals/GSPC.INDX",
+            {
+                "filter": "HistoricalTickerComponents",
+                "api_token": "secret-test-token",
+                "fmt": "json",
+            },
+        ),
+        (
+            "https://eodhd.com/api/eod/TWTR.US",
+            {
+                "from": "2022-10-24",
+                "to": "2022-10-28",
+                "api_token": "secret-test-token",
+                "fmt": "json",
+            },
+        ),
+    ]
+
+
+@pytest.mark.parametrize(
+    "method,payload",
+    [
+        ("historical_sp500_membership_summary", []),
+        ("historical_sp500_membership_summary", {"0": {"Code": "AAA"}}),
+        ("delisted_symbol_eod_capability", {}),
+        ("delisted_symbol_eod_capability", [{"date": "2022-10-24"}]),
+    ],
+)
+def test_eodhd_probes_fail_closed_on_unexpected_schema(method, payload):
+    class Response:
+        ok = True
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return payload
+
+    class Session:
+        @staticmethod
+        def get(*args, **kwargs):
+            return Response()
+
+    original = os.environ.get("EODHD_API_TOKEN")
+    os.environ["EODHD_API_TOKEN"] = "test-token"
+    try:
+        with pytest.raises(Exception, match="unexpected"):
+            getattr(EODHDSource(session=Session()), method)()
+    finally:
+        if original is None:
+            os.environ.pop("EODHD_API_TOKEN", None)
+        else:
+            os.environ["EODHD_API_TOKEN"] = original
+
+
+def test_query_authenticated_provider_network_failure_has_no_secret_cause():
+    class Session:
+        @staticmethod
+        def get(*args, **kwargs):
+            raise requests.ConnectionError("request contained secret-test-token")
+
+    original = os.environ.get("EODHD_API_TOKEN")
+    os.environ["EODHD_API_TOKEN"] = "secret-test-token"
+    try:
+        with pytest.raises(Exception, match="could not be reached") as error:
+            EODHDSource(session=Session()).historical_sp500_membership_summary()
+        assert error.value.__cause__ is None
+        assert "secret-test-token" not in str(error.value)
+    finally:
+        if original is None:
+            os.environ.pop("EODHD_API_TOKEN", None)
+        else:
+            os.environ["EODHD_API_TOKEN"] = original
 
 
 if __name__ == "__main__":
