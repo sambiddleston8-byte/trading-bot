@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import time
+from typing import Any, Callable
 from core.decision_ledger import current_git_revision
 from core.research.research_contract import ResearchContract
 
@@ -26,6 +28,47 @@ class InvestmentResearchPipeline:
         return datetime.now(
             timezone.utc
         ).isoformat()
+
+    @staticmethod
+    def _measure_component(
+        component: str,
+        observations: list[dict[str, Any]] | None,
+        monotonic: Callable[[], float],
+        operation: Callable[[], Any],
+    ) -> Any:
+        """Run one pipeline stage and record only its observed elapsed time."""
+        if observations is None:
+            return operation()
+
+        started = monotonic()
+        try:
+            return operation()
+        finally:
+            duration_ms = max(0.0, (monotonic() - started) * 1000.0)
+            observations.append(
+                {
+                    "component": component,
+                    "duration_ms": round(duration_ms, 3),
+                }
+            )
+
+    @classmethod
+    def analyse_with_telemetry(
+        cls,
+        ticker,
+        save=True,
+        *,
+        monotonic: Callable[[], float] = time.monotonic,
+    ):
+        """Return the normal result plus run-local, secret-free stage timings."""
+        observations: list[dict[str, Any]] = []
+        result = cls.analyse(
+            ticker,
+            save=save,
+            _component_telemetry=observations,
+            _monotonic=monotonic,
+        )
+        return result, observations
 
     # ========================================================
     # IMPORT ENGINES
@@ -1001,6 +1044,9 @@ class InvestmentResearchPipeline:
         cls,
         ticker,
         save=True,
+        *,
+        _component_telemetry: list[dict[str, Any]] | None = None,
+        _monotonic: Callable[[], float] = time.monotonic,
     ):
 
         started_at = cls.now()
@@ -1009,8 +1055,11 @@ class InvestmentResearchPipeline:
         # 1. CORE ANALYSIS
         # ----------------------------------------------------
 
-        core = cls.analyse_core(
-            ticker
+        core = cls._measure_component(
+            "core_analysis",
+            _component_telemetry,
+            _monotonic,
+            lambda: cls.analyse_core(ticker),
         )
 
         fundamental = core[
@@ -1040,7 +1089,12 @@ class InvestmentResearchPipeline:
             {},
         )
 
-        market_context = cls.analyse_market_context()
+        market_context = cls._measure_component(
+            "market_context",
+            _component_telemetry,
+            _monotonic,
+            cls.analyse_market_context,
+        )
 
         # ----------------------------------------------------
         # 2. NEWS
@@ -1048,8 +1102,11 @@ class InvestmentResearchPipeline:
 
         try:
 
-            news = cls.analyse_news(
-                ticker
+            news = cls._measure_component(
+                "news_research",
+                _component_telemetry,
+                _monotonic,
+                lambda: cls.analyse_news(ticker),
             )
 
         except Exception as exc:
@@ -1064,7 +1121,12 @@ class InvestmentResearchPipeline:
 
             }
 
-        sentiment = cls.analyse_sentiment(news)
+        sentiment = cls._measure_component(
+            "sentiment_analysis",
+            _component_telemetry,
+            _monotonic,
+            lambda: cls.analyse_sentiment(news),
+        )
 
         # ----------------------------------------------------
         # 3. CATALYSTS
@@ -1072,10 +1134,11 @@ class InvestmentResearchPipeline:
 
         try:
 
-            catalysts = (
-                cls.analyse_catalysts(
-                    ticker
-                )
+            catalysts = cls._measure_component(
+                "catalyst_research",
+                _component_telemetry,
+                _monotonic,
+                lambda: cls.analyse_catalysts(ticker),
             )
 
         except Exception as exc:
@@ -1097,10 +1160,11 @@ class InvestmentResearchPipeline:
         # 4. CATALYST VALIDATION
         # ----------------------------------------------------
 
-        catalysts = (
-            cls.validate_catalysts(
-                catalysts
-            )
+        catalysts = cls._measure_component(
+            "catalyst_validation",
+            _component_telemetry,
+            _monotonic,
+            lambda: cls.validate_catalysts(catalysts),
         )
 
         # ----------------------------------------------------
@@ -1109,15 +1173,18 @@ class InvestmentResearchPipeline:
 
         try:
 
-            thesis = (
-                cls.challenge_thesis(
+            thesis = cls._measure_component(
+                "thesis_challenge",
+                _component_telemetry,
+                _monotonic,
+                lambda: cls.challenge_thesis(
                     ticker,
                     fundamental,
                     valuation,
                     decision,
                     catalysts,
                     news,
-                )
+                ),
             )
 
         except Exception as exc:
@@ -1169,10 +1236,11 @@ class InvestmentResearchPipeline:
             ["synthesis"]
         )
 
-        synthesis = (
-            synthesizer.synthesise(
-                synthesis_input
-            )
+        synthesis = cls._measure_component(
+            "research_synthesis",
+            _component_telemetry,
+            _monotonic,
+            lambda: synthesizer.synthesise(synthesis_input),
         )
 
         # Synthesis is the final recommendation because it is the first stage
@@ -1186,15 +1254,23 @@ class InvestmentResearchPipeline:
         # 8. FINAL EVIDENCE AUDIT
         # ----------------------------------------------------
 
-        audit = cls.audit(
-            synthesis_input
+        audit = cls._measure_component(
+            "evidence_audit",
+            _component_telemetry,
+            _monotonic,
+            lambda: cls.audit(synthesis_input),
         )
 
         # ----------------------------------------------------
         # 9. FINAL RESULT
         # ----------------------------------------------------
 
-        supplemental_evidence = cls.load_engines()["supplemental_evidence"].collect(ticker)
+        supplemental_evidence = cls._measure_component(
+            "supplemental_evidence",
+            _component_telemetry,
+            _monotonic,
+            lambda: cls.load_engines()["supplemental_evidence"].collect(ticker),
+        )
 
         result = {
 
@@ -1289,8 +1365,11 @@ class InvestmentResearchPipeline:
         # without permitting it to override the evidence audit, valuation,
         # risk, or adversarial-thesis gates.  It is saved separately so both
         # the portfolio and a holding's research page can show its reasoning.
-        result["master_decision"] = (
-            cls.load_engines()["master_decision"].evaluate(
+        result["master_decision"] = cls._measure_component(
+            "master_decision",
+            _component_telemetry,
+            _monotonic,
+            lambda: cls.load_engines()["master_decision"].evaluate(
                 result["canonical"],
                 catalysts=catalysts,
                 learning_adjustment=(
@@ -1298,13 +1377,14 @@ class InvestmentResearchPipeline:
                         result["canonical"].get("decision")
                     )
                 ),
-            )
+            ),
         )
 
-        result["diagnostics"] = (
-            cls.load_engines()["diagnostics"].analyse(
-                result
-            )
+        result["diagnostics"] = cls._measure_component(
+            "research_diagnostics",
+            _component_telemetry,
+            _monotonic,
+            lambda: cls.load_engines()["diagnostics"].analyse(result),
         )
 
         # Rebuild once more so the canonical portfolio-facing record contains

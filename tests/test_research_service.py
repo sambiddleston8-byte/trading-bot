@@ -34,6 +34,14 @@ class FakePipeline:
         }
 
 
+class FakeTelemetryPipeline(FakePipeline):
+    @staticmethod
+    def analyse_with_telemetry(ticker, save=False):
+        return FakePipeline.analyse(ticker, save=save), [
+            {"component": "core_analysis", "duration_ms": 12.5}
+        ]
+
+
 def test_run_saves_canonical_record():
     previous_directory = ResearchService.OUTPUT_DIRECTORY
     with tempfile.TemporaryDirectory() as directory:
@@ -52,6 +60,18 @@ def test_rejects_invalid_ticker():
     except ValueError:
         return
     raise AssertionError("Invalid ticker was accepted.")
+
+
+def test_run_returns_telemetry_without_persisting_it_in_research_result():
+    previous_directory = ResearchService.OUTPUT_DIRECTORY
+    with tempfile.TemporaryDirectory() as directory:
+        ResearchService.OUTPUT_DIRECTORY = Path(directory)
+        completed = ResearchService.run("NVDA", pipeline=FakeTelemetryPipeline)
+        assert completed["component_telemetry"] == [
+            {"component": "core_analysis", "duration_ms": 12.5}
+        ]
+        assert "component_telemetry" not in completed["result"]
+    ResearchService.OUTPUT_DIRECTORY = previous_directory
 
 
 if __name__ == "__main__":
