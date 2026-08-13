@@ -314,6 +314,14 @@ observations whose outcomes reach the test boundary are purged, a fixed post-
 test embargo is declared, test windows cannot overlap and test observations
 cannot be reused. The fold builder trains no model and runs no replay.
 
+The replay execution contract now forbids decision-price and same-close fills.
+It requires the first eligible next tradable observation, market calendar and
+halt handling, volume evidence, participation caps, partial fills, rejections,
+cancellations, cash/position/settlement/fractional-share checks and applicable
+regulatory or borrow costs. Base and pessimistic scenarios are separate; each
+pessimistic cost is at least twice base and must pass. This is a policy only:
+it generates no fill, performance result, broker request or order.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;
