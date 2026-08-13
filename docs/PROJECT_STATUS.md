@@ -529,6 +529,11 @@ learning.
   fixed pass fraction and every robustness dimension must pass. The strategy
   registry can no longer advance a plain out-of-sample result; only verified
   robustness evidence can make a candidate eligible for future shadow testing.
+- Phase 10 now implements real local disposable experiment storage: an exact
+  marker-authorized root, private manifest and SQLite database, bounded retention
+  and safe expiry. Path escapes, symlinks, tampering, early deletion and unknown
+  files fail closed. It is not yet invoked by a runner and touched no repository
+  or research data.
 
 ## Safety invariants
 
