@@ -42,10 +42,10 @@ def test_learning_is_neutral_without_closed_outcomes():
 
 def test_unvalidated_valuation_cannot_enter_the_portfolio():
     record = complete_record()
-    record["valuation_confidence"] = "INSUFFICIENT_DATA"
+    record["valuation_input_consistency"] = "INSUFFICIENT_DATA"
     result = MasterPortfolioDecisionEngine.evaluate(record)
     assert result["portfolio_recommendation"] == "EXCLUDE"
-    assert "Valuation forecast confidence" in result["hard_gate_reasons"][-1]
+    assert "Valuation estimate consistency" in result["hard_gate_reasons"][-1]
 
 
 def test_moderately_terminal_sensitive_model_can_be_conditionally_eligible():

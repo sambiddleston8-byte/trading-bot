@@ -139,7 +139,9 @@ class MasterPortfolioDecisionEngine:
         audit = cls.mapping(item.get("audit"))
         thesis = cls.mapping(item.get("thesis"))
         expected_return = cls.number(item.get("expected_return"))
-        valuation_confidence = str(item.get("valuation_confidence") or "").upper()
+        valuation_input_consistency = str(
+            item.get("valuation_input_consistency") or ""
+        ).upper()
         valuation_quality = cls.mapping(item.get("valuation_quality"))
 
         if item.get("research_status") != "COMPLETE":
@@ -154,8 +156,8 @@ class MasterPortfolioDecisionEngine:
             reasons.append("Expected return is unavailable.")
         elif expected_return <= 0:
             reasons.append("Expected return is not positive after valuation assumptions.")
-        if valuation_confidence in {"INSUFFICIENT_DATA", "UNAVAILABLE"}:
-            reasons.append("Valuation forecast confidence is not sufficient for portfolio use.")
+        if valuation_input_consistency in {"INSUFFICIENT_DATA", "UNAVAILABLE"}:
+            reasons.append("Valuation estimate consistency is not sufficient for portfolio use.")
         if valuation_quality.get("assessment") == "FAIL":
             reasons.append("Valuation quality review has not cleared the model for portfolio use.")
         return reasons
@@ -309,7 +311,8 @@ class MasterPortfolioDecisionEngine:
             "components": {
                 "investment_case_score": base,
                 "expected_return": expected_return,
-                "valuation_confidence": item.get("valuation_confidence"),
+                "valuation_input_consistency": item.get("valuation_input_consistency"),
+                "forecast_accuracy_status": item.get("forecast_accuracy_status"),
                 "valuation_quality": valuation_quality,
                 "technical_score": technical,
                 "risk_score": risk,

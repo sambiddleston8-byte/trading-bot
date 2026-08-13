@@ -229,6 +229,22 @@ not validate forecasts, clear the methodology gate, recommend a position,
 enable learning or authorize broker submission. Pipeline capture and the other
 four trust-critical repairs remain separate work.
 
+### Forecast-semantics correction
+
+The active research route no longer treats agreement between revenue-growth and
+EPS-growth estimates as forecast accuracy. The validator now calls this
+`estimate_consistency`, records that realised forecast accuracy is uncalibrated,
+and explicitly forbids use as a decision-score multiplier. Estimate consistency
+remains visible as an input-quality warning and can still fail a valuation when
+forward inputs are missing, but agreement no longer boosts or suppresses the
+forward-expectations score.
+
+The canonical contract and master portfolio decision now expose separate
+`valuation_input_consistency` and `forecast_accuracy_status` fields. The active
+pipeline version is advanced so new records cannot be confused with saved
+research produced under the old semantics. Genuine accuracy calibration still
+requires complete realised outcomes under the preregistered Phase 5 policy.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;

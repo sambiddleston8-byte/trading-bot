@@ -164,7 +164,7 @@ class InvestmentDecisionEngine:
         self,
         revenue_growth,
         eps_growth,
-        forecast_confidence,
+        estimate_consistency=None,
     ):
 
         revenue_growth = self.number(
@@ -217,19 +217,9 @@ class InvestmentDecisionEngine:
 
         score = sum(scores) / len(scores)
 
-        confidence_multiplier = {
-            "HIGH": 1.00,
-            "MEDIUM": 0.90,
-            "LOW": 0.75,
-            "REVIEW": 0.80,
-        }.get(
-            str(
-                forecast_confidence
-            ).upper(),
-            0.85,
-        )
-
-        return score * confidence_multiplier
+        # Agreement between revenue and EPS estimates is not realised
+        # forecast accuracy, so it must not alter candidate ordering.
+        return score
 
     # ========================================================
     # DECISION
@@ -329,10 +319,11 @@ class InvestmentDecisionEngine:
             )
         )
 
-        forecast_confidence = (
+        estimate_consistency = (
             forecast_validation
             .get(
-                "overall_confidence"
+                "estimate_consistency",
+                forecast_validation.get("overall_confidence"),
             )
         )
 
@@ -439,7 +430,7 @@ class InvestmentDecisionEngine:
             self.forward_expectation_score(
                 forward_revenue_growth,
                 forward_eps_growth,
-                forecast_confidence,
+                estimate_consistency,
             )
         )
 
@@ -582,8 +573,11 @@ class InvestmentDecisionEngine:
                 "forward_eps_growth":
                     forward_eps_growth,
 
-                "forecast_confidence":
-                    forecast_confidence,
+                "estimate_consistency":
+                    estimate_consistency,
+
+                "forecast_accuracy_status":
+                    "UNCALIBRATED_NO_REALISED_OUTCOME_EVIDENCE",
 
             },
 
@@ -592,8 +586,11 @@ class InvestmentDecisionEngine:
                 "fundamental":
                     fundamental_confidence,
 
-                "forecast":
-                    forecast_confidence,
+                "forecast_accuracy":
+                    "UNCALIBRATED_NO_REALISED_OUTCOME_EVIDENCE",
+
+                "estimate_consistency":
+                    estimate_consistency,
 
             },
 

@@ -10,7 +10,7 @@ def valid_inputs():
             "Forecast Validation": {"Overall Confidence": "HIGH"},
             "Terminal Value Contribution": 0.70,
         },
-        {"confidence": {"forecast": "HIGH"}},
+        {"confidence": {"estimate_consistency": "HIGH"}},
     )
 
 
@@ -22,10 +22,13 @@ def test_validated_dcf_passes_quality_check():
 
 def test_unvalidated_forecast_fails_quality_check():
     valuation, decision = valid_inputs()
-    decision["confidence"]["forecast"] = "INSUFFICIENT_DATA"
+    decision["confidence"]["estimate_consistency"] = "INSUFFICIENT_DATA"
     result = ValuationQualityEngine.assess(valuation, decision)
     assert result["assessment"] == "FAIL"
     assert result["failures"]
+    assert result["forecast_accuracy_status"] == (
+        "UNCALIBRATED_NO_REALISED_OUTCOME_EVIDENCE"
+    )
 
 
 def test_terminal_dominance_is_visible_for_review():
