@@ -35,6 +35,13 @@ only; it cannot become an automatic/copy-trading signal, connect to a broker,
 submit an order or enable live trading. Synthetic tests use no real politician
 data.
 
+The source-activation preflight now converts this policy into a fail-closed
+technical boundary. It requires hashed terms evidence and affirmative legal and
+automation findings; a commercial source additionally requires an in-force
+licensed-feed contract. Even a passing assessment grants only permission to
+review a separate connector design. See
+`docs/PHASE_7_SOURCE_TERMS_ASSESSMENT.md`.
+
 ## Point-in-time activity snapshots
 
 Issue #131 adds deterministic issuer-level research snapshots using only
