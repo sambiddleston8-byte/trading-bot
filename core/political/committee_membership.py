@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta, timezone
 import hashlib
 import re
 from typing import Any, Mapping
+from urllib.parse import urlsplit
 
 from core.decision_ledger import canonical_timestamp
 from core.performance.portfolio_valuation import _canonical_json
@@ -61,8 +62,13 @@ def create_committee_membership(
     if known > datetime.now(timezone.utc) + MAX_CLOCK_SKEW:
         raise ValueError("evidence_known_at cannot be in the future")
     uri = _required(source_url, "source_url", 1000)
-    if not uri.startswith("https://"):
-        raise ValueError("source_url must be HTTPS")
+    parsed = urlsplit(uri)
+    if (
+        parsed.scheme != "https" or not parsed.hostname
+        or parsed.username or parsed.password
+        or any(character.isspace() for character in uri)
+    ):
+        raise ValueError("source_url must be a safe HTTPS URL")
     evidence_hash = _required(evidence_sha256, "evidence_sha256", 64).lower()
     if not _SHA256.fullmatch(evidence_hash):
         raise ValueError("evidence_sha256 must be a lowercase SHA-256 digest")

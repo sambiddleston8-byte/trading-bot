@@ -660,6 +660,10 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   commercial provider additionally requires an in-force licensed-feed contract.
   Passing permits only a separate connector review; no connector, scraper,
   download, signal or trading authority is created.
+  A retrospective Claude review found that the original official-source
+  commercial-use condition duplicated the general legal flag and could be
+  bypassed by caller-supplied text. Policy v2 now blocks official House/Senate
+  commercial investment use unconditionally and also hardens evidence URLs.
 - Phase 7 now has a point-in-time issuer-mapping boundary for future connector
   work. It requires a stable reviewed issuer identifier, exact asset-name match,
   effective period, knowledge timestamp and hashed evidence. Hindsight,

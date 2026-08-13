@@ -69,10 +69,27 @@ def test_licensed_provider_can_only_reach_connector_review_not_ingestion():
     assert result["scraper_enabled"] is False
 
 
+@pytest.mark.parametrize("source", ["OFFICIAL_HOUSE", "OFFICIAL_SENATE"])
+def test_official_source_commercial_investment_use_is_always_blocked(source):
+    result = assess(
+        source=source,
+        intended_use="COMMERCIAL_INVESTMENT_RESEARCH",
+        legal_use_permitted=True,
+        automated_access_permitted=True,
+    )
+    assert result["status"] == "BLOCKED"
+    assert result["source_approved"] is False
+    assert "Current policy prohibits" in " ".join(result["reasons"])
+    assert result["connector_implemented"] is False
+    assert result["data_downloaded"] is False
+
+
 @pytest.mark.parametrize(
     "overrides",
     [
         {"terms_uri": "http://example.com/terms"},
+        {"terms_uri": "https://user:password@example.com/terms"},
+        {"terms_uri": "https://example.com/bad\nterms"},
         {"terms_content_sha256": "bad"},
         {"reviewed_on": "13/08/2026"},
         {"reviewed_on": "2999-01-01"},

@@ -9,7 +9,7 @@ from typing import Any, Mapping
 from urllib.parse import urlsplit
 
 
-POLICY_VERSION = "congressional-source-activation-preflight-v1"
+POLICY_VERSION = "congressional-source-activation-preflight-v2"
 OFFICIAL_SOURCES = {"OFFICIAL_HOUSE", "OFFICIAL_SENATE"}
 LICENSED_SOURCES = {"CAPITOL_TRADES", "LICENSED_PROVIDER"}
 ALLOWED_USES = {"PRIVATE_NONCOMMERCIAL_RESEARCH", "COMMERCIAL_INVESTMENT_RESEARCH"}
@@ -55,7 +55,11 @@ def assess_source_activation(
         raise ValueError("intended_use is unsupported")
     uri = _required(terms_uri, "terms_uri")
     parsed = urlsplit(uri)
-    if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+    if (
+        parsed.scheme != "https" or not parsed.hostname
+        or parsed.username or parsed.password
+        or any(character.isspace() for character in uri)
+    ):
         raise ValueError("terms_uri must be a safe HTTPS URL")
     content_hash = _sha256(terms_content_sha256, "terms_content_sha256")
     try:
@@ -73,8 +77,11 @@ def assess_source_activation(
     if resolved_source in LICENSED_SOURCES and licensed_feed_contract_in_force is not True:
         reasons.append("A commercial provider requires an express licensed feed contract.")
     if resolved_source in OFFICIAL_SOURCES and use == "COMMERCIAL_INVESTMENT_RESEARCH":
-        if legal_use_permitted is not True:
-            reasons.append("Official disclosure commercial-use restrictions remain unresolved.")
+        reasons.append(
+            "Current policy prohibits official disclosure sources for commercial "
+            "investment research; use an expressly licensed provider or adopt a "
+            "separately reviewed future policy."
+        )
     identity = {
         "policy_version": POLICY_VERSION,
         "source": resolved_source,

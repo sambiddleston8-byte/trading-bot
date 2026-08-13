@@ -108,6 +108,9 @@ def test_same_identifier_from_two_evidence_records_is_unambiguous():
         {"effective_to": "2024-01-01"},
         {"mapping_known_at": "2999-01-01T00:00:00+00:00"},
         {"source_url": "http://example.com"},
+        {"source_url": "https://"},
+        {"source_url": "https://user:password@example.com/evidence"},
+        {"source_url": "https://example.com/bad\npath"},
         {"evidence_sha256": "bad"},
     ],
 )
