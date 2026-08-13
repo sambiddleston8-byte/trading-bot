@@ -355,6 +355,20 @@ terminal outcomes. The record cannot purchase a subscription, store a
 credential, fetch data, certify coverage, run a replay or make a performance or
 trading claim. No provider is currently approved.
 
+The next fail-closed boundary can admit a future sealed replay package only
+when its exact manifest bytes reproduce the commitment in the preregistered
+plan. That manifest must link authenticated source bytes for historical
+membership, delisting outcomes, corporate actions, total-return prices,
+point-in-time fundamentals and market calendars/halts. Its bounded membership
+certificates must cover every planned index and the entire evaluation interval
+without a gap, use the approved source and match the authenticated membership
+artifact. Exact authenticated terms must match the human approval. The system
+enforces the preregistered access time before reading the manifest or any
+artifact and creates no performance or trading authority. No evaluation
+dataset has been populated, opened or replayed. Exact authenticated terms must
+exist before approval, approval must precede access, and provider-host matching
+prevents an approval for one source being silently reused for another.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;

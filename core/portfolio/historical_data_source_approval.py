@@ -77,6 +77,17 @@ def _https(value: Any, name: str) -> str:
     return resolved
 
 
+def _hosts(values: Sequence[str]) -> list[str]:
+    hosts = sorted({_required(value, "approved_data_host", 253).lower() for value in values})
+    if not hosts:
+        raise ValueError("approved_data_hosts cannot be empty")
+    for host in hosts:
+        parsed = urlsplit(f"https://{host}")
+        if parsed.hostname != host or parsed.port or "/" in host or "@" in host:
+            raise ValueError("approved_data_hosts must contain bare lowercase hostnames")
+    return hosts
+
+
 def _set(values: Sequence[str], name: str, allowed: set[str]) -> list[str]:
     resolved = sorted({_required(value, name, 100).upper() for value in values})
     if not resolved or any(value not in allowed for value in resolved):
@@ -125,6 +136,7 @@ class HistoricalDataSourceApprovalLedger:
         terms_url: str,
         terms_content_sha256: str,
         terms_review_reference: str,
+        approved_data_hosts: Sequence[str],
         approved_universes: Sequence[str],
         permitted_uses: Sequence[str],
         coverage_not_before: str | date,
@@ -172,6 +184,7 @@ class HistoricalDataSourceApprovalLedger:
             "terms_url": _https(terms_url, "terms_url"),
             "terms_content_sha256": terms_hash,
             "terms_review_reference": _required(terms_review_reference, "terms_review_reference"),
+            "approved_data_hosts": _hosts(approved_data_hosts),
             "approved_universes": _set(approved_universes, "approved_universes", SUPPORTED_UNIVERSES),
             "permitted_uses": _set(permitted_uses, "permitted_uses", PERMITTED_USES),
             "coverage_not_before": start.isoformat(),
@@ -209,6 +222,7 @@ class HistoricalDataSourceApprovalLedger:
                 _https(record.get("provider_url"), "provider_url")
                 _https(record.get("terms_url"), "terms_url")
                 _required(record.get("terms_review_reference"), "terms review")
+                hosts = _hosts(record.get("approved_data_hosts") or [])
                 _required(record.get("approved_by"), "approved_by", 100)
                 universes = _set(record.get("approved_universes") or [], "universes", SUPPORTED_UNIVERSES)
                 uses = _set(record.get("permitted_uses") or [], "uses", PERMITTED_USES)
@@ -237,6 +251,7 @@ class HistoricalDataSourceApprovalLedger:
                 and record.get("status") == "APPROVED_FOR_BOUNDED_LOCAL_REPLAY_INPUTS"
                 and universes == record.get("approved_universes")
                 and uses == record.get("permitted_uses")
+                and hosts == record.get("approved_data_hosts")
                 and end > start
                 and approved <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
                 and isinstance(record.get("redistribution_allowed"), bool)

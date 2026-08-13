@@ -44,6 +44,16 @@ def test_identical_ingest_is_idempotent(tmp_path):
     assert len(target.verify()) == 1
 
 
+def test_reads_only_reverified_exact_content(tmp_path):
+    target = ledger(tmp_path)
+    record = ingest(target)
+    verified, payload = target.read_verified(record["content_evidence_id"])
+    assert verified == record
+    assert payload == b'{"rate":"0.04"}'
+    with pytest.raises(ValueError, match="not found"):
+        target.read_verified("SRC-MISSING")
+
+
 def test_changed_blob_or_missing_blob_fails_authentication(tmp_path):
     target = ledger(tmp_path)
     record = ingest(target)

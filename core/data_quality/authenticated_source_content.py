@@ -211,6 +211,21 @@ class AuthenticatedSourceContentLedger:
             previous_hash = record["record_hash"]
         return records
 
+    def read_verified(self, content_evidence_id: str) -> tuple[dict[str, Any], bytes]:
+        """Return exact bytes only after the entire content ledger verifies."""
+        identifier = _required(content_evidence_id, "content_evidence_id")
+        record = next(
+            (item for item in self.verify() if item["content_evidence_id"] == identifier),
+            None,
+        )
+        if record is None:
+            raise ValueError("Authenticated source content was not found")
+        blob_path = self.blob_directory / record["blob_relative_path"]
+        payload = blob_path.read_bytes()
+        if hashlib.sha256(payload).hexdigest() != record["source_input_sha256"]:
+            raise LedgerIntegrityError("Authenticated source bytes changed after verification.")
+        return record, payload
+
     def _append(
         self, result: dict[str, Any], *, payload: bytes, allow_existing: bool
     ) -> dict[str, Any]:
