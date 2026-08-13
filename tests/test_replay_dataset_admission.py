@@ -8,6 +8,7 @@ from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError
 from core.orchestration.replay_dataset_admission import (
     REQUIRED_ROLES,
     ReplayDatasetAdmissionLedger,
+    _manifest,
 )
 
 
@@ -144,6 +145,19 @@ def test_links_exact_sealed_manifest_without_interpreting_observations_or_runnin
     ):
         assert record[field] is False
     assert ledger.verify() == [record]
+
+
+def test_manifest_rejects_two_artifacts_claiming_the_same_role(tmp_path):
+    values = inputs(tmp_path)
+    contents = values[2]
+    manifest = values[5]
+    _, payload = contents.read_verified(manifest["content_evidence_id"])
+    parsed = json.loads(payload)
+    duplicate = dict(parsed["artifacts"][0])
+    duplicate["content_evidence_id"] = "CONTENT-DIFFERENT"
+    parsed["artifacts"].append(duplicate)
+    with pytest.raises(ValueError, match="duplicate role"):
+        _manifest(json.dumps(parsed).encode())
 
 
 def test_manifest_cannot_be_opened_before_preregistered_access_time(tmp_path):
