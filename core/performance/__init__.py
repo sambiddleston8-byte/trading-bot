@@ -11,6 +11,7 @@ from core.performance.daily_position_value import DailyPositionValueLedger
 from core.performance.downside_target_policy import DownsideTargetPolicyLedger
 from core.performance.effectiveness_cohort import EffectivenessCohortAssignmentLedger
 from core.performance.effectiveness_summary import EffectivenessSummaryEngine
+from core.performance.event_aware_position_state import EventAwarePaperPositionStateLedger
 from core.performance.daily_risk_statistics import DailyRiskStatisticsLedger
 from core.performance.daily_risk_free_return import DailyRiskFreeReturnLedger
 from core.performance.factor_exposure_evidence import FactorExposureEvidenceLedger
@@ -66,6 +67,7 @@ __all__ = [
     "DownsideTargetPolicyLedger",
     "EffectivenessCohortAssignmentLedger",
     "EffectivenessSummaryEngine",
+    "EventAwarePaperPositionStateLedger",
     "DailyRiskStatisticsLedger",
     "DailyRiskFreeReturnLedger",
     "FactorExposureEvidenceLedger",
