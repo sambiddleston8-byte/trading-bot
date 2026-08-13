@@ -165,11 +165,13 @@ JSON-only reallocation path.
 6. Only after user approval, make PostgreSQL authoritative for the paper pilot.
 
 Before step 6 can even be presented for approval, a pure cutover-readiness gate
-must pass. It requires at least 30 consecutive, distinct portfolio changes with
-exact local/PostgreSQL comparison matches; identical local and database decision
+must pass. It requires a trailing run of at least 30 exact local/PostgreSQL
+matches for distinct portfolio changes from contiguous, strictly time-ordered
+comparison evidence; identical local and database decision
 ledger counts and tail hashes; all required migrations; no undelivered outbox
 events; no failed/running jobs; and an exact isolated restore rehearsal no more
-than seven days old. The result is fingerprinted and only says
+than seven days old when measured against the system clock. The result is
+fingerprinted and only says
 `EVIDENCE_READY_FOR_HUMAN_DECISION`. It cannot change `PERSISTENCE_MODE`, make
 PostgreSQL authoritative, deploy AWS, authorize spend or enable trading.
 

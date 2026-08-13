@@ -765,6 +765,13 @@ fresh successful isolated restore rehearsal. Passing only creates fingerprinted
 evidence for a later human decision; it cannot switch persistence, deploy AWS,
 authorize spending or enable trading. No real cutover certificate has passed.
 
+A retrospective Claude review found that the original gate could not prove an
+unbroken chronological run and could measure restore age against a caller-
+selected past assessment time. Policy v2 now requires contiguous sequence
+numbers, strictly increasing non-future observation times, calculates only the
+trailing exact-match run, uses the system clock for restore freshness and turns
+malformed outbox/job counters into structured blocked evidence.
+
 The configured FMP key has now been authenticated and capability-probed without
 printing secrets or financial values. Delisted companies, as-reported
 financials, dividend-adjusted prices and splits are available, while historical
