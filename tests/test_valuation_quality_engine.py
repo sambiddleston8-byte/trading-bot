@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from core.data_quality.authenticated_source_content import AuthenticatedSourceContentLedger
 from core.research.valuation_quality_engine import ValuationQualityEngine
 
@@ -166,6 +168,49 @@ def test_rate_sanity_and_substantive_sensitivity_grid_are_required():
     result = ValuationQualityEngine.assess(valuation, decision)
     assert result["sensitivity_matrix_complete"] is False
     assert any("three" in item for item in result["failures"])
+
+
+@pytest.mark.parametrize("invalid", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_authenticated_assumption_cannot_clear_dcf_gate(tmp_path, invalid):
+    valuation, decision = valid_inputs()
+    valuation["DCF Assumption Evidence"]["beta"]["value"] = invalid
+    sources = authenticate_assumptions(tmp_path, valuation)
+    result = ValuationQualityEngine.assess(valuation, decision, sources)
+    assert result["assessment"] == "FAIL"
+    assert result["portfolio_expected_return_eligible"] is False
+    assert result["dcf_assumption_evidence_complete"] is False
+    assert any("beta" in item for item in result["failures"])
+
+
+@pytest.mark.parametrize(
+    "path,invalid",
+    [
+        (("Current Price",), float("nan")),
+        (("Intrinsic Value", "Base"), float("inf")),
+        (("Expected Return", "Base"), float("-inf")),
+        (("WACC",), float("nan")),
+        (("Terminal Growth",), float("inf")),
+    ],
+)
+def test_nonfinite_valuation_outputs_fail_closed(path, invalid):
+    valuation, decision = valid_inputs()
+    target = valuation
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = invalid
+    result = ValuationQualityEngine.assess(valuation, decision)
+    assert result["assessment"] == "FAIL"
+    assert result["portfolio_expected_return_eligible"] is False
+
+
+@pytest.mark.parametrize("invalid", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_sensitivity_value_cannot_clear_grid(invalid):
+    valuation, decision = valid_inputs()
+    valuation["DCF Sensitivity Matrix"]["wacc_values"][1] = invalid
+    result = ValuationQualityEngine.assess(valuation, decision)
+    assert result["assessment"] == "FAIL"
+    assert result["sensitivity_matrix_complete"] is False
+    assert any("decimal rates" in item for item in result["failures"])
 
 
 if __name__ == "__main__":
