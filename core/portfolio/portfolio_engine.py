@@ -207,22 +207,11 @@ class PortfolioEngine:
         score = base
 
         master_decision = cls.safe_dict(item.get("master_decision"))
-        master_conviction = cls.number(master_decision.get("conviction_score"))
-        if master_conviction is not None:
-            confidence_detail = cls.safe_dict(master_decision.get("research_confidence"))
-            research_confidence = cls.number(confidence_detail.get("score"))
-            if research_confidence is None:
-                research_confidence = cls.number(master_decision.get("confidence"))
-            if research_confidence is None:
-                return None
-            # This preserves the differences between the master decision and
-            # research confidence instead of compressing strong candidates
-            # into the same score band. It is not clipped below 100.
-            combined = max(
-                0.0,
-                (master_conviction * 0.80) + (research_confidence * 0.20),
-            )
-            return round(combined, 2)
+        authoritative_opportunity = cls.number(
+            master_decision.get("opportunity_score")
+        )
+        if authoritative_opportunity is not None:
+            return round(max(0.0, min(100.0, authoritative_opportunity)), 2)
 
         expected_return = cls.number(
             item.get(
@@ -414,13 +403,7 @@ class PortfolioEngine:
 
     @classmethod
     def decision_rating_detail(cls, item):
-        """Return the visible 0-100 decision rating and its disclosed inputs.
-
-        This rating is a ranking aid, not a probability of success.  It is
-        deliberately separate from sizing and evidence confidence so the
-        application does not imply that a high-quality research record is a
-        certain investment outcome.
-        """
+        """Display the authoritative opportunity score without recalculating it."""
         candidate = cls.safe_dict(item)
         opportunity = cls.number(candidate.get("portfolio_conviction"))
         if opportunity is None:
@@ -430,104 +413,14 @@ class PortfolioEngine:
             opportunity = cls.number(master.get("opportunity_score"))
         opportunity_score = min(100.0, max(0.0, opportunity or 0.0))
 
-        confidence = cls.number(candidate.get("research_confidence"))
-        if confidence is None:
-            master = cls.safe_dict(candidate.get("master_decision"))
-            confidence = cls.number(
-                cls.safe_dict(master.get("research_confidence")).get("score")
-            ) or cls.number(master.get("confidence"))
-        # Research confidence is already a 0–100 evidence-quality measure.
-        # Do not rescale it to a legacy 90-point ceiling; doing so would make
-        # incomplete evidence look more certain than the underlying record.
-        evidence_score = min(100.0, max(0.0, confidence or 0.0))
-
-        expected_return = cls.number(candidate.get("expected_return"))
-        expected_return_score = 35.0 if expected_return is None else min(
-            100.0,
-            max(0.0, ((expected_return + 0.20) / 0.50) * 100.0),
-        )
-
-        valuation_quality = cls.safe_dict(candidate.get("valuation_quality"))
-        valuation_assessment = str(valuation_quality.get("assessment") or "").upper()
-        valuation_score = {
-            "PASS": 100.0,
-            "REVIEW": 55.0,
-            "FAIL": 0.0,
-        }.get(valuation_assessment, 45.0)
-
-        signals = cls.safe_dict(candidate.get("market_signals"))
-        risk_score = min(100.0, max(0.0, cls.number(signals.get("risk_score")) or 35.0))
-        technical_score = min(100.0, max(0.0, cls.number(signals.get("technical_score")) or 35.0))
-
-        thesis = cls.safe_dict(candidate.get("thesis"))
-        if thesis.get("thesis_survives") is True:
-            thesis_score = 100.0
-        elif thesis.get("thesis_survives") is False:
-            thesis_score = 25.0
-        else:
-            thesis_score = 50.0
-
-        evidence = cls.safe_dict(candidate.get("provider_evidence"))
-        source_count = cls.number(evidence.get("completed_evidence_count"))
-        if source_count is None:
-            source_count = cls.number(evidence.get("completed_source_count"))
-        source_breadth_score = 35.0 if source_count is None else min(
-            100.0,
-            max(0.0, source_count / 8.0 * 100.0),
-        )
-
-        raw = (
-            opportunity_score * 0.30
-            + evidence_score * 0.20
-            + expected_return_score * 0.15
-            + valuation_score * 0.10
-            + risk_score * 0.08
-            + technical_score * 0.05
-            + thesis_score * 0.07
-            + source_breadth_score * 0.05
-        )
-        # The weighted average preserves material differences between
-        # candidates. A small, explicit residual-uncertainty deduction means
-        # no investment is presented as a false 100/100 certainty score.
-        uncertainty_inputs = [
-            evidence_score,
-            valuation_score,
-            risk_score,
-            technical_score,
-            thesis_score,
-            source_breadth_score,
-        ]
-        residual_uncertainty = max(
-            0.25,
-            sum(100.0 - value for value in uncertainty_inputs) / len(uncertainty_inputs) * 0.05,
-        )
-        score = round(max(0.0, raw - residual_uncertainty), 1)
         return {
-            "score": score,
+            "score": round(opportunity_score, 2),
             "maximum_score": 100.0,
-            "label": "Decision rating",
-            "meaning": "A 0-100 ranking score with an explicit residual-uncertainty deduction; it is not a probability of return.",
-            "formula": {
-                "opportunity": 0.30,
-                "evidence_quality": 0.20,
-                "expected_return": 0.15,
-                "valuation_reliability": 0.10,
-                "risk_quality": 0.08,
-                "technical_context": 0.05,
-                "thesis_strength": 0.07,
-                "source_breadth": 0.05,
-            },
-            "components": {
-                "opportunity": round(opportunity_score, 1),
-                "evidence_quality": round(evidence_score, 1),
-                "expected_return": round(expected_return_score, 1),
-                "valuation_reliability": valuation_score,
-                "risk_quality": round(risk_score, 1),
-                "technical_context": round(technical_score, 1),
-                "thesis_strength": thesis_score,
-                "source_breadth": round(source_breadth_score, 1),
-                "residual_uncertainty_deduction": round(residual_uncertainty, 2),
-            },
+            "label": "Opportunity score",
+            "meaning": "Display-only pass-through of the single authoritative synthesis opportunity score; not a probability of return.",
+            "formula": "NO_RECALCULATION",
+            "source": "master_decision.opportunity_score",
+            "display_only": True,
         }
 
     # ========================================================
@@ -612,11 +505,17 @@ class PortfolioEngine:
             )
 
         candidates.sort(
-            key=lambda item:
-                cls.number(cls.safe_dict(item.get("decision_rating")).get("score"))
-                or cls.number(item.get("portfolio_conviction"))
-                or -1,
-            reverse=True,
+            key=lambda item: (
+                -(
+                    cls.number(
+                        cls.safe_dict(item.get("master_decision")).get(
+                            "opportunity_score"
+                        )
+                    )
+                    or -1
+                ),
+                str(item.get("ticker") or ""),
+            )
         )
 
         return candidates

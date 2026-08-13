@@ -12,10 +12,11 @@ from typing import Any
 
 from core.portfolio.portfolio_confidence_engine import PortfolioConfidenceEngine
 from core.research.catalyst_validation_engine import CatalystValidationEngine
+from core.research.factor_lineage import active_factor_lineage_policy
 
 
 class MasterPortfolioDecisionEngine:
-    VERSION = "2.7-validated-catalyst-and-context"
+    VERSION = "2.8-single-authoritative-opportunity-score"
     MAX_OPPORTUNITY_SCORE = 100.0
     MIN_ELIGIBLE_OPPORTUNITY = 65.0
     MIN_ELIGIBLE_CONFIDENCE = 60.0
@@ -219,39 +220,18 @@ class MasterPortfolioDecisionEngine:
         terminal_value = cls.number(valuation_quality.get("terminal_value_contribution"))
         caution_reasons: list[str] = []
 
-        raw_score = base
-        raw_score += min(12.0, max(-6.0, expected_return * 20.0))
-        if technical is not None:
-            raw_score += max(-5.0, min(5.0, (technical - 50.0) / 10.0))
-        if risk is not None:
-            raw_score += max(-8.0, min(4.0, (risk - 50.0) / 7.5))
-        if sentiment_score is not None and str(sentiment.get("confidence", "")).upper() in {"HIGH", "VERY_HIGH"}:
-            raw_score += max(-2.0, min(2.0, (sentiment_score - 50.0) / 10.0))
-        raw_score += catalyst
-        raw_score += specialist_coverage_adjustment
-        raw_score += provider_evidence_adjustment
-        raw_score += valuation_reliability_adjustment
-        raw_score += market_context_adjustment
-        if thesis.get("thesis_survives") is False:
-            raw_score -= 4.0 + min(4.0, material_negative * 2.0)
-        if (
-            str(valuation_quality.get("assessment") or "").upper() == "REVIEW"
-            and terminal_value is not None
-            and terminal_value > 0.75
-        ):
-            raw_score -= 5.0
+        # Synthesis owns the only opportunity-ranking score. Everything here
+        # is a gate or an explanation; re-adding the same economics would
+        # manufacture extra votes from correlated evidence.
+        raw_score = max(0.0, min(100.0, base))
 
         learning = cls.mapping(learning_adjustment)
-        if learning.get("status") == "READY":
-            adjustment = cls.number(learning.get("adjustment")) or 0.0
-            raw_score += max(-5.0, min(5.0, adjustment))
-        else:
+        if learning.get("status") != "READY":
             learning = {"status": "INSUFFICIENT_EVIDENCE", "adjustment": 0.0}
+        else:
+            learning = {**learning, "adjustment_applied_to_ranking": False}
 
-        if audit.get("status") == "PASS_WITH_WARNINGS":
-            raw_score -= min(6.0, 2.0 * (cls.number(audit.get("medium")) or 0.0))
-
-        opportunity = cls.calibrate_opportunity_score(raw_score)
+        opportunity = round(raw_score, 2)
         confidence_detail = PortfolioConfidenceEngine.evaluate(item)
         confidence = confidence_detail["score"]
 
@@ -309,6 +289,7 @@ class MasterPortfolioDecisionEngine:
             "hard_gate_reasons": reasons,
             "caution_reasons": caution_reasons,
             "components": {
+                "factor_lineage_policy": active_factor_lineage_policy(),
                 "investment_case_score": base,
                 "expected_return": expected_return,
                 "valuation_input_consistency": item.get("valuation_input_consistency"),
@@ -326,5 +307,6 @@ class MasterPortfolioDecisionEngine:
                 "market_context_reasons": market_context_reasons,
                 "learning": learning,
                 "raw_opportunity_score": round(raw_score, 2),
+                "downstream_ranking_adjustments_applied": False,
             },
         }

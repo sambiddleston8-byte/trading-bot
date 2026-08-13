@@ -245,6 +245,23 @@ pipeline version is advanced so new records cannot be confused with saved
 research produced under the old semantics. Genuine accuracy calibration still
 requires complete realised outcomes under the preregistered Phase 5 policy.
 
+### Single opportunity score and factor lineage
+
+The active factor lineage is now executable and versioned. The synthesis
+`investment_case_score` is the single authoritative opportunity-ranking score.
+It owns fundamental quality, valuation attractiveness, validated catalysts,
+adversarial thesis and data quality. The master-decision layer applies hard
+eligibility gates and records explanations but no longer re-adds expected
+return, catalysts, thesis, technical/risk signals, source breadth, market
+context or evidence coverage to manufacture a second ranking score.
+
+Portfolio ranking passes through the authoritative master opportunity score.
+The former third blended decision rating is now display-only and performs no
+recalculation. Evidence quality, volatility, risk quality and valuation
+reliability may still affect position sizing because sizing is a distinct risk
+question; they cannot change rank. A validator fails if a second authoritative
+ranking stage is declared or if two ranking factors point to the same lineage.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;
