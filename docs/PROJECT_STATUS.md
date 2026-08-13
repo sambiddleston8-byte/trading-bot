@@ -437,6 +437,16 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   requires the choice before a future evaluation window, forbids retrospective
   application or same-window replacement, and fixes conservative floors of 252
   total and 30 downside observations. No Sortino is yet calculated.
+- The user has selected zero daily return as the future Sortino downside target.
+  It is distinct from S&P 500 market benchmarking and SOFR-based Sharpe/CAPM.
+  A fail-closed readiness gate now binds the future calculation to the exact
+  preregistered policy and evaluation window, matching strategy/model identity,
+  at least 252 daily observations and at least 30 true downside observations.
+  The gated immutable calculator pins the policy, readiness fingerprint and
+  exact return path, uses the preregistered total-count denominator and fixed
+  252-session annualization, and fails closed on zero downside deviation. No
+  live portfolio/window has been invented or registered, so no actual Sortino
+  has yet been calculated.
 - Phase 5 now pairs each preregistered timestamped prediction to one verified
   simulated total-return result only at its exact declared fixed horizon.
   Confidence and return units are explicit, the decision must predate the fill,
@@ -712,8 +722,8 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
 
 ## Next action
 
-Obtain the user's explicit Sortino target choice, then preregister it for a
-future evaluation window before calculating Sortino. Continue objective Phase 5
+Preregister the user-approved zero-return Sortino target when the next genuine
+portfolio version and future evaluation window are declared. Continue objective Phase 5
 prerequisites that do not depend on that choice meanwhile. The hit-rate and
 calibration policy boundary now exists but requires the user's future explicit
 choices before registration or aggregation. Turnover is a distinct verified
