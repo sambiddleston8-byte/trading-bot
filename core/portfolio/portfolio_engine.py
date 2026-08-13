@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 import json
+import math
 import re
 
 from core.research.master_portfolio_decision_engine import (
@@ -85,9 +86,9 @@ class PortfolioEngine:
             if value is None:
                 return None
 
-            return float(
-                value
-            )
+            resolved = float(value)
+
+            return resolved if math.isfinite(resolved) else None
 
         except (
             TypeError,
@@ -162,6 +163,12 @@ class PortfolioEngine:
             if isinstance(reasons, list) and reasons:
                 return f"Master portfolio decision excludes the company: {reasons[0]}"
             return "Master portfolio decision has not approved the company for allocation."
+        authoritative_opportunity = cls.number(master.get("opportunity_score"))
+        if (
+            authoritative_opportunity is None
+            or not 0.0 <= authoritative_opportunity <= 100.0
+        ):
+            return "Master portfolio opportunity score is unavailable or invalid."
         return None
 
     @classmethod
@@ -169,237 +176,19 @@ class PortfolioEngine:
         cls,
         item,
     ):
-        """
-        Convert the research output into a portfolio
-        opportunity score.
-
-        The research engine remains the primary source of
-        investment quality.
-
-        Portfolio construction then rewards:
-
-        - high investment case score
-        - positive expected return
-        - surviving thesis
-        - clean audit
-        - valuation upside
-
-        and penalises:
-
-        - negative expected return
-        - material thesis negatives
-        - failed / incomplete research
-        """
+        """Pass through the sole authoritative master opportunity score."""
 
         if cls.eligibility_reason(item) is not None:
             return None
-
-        base = cls.number(
-            item.get(
-                "investment_case_score"
-            )
-        )
-
-        if base is None:
-
-            return None
-
-        score = base
 
         master_decision = cls.safe_dict(item.get("master_decision"))
         authoritative_opportunity = cls.number(
             master_decision.get("opportunity_score")
         )
-        if authoritative_opportunity is not None:
-            return round(max(0.0, min(100.0, authoritative_opportunity)), 2)
-
-        expected_return = cls.number(
-            item.get(
-                "expected_return"
-            )
-        )
-
-        # ----------------------------------------------------
-        # Expected return
-        # ----------------------------------------------------
-
-        if expected_return is not None:
-
-            if expected_return >= 0.40:
-
-                score += 12
-
-            elif expected_return >= 0.25:
-
-                score += 9
-
-            elif expected_return >= 0.15:
-
-                score += 6
-
-            elif expected_return >= 0.05:
-
-                score += 2
-
-            elif expected_return < 0:
-
-                score -= 12
-
-            elif expected_return < 0.05:
-
-                score -= 6
-
-        # ----------------------------------------------------
-        # Thesis challenge
-        # ----------------------------------------------------
-
-        thesis = cls.safe_dict(
-            item.get(
-                "thesis"
-            )
-        )
-
-        material_negative = (
-            cls.number(
-                thesis.get(
-                    "material_negative"
-                )
-            )
-            or 0
-        )
-
-        score -= min(
-            material_negative * 2,
-            12,
-        )
-
-        audit = cls.safe_dict(item.get("audit"))
-        medium_findings = cls.number(audit.get("medium")) or 0
-        if audit.get("status") == "PASS_WITH_WARNINGS":
-            score -= min(medium_findings * 2, 6)
-
-        if thesis.get(
-            "thesis_survives"
-        ) is True:
-
-            score += 4
-
-        elif thesis.get(
-            "thesis_survives"
-        ) is False:
-
-            score -= 8
-
-        decision = str(item.get("decision") or "").upper()
-        if decision == "STRONG_BUY":
-            score += 5
-        elif decision == "BUY":
-            score += 2
-        elif decision == "AVOID":
-            score -= 10
-
-        valuation_quality = cls.safe_dict(item.get("valuation_quality"))
-        if valuation_quality.get("assessment") == "REVIEW":
-            score -= 6
-
-        market_signals = cls.safe_dict(
-            item.get("market_signals")
-        )
-
-        risk_score = cls.number(
-            market_signals.get("risk_score")
-        )
-
-        if risk_score is not None:
-
-            if risk_score < 40:
-                score -= 12
-
-            elif risk_score < 60:
-                score -= 5
-
-        else:
-            score -= 8
-
-        technical_score = cls.number(market_signals.get("technical_score"))
-        if technical_score is None:
-            score -= 5
-
-        sentiment = cls.safe_dict(
-            item.get("sentiment")
-        )
-
-        sentiment_score = cls.number(
-            sentiment.get("score")
-        )
-
-        sentiment_confidence = str(
-            sentiment.get("confidence") or ""
-        ).upper()
-
-        # News can only make a small difference when independent evidence is
-        # strong.  It cannot turn an ineligible company into a holding.
-        if sentiment_confidence in {"HIGH", "VERY_HIGH"}:
-            if sentiment_score is not None and sentiment_score >= 65:
-                score += 2
-            elif sentiment_score is not None and sentiment_score <= 35:
-                score -= 2
-
-        # ----------------------------------------------------
-        # Valuation upside
-        # ----------------------------------------------------
-
-        current_price = cls.number(
-            item.get(
-                "current_price"
-            )
-        )
-
-        intrinsic_value = cls.number(
-            item.get(
-                "base_intrinsic_value"
-            )
-        )
-
-        valuation_upside = None
-
-        if (
-            current_price is not None
-            and intrinsic_value is not None
-            and current_price > 0
-        ):
-
-            valuation_upside = (
-                intrinsic_value
-                / current_price
-            ) - 1
-
-            if valuation_upside >= 0.50:
-
-                score += 8
-
-            elif valuation_upside >= 0.25:
-
-                score += 5
-
-            elif valuation_upside >= 0.10:
-
-                score += 3
-
-            elif valuation_upside < 0:
-
-                score -= 8
-
-        return round(
-            max(
-                0,
-                min(
-                    100,
-                    score,
-                ),
-            ),
-            2,
-        )
+        # Eligibility requires a current, finite 0-100 master score. Never
+        # fall back to the obsolete blended formula when that authority is
+        # malformed or unavailable.
+        return round(authoritative_opportunity, 2)
 
     @classmethod
     def decision_rating_detail(cls, item):

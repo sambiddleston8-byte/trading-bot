@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 
 class ResearchContract:
     """
@@ -25,7 +27,9 @@ class ResearchContract:
 
                 return None
 
-            return float(value)
+            resolved = float(value)
+
+            return resolved if math.isfinite(resolved) else None
 
         except (
             TypeError,
