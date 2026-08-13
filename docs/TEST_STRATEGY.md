@@ -11,10 +11,10 @@ calling unrelated systems or paid AI services.
 
 ## Local checkpoint
 
-Run all tests except those marked `live_data`:
+Ordinary local test runs exclude tests marked `live_data` by default:
 
 ```bash
-python -m pytest -q -m "not live_data"
+python -m pytest -q
 ```
 
 These tests must be deterministic, must use temporary paths, and must not write
@@ -22,11 +22,18 @@ to the repository's research history.
 
 ## Provider or release checkpoint
 
-Run the complete suite, including `live_data`, only when provider integration is
-changed or before a release/promotion checkpoint:
+Run the live provider test by itself only when its integration is changed:
 
 ```bash
-python -m pytest -q
+python -m pytest -q -m "live_data"
+```
+
+Run the complete suite, including `live_data`, only before a release or other
+promotion checkpoint. The explicit override is necessary because the safe
+offline selection is the project default:
+
+```bash
+python -m pytest -q -o addopts=""
 ```
 
 A live-data failure must be classified as either a provider/network outage or a
@@ -34,7 +41,7 @@ code defect before any code is changed.
 
 ## Current assessment
 
-- 120 deterministic local tests cover portfolio construction, risk gates,
+- More than 2,000 deterministic local tests cover portfolio construction, risk gates,
   research contracts, evidence quality, monitoring, paper-only behavior and the
   immutable decision ledger.
 - 1 live-data integration test exercises the NVDA analysis path through Yahoo
