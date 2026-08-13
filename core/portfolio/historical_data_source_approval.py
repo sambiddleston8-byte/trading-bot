@@ -13,6 +13,7 @@ from typing import Any, Sequence
 from urllib.parse import urlsplit
 
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
+from core.portfolio.historical_provider_qualification import HistoricalProviderQualificationLedger
 
 
 SCHEMA_VERSION = "1.0"
@@ -104,8 +105,13 @@ def _approval_id(provider: str, plan: str, terms_hash: str, approved_at: str) ->
 class HistoricalDataSourceApprovalLedger:
     """Records human approval; it does not subscribe, fetch, certify, or run data."""
 
-    def __init__(self, path: str | Path) -> None:
+    def __init__(
+        self,
+        path: str | Path,
+        qualification_ledger: HistoricalProviderQualificationLedger,
+    ) -> None:
         self.path = Path(path)
+        self.qualification_ledger = qualification_ledger
 
     def records(self) -> list[dict[str, Any]]:
         if not self.path.exists():
@@ -132,6 +138,8 @@ class HistoricalDataSourceApprovalLedger:
         *,
         provider_name: str,
         product_or_plan: str,
+        qualification_id: str,
+        qualification_record_hash: str,
         provider_url: str,
         terms_url: str,
         terms_content_sha256: str,
@@ -170,6 +178,26 @@ class HistoricalDataSourceApprovalLedger:
         provider = _required(provider_name, "provider_name", 200)
         plan = _required(product_or_plan, "product_or_plan", 200)
         terms_hash = _sha256(terms_content_sha256, "terms_content_sha256")
+        resolved_provider_url = _https(provider_url, "provider_url")
+        resolved_terms_url = _https(terms_url, "terms_url")
+        resolved_hosts = _hosts(approved_data_hosts)
+        resolved_universes = _set(
+            approved_universes, "approved_universes", SUPPORTED_UNIVERSES
+        )
+        resolved_uses = _set(permitted_uses, "permitted_uses", PERMITTED_USES)
+        qualification = self._qualification(
+            qualification_id=qualification_id,
+            qualification_record_hash=qualification_record_hash,
+            provider=provider,
+            product=plan,
+            terms_url=resolved_terms_url,
+            terms_hash=terms_hash,
+            hosts=resolved_hosts,
+            universes=resolved_universes,
+            uses=resolved_uses,
+            coverage_start=start,
+            coverage_end=end,
+        )
         result = {
             "schema_version": SCHEMA_VERSION,
             "policy_version": POLICY_VERSION,
@@ -180,13 +208,15 @@ class HistoricalDataSourceApprovalLedger:
             "approved_by": _required(approved_by, "approved_by", 100),
             "provider_name": provider,
             "product_or_plan": plan,
-            "provider_url": _https(provider_url, "provider_url"),
-            "terms_url": _https(terms_url, "terms_url"),
+            "qualification_id": qualification["qualification_id"],
+            "qualification_record_hash": qualification["record_hash"],
+            "provider_url": resolved_provider_url,
+            "terms_url": resolved_terms_url,
             "terms_content_sha256": terms_hash,
             "terms_review_reference": _required(terms_review_reference, "terms_review_reference"),
-            "approved_data_hosts": _hosts(approved_data_hosts),
-            "approved_universes": _set(approved_universes, "approved_universes", SUPPORTED_UNIVERSES),
-            "permitted_uses": _set(permitted_uses, "permitted_uses", PERMITTED_USES),
+            "approved_data_hosts": resolved_hosts,
+            "approved_universes": resolved_universes,
+            "permitted_uses": resolved_uses,
             "coverage_not_before": start.isoformat(),
             "coverage_not_after": end.isoformat(),
             **required_true,
@@ -202,6 +232,60 @@ class HistoricalDataSourceApprovalLedger:
             "live_trading_enabled": False,
         }
         return self._append(result, allow_existing=allow_existing)
+
+    def _qualification(
+        self,
+        *,
+        qualification_id: Any,
+        qualification_record_hash: Any,
+        provider: str,
+        product: str,
+        terms_url: Any,
+        terms_hash: str,
+        hosts: Sequence[str],
+        universes: Sequence[str],
+        uses: Sequence[str],
+        coverage_start: date,
+        coverage_end: date,
+    ) -> dict[str, Any]:
+        identifier = _required(qualification_id, "qualification_id")
+        expected_hash = _sha256(qualification_record_hash, "qualification_record_hash")
+        qualification = next(
+            (
+                item for item in self.qualification_ledger.verify()
+                if item["qualification_id"] == identifier
+            ),
+            None,
+        )
+        if qualification is None or qualification["record_hash"] != expected_hash:
+            raise ValueError("an exact verified provider qualification is required")
+        if not qualification["qualification_passed"]:
+            raise ValueError("provider qualification must pass before approval")
+        terms_ref = next(
+            item for item in qualification["evidence_references"]
+            if item["evidence_kind"] == "TERMS"
+        )
+        terms = next(
+            item for item in self.qualification_ledger.content_ledger.verify()
+            if item["content_evidence_id"] == terms_ref["content_evidence_id"]
+        )
+        boundary = (
+            qualification["provider_name"] == provider
+            and qualification["product_or_plan"] == product
+            and qualification["provider_hosts"] == _hosts(hosts)
+            and set(_set(universes, "approved_universes", SUPPORTED_UNIVERSES))
+            .issubset(qualification["evaluated_universes"])
+            and set(_set(uses, "permitted_uses", PERMITTED_USES))
+            .issubset(qualification["permitted_uses"])
+            and _date(qualification["coverage_not_before"]) <= coverage_start
+            and _date(qualification["coverage_not_after"]) >= coverage_end
+            and terms["source_uri"] == _https(terms_url, "terms_url")
+            and terms["source_input_sha256"] == terms_hash
+            and terms["record_hash"] == terms_ref["content_record_hash"]
+        )
+        if not boundary:
+            raise ValueError("approval scope must exactly derive from the passing qualification")
+        return qualification
 
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH
@@ -228,6 +312,14 @@ class HistoricalDataSourceApprovalLedger:
                 uses = _set(record.get("permitted_uses") or [], "uses", PERMITTED_USES)
                 start = _date(record.get("coverage_not_before"))
                 end = _date(record.get("coverage_not_after"))
+                qualification = self._qualification(
+                    qualification_id=record.get("qualification_id"),
+                    qualification_record_hash=record.get("qualification_record_hash"),
+                    provider=provider, product=plan,
+                    terms_url=record.get("terms_url"), terms_hash=terms_hash,
+                    hosts=hosts, universes=universes, uses=uses,
+                    coverage_start=start, coverage_end=end,
+                )
             except (TypeError, ValueError) as error:
                 raise LedgerIntegrityError(f"Data-source approval {index} is invalid.") from error
             expected = _approval_id(provider, plan, terms_hash, approved.isoformat())
@@ -252,6 +344,8 @@ class HistoricalDataSourceApprovalLedger:
                 and universes == record.get("approved_universes")
                 and uses == record.get("permitted_uses")
                 and hosts == record.get("approved_data_hosts")
+                and record.get("qualification_id") == qualification["qualification_id"]
+                and record.get("qualification_record_hash") == qualification["record_hash"]
                 and end > start
                 and approved <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
                 and isinstance(record.get("redistribution_allowed"), bool)

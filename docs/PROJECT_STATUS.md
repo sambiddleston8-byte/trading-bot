@@ -187,6 +187,19 @@ learning.
   record cannot subscribe, store credentials, fetch data, certify completeness,
   run a replay or grant performance/trading authority. No provider has been
   approved yet.
+- Historical-data providers can now be qualified against a provider-neutral,
+  fail-closed checklist before approval. Authenticated terms, documentation and
+  a representative sample are mandatory, and every required replay capability
+  must link to the exact documentation and sample that support it. Both roadmap
+  universes, internal-use terms, removals/delistings, terminal outcomes,
+  corporate actions, total-return prices, point-in-time fields, corrections,
+  calendars/halts and reproducible versioned exports are checked. A pass only
+  remains possible when every known limitation has a recorded mitigation and
+  none blocks a required capability. A pass only
+  makes the provider eligible for a separate human approval; qualification
+  cannot approve, purchase, store credentials, fetch data, open evaluation
+  observations, replay, claim performance or enable trading. FMP has not yet
+  been assessed.
 - A sealed replay-dataset admission boundary now links one preregistered replay
   plan to the exact human-approved provider and authenticated terms, an
   authenticated content-addressed dataset manifest, all required replay-data

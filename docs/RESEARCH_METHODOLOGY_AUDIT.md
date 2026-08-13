@@ -355,6 +355,17 @@ terminal outcomes. The record cannot purchase a subscription, store a
 credential, fetch data, certify coverage, run a replay or make a performance or
 trading claim. No provider is currently approved.
 
+Before that approval, a provider-neutral qualification report now requires
+authenticated terms, documentation and a representative sample from explicitly
+bounded provider hosts. Each required capability must point to the precise
+documentation and sample evidence supporting it. The checklist covers both
+roadmap indices, internal-use rights, removals, delistings and terminal values,
+corporate actions, total-return prices, point-in-time fundamentals, calendars,
+halts, stable identifiers, corrections and reproducible versioned exports. A
+failed report stays failed; a passing report is only eligible for a separate
+human approval and creates no subscription, data access, replay, performance or
+trading authority.
+
 The next fail-closed boundary can admit a future sealed replay package only
 when its exact manifest bytes reproduce the commitment in the preregistered
 plan. That manifest must link authenticated source bytes for historical
