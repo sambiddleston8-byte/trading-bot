@@ -5,16 +5,17 @@ import pytest
 
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError
 from core.portfolio.historical_data_source_approval import HistoricalDataSourceApprovalLedger
+from tests.test_historical_provider_qualification import target as qualification_target, qualify
 
 
 BASE = {
     "provider_name": "Example Historical Data",
-    "product_or_plan": "Research Platinum",
+    "product_or_plan": "Research Plan",
     "provider_url": "https://provider.example/product",
     "terms_url": "https://provider.example/terms",
     "terms_content_sha256": "a" * 64,
     "terms_review_reference": "Human review of terms dated 2026-08-13",
-    "approved_data_hosts": ["provider.example", "cdn.provider.example"],
+    "approved_data_hosts": ["provider.example"],
     "approved_universes": ["SP500", "NASDAQ100"],
     "permitted_uses": ["LOCAL_RESEARCH", "HISTORICAL_REPLAY", "INTERNAL_DERIVED_RESULTS"],
     "coverage_not_before": "2000-01-01",
@@ -30,11 +31,34 @@ BASE = {
 
 
 def ledger(tmp_path):
-    return HistoricalDataSourceApprovalLedger(tmp_path / "approvals.jsonl")
+    qualifications, references, matrix = qualification_target(tmp_path / "qualification")
+    qualification = qualify(qualifications, references, matrix)
+    target = HistoricalDataSourceApprovalLedger(tmp_path / "approvals.jsonl", qualifications)
+    target.qualification = qualification
+    return target
 
 
 def approve(target, **overrides):
-    values = {**BASE, "approved_at": datetime.now(timezone.utc).isoformat()}
+    values = {
+        **BASE,
+        "qualification_id": target.qualification["qualification_id"],
+        "qualification_record_hash": target.qualification["record_hash"],
+        "terms_url": next(
+            item["source_uri"] for item in target.qualification_ledger.content_ledger.verify()
+            if item["content_evidence_id"] == next(
+                ref["content_evidence_id"] for ref in target.qualification["evidence_references"]
+                if ref["evidence_kind"] == "TERMS"
+            )
+        ),
+        "terms_content_sha256": next(
+            item["source_input_sha256"] for item in target.qualification_ledger.content_ledger.verify()
+            if item["content_evidence_id"] == next(
+                ref["content_evidence_id"] for ref in target.qualification["evidence_references"]
+                if ref["evidence_kind"] == "TERMS"
+            )
+        ),
+        "approved_at": datetime.now(timezone.utc).isoformat(),
+    }
     values.update(overrides)
     return target.approve(**values)
 
@@ -75,7 +99,22 @@ def test_inadequate_or_unlicensed_source_cannot_be_approved(tmp_path, field, val
 def test_identical_approval_is_idempotent(tmp_path):
     target = ledger(tmp_path)
     first = approve(target)
-    assert target.approve(**{**BASE, "approved_at": first["approved_at"]}) == first
+    retry = {key: value for key, value in first.items() if key not in {
+        "schema_version", "policy_version", "approval_id", "record_type", "status",
+        "source_quality_independently_proven", "subscription_purchased",
+        "credentials_recorded", "data_fetched", "coverage_certificate_created",
+        "replay_executed", "performance_claim_allowed", "broker_submission_enabled",
+        "live_trading_enabled", "previous_hash", "record_hash",
+    }}
+    assert target.approve(**retry) == first
+
+
+def test_approval_cannot_bypass_or_exceed_passing_qualification(tmp_path):
+    target = ledger(tmp_path)
+    with pytest.raises(ValueError, match="exact verified"):
+        approve(target, qualification_record_hash="0" * 64)
+    with pytest.raises(ValueError, match="derive"):
+        approve(target, approved_data_hosts=["different.example"])
 
 
 @pytest.mark.parametrize("change", [
