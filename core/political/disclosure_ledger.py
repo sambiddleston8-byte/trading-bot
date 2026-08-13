@@ -16,8 +16,8 @@ from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_t
 from core.performance.portfolio_valuation import _canonical_json, _record_hash, _write_all
 
 
-DISCLOSURE_SCHEMA_VERSION = "1.0"
-DISCLOSURE_POLICY_VERSION = "point-in-time-congressional-disclosure-v1"
+DISCLOSURE_SCHEMA_VERSION = "2.0"
+DISCLOSURE_POLICY_VERSION = "point-in-time-congressional-disclosure-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 ALLOWED_CHAMBERS = {"HOUSE", "SENATE"}
 ALLOWED_SOURCES = {"OFFICIAL_HOUSE", "OFFICIAL_SENATE", "CAPITOL_TRADES", "LICENSED_PROVIDER"}
@@ -86,7 +86,12 @@ DISCLOSURE_ID_FIELDS = (
     "availability_evidence_sha256", "transaction_date", "notification_date",
     "filed_at", "source_first_publicly_available_at", "system_observed_at",
     "owner", "asset_name", "ticker", "transaction_type", "amount_min_usd",
-    "amount_max_usd",
+    "amount_max_usd", "supersedes_disclosure_id",
+)
+
+TRANSACTION_IDENTITY_FIELDS = (
+    "chamber", "politician_name", "transaction_date", "owner", "asset_name",
+    "ticker", "transaction_type",
 )
 
 
@@ -97,6 +102,21 @@ def _disclosure_id(values: Mapping[str, Any]) -> str:
             DISCLOSURE_POLICY_VERSION,
         ]).encode()
     ).hexdigest()[:32].upper()
+
+
+def _transaction_identity(values: Mapping[str, Any]) -> tuple[Any, ...]:
+    return tuple(values.get(field) for field in TRANSACTION_IDENTITY_FIELDS)
+
+
+def current_disclosures(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Return only non-superseded versions from an already verified point-in-time set."""
+
+    superseded = {
+        item["supersedes_disclosure_id"]
+        for item in records
+        if item.get("supersedes_disclosure_id")
+    }
+    return [item for item in records if item["disclosure_id"] not in superseded]
 
 
 class CongressionalTradeDisclosureLedger:
@@ -136,6 +156,7 @@ class CongressionalTradeDisclosureLedger:
         asset_name: str, ticker: str | None, transaction_type: str,
         amount_min_usd: Any, amount_max_usd: Any,
         recorded_by: str, recorded_at: str | datetime | None = None,
+        supersedes_disclosure_id: str | None = None,
         allow_existing: bool = True,
     ) -> dict[str, Any]:
         resolved_source = _enum(source, "source", ALLOWED_SOURCES)
@@ -153,6 +174,8 @@ class CongressionalTradeDisclosureLedger:
             raise ValueError("filed_at cannot predate the transaction")
         if notification is not None and notification < transaction:
             raise ValueError("notification_date cannot predate the transaction")
+        if notification is not None and filed.date() < notification:
+            raise ValueError("filed_at cannot predate notification")
         if available < filed:
             raise ValueError("public availability cannot predate filing")
         if observed < available:
@@ -200,6 +223,15 @@ class CongressionalTradeDisclosureLedger:
             "transaction_type": _enum(transaction_type, "transaction_type", ALLOWED_TRANSACTION_TYPES),
             "amount_min_usd": _canonical_decimal(minimum),
             "amount_max_usd": _canonical_decimal(maximum),
+            "supersedes_disclosure_id": (
+                _required(
+                    supersedes_disclosure_id,
+                    "supersedes_disclosure_id",
+                    100,
+                )
+                if supersedes_disclosure_id is not None
+                else None
+            ),
             "exact_trade_amount_known": minimum == maximum,
             "automatic_trade_signal": False,
             "copy_trade_allowed": False,
@@ -212,6 +244,10 @@ class CongressionalTradeDisclosureLedger:
 
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH; seen_ids = set(); records = self.records()
+        seen_records: dict[str, dict[str, Any]] = {}
+        root_by_id: dict[str, str] = {}
+        root_heads: dict[str, str] = {}
+        source_roots: dict[tuple[str, str], str] = {}
         for index, record in enumerate(records, start=1):
             material = {key: value for key, value in record.items() if key != "record_hash"}
             if record.get("previous_hash") != previous_hash or record.get("record_hash") != _record_hash(material): raise LedgerIntegrityError(f"Congressional-disclosure record {index} has been modified.")
@@ -224,18 +260,37 @@ class CongressionalTradeDisclosureLedger:
                 _required(record.get("politician_name"), "politician", 200); _required(record.get("asset_name"), "asset", 500); _required(record.get("source_terms_review_reference"), "terms", 500); _hash(record.get("availability_evidence_sha256"), "availability")
             except (TypeError, ValueError) as error: raise LedgerIntegrityError(f"Congressional-disclosure record {index} has invalid values.") from error
             expected_id = _disclosure_id(record)
+            supersedes = record.get("supersedes_disclosure_id")
+            predecessor = seen_records.get(str(supersedes)) if supersedes else None
+            source_key = (source, source_id)
+            if predecessor is None:
+                supersession_valid = supersedes is None and source_key not in source_roots
+                root = expected_id
+            else:
+                root = root_by_id[predecessor["disclosure_id"]]
+                supersession_valid = (
+                    root_heads.get(root) == predecessor["disclosure_id"]
+                    and _transaction_identity(predecessor) == _transaction_identity(record)
+                    and (
+                        source_key not in source_roots
+                        or source_roots[source_key] == root
+                    )
+                )
             boundary = (
                 record.get("schema_version") == DISCLOSURE_SCHEMA_VERSION and record.get("policy_version") == DISCLOSURE_POLICY_VERSION and record.get("disclosure_id") == expected_id and expected_id not in seen_ids
                 and record.get("record_type") == "POINT_IN_TIME_CONGRESSIONAL_TRADE_DISCLOSURE" and record.get("status") == "RESEARCH_EVIDENCE_ONLY"
                 and not (source == "CAPITOL_TRADES" and access != "LICENSED_FEED") and record.get("source_url", "").startswith("https://")
-                and filed.date() >= transaction and (notification is None or notification >= transaction) and available >= filed and observed >= available and recorded >= observed and recorded <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
+                and filed.date() >= transaction and (notification is None or transaction <= notification <= filed.date()) and available >= filed and observed >= available and recorded >= observed and recorded <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
                 and record.get("historical_point_in_time_signal_at") == available.isoformat() and record.get("live_system_signal_at") == observed.isoformat()
                 and record.get("transaction_to_public_delay_days") == (available.date() - transaction).days and record.get("transaction_to_system_delay_days") == (observed.date() - transaction).days
                 and maximum >= minimum and record.get("amount_min_usd") == _canonical_decimal(minimum) and record.get("amount_max_usd") == _canonical_decimal(maximum) and record.get("exact_trade_amount_known") is (minimum == maximum)
+                and supersession_valid
                 and all(record.get(field) is False for field in ("automatic_trade_signal","copy_trade_allowed","broker_connection_allowed","order_submitted","live_trading_enabled"))
             )
             if not boundary: raise LedgerIntegrityError(f"Congressional-disclosure record {index} violates its boundary.")
-            seen_ids.add(expected_id); previous_hash = record["record_hash"]
+            seen_ids.add(expected_id); seen_records[expected_id] = record
+            root_by_id[expected_id] = root; root_heads[root] = expected_id
+            source_roots[source_key] = root; previous_hash = record["record_hash"]
         return records
 
     def _append(self, result: dict[str, Any], *, allow_existing: bool):
@@ -246,6 +301,33 @@ class CongressionalTradeDisclosureLedger:
                 ignored={"previous_hash","record_hash","recorded_at"}
                 if allow_existing and {k:v for k,v in existing.items() if k not in ignored}=={k:v for k,v in result.items() if k not in ignored}: return existing
                 raise LedgerIntegrityError("Congressional disclosure already exists.")
+            supersedes = result.get("supersedes_disclosure_id")
+            same_source = [
+                item for item in records
+                if item["source"] == result["source"]
+                and item["source_record_id"] == result["source_record_id"]
+            ]
+            if same_source and supersedes is None:
+                raise LedgerIntegrityError(
+                    "A changed source record must explicitly supersede its current disclosure."
+                )
+            if supersedes is not None:
+                predecessor = next(
+                    (item for item in records if item["disclosure_id"] == supersedes),
+                    None,
+                )
+                active_ids = {
+                    item["disclosure_id"] for item in current_disclosures(records)
+                }
+                if (
+                    predecessor is None
+                    or predecessor["disclosure_id"] not in active_ids
+                    or _transaction_identity(predecessor)
+                    != _transaction_identity(result)
+                ):
+                    raise LedgerIntegrityError(
+                        "A disclosure may supersede only the current version of the same transaction."
+                    )
             material={**result,"previous_hash":records[-1]["record_hash"] if records else GENESIS_HASH}; record={**material,"record_hash":_record_hash(material)}
             target=os.open(self.path,os.O_WRONLY|os.O_CREAT|os.O_APPEND,0o600)
             try: _write_all(target,(_canonical_json(record)+"\n").encode()); os.fsync(target)
