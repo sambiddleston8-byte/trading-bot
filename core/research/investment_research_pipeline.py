@@ -7,7 +7,14 @@ from core.research.research_contract import ResearchContract
 
 class InvestmentResearchPipeline:
 
-    VERSION = "1.4-uncalibrated-forecast-semantics"
+    VERSION = "1.5-authenticated-valuation-sources"
+    PROJECT_ROOT = Path(__file__).resolve().parents[2]
+    AUTHENTICATED_SOURCE_LEDGER_PATH = (
+        PROJECT_ROOT / "data" / "source_evidence" / "authenticated_sources.jsonl"
+    )
+    AUTHENTICATED_SOURCE_BLOB_DIRECTORY = (
+        PROJECT_ROOT / "data" / "source_evidence" / "blobs"
+    )
 
     # ========================================================
     # TIME
@@ -103,6 +110,10 @@ class InvestmentResearchPipeline:
             ValuationQualityEngine,
         )
 
+        from core.data_quality.authenticated_source_content import (
+            AuthenticatedSourceContentLedger,
+        )
+
         from core.research.research_failure_diagnostics_engine import (
             ResearchFailureDiagnosticsEngine,
         )
@@ -168,6 +179,9 @@ class InvestmentResearchPipeline:
 
             "valuation_quality":
                 ValuationQualityEngine,
+
+            "authenticated_sources":
+                AuthenticatedSourceContentLedger,
 
             "diagnostics":
                 ResearchFailureDiagnosticsEngine,
@@ -243,6 +257,10 @@ class InvestmentResearchPipeline:
             "assess",
             valuation,
             decision,
+            engines["authenticated_sources"](
+                cls.AUTHENTICATED_SOURCE_LEDGER_PATH,
+                cls.AUTHENTICATED_SOURCE_BLOB_DIRECTORY,
+            ),
         )
 
         market_signals = cls.call(

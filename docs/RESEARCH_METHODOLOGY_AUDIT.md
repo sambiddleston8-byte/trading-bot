@@ -152,6 +152,14 @@ Effective dates cannot postdate the valuation cutoff, rates and beta have
 sanity bounds, and each sensitivity axis requires at least three ordered values
 that bracket the base case while keeping every WACC above terminal growth.
 
+That content-addressed evidence ledger now exists. It writes retrieved bytes to
+an immutable SHA-256 path, records source/public/retrieval identity in an
+append-only hash chain, and re-hashes the blob on every verification. Missing,
+changed, symlinked or path-escaping content fails closed. DCF assumptions must
+pin the exact authenticated evidence ID, hash, URL and retrieval time before the
+assumption gate can clear. Byte authentication does not validate the economic
+meaning of the source, and realised forecast accuracy remains uncalibrated.
+
 **Required repair:** version and date all assumptions; calculate or document the
 risk-free rate, equity premium, beta, debt cost, tax and capital weights; show a
 sensitivity matrix; derive scenario ranges from historical forecast errors and

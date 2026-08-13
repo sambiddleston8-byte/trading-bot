@@ -1,3 +1,6 @@
+import json
+
+from core.data_quality.authenticated_source_content import AuthenticatedSourceContentLedger
 from core.research.valuation_quality_engine import ValuationQualityEngine
 
 
@@ -24,6 +27,23 @@ def assumption_evidence():
         }
         for index, (name, value) in enumerate(values.items(), start=1)
     }
+
+
+def authenticate_assumptions(tmp_path, valuation):
+    ledger = AuthenticatedSourceContentLedger(
+        tmp_path / "sources.jsonl", tmp_path / "blobs"
+    )
+    for name, item in valuation["DCF Assumption Evidence"].items():
+        payload = json.dumps({"field": name, "value": item["value"]}).encode("utf-8")
+        record = ledger.ingest(
+            source_uri=item["source_uri"], payload=payload, media_type="application/json",
+            publicly_available_at=item["publicly_available_at"],
+            retrieved_at=item["retrieved_at"], recorded_at="2025-01-04T00:00:00+00:00",
+            source_locator=item["source_locator"],
+        )
+        item["source_input_sha256"] = record["source_input_sha256"]
+        item["content_evidence_id"] = record["content_evidence_id"]
+    return ledger
 
 
 def valid_inputs():
@@ -53,6 +73,36 @@ def test_schema_complete_dcf_still_fails_until_source_content_is_authenticated()
     assert result["assessment"] == "FAIL"
     assert result["portfolio_expected_return_eligible"] is False
     assert any("authenticated" in item for item in result["failures"])
+
+
+def test_authenticated_dcf_source_bytes_clear_assumption_gate(tmp_path):
+    valuation, decision = valid_inputs()
+    sources = authenticate_assumptions(tmp_path, valuation)
+    result = ValuationQualityEngine.assess(valuation, decision, sources)
+    assert result["assessment"] == "PASS"
+    assert result["portfolio_expected_return_eligible"] is True
+    assert result["dcf_assumption_evidence"]["source_content_authentication_status"] == (
+        "ALL_SOURCE_BYTES_HASH_VERIFIED"
+    )
+    assert result["forecast_accuracy_status"] == (
+        "UNCALIBRATED_NO_REALISED_OUTCOME_EVIDENCE"
+    )
+
+
+def test_wrong_content_id_or_tampered_blob_keeps_dcf_blocked(tmp_path):
+    valuation, decision = valid_inputs()
+    sources = authenticate_assumptions(tmp_path, valuation)
+    valuation["DCF Assumption Evidence"]["beta"]["content_evidence_id"] = "SRC-WRONG"
+    result = ValuationQualityEngine.assess(valuation, decision, sources)
+    assert result["assessment"] == "FAIL"
+    valuation, decision = valid_inputs()
+    sources = authenticate_assumptions(tmp_path / "tampered", valuation)
+    first = sources.verify()[0]
+    blob = sources.blob_directory / first["blob_relative_path"]
+    blob.chmod(0o600)
+    blob.write_bytes(b"changed")
+    result = ValuationQualityEngine.assess(valuation, decision, sources)
+    assert result["assessment"] == "FAIL"
 
 
 def test_unvalidated_forecast_fails_quality_check():
@@ -119,7 +169,7 @@ def test_rate_sanity_and_substantive_sensitivity_grid_are_required():
 
 
 if __name__ == "__main__":
-    test_validated_dcf_passes_quality_check()
+    test_schema_complete_dcf_still_fails_until_source_content_is_authenticated()
     test_unvalidated_forecast_fails_quality_check()
     test_terminal_dominance_is_visible_for_review()
     print("VALUATION QUALITY TESTS PASSED")

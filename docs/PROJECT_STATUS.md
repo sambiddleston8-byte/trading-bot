@@ -173,6 +173,14 @@ learning.
   remains fail-closed until a separate ledger authenticates the retrieved bytes.
   Rate/beta sanity bounds and a substantive base-bracketing sensitivity grid are
   also enforced.
+- Authenticated source-content storage now preserves the actual retrieved bytes
+  behind a content-addressed SHA-256 path and re-hashes them whenever its
+  append-only ledger is verified. Missing, changed, symlinked or path-escaping
+  blobs fail closed. A DCF assumption must match the exact authenticated source
+  ID, content hash, URL and retrieval time; byte authentication does not itself
+  claim the source's economic interpretation is correct. The active research
+  pipeline reads this canonical local ledger directly; absence of authenticated
+  content fails closed and performs no network access.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
