@@ -666,6 +666,11 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   conflicting and tampered mappings fail closed. It is not connected to an
   external source or current snapshot path and grants no recommendation or
   trading authority.
+- Phase 7 now has point-in-time committee-membership evidence. It pins chamber,
+  committee/subcommittee, role, effective dates, knowledge time and hashed
+  source review, then rejects hindsight or mismatched disclosures. It explicitly
+  makes no committee-relevance or investment-advantage claim and is not yet
+  integrated into activity snapshots.
 
 ## Phase 8 work
 

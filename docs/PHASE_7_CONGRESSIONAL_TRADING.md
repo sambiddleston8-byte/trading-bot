@@ -69,3 +69,17 @@ This foundation does not fetch mapping data and is not yet wired into an active
 political-data connector or activity snapshot. That later integration requires
 an approved source, real reviewed mapping evidence and separate tests. Mapping
 success creates research identity only and cannot recommend or execute a trade.
+
+## Point-in-time committee membership
+
+A separate evidence boundary now records reviewed House or Senate committee and
+subcommittee membership, role, effective period, knowledge timestamp and hashed
+source evidence. A membership is available to a disclosure only when the
+politician and chamber match, the transaction falls inside the membership
+period and the evidence was knowable when the disclosure became public.
+
+This deliberately does not infer that a committee is relevant to a company or
+that membership creates an investment advantage. Those are distinct hypotheses
+requiring reviewed company/sector mapping, preregistration and out-of-sample
+testing. No external committee data has been ingested and no current activity
+snapshot uses this evidence yet.
