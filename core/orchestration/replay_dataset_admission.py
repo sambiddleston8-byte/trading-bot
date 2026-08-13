@@ -68,15 +68,14 @@ def _normalise_artifacts(
     values: Sequence[Mapping[str, Any]],
 ) -> list[dict[str, str]]:
     artifacts: list[dict[str, str]] = []
-    seen: set[tuple[str, str]] = set()
+    seen_roles: set[str] = set()
     for value in values:
         role = _required(value.get("role"), "artifact role").upper()
         content_id = _required(value.get("content_evidence_id"), "content_evidence_id")
-        key = (role, content_id)
-        if role not in REQUIRED_ROLES or key in seen:
+        if role not in REQUIRED_ROLES or role in seen_roles:
             raise ValueError("dataset artifacts contain an unsupported or duplicate role reference")
         artifacts.append({"role": role, "content_evidence_id": content_id})
-        seen.add(key)
+        seen_roles.add(role)
     if {item["role"] for item in artifacts} != REQUIRED_ROLES:
         raise ValueError("dataset artifacts must cover every required replay-data role")
     return sorted(artifacts, key=lambda item: (item["role"], item["content_evidence_id"]))
