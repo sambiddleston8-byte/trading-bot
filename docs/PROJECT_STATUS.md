@@ -750,3 +750,9 @@ stores only hashes of the account reference and source payload, and requires an
 explicitly confirmed paper environment. It neither relabels gross-pre-tax
 performance nor estimates tax, submits orders, completes reconciliation or
 enables live trading.
+
+Phase 4 now also has a strictly read-only Alpaca paper-account adapter. It uses
+dedicated paper-only environment variables, accepts only Alpaca's official paper
+host, returns hashed account/payload references and has no order method. Because
+the account response alone does not prove settled versus unsettled cash, it
+requires separate exact settlement evidence before recording a cash snapshot.
