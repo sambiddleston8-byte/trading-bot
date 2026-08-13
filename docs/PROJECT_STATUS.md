@@ -803,11 +803,15 @@ enables live trading.
 Daily simulated portfolio valuations now use an explicit as-of-close fill
 boundary. Future BUY or SELL fills are excluded from earlier sessions, included
 fills must come from the proposal set pinned by initial funding, and every
-included fill requires one value at the exact shared close. This removes a
+historical BUY fill requires one value at the exact shared close. This removes a
 look-ahead path where later activity could previously block an earlier daily
-valuation. Simulated fill timestamps are still controlled replay inputs, not
-independently reconciled broker timestamps, and sell/rebalance position-state
-accounting remains fail-closed.
+valuation. An immutable paper-position-state ledger now consumes exact FIFO
+lots across decisions, supports partial/full sales, rejects short/oversell and
+pins the as-of execution-chain prefix. Daily valuation pins that snapshot,
+reconciles BUY/SELL gross cash and all recorded fees, and values only remaining
+lots. Any sold ticker with split/dividend history fails closed until event-aware
+lot accounting exists. Simulated fill timestamps are still controlled replay
+inputs, not independently reconciled broker timestamps.
 
 Phase 4 now also has a strictly read-only Alpaca paper-account adapter. It uses
 dedicated paper-only environment variables, accepts only Alpaca's official paper
