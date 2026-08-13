@@ -252,16 +252,24 @@ def test_even_cleared_preflight_cannot_enable_submission():
 
 def test_live_promotion_remains_disabled_even_when_evidence_is_complete():
     missing = LiveTradingPromotionPreflight.evaluate()
-    assert missing["status"] == "BLOCKED"
+    assert missing["status"] == "UNVERIFIED_DIAGNOSTIC_ONLY"
     assert len(missing["open_gates"]) == 10
+    assert missing["caller_assertions_complete"] is False
+    assert missing["evidence_verified"] is False
+    assert missing["review_eligible"] is False
     assert missing["live_submission_enabled"] is False
     assert missing["live_endpoint_supported"] is False
 
     supplied = {key: True for key in missing["gates"]}
     complete = LiveTradingPromotionPreflight.evaluate(supplied)
-    assert complete["status"] == "REVIEW_ELIGIBLE_ONLY"
+    assert complete["status"] == "UNVERIFIED_DIAGNOSTIC_ONLY"
+    assert complete["caller_assertions_complete"] is True
+    assert complete["evidence_verified"] is False
+    assert complete["review_eligible"] is False
+    assert all(item["caller_asserted"] is True for item in complete["gates"].values())
     assert complete["live_submission_enabled"] is False
     assert complete["live_endpoint_supported"] is False
     assert complete["next_authority"] == (
-        "SEPARATE_FUTURE_HUMAN_DECISION_AND_IMPLEMENTATION_REQUIRED"
+        "IMPLEMENT_IMMUTABLE_EVIDENCE_BACKED_LIVE_READINESS_GATE"
     )
+    assert "unverified assertions, not evidence" in complete["note"]

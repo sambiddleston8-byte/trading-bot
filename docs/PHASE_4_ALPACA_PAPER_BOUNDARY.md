@@ -85,10 +85,14 @@ state reconciliation, pessimistic execution stress, outage recovery, exposure
 and kill controls, independent review, security/regulatory/tax review and a
 human-set initial capital limit.
 
-Even if all ten are reported complete, the result is only
-`REVIEW_ELIGIBLE_ONLY`. It cannot enable live submission, and this repository
-still supports no live endpoint. A future live capability would require a
-separate human decision, security design, implementation and review project.
+The present boolean checklist is explicitly
+`UNVERIFIED_DIAGNOSTIC_ONLY`: its values are caller assertions, not evidence.
+Even if all ten are asserted complete, it remains evidence-unverified and cannot
+claim review eligibility or enable live submission. Phase 10 requires a future
+append-only, hash-chained evidence gate before live readiness can be reviewed.
+This repository still supports no live endpoint. A future live capability would
+require a separate human decision, security design, implementation and review
+project.
 ## Read-only paper-account boundary
 
 The first network-capable Alpaca component is deliberately read-only. It accepts
