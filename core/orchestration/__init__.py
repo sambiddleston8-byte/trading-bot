@@ -21,6 +21,7 @@ from core.orchestration.active_pipeline_replay_plan import ActivePipelineReplayP
 from core.orchestration.purged_embargoed_folds import PurgedEmbargoedForwardFolds
 from core.orchestration.replay_execution_policy import ReplayExecutionPolicy
 from core.orchestration.replay_execution_policy_ledger import ReplayExecutionPolicyLedger
+from core.orchestration.authenticated_replay_artifact import load_authenticated_replay_artifact
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -44,4 +45,5 @@ __all__ = [
     "PurgedEmbargoedForwardFolds",
     "ReplayExecutionPolicy",
     "ReplayExecutionPolicyLedger",
+    "load_authenticated_replay_artifact",
 ]
