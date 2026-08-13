@@ -34,8 +34,10 @@ The proposal begins unapproved. It cannot claim causality, validate itself,
 execute an experiment, change code, weights, investment rules, permissions,
 deployment or trading, or apply a lesson. Human, Codex and Claude Code provenance
 is supported. Hermes provenance is explicitly rejected while Hermes remains
-inactive; a future verified activation boundary is required before it can author
-proposals. Recording a proposal invokes no model and performs no experiment.
+inactive. The verified activation and lifecycle boundaries now exist, but
+Hermes still cannot author proposals until a future actual worker is integrated
+and a human approves its bounded activation. Recording a proposal invokes no
+model and performs no experiment.
 
 ## Preregistered sandbox experiment specifications
 
@@ -140,9 +142,10 @@ policy and its named emergency-stop identifier. Human, safety-monitor and
 system-failure sources may latch it. Once triggered, new work is denied, running
 work must terminate and evidence remains preserved.
 
-This component deliberately has no clear, resume or activation operation.
-Unknown policies and inactive policies also evaluate as stopped. A separate
-future human-controlled activation design is required before Hermes may run.
+This stop component deliberately has no clear, resume or activation operation.
+Unknown policies and inactive policies also evaluate as stopped. The separate
+human-controlled activation design now exists below, but Hermes still cannot
+run until an actual sandbox worker is integrated and explicitly activated.
 
 ## Human-controlled activation and start-time admission
 
@@ -158,9 +161,9 @@ nearly expired windows, unapproved jobs, code drift and invalid or excessive
 resource requests. A passing check returns the fixed deadline and local
 permissions but still creates no scheduler and starts no job. Network, broker,
 AWS, GitHub-write, promotion, order and live-trading authority remain false.
-An actual scheduled-worker lifecycle and consumption ledger must enforce daily,
-concurrency, heartbeat, failure and cumulative-cost state before any work may
-run.
+The separate lifecycle and consumption ledger below enforces daily,
+concurrency, heartbeat, failure and cumulative-cost state. Passing admission
+still cannot run work by itself.
 
 ## Immutable worker lifecycle and usage enforcement
 

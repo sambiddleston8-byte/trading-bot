@@ -18,9 +18,12 @@ future usage/cost observability.
 
 ## Current phase
 
-Phase 5 performance and attribution foundations. The Alpaca boundary remains
-local; nothing is connected or submitted, and results are not eligible for
-learning.
+Cross-phase foundation implementation with Phase 5 evidence acquisition as the
+critical path. Safe boundaries now exist through Phase 10, but later phases are
+not operationally complete. Alpaca, AWS, Hermes, Capitol Trades, Obsidian and
+Buzz are not connected or activated, and results are not eligible for learning
+or track-record claims. The requirement-by-requirement distinction is recorded
+in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
 
 ## Completed
 
@@ -245,7 +248,9 @@ learning.
   layers; fixed permissions/resource limits; emergency stops; and a promotion
   path that no agent can approve for itself. GitHub issues and pull requests now
   require sandbox impact and escape risks to be stated. Existing controls are
-  distinguished from future AWS/Hermes controls that are not yet implemented.
+  distinguished from future AWS controls and the later Hermes controls, which
+  are now implemented as inactive governance boundaries rather than a running
+  worker.
 - Issue #33 adds an immutable simulated long holding-period total return from
   verified unadjusted prices and complete corporate-action evidence. It applies
   USD gross cash dividends without reinvestment and exact split ratios, retains
@@ -664,7 +669,8 @@ learning.
   least two historical-period, sector and market-regime slices plus a fixed pass
   fraction. Costs, point-in-time data, survivorship safety and no leakage are
   mandatory. Planning cannot execute, grant shadow eligibility, promote, deploy
-  or trade; result enforcement remains the next step.
+  or trade. The following completed item records the result enforcement that
+  closed this gap.
 - Phase 10 now enforces every preregistered robustness slice with pinned evidence
   and the required costs, point-in-time, survivorship and leakage controls. The
   fixed pass fraction and every robustness dimension must pass. The strategy
@@ -716,5 +722,7 @@ unaggregated until the human policy choices are registered; complete matched
 benchmark-relative evidence is also ready for the recommended rule. Risk-adjusted
 alpha now has a preregistration boundary but still requires the user's model and
 future-window choice; learning and track-record claims remain blocked.
-Issue #21 remains the research-quality backlog. PostgreSQL remains
+Issue #21's research-methodology audit is closed; its remaining trust-critical
+actions are tracked by the provider/replay/evidence sequence and
+`docs/QUANT_VALIDITY_AND_PERFORMANCE_AUDIT.md`. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
