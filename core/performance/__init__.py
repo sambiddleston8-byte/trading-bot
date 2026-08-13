@@ -46,6 +46,8 @@ from core.performance.sector_classification import SectorClassificationEvidenceL
 from core.performance.sector_exposure import SectorExposureLedger
 from core.performance.sharpe_readiness import SharpeMetricReadinessGate
 from core.performance.sharpe_ratio import SharpeRatioLedger
+from core.performance.sortino_readiness import SortinoMetricReadinessGate
+from core.performance.sortino_ratio import SortinoRatioLedger
 from core.performance.total_return import TotalReturnLedger
 from core.performance.transaction_cost_attribution import (
     EntryTransactionCostAttributionLedger,
@@ -92,6 +94,8 @@ __all__ = [
     "SectorExposureLedger",
     "SharpeMetricReadinessGate",
     "SharpeRatioLedger",
+    "SortinoMetricReadinessGate",
+    "SortinoRatioLedger",
     "TotalReturnLedger",
     "EntryTransactionCostAttributionLedger",
 ]

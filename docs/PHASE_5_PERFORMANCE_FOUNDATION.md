@@ -756,6 +756,25 @@ count, preventing the system from changing Sortino conventions after seeing the
 score. This component calculates no Sortino or other metric and enables no
 recommendation, learning, track-record claim, AWS, broker or trading.
 
+On 13 August 2026 the user selected zero daily return as the intuitive downside
+threshold for future Sortino evaluations. SOFR remains the risk-free comparison
+for Sharpe and CAPM, while S&P 500 total return remains the principal market
+benchmark. The choice may be changed only for a separately preregistered future
+evaluation window; results from an existing window cannot be relabelled after
+observation. A new readiness gate now requires the exact requested policy,
+policy-window returns, matching strategy/model identity, 252 daily observations
+and at least 30 observations below the declared target. It calculates no
+Sortino and grants no learning, promotion, broker or trading authority.
+
+Once that gate passes, the immutable Sortino result uses exact rational daily
+inputs and the preregistered total-observation-count denominator. It calculates
+`sqrt(252) * mean(target-relative daily return) / downside deviation`; decimal
+square roots and the final ratio use the same fixed 34-digit context as Sharpe.
+The full target-relative return path, policy hash, readiness fingerprint and
+supporting return hashes are pinned. Zero downside deviation fails closed.
+The result remains simulated and gross pre-tax, not alpha, a recommendation,
+learning evidence, a promotion decision or a live track record.
+
 ## Immutable fixed-horizon prediction/outcome pairs
 
 Issue #95 creates the raw evidence units required before hit rate or prediction
