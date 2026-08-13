@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
-from core.orchestration.experiment_result import SandboxExperimentResultLedger
+from core.orchestration.robustness_result import RobustnessTestResultLedger
 from core.performance.pinned_support import resolve_pinned_records
 from core.performance.portfolio_valuation import _canonical_json, _record_hash, _write_all
 
@@ -43,9 +43,10 @@ def _entry_id(result_id: str, recorded_at: str) -> str:
 class CandidateStrategyRegistryLedger:
     """Classifies experiment candidates without starting shadow or production use."""
 
-    def __init__(self, path: str | Path, result_ledger: SandboxExperimentResultLedger) -> None:
+    def __init__(self, path: str | Path, robustness_result_ledger: RobustnessTestResultLedger) -> None:
         self.path = Path(path)
-        self.result_ledger = result_ledger
+        self.robustness_result_ledger = robustness_result_ledger
+        self.result_ledger = robustness_result_ledger.plan_ledger.result_ledger
 
     def records(self) -> list[dict[str, Any]]:
         if not self.path.exists():
@@ -68,25 +69,28 @@ class CandidateStrategyRegistryLedger:
         return records
 
     def classify(
-        self, *, result_id: str, recorded_by: str,
+        self, *, robustness_result_id: str, recorded_by: str,
         recorded_at: str | datetime | None = None, allow_existing: bool = True,
     ) -> dict[str, Any]:
+        robustness_results = self.robustness_result_ledger.verify()
+        robustness = next((item for item in robustness_results if item.get("robustness_result_id") == robustness_result_id), None)
+        if robustness is None:
+            raise ValueError("A verified robustness result is required")
         results = self.result_ledger.verify()
-        result = next((item for item in results if item.get("result_id") == result_id), None)
-        if result is None:
-            raise ValueError("A verified experiment result is required")
+        result = next((item for item in results if item.get("result_id") == robustness["experiment_result_id"]), None)
+        if result is None: raise LedgerIntegrityError("Robustness result lost its experiment result.")
         experiment = self._experiment_for(result)
         recorded = _timestamp(recorded_at or datetime.now(timezone.utc))
         if recorded > datetime.now(timezone.utc) + MAX_CLOCK_SKEW:
             raise ValueError("recorded_at cannot be in the future")
         if recorded < _timestamp(result["completed_at"]):
             raise ValueError("recorded_at cannot predate the experiment result")
-        accepted = result["status"] == "ACCEPTANCE_CRITERIA_MET"
+        accepted = robustness["status"] == "ROBUSTNESS_CRITERIA_MET"
         status = "ELIGIBLE_FOR_SHADOW_NOT_STARTED" if accepted else "REJECTED_EXPERIMENT"
         entry = {
             "schema_version": REGISTRY_SCHEMA_VERSION,
             "policy_version": REGISTRY_POLICY_VERSION,
-            "strategy_registry_entry_id": _entry_id(result_id, recorded.isoformat()),
+            "strategy_registry_entry_id": _entry_id(robustness_result_id, recorded.isoformat()),
             "record_type": "CONTROLLED_LEARNING_CANDIDATE_STRATEGY_DISPOSITION",
             "status": status,
             "recorded_at": recorded.isoformat(),
@@ -95,6 +99,8 @@ class CandidateStrategyRegistryLedger:
             "baseline_strategy_version": experiment["baseline_strategy_version"],
             "result_id": result["result_id"],
             "result_record_hash": result["record_hash"],
+            "robustness_result_id": robustness["robustness_result_id"],
+            "robustness_result_record_hash": robustness["record_hash"],
             "experiment_id": experiment["experiment_id"],
             "experiment_record_hash": experiment["record_hash"],
             "experiment_criteria_met": accepted,
@@ -128,22 +134,24 @@ class CandidateStrategyRegistryLedger:
             material = {key: value for key, value in record.items() if key != "record_hash"}
             if record.get("previous_hash") != previous_hash or record.get("record_hash") != _record_hash(material):
                 raise LedgerIntegrityError(f"Strategy-registry record {index} has been modified.")
-            results, reasons = resolve_pinned_records(
-                self.result_ledger.verify(), [record.get("result_id")], [record.get("result_record_hash")],
-                id_field="result_id", label="experiment result",
+            robustness_results, reasons = resolve_pinned_records(
+                self.robustness_result_ledger.verify(), [record.get("robustness_result_id")], [record.get("robustness_result_record_hash")],
+                id_field="robustness_result_id", label="robustness result",
             )
-            if reasons or len(results) != 1:
-                raise LedgerIntegrityError(f"Strategy-registry record {index} lost its result.")
-            result = results[0]
+            if reasons or len(robustness_results) != 1: raise LedgerIntegrityError(f"Strategy-registry record {index} lost its robustness result.")
+            robustness = robustness_results[0]
+            results=[item for item in self.result_ledger.verify() if item.get("result_id")==robustness["experiment_result_id"]]
+            if len(results)!=1: raise LedgerIntegrityError(f"Strategy-registry record {index} lost its result.")
+            result=results[0]
             experiment = self._experiment_for(result)
             try:
                 recorded = _timestamp(record.get("recorded_at"))
                 _required(record.get("recorded_by"), "recorded_by", 100)
             except (TypeError, ValueError) as error:
                 raise LedgerIntegrityError(f"Strategy-registry record {index} has invalid values.") from error
-            accepted = result["status"] == "ACCEPTANCE_CRITERIA_MET"
+            accepted = robustness["status"] == "ROBUSTNESS_CRITERIA_MET"
             expected_status = "ELIGIBLE_FOR_SHADOW_NOT_STARTED" if accepted else "REJECTED_EXPERIMENT"
-            expected_id = _entry_id(result["result_id"], recorded.isoformat())
+            expected_id = _entry_id(robustness["robustness_result_id"], recorded.isoformat())
             fixed_false = (
                 "shadow_test_started", "incumbent", "production_active",
                 "human_promotion_approved", "code_changed", "deployment_performed",
@@ -158,6 +166,8 @@ class CandidateStrategyRegistryLedger:
                 and record.get("result_id") not in seen_results
                 and record.get("result_id") == result["result_id"]
                 and record.get("result_record_hash") == result["record_hash"]
+                and record.get("robustness_result_id") == robustness["robustness_result_id"]
+                and record.get("robustness_result_record_hash") == robustness["record_hash"]
                 and record.get("experiment_id") == experiment["experiment_id"]
                 and record.get("experiment_record_hash") == experiment["record_hash"]
                 and record.get("candidate_strategy_version") == experiment["candidate_strategy_version"]
