@@ -14,6 +14,10 @@ from core.broker.methodology_preflight import (
     EvidenceBackedPaperSubmissionPreflightLedger,
 )
 from core.broker.paper_account_snapshot import PaperBrokerAccountSnapshotLedger
+from core.broker.alpaca_paper_account import (
+    AlpacaPaperAccountError,
+    AlpacaPaperAccountReader,
+)
 
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
@@ -24,4 +28,6 @@ __all__ = [
     "PaperOrderProposalLedger",
     "PaperSubmissionPreflight",
     "PaperBrokerAccountSnapshotLedger",
+    "AlpacaPaperAccountError",
+    "AlpacaPaperAccountReader",
 ]

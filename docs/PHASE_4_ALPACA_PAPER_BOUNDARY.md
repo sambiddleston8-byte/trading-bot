@@ -89,3 +89,17 @@ Even if all ten are reported complete, the result is only
 `REVIEW_ELIGIBLE_ONLY`. It cannot enable live submission, and this repository
 still supports no live endpoint. A future live capability would require a
 separate human decision, security design, implementation and review project.
+## Read-only paper-account boundary
+
+The first network-capable Alpaca component is deliberately read-only. It accepts
+only `https://paper-api.alpaca.markets`, reads `/v2/account` with dedicated
+`ALPACA_PAPER_*` environment credentials and exposes no create, replace, cancel
+or order-submission method. It returns a hash of the account reference and raw
+payload rather than either value.
+
+Alpaca's account response does not provide a universal settled/unsettled cash
+decomposition. The adapter therefore refuses to invent one and will not append
+the Phase 5 broker-cash snapshot until separate exact settlement evidence is
+provided. Missing credentials return `NOT_CONFIGURED`; unsupported status,
+currency, schema or any non-paper endpoint fails closed. This adds no broker
+connection by itself and enables no trading.
