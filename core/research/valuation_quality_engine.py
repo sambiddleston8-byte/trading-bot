@@ -8,7 +8,7 @@ import re
 from typing import Any
 from urllib.parse import urlsplit
 
-from core.decision_ledger import canonical_timestamp
+from core.decision_ledger import LedgerIntegrityError, canonical_timestamp
 
 
 ASSUMPTION_FIELDS = {
@@ -25,7 +25,21 @@ SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
 class ValuationQualityEngine:
-    VERSION = "2.0-evidence-grounded-dcf"
+    VERSION = "2.1-authenticated-dcf-source-content"
+
+    @staticmethod
+    def _authenticated_sources(value: Any) -> dict[str, dict[str, Any]]:
+        if value is None:
+            return {}
+        try:
+            records = value.verify()
+        except (AttributeError, LedgerIntegrityError):
+            return {}
+        return {
+            item["content_evidence_id"]: item
+            for item in records
+            if item.get("source_bytes_authenticated") is True
+        }
 
     @staticmethod
     def mapping(value: Any) -> dict[str, Any]:
@@ -40,7 +54,7 @@ class ValuationQualityEngine:
 
     @staticmethod
     def _assumption_evidence(
-        value: Any, data_cutoff: Any
+        value: Any, data_cutoff: Any, authenticated_sources: dict[str, dict[str, Any]]
     ) -> tuple[dict[str, Any] | None, list[str]]:
         evidence = value if isinstance(value, dict) else {}
         failures: list[str] = []
@@ -68,6 +82,14 @@ class ValuationQualityEngine:
             parsed = urlsplit(source_uri)
             source_hash = str(item.get("source_input_sha256") or "").lower()
             locator = str(item.get("source_locator") or "").strip()
+            content_evidence_id = str(item.get("content_evidence_id") or "").strip()
+            authenticated = authenticated_sources.get(content_evidence_id)
+            authentication_invalid = (
+                authenticated is None
+                or authenticated.get("source_input_sha256") != source_hash
+                or authenticated.get("source_uri") != source_uri
+                or authenticated.get("retrieved_at") != retrieved.isoformat()
+            )
             if (
                 number is None or number < 0 or public > retrieved or retrieved > cutoff
                 or effective > cutoff
@@ -77,6 +99,9 @@ class ValuationQualityEngine:
             ):
                 failures.append(f"{name} point-in-time source evidence is invalid.")
                 continue
+            if authentication_invalid:
+                failures.append(f"{name} source bytes are not authenticated.")
+                continue
             resolved[name] = {
                 "value": number,
                 "effective_at": effective.isoformat(),
@@ -85,6 +110,8 @@ class ValuationQualityEngine:
                 "source_uri": source_uri,
                 "source_input_sha256": source_hash,
                 "source_locator": locator,
+                "content_evidence_id": content_evidence_id,
+                "content_evidence_record_hash": authenticated["record_hash"],
             }
             if name in UNIT_RATE_FIELDS and number > 1:
                 failures.append(f"{name} must be a decimal rate between zero and one.")
@@ -122,7 +149,7 @@ class ValuationQualityEngine:
             "evidence_derived_wacc": wacc,
             "terminal_growth_rate": resolved["terminal_growth_rate"]["value"],
             "valuation_data_cutoff": cutoff.isoformat(),
-            "source_content_authentication_status": "PENDING_VERIFIED_CONTENT_LEDGER",
+            "source_content_authentication_status": "ALL_SOURCE_BYTES_HASH_VERIFIED",
         }, []
 
     @staticmethod
@@ -163,7 +190,9 @@ class ValuationQualityEngine:
         return (resolved if not failures else None), failures
 
     @classmethod
-    def assess(cls, valuation: Any, decision: Any) -> dict[str, Any]:
+    def assess(
+        cls, valuation: Any, decision: Any, authenticated_source_ledger: Any = None
+    ) -> dict[str, Any]:
         valuation_data = cls.mapping(valuation)
         decision_data = cls.mapping(decision)
         decision_valuation = cls.mapping(decision_data.get("valuation"))
@@ -197,6 +226,7 @@ class ValuationQualityEngine:
         assumption_evidence, assumption_failures = cls._assumption_evidence(
             valuation_data.get("DCF Assumption Evidence"),
             valuation_data.get("Valuation Data Cutoff"),
+            cls._authenticated_sources(authenticated_source_ledger),
         )
         reported_wacc = cls.number(valuation_data.get("WACC"))
         reported_terminal_growth = cls.number(valuation_data.get("Terminal Growth"))
@@ -240,14 +270,13 @@ class ValuationQualityEngine:
                 failures.append(
                     "Reported terminal growth does not match its point-in-time evidence."
                 )
-            failures.append(
-                "DCF source contents are not yet authenticated by a verified evidence ledger."
-            )
         failures.extend(sensitivity_failures)
 
         assessment = "FAIL" if failures else ("REVIEW" if warnings else "PASS")
         score = 0.0 if failures else (70.0 if warnings else 100.0)
-        expected_return_eligible = False
+        expected_return_eligible = (
+            not failures and assumption_evidence is not None and sensitivity is not None
+        )
         return {
             "version": cls.VERSION,
             "status": "COMPLETE",
@@ -261,7 +290,9 @@ class ValuationQualityEngine:
             "sensitivity_matrix_complete": sensitivity is not None,
             "portfolio_expected_return_eligible": expected_return_eligible,
             "expected_return_status": (
-                "SOURCE_CONTENT_AUTHENTICATION_REQUIRED_NOT_PORTFOLIO_ELIGIBLE"
+                "EVIDENCE_GROUNDED_BUT_FORECAST_ACCURACY_UNCALIBRATED"
+                if expected_return_eligible
+                else "SOURCE_CONTENT_AUTHENTICATION_REQUIRED_NOT_PORTFOLIO_ELIGIBLE"
             ),
             "terminal_value_contribution": terminal_value_contribution,
             "failures": failures,
