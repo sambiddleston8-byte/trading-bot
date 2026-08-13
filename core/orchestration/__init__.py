@@ -20,6 +20,7 @@ from core.orchestration.container_experiment_runner import ContainerExperimentRu
 from core.orchestration.active_pipeline_replay_plan import ActivePipelineReplayPlanLedger
 from core.orchestration.purged_embargoed_folds import PurgedEmbargoedForwardFolds
 from core.orchestration.replay_execution_policy import ReplayExecutionPolicy
+from core.orchestration.replay_execution_policy_ledger import ReplayExecutionPolicyLedger
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -42,4 +43,5 @@ __all__ = [
     "ActivePipelineReplayPlanLedger",
     "PurgedEmbargoedForwardFolds",
     "ReplayExecutionPolicy",
+    "ReplayExecutionPolicyLedger",
 ]
