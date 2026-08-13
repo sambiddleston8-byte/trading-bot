@@ -272,12 +272,18 @@ publicly known by the requested knowledge cutoff; they never substitute the
 current member list. Removals remain in the snapshot history rather than
 disappearing.
 
-A delisting must declare which terminal-outcome evidence will be required, but
-that declaration is not the evidence itself. Consequently snapshots are
-explicitly partial, `coverage_completeness_proven` and
-`terminal_outcome_evidence_complete` remain false, and survivorship-safe replay
-readiness remains false. A later coverage manifest and terminal-outcome ledger
-must close those gaps before historical performance is calculated.
+A delisting must declare which terminal-outcome evidence will be required. A
+separate immutable ledger can now attach the actual economic outcome to that
+exact delisting event and hash: acquisition proceeds, final
+bankruptcy/liquidation recovery (including sourced zero recovery), or the last
+tradable value. It preserves when the outcome became public, so a replay cannot
+learn it early, and rejects mismatched outcome methods.
+
+This closes the record format, not the historical data collection. Snapshots
+remain explicitly partial, `coverage_completeness_proven` remains false, and
+survivorship-safe replay readiness remains false until a bounded coverage
+manifest proves that all membership events and all required terminal outcomes
+within its declared interval have been captured.
 
 ### Investment-method optimisation that can continue later
 

@@ -126,6 +126,12 @@ learning.
   both effective and public-availability cutoffs and retain exclusions. They
   remain explicitly partial and cannot claim survivorship-safe replay until
   full coverage and actual terminal-outcome evidence are separately proven.
+- Delisted members now have a separate evidence-backed terminal-outcome ledger.
+  It pins the precise delisting event, source content and availability time,
+  distinguishes acquisition proceeds, bankruptcy/liquidation recovery and last
+  tradable value, and cannot calculate performance or declare replay readiness.
+  The historical source population is not yet complete, so the next control is
+  a bounded coverage manifest that verifies every required event and outcome.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
