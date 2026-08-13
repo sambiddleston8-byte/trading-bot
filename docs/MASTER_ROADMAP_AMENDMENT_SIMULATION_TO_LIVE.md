@@ -96,3 +96,11 @@ forward evidence and new human approval; it is never automatic.
 - Phase 10 must treat the full measurement ladder as a promotion gate.
 - AWS deployment may improve uptime but does not relax any investment or
   execution-validity requirement.
+
+The current ten-item boolean checklist is a legacy, unverified diagnostic only.
+Its values are caller assertions rather than evidence, so it can never establish
+review eligibility. Before Phase 10 can assess live readiness, the platform must
+implement an append-only, hash-chained evidence ledger that binds every gate to
+verified source identity, content hash, exact location, observation time and an
+independent review. Even that future evidence gate may block or permit human
+review only; it cannot enable a broker route or live trading.

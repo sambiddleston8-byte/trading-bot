@@ -428,25 +428,32 @@ class PaperSubmissionPreflight:
 
 
 class LiveTradingPromotionPreflight:
-    """Describe future live-readiness evidence without enabling live trading."""
+    """Legacy caller-assertion diagnostic; never verifies promotion evidence."""
 
     @classmethod
     def evaluate(cls, gates: Mapping[str, bool] | None = None) -> dict[str, Any]:
         supplied = dict(gates or {})
         results = {
-            key: {"label": label, "passed": supplied.get(key) is True}
+            key: {"label": label, "caller_asserted": supplied.get(key) is True}
             for key, label in LIVE_PROMOTION_GATE_LABELS.items()
         }
-        open_gates = [key for key, result in results.items() if not result["passed"]]
+        open_gates = [
+            key for key, result in results.items() if not result["caller_asserted"]
+        ]
         return {
-            "status": "BLOCKED" if open_gates else "REVIEW_ELIGIBLE_ONLY",
+            "status": "UNVERIFIED_DIAGNOSTIC_ONLY",
+            "caller_assertions_complete": not open_gates,
+            "evidence_verified": False,
+            "review_eligible": False,
             "live_submission_enabled": False,
             "live_endpoint_supported": False,
-            "next_authority": "SEPARATE_FUTURE_HUMAN_DECISION_AND_IMPLEMENTATION_REQUIRED",
+            "next_authority": "IMPLEMENT_IMMUTABLE_EVIDENCE_BACKED_LIVE_READINESS_GATE",
             "gates": results,
             "open_gates": open_gates,
             "note": (
-                "This evidence checklist cannot enable live trading. The repository "
-                "contains no live broker endpoint or live-order implementation."
+                "Caller-supplied booleans are unverified assertions, not evidence. "
+                "This diagnostic cannot establish review eligibility or enable live "
+                "trading. The repository contains no live broker endpoint or live-order "
+                "implementation."
             ),
         }
