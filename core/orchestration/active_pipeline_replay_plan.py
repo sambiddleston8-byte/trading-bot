@@ -16,7 +16,7 @@ from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_t
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "faithful-active-pipeline-replay-preregistration-v1"
+POLICY_VERSION = "faithful-active-pipeline-replay-preregistration-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 MINIMUM_EVALUATION_SPAN = timedelta(days=90)
 MINIMUM_NON_COMMISSION_COST_BPS = Decimal("1")
@@ -138,6 +138,17 @@ def _plan_id(registered_at: str, material: Mapping[str, Any]) -> str:
     return "REPLAY-" + hashlib.sha256(
         _canonical_json([registered_at, material, POLICY_VERSION]).encode("utf-8")
     ).hexdigest()[:32].upper()
+
+
+def _windows_overlap(
+    first_start: datetime,
+    first_end: datetime,
+    second_start: datetime,
+    second_end: datetime,
+) -> bool:
+    """Return whether two half-open evaluation windows share any time."""
+
+    return first_start < second_end and second_start < first_end
 
 
 class ActivePipelineReplayPlanLedger:
@@ -274,6 +285,7 @@ class ActivePipelineReplayPlanLedger:
             "active_route_only": True,
             "random_split_allowed": False,
             "evaluation_period_reuse_allowed": False,
+            "overlapping_evaluation_window_allowed": False,
             "metric_substitution_allowed": False,
             "optional_stopping_allowed": False,
             "point_in_time_inputs_required": True,
@@ -291,6 +303,7 @@ class ActivePipelineReplayPlanLedger:
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH
         seen: set[str] = set()
+        evaluation_windows: list[tuple[datetime, datetime]] = []
         records = self.records()
         for index, record in enumerate(records, start=1):
             material_with_chain = {key: value for key, value in record.items() if key != "record_hash"}
@@ -340,6 +353,7 @@ class ActivePipelineReplayPlanLedger:
                 raise LedgerIntegrityError(f"Replay-plan record {index} has invalid values.") from error
             fixed_false = (
                 "random_split_allowed", "evaluation_period_reuse_allowed",
+                "overlapping_evaluation_window_allowed",
                 "metric_substitution_allowed", "optional_stopping_allowed",
                 "historical_universe_coverage_bound", "evaluation_dataset_opened",
                 "replay_executed", "performance_claim_allowed",
@@ -370,11 +384,16 @@ class ActivePipelineReplayPlanLedger:
                 and Decimal(identity["cost_model"]["pessimistic_cost_multiplier"])
                 >= MINIMUM_PESSIMISTIC_COST_MULTIPLIER
                 and registered <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
+                and not any(
+                    _windows_overlap(start, end, prior_start, prior_end)
+                    for prior_start, prior_end in evaluation_windows
+                )
                 and all(record.get(field) is False for field in fixed_false)
             )
             if not boundary:
                 raise LedgerIntegrityError(f"Replay-plan record {index} violates its boundary.")
             seen.add(record["replay_plan_id"])
+            evaluation_windows.append((start, end))
             previous_hash = record["record_hash"]
         return records
 
@@ -399,6 +418,20 @@ class ActivePipelineReplayPlanLedger:
             if any(item["git_revision"] == result["git_revision"] for item in records):
                 raise LedgerIntegrityError(
                     "This Git revision already has its single binding replay plan."
+                )
+            start = _timestamp(result["evaluation_not_before"])
+            end = _timestamp(result["evaluation_not_after"])
+            if any(
+                _windows_overlap(
+                    start,
+                    end,
+                    _timestamp(item["evaluation_not_before"]),
+                    _timestamp(item["evaluation_not_after"]),
+                )
+                for item in records
+            ):
+                raise LedgerIntegrityError(
+                    "Evaluation window overlaps an existing unresolved replay plan."
                 )
             material = {
                 **result,
