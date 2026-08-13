@@ -213,6 +213,22 @@ coordinated workstreams.
 5. Build a faithful replay of the active decision route, with an untouched
    out-of-sample period and realistic costs.
 
+### Point-in-time input-provenance foundation
+
+The first trust-critical repair now records an immutable source-input manifest
+for each verified investment decision. It binds the exact canonical research
+snapshot to financial statements, market price, analyst estimates,
+news/catalysts, technical history, market-regime data and macro data. Each
+available family preserves effective, public-availability and retrieval times,
+plus provider, endpoint, HTTPS source, source SHA-256 and exact source locator.
+
+Evidence retrieved after canonical generation is rejected rather than treated
+as an original input. Missing families remain explicit and make the manifest
+incomplete. A complete provenance manifest proves reproducibility only: it does
+not validate forecasts, clear the methodology gate, recommend a position,
+enable learning or authorize broker submission. Pipeline capture and the other
+four trust-critical repairs remain separate work.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;

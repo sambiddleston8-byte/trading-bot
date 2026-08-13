@@ -103,6 +103,12 @@ learning.
   diagnostic. Complete evidence still cannot connect an account, permit
   credentials, make a network request, submit an order or enable live trading.
   Reassessment preserves history through explicit forward-only supersession.
+- The first underlying methodology repair adds an immutable point-in-time input
+  manifest for the active research-to-decision route. It pins the canonical
+  research snapshot and seven raw input families with effective, public and
+  retrieval times plus source hashes and exact locations. Late evidence is
+  rejected as an input and missing families remain explicit. This proves
+  provenance only; it does not validate forecasts or clear broker readiness.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
