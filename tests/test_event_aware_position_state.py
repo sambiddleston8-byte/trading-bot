@@ -187,6 +187,10 @@ def test_processes_dividend_split_second_buy_and_fifo_sale_exactly(tmp_path):
         "1",
         "2",
     ]
+    assert [
+        lot["remaining_historical_buy_cost"]
+        for lot in position["supporting_open_lots"]
+    ] == ["50.25", "222"]
     assert result["net_trade_cash_flow"] == "-66"
     assert result["cumulative_paid_gross_usd_dividend_cash"] == "2"
     assert result["applied_corporate_actions"][0]["exact_entitled_quantity"] == fraction(2)

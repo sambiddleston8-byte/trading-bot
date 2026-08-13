@@ -10,7 +10,7 @@ from core.performance import (
     DailyMarketObservationLedger,
     DailyPortfolioValuationLedger,
     DailyPositionValueLedger,
-    PaperPositionStateLedger,
+    EventAwarePaperPositionStateLedger,
     PortfolioFundingLedger,
 )
 
@@ -67,6 +67,7 @@ def chain(
     second_filled_at="2025-01-02T15:02:00+00:00",
     flows=(),
     include_gross_dividend=False,
+    include_split=False,
     sell_aaa_quantity=None,
 ):
     proposals = PaperOrderProposalLedger(tmp_path / "proposals.jsonl")
@@ -138,8 +139,9 @@ def chain(
             source_uri=f"https://provider.example/{fill['ticker']}/2025-02-03",
             source_input_sha256=("a" if index == 0 else "b") * 64,
         )
-        action_events = (
-            [
+        action_events = []
+        if include_gross_dividend and fill["ticker"] == "AAA":
+            action_events.append(
                 {
                     "event_type": "CASH_DIVIDEND",
                     "source_event_id": "div-aaa",
@@ -148,10 +150,17 @@ def chain(
                     "amount_per_share": "1",
                     "currency": "USD",
                 }
-            ]
-            if include_gross_dividend and fill["ticker"] == "AAA"
-            else []
-        )
+            )
+        if include_split and fill["ticker"] == "AAA":
+            action_events.append(
+                {
+                    "event_type": "STOCK_SPLIT",
+                    "source_event_id": "split-aaa",
+                    "effective_at": "2025-01-15T00:00:00+00:00",
+                    "numerator": "2",
+                    "denominator": "1",
+                }
+            )
         actions.record(
             fill_id=fill["fill_id"],
             covers_from_at=fill["filled_at"],
@@ -173,7 +182,9 @@ def chain(
         position_values,
         funding,
         CashFlowStub(flows),
-        PaperPositionStateLedger(tmp_path / "position_state.jsonl", executions),
+        EventAwarePaperPositionStateLedger(
+            tmp_path / "event_position_state.jsonl", executions, actions
+        ),
     )
     return valuations, position_values, funding, fill_records, created_values
 
@@ -260,7 +271,7 @@ def test_oversell_without_an_open_position_fails_closed(tmp_path):
     valuations, _, _, _, _ = chain(tmp_path, second_side="SELL")
     result = calculate(valuations)
     assert result["status"] == "NOT_CALCULABLE"
-    assert "exceeds the cumulative open paper position" in " ".join(result["reasons"])
+    assert "exceeds the adjusted open paper position" in " ".join(result["reasons"])
 
 
 def test_partial_sell_reconciles_remaining_quantity_value_and_cash(tmp_path):
@@ -279,15 +290,40 @@ def test_partial_sell_reconciles_remaining_quantity_value_and_cash(tmp_path):
     assert valuations.verify() == [result]
 
 
-def test_sell_with_any_historical_dividend_event_fails_closed(tmp_path):
+def test_sell_with_historical_dividend_uses_ex_date_entitlement_once(tmp_path):
     valuations, _, _, _, _ = chain(
         tmp_path,
         sell_aaa_quantity=1,
         include_gross_dividend=True,
     )
     result = calculate(valuations)
-    assert result["status"] == "NOT_CALCULABLE"
-    assert "event-aware lot accounting" in " ".join(result["reasons"])
+    assert result["status"] == "CALCULATED"
+    assert result["cumulative_gross_usd_dividend_cash_pre_tax"] == "1"
+    assert result["remaining_cash"] == "758"
+    assert result["total_position_market_value"] == "275"
+    assert result["total_equity"] == "1033"
+    aaa = next(item for item in result["positions"] if item["ticker"] == "AAA")
+    assert aaa["remaining_quantity"] == "1"
+    assert aaa["cumulative_gross_dividend_cash"] == "1"
+    assert valuations.verify() == [result]
+
+
+def test_split_then_partial_sell_values_event_adjusted_remaining_shares(tmp_path):
+    valuations, _, _, _, _ = chain(
+        tmp_path,
+        sell_aaa_quantity=1,
+        include_split=True,
+    )
+    result = calculate(valuations)
+    assert result["status"] == "CALCULATED"
+    aaa = next(item for item in result["positions"] if item["ticker"] == "AAA")
+    assert aaa["remaining_quantity"] == "2"
+    assert aaa["position_market_value"] == "220"
+    assert aaa["remaining_historical_buy_cost"] == "102"
+    assert result["remaining_cash"] == "757"
+    assert result["total_position_market_value"] == "385"
+    assert result["total_equity"] == "1142"
+    assert valuations.verify() == [result]
 
 
 @pytest.mark.parametrize("future_side", ["BUY", "SELL"])
