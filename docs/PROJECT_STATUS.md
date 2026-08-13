@@ -139,6 +139,16 @@ learning.
   replay readiness remain false until a later source-approval control is met.
   It cannot claim global coverage or calculate performance, and no real
   certificate has yet been populated from an authoritative historical dataset.
+- A faithful active-pipeline replay can now be preregistered without running it.
+  The inert plan freezes code and component versions, source hashes,
+  dependencies, runner, sealed dataset commitment, untouched evaluation dates,
+  point-in-time requirements, two-sided commission/spread/slippage/latency/
+  impact costs, pessimistic stress and fixed success/failure metrics. It cannot
+  open the test data, execute a replay, claim performance or connect to a
+  broker. Plans cannot be backdated or shopped: a frozen Git revision gets one
+  binding plan, with minimum non-commission costs and at least 2x pessimistic
+  stress. A real plan awaits an approved historical-universe source and a
+  genuinely sealed dataset.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark

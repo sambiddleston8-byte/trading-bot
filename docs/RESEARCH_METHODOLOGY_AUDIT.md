@@ -291,6 +291,23 @@ ending population forward, preventing a hidden gap or population reset. The
 record cannot make a global-history, performance, recommendation or trading
 claim.
 
+### Faithful active-pipeline replay preregistration
+
+The current production research-to-portfolio route can now be frozen in an
+immutable, inert replay plan before its sealed evaluation dataset is opened.
+The plan pins the exact Git revision, every active pipeline component and
+source hash, dependencies, runner, sealed dataset commitment, evaluation
+window, required point-in-time universe, realistic two-sided cost components,
+pessimistic cost stress and fixed acceptance/rejection metrics. Random splits,
+test-period reuse, metric substitution and optional stopping are prohibited.
+Registration must match the actual append time, each Git revision gets only one
+binding plan, non-commission costs have conservative one-basis-point minimums,
+and the pessimistic stress multiplier is at least two.
+
+This is a plan boundary, not a backtest. Historical-universe source approval
+remains required, no real evaluation dataset is opened, no replay is executed,
+and no performance, paper-broker or trading authority is created.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;
