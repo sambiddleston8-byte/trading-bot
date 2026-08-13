@@ -124,6 +124,15 @@ Completing the package records no decision. Promotion, incumbent or production
 changes, deployment and trading remain false and cannot be set by this ledger.
 An explicit future human decision requires a separate boundary.
 
+That separate immutable decision boundary now exists. After reviewing one
+verified complete bundle, a named human may either reject the candidate or
+approve it only for a separate implementation change. One bundle receives one
+final decision; concurrent retries are idempotent and a later contradictory
+decision is blocked. Approval does not alter the incumbent, change code or a
+production rule, activate or deploy anything, connect a broker, submit an order
+or enable live trading. Those remain separate implementation, review and
+activation steps; an agent cannot promote itself.
+
 ## Durable Hermes emergency stop
 
 Issue #127 adds a persistent, one-way stop record pinned to an immutable Hermes

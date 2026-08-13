@@ -127,8 +127,9 @@ rewriting what happened.
   lifecycle/usage controls into a future actual sandbox worker, without
   weakening their daily-use, concurrency, heartbeat or failure enforcement;
 - a separate AWS staging environment and least-privilege identities;
-- activation of the implemented promotion/rollback evidence bundle only after
-  real complete evidence exists; and
+- use of the implemented promotion bundle and human decision boundary only
+  after real complete evidence exists, followed by a separate reviewed
+  implementation and activation step; and
 - tests demonstrating that sandbox jobs cannot reach production data, live
   endpoints or promotion permissions.
 

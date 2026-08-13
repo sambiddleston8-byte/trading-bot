@@ -597,6 +597,13 @@ learning.
   deterministic tests, independent review and rollback evidence. A complete
   package still records no human decision and cannot promote, activate, deploy
   or trade.
+- Phase 6 now records the explicit human decision after a complete review
+  package: reject the candidate, or approve it only for a separate implementation
+  change. Each bundle receives one final, immutable decision. Even approval
+  leaves the incumbent unchanged and cannot change code/rules, activate,
+  deploy, connect a broker, submit an order or enable live trading. Promotion
+  cannot be self-approved and still requires a distinct reviewed implementation
+  and later activation boundary.
 - Phase 6 now has a durable latched Hermes emergency stop. It denies new jobs,
   requires running jobs to terminate, preserves evidence and exposes no resume
   or activation operation. Unknown and inactive policies fail closed as stopped.
