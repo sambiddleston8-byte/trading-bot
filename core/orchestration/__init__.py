@@ -13,6 +13,7 @@ from core.orchestration.promotion_review_bundle import PromotionReviewBundleLedg
 from core.orchestration.robustness_plan import RobustnessTestPlanLedger
 from core.orchestration.robustness_result import RobustnessTestResultLedger
 from core.orchestration.disposable_workspace import DisposableExperimentWorkspace
+from core.orchestration.active_pipeline_replay_plan import ActivePipelineReplayPlanLedger
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -28,4 +29,5 @@ __all__ = [
     "RobustnessTestPlanLedger",
     "RobustnessTestResultLedger",
     "DisposableExperimentWorkspace",
+    "ActivePipelineReplayPlanLedger",
 ]
