@@ -130,8 +130,15 @@ learning.
   It pins the precise delisting event, source content and availability time,
   distinguishes acquisition proceeds, bankruptcy/liquidation recovery and last
   tradable value, and cannot calculate performance or declare replay readiness.
-  The historical source population is not yet complete, so the next control is
-  a bounded coverage manifest that verifies every required event and outcome.
+  The historical source population is not yet complete.
+- A bounded historical-universe coverage certificate now records a pinned
+  source's completeness attestation for one exact interval and internally
+  reconciles its starting population, every event and every delisting outcome.
+  Successive intervals must be contiguous and carry the prior ending population
+  forward. Source attestation is not independent proof, so completeness and
+  replay readiness remain false until a later source-approval control is met.
+  It cannot claim global coverage or calculate performance, and no real
+  certificate has yet been populated from an authoritative historical dataset.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
