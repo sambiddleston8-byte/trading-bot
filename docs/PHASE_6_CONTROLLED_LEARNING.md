@@ -135,6 +135,15 @@ production rule, activate or deploy anything, connect a broker, submit an order
 or enable live trading. Those remain separate implementation, review and
 activation steps; an agent cannot promote itself.
 
+A retrospective Claude review found that the original decision ledger merely
+labelled self-promotion as false without comparing identities. Policy v2 now
+requires the named decision-maker to differ case-insensitively from both the
+bundle builder and independent reviewer, and re-verifies that rule against the
+pinned bundle. These names remain identity assertions rather than
+cryptographically authenticated identities; therefore no decision record can
+by itself cause code, promotion, deployment or trading. A future operational
+workflow requires a separately reviewed authenticated-human identity boundary.
+
 ## Durable Hermes emergency stop
 
 Issue #127 adds a persistent, one-way stop record pinned to an immutable Hermes
@@ -183,3 +192,17 @@ reservation, and a stale worker cannot report success to evade stopping. The
 ledger itself runs no task, creates no scheduler and grants no network, broker,
 AWS, GitHub-write, promotion, order or live-trading permission. Integration
 with a future actual sandbox worker remains separately human controlled.
+
+Claude's retrospective review also identified and closed two end-state
+integrity gaps. Each run manifest may now have exactly one immutable experiment
+result, preventing contradictory replays with a different completion time or
+artifact hash. Lifecycle enforcement now scopes latched stops by policy and
+continues checking unstopped policies, so an unrelated earlier stop cannot hide
+a stale worker, deadline breach or failure limit.
+
+Experiment and shadow metrics are still assertions pinned to artifact hashes;
+the current ledgers do not yet prove that every submitted metric was
+deterministically derived from the hashed artifact. This is acceptable only
+while the chain remains unwired and non-authoritative. Artifact parsing and
+metric derivation must become a separately Claude-reviewed prerequisite before
+any real experiment result can enter a promotion workflow.

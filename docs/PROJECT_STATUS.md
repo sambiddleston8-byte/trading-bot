@@ -729,6 +729,13 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   exact arithmetic. Results remain descriptive: no independence, significance
   or causal claim is inferred, and no recommendation, learning, promotion or
   trading authority is produced.
+- A retrospective Claude review of the complete Hermes controlled-learning
+  chain found a builder/reviewer self-approval gap, duplicate results per run
+  and cross-policy emergency-stop masking. The remediated boundaries require a
+  distinct decision-maker, one immutable result per run and policy-scoped stop
+  enforcement. Human names remain unauthenticated assertions and result metrics
+  remain hash-pinned rather than deterministically derived from artifacts, so
+  the chain stays unwired and cannot operationally promote, deploy or trade.
 
 ## Safety invariants
 

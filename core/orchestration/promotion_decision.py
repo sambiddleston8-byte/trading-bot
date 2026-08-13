@@ -17,7 +17,7 @@ from core.performance.portfolio_valuation import _canonical_json, _record_hash, 
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "explicit-human-strategy-promotion-decision-v1"
+POLICY_VERSION = "explicit-human-strategy-promotion-decision-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 DECISIONS = {"APPROVE_FOR_SEPARATE_IMPLEMENTATION", "REJECT_CANDIDATE"}
 
@@ -98,6 +98,15 @@ class PromotionDecisionLedger:
         if decided < _timestamp(bundle["assembled_at"]):
             raise ValueError("decision cannot predate the review bundle")
         approved = resolved_decision == "APPROVE_FOR_SEPARATE_IMPLEMENTATION"
+        decision_maker = _required(decided_by, "decided_by", 100)
+        disallowed_deciders = {
+            str(bundle.get("builder_identity") or "").strip().casefold(),
+            str(bundle.get("independent_reviewer_identity") or "").strip().casefold(),
+        }
+        if decision_maker.casefold() in disallowed_deciders:
+            raise ValueError(
+                "human decision maker must differ from the builder and independent reviewer"
+            )
         record = {
             "schema_version": SCHEMA_VERSION,
             "policy_version": POLICY_VERSION,
@@ -111,7 +120,7 @@ class PromotionDecisionLedger:
             ),
             "decision": resolved_decision,
             "decided_at": decided.isoformat(),
-            "decided_by": _required(decided_by, "decided_by", 100),
+            "decided_by": decision_maker,
             "rationale": _required(rationale, "rationale"),
             "human_decision_confirmed": True,
             "promotion_bundle_id": bundle["promotion_bundle_id"],
@@ -155,7 +164,7 @@ class PromotionDecisionLedger:
             try:
                 decision = _required(record.get("decision"), "decision", 80).upper()
                 decided = _timestamp(record.get("decided_at"))
-                _required(record.get("decided_by"), "decided_by", 100)
+                decision_maker = _required(record.get("decided_by"), "decided_by", 100)
                 _required(record.get("rationale"), "rationale")
             except (TypeError, ValueError) as error:
                 raise LedgerIntegrityError(
@@ -182,6 +191,10 @@ class PromotionDecisionLedger:
                 and record.get("record_type") == "EXPLICIT_HUMAN_STRATEGY_PROMOTION_DECISION"
                 and record.get("status") == expected_status
                 and record.get("human_decision_confirmed") is True
+                and decision_maker.casefold() not in {
+                    str(bundle.get("builder_identity") or "").strip().casefold(),
+                    str(bundle.get("independent_reviewer_identity") or "").strip().casefold(),
+                }
                 and decided >= _timestamp(bundle["assembled_at"])
                 and decided <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
                 and record.get("shadow_result_id") == bundle["shadow_result_id"]
