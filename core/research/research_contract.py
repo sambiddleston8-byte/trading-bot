@@ -9,7 +9,7 @@ class ResearchContract:
     The scanner and portfolio layers consume this normalized form.
     """
 
-    VERSION = "1.3"
+    VERSION = "1.4"
 
     @staticmethod
     def mapping(value):
@@ -444,14 +444,20 @@ class ResearchContract:
                     ),
                 ),
 
-            "valuation_confidence":
+            "valuation_input_consistency":
                 cls.first_value(
-                    decision_confidence.get(
-                        "forecast"
-                    ),
+                    decision_confidence.get("estimate_consistency"),
+                    legacy_forecast_validation.get("estimate_consistency"),
                     legacy_forecast_validation.get(
                         "Overall Confidence"
                     ),
+                ),
+
+            "forecast_accuracy_status":
+                cls.first_value(
+                    decision_confidence.get("forecast_accuracy"),
+                    legacy_forecast_validation.get("forecast_accuracy_status"),
+                    "UNCALIBRATED_NO_REALISED_OUTCOME_EVIDENCE",
                 ),
 
             "valuation_quality":

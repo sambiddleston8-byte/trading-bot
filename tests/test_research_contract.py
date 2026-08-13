@@ -73,7 +73,10 @@ def test_research_contract():
     assert canonical["base_intrinsic_value"] == 131.0
     assert canonical["expected_return"] == 0.297
     assert canonical["audit"]["status"] == "PASS"
-    assert canonical["contract_version"] == "1.3"
+    assert canonical["contract_version"] == "1.4"
+    assert canonical["forecast_accuracy_status"] == (
+        "UNCALIBRATED_NO_REALISED_OUTCOME_EVIDENCE"
+    )
     assert canonical["annualised_expected_return"] == 0.0539
     assert canonical["valuation_horizon_years"] == 5.0
     assert canonical["specialist_research"]["completed_count"] == 5

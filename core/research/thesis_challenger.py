@@ -331,31 +331,32 @@ class ThesisChallenger:
         # 3. FORECAST RELIABILITY
         # ----------------------------------------------------
 
-        forecast_confidence = (
+        estimate_consistency = (
             expectations.get(
-                "forecast_confidence"
+                "estimate_consistency",
+                expectations.get("forecast_confidence"),
             )
         )
 
-        if forecast_confidence in {
+        if estimate_consistency in {
             "LOW",
         }:
 
             test_area(
                 "earnings",
-                "Forecast confidence is insufficient to support the thesis strongly.",
+                "Forward revenue and EPS estimates have weak internal consistency.",
                 "MATERIAL_NEGATIVE",
                 "HIGH",
             )
 
-        elif forecast_confidence in {
+        elif estimate_consistency in {
             "MEDIUM",
             "REVIEW",
         }:
 
             test_area(
                 "earnings",
-                "Forecast evidence is useful but contains meaningful uncertainty.",
+                "Forward estimates have mixed internal consistency; this does not measure accuracy.",
                 "CAUTION",
                 "MEDIUM",
             )

@@ -41,8 +41,9 @@ class ValuationQualityEngine:
             decision_valuation.get("expected_return")
             if decision_valuation else cls.mapping(valuation_data.get("Expected Return")).get("Base")
         )
-        forecast_confidence = str(
-            confidence.get("forecast")
+        estimate_consistency = str(
+            confidence.get("estimate_consistency")
+            or forecast_validation.get("estimate_consistency")
             or forecast_validation.get("Overall Confidence")
             or "UNAVAILABLE"
         ).upper()
@@ -59,13 +60,11 @@ class ValuationQualityEngine:
             failures.append("Base intrinsic value is unavailable or invalid.")
         if expected_return is None:
             failures.append("Expected return is unavailable.")
-        # Missing forecast evidence is a structural valuation failure.  REVIEW
-        # and LOW are usable but uncertain inputs, so they affect conviction
-        # and sizing rather than automatically removing a candidate.
-        if forecast_confidence in {"INSUFFICIENT_DATA", "UNAVAILABLE"}:
-            failures.append("Forecast inputs do not have sufficient independent validation.")
-        elif forecast_confidence in {"LOW", "REVIEW"}:
-            warnings.append("Forecast inputs have limited independent validation.")
+        # This is internal estimate consistency, not realised forecast skill.
+        if estimate_consistency in {"INSUFFICIENT_DATA", "UNAVAILABLE"}:
+            failures.append("Forward estimate inputs do not have sufficient consistency evidence.")
+        elif estimate_consistency in {"LOW", "REVIEW"}:
+            warnings.append("Forward estimate inputs have limited internal consistency.")
         if terminal_value_contribution is not None and terminal_value_contribution > 0.85:
             warnings.append("More than 85% of enterprise value comes from terminal value.")
         elif terminal_value_contribution is not None and terminal_value_contribution > 0.75:
@@ -78,7 +77,8 @@ class ValuationQualityEngine:
             "status": "COMPLETE",
             "assessment": assessment,
             "score": score,
-            "forecast_confidence": forecast_confidence,
+            "estimate_consistency": estimate_consistency,
+            "forecast_accuracy_status": "UNCALIBRATED_NO_REALISED_OUTCOME_EVIDENCE",
             "terminal_value_contribution": terminal_value_contribution,
             "failures": failures,
             "warnings": warnings,

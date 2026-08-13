@@ -313,10 +313,6 @@ class PortfolioEngine:
         if valuation_quality.get("assessment") == "REVIEW":
             score -= 6
 
-        valuation_confidence = str(item.get("valuation_confidence") or "").upper()
-        if valuation_confidence in {"REVIEW", "LOW"}:
-            score -= 5
-
         market_signals = cls.safe_dict(
             item.get("market_signals")
         )

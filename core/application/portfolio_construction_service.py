@@ -323,7 +323,12 @@ class PortfolioConstructionService:
                     "valuation_horizon_years": canonical.get(
                         "valuation_horizon_years"
                     ),
-                    "valuation_confidence": canonical.get("valuation_confidence"),
+                    "valuation_input_consistency": canonical.get(
+                        "valuation_input_consistency"
+                    ),
+                    "forecast_accuracy_status": canonical.get(
+                        "forecast_accuracy_status"
+                    ),
                     "valuation_quality": canonical.get("valuation_quality", {}),
                     "thesis": canonical.get("thesis", {}),
                     "market_signals": canonical.get("market_signals", {}),

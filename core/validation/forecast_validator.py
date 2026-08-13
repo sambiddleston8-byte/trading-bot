@@ -1,5 +1,7 @@
 class ForecastValidator:
 
+    VERSION = "2.0-estimate-consistency-not-accuracy"
+
     def __init__(
         self,
         revenue_estimates,
@@ -180,6 +182,27 @@ class ForecastValidator:
 
         return {
 
+            "version": self.VERSION,
+
+            "metric_name":
+                "REVENUE_EPS_GROWTH_ESTIMATE_CONSISTENCY",
+
+            "estimate_consistency":
+                overall,
+
+            "forecast_accuracy_status":
+                "UNCALIBRATED_NO_REALISED_OUTCOME_EVIDENCE",
+
+            "semantics": (
+                "Agreement between contemporaneous revenue-growth and EPS-growth "
+                "estimates; not forecast accuracy, probability or expected-return confidence."
+            ),
+
+            "decision_score_multiplier_permitted":
+                False,
+
+            # Compatibility only. New active code consumes
+            # estimate_consistency rather than interpreting this as accuracy.
             "overall_confidence":
                 overall,
 

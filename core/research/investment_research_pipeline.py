@@ -7,7 +7,7 @@ from core.research.research_contract import ResearchContract
 
 class InvestmentResearchPipeline:
 
-    VERSION = "1.3-calibrated-portfolio-evidence"
+    VERSION = "1.4-uncalibrated-forecast-semantics"
 
     # ========================================================
     # TIME
@@ -429,12 +429,15 @@ class InvestmentResearchPipeline:
                         "forward_eps_growth"
                     ),
 
-                "forecast_confidence":
+                "estimate_consistency":
                     fundamental.get(
                         "forecast_validation",
                         {},
                     ).get(
-                        "overall_confidence"
+                        "estimate_consistency",
+                        fundamental.get("forecast_validation", {}).get(
+                            "overall_confidence"
+                        ),
                     ),
             },
         )
