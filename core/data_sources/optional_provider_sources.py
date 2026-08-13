@@ -63,6 +63,11 @@ class OptionalHTTPSource:
             ) from exc
 
         if not response.ok:
+            if response.status_code in {401, 402, 403}:
+                raise OptionalProviderError(
+                    f"{self.SOURCE_NAME} capability is unavailable for the configured account "
+                    f"(HTTP {response.status_code})."
+                )
             raise OptionalProviderError(
                 f"{self.SOURCE_NAME} rejected the request (HTTP {response.status_code})."
             )
@@ -119,10 +124,26 @@ class FinancialModelingPrepSource(OptionalHTTPSource):
     SOURCE_NAME = "Financial Modeling Prep"
     BASE_URL = "https://financialmodelingprep.com/stable"
 
-    def query(self, endpoint: str, symbol: str, **parameters: Any) -> dict[str, Any]:
+    def authenticated_headers(self) -> dict[str, str]:
+        # FMP accepts either a header or query parameter.  The header keeps the
+        # credential out of URLs, proxy logs and HTTP exception messages.
+        return {"apikey": str(os.getenv(self.KEY_ENV) or "")}
+
+    def query(
+        self,
+        endpoint: str,
+        symbol: str | None = None,
+        **parameters: Any,
+    ) -> dict[str, Any]:
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
-        params = {"symbol": str(symbol).upper(), "apikey": os.getenv(self.KEY_ENV), **parameters}
-        return self.get_json(url, params=params)
+        params = dict(parameters)
+        if symbol is not None:
+            params["symbol"] = str(symbol).upper()
+        return self.get_json(
+            url,
+            params=params,
+            headers=self.authenticated_headers(),
+        )
 
     def analyst_estimates(self, symbol: str) -> dict[str, Any]:
         return self.query("analyst-estimates", symbol, period="annual", page=0, limit=10)
@@ -141,6 +162,30 @@ class FinancialModelingPrepSource(OptionalHTTPSource):
     def price_target_consensus(self, symbol: str) -> dict[str, Any]:
         """Return external analyst expectations for comparison only."""
         return self.query("price-target-consensus", symbol)
+
+    def historical_sp500_constituent_changes(self) -> dict[str, Any]:
+        return self.query("historical-sp500-constituent")
+
+    def historical_nasdaq_constituent_changes(self) -> dict[str, Any]:
+        return self.query("historical-nasdaq-constituent")
+
+    def delisted_companies(self, *, page: int = 0, limit: int = 100) -> dict[str, Any]:
+        return self.query("delisted-companies", page=int(page), limit=int(limit))
+
+    def dividend_adjusted_prices(
+        self, symbol: str, *, start: str, end: str
+    ) -> dict[str, Any]:
+        return self.query(
+            "historical-price-eod/dividend-adjusted",
+            symbol,
+            **{"from": str(start), "to": str(end)},
+        )
+
+    def splits(self, symbol: str) -> dict[str, Any]:
+        return self.query("splits", symbol)
+
+    def symbol_changes(self) -> dict[str, Any]:
+        return self.query("symbol-change")
 
 
 class PolygonSource(OptionalHTTPSource):

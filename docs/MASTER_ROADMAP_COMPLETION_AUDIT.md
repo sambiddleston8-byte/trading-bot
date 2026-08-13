@@ -16,7 +16,7 @@ method works out of sample.
 | 2 — Codex + Claude | Repeatable issue/branch/test/PR workflow and usage-allocation policy exist. Targeted Claude review has worked historically, but recent CLI attempts returned no response. | Restore reliable Claude CLI review before relying on it for a future high-risk promotion; routine deterministic changes do not require duplicated frontier review. | No product activation needed. |
 | 3 — AWS | Docker/PostgreSQL local foundation, backup/restore, comparison mode and a reviewed Lightsail design exist. | Explicit AWS-spend approval, staging resources, least-privilege identities, transactional PostgreSQL authority, alerts and deployment rehearsal. | Deliberately deferred until software/evidence foundations are ready. |
 | 4 — Alpaca paper | Immutable paper-order proposals, deterministic local fills, methodology pre-flight and a live-prohibition checklist exist. | User-created paper account, securely stored credentials, read-only account check, paper submission/cancel/fill/reconciliation adapter and broker-specific kill/exposure controls. | Explicit broker-account connection decision required; live endpoint remains unsupported. |
-| 5 — performance | Fixed-horizon outcomes, portfolio/benchmark returns, costs, exposures, turnover, volatility, drawdown, CAGR and Sharpe evidence boundaries exist. Zero daily return is human-selected for future Sortino windows and has a fail-closed readiness gate. | A genuine future portfolio/window registration; future hit-rate/calibration and alpha policies; qualified point-in-time historical provider/data; sufficient real forward observations; taxes/net broker-cash and several execution-realism limitations. | FMP/provider assessment required. No track record yet. |
+| 5 — performance | Fixed-horizon outcomes, portfolio/benchmark returns, costs, exposures, turnover, volatility, drawdown, CAGR and Sharpe evidence boundaries exist. Zero daily return is human-selected for future Sortino windows and has a fail-closed readiness gate. The configured FMP account has been capability-probed without exposing its key. | A genuine future portfolio/window registration; future hit-rate/calibration and alpha policies; qualified point-in-time historical provider/data; sufficient real forward observations; taxes/net broker-cash and several execution-realism limitations. | Current FMP access lacks historical S&P/Nasdaq membership and symbol-change feeds, so it is supplementary rather than replay-qualified. No track record yet. |
 | 6 — controlled learning | Lesson, experiment, run, robustness, shadow, review, human-decision, activation, lifecycle/budget and emergency-stop boundaries exist. | Real eligible outcomes, actual sandbox worker/Hermes installation, a human-approved activation window and end-to-end execution using the implemented controls. | No Hermes agent is installed, scheduled or running. |
 | 7 — political trading | Immutable point-in-time disclosure and aggregate-snapshot models account for publication and disclosure delay. | Licensed Capitol Trades feed or documented official-source terms review, ingestion, issuer/entity mapping, committee/reliability evidence and out-of-sample signal testing. | Legal/terms and source decision required; no scraper or connector exists. |
 | 8 — Obsidian | Safe deterministic non-authoritative Markdown exporter exists. | User-selected vault and first controlled export; optional knowledge workflows only after authoritative records exist. | Local path/configuration decision required. |
@@ -37,9 +37,9 @@ method works out of sample.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. Assess a real historical provider. The planned first candidate is Financial
-   Modeling Prep after the user creates an account; credentials must not enter
-   chat, Git, tests or model prompts.
+2. Decide whether to upgrade FMP access or assess an alternative provider for
+   the missing historical membership/symbol-change evidence. Credentials must
+   not enter chat, Git, tests or model prompts.
 3. Qualify and, only after separate human approval, admit a genuinely sealed
    point-in-time dataset covering membership removals, delistings, terminal
    outcomes, corporate actions, total return, corrections and market calendars.
