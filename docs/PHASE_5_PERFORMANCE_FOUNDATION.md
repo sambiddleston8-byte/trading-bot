@@ -775,6 +775,22 @@ supporting return hashes are pinned. Zero downside deviation fails closed.
 The result remains simulated and gross pre-tax, not alpha, a recommendation,
 learning evidence, a promotion decision or a live track record.
 
+## Paper-broker cash evidence boundary
+
+The gross-pre-tax performance ledgers must not be relabelled as the cash a
+broker would make available. A separate immutable paper-account snapshot now
+records normalized USD cash, settled cash, unsettled cash, buying power and
+equity from an explicitly confirmed paper environment. It stores only hashes
+of the account reference and raw provider payload, never the account identifier,
+credential or raw response. Cash must reconcile exactly to settled plus
+unsettled cash, snapshots move forward in observed time and the initial policy
+is deliberately limited to long-only cash-account semantics.
+
+This is evidence only: it does not submit an order, reconcile a portfolio,
+calculate a return, estimate personal tax, claim a track record, enable learning
+or connect a live account. Future reconciliation must pin both the broker
+snapshot and matching internal ledger records rather than altering either.
+
 ## Immutable fixed-horizon prediction/outcome pairs
 
 Issue #95 creates the raw evidence units required before hit rate or prediction
