@@ -121,13 +121,13 @@ rewriting what happened.
 
 ## Requirements still to implement
 
-- per-experiment disposable datasets and databases with retention controls;
-- a strategy registry separating incumbent, candidate, shadow and rejected
-  versions;
-- deterministic agent permission manifests, timeouts and cost ceilings;
-- a durable emergency-stop state checked by every scheduled worker;
+- integration of the implemented per-experiment disposable local SQLite
+  workspace into a future experiment runner;
+- activation-time checks of the implemented agent permission, timeout, cost and
+  emergency-stop boundaries in every future scheduled worker;
 - a separate AWS staging environment and least-privilege identities;
-- automated evidence bundles for experiment promotion and rollback; and
+- activation of the implemented promotion/rollback evidence bundle only after
+  real complete evidence exists; and
 - tests demonstrating that sandbox jobs cannot reach production data, live
   endpoints or promotion permissions.
 

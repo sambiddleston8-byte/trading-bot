@@ -26,3 +26,16 @@ The strategy registry no longer accepts a plain out-of-sample result. It accepts
 only a verified robustness result; failures are rejected and passes are merely
 eligible for the separately preregistered shadow stage. This closes the bypass
 between historical validation and forward paper evidence.
+
+## Disposable experiment storage
+
+Issue #141 adds an executable local data-sandbox control. An experiment
+workspace can be created only inside a non-symlink directory bearing the exact
+sandbox-root safety marker. It receives a private manifest and isolated SQLite
+database, a maximum 30-day retention period, and immutable denials for network,
+authoritative writes, AWS, brokers, promotion and trading.
+
+Expiry removes only the two exact managed files and their direct child folder.
+Early deletion, path traversal, symlinks, tampered manifests and unexpected
+files all fail closed. This code is tested only in temporary directories; no
+repository data or current research output is copied or removed.
