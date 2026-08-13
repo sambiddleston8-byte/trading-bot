@@ -14,6 +14,7 @@ BASE = {
     "terms_url": "https://provider.example/terms",
     "terms_content_sha256": "a" * 64,
     "terms_review_reference": "Human review of terms dated 2026-08-13",
+    "approved_data_hosts": ["provider.example", "cdn.provider.example"],
     "approved_universes": ["SP500", "NASDAQ100"],
     "permitted_uses": ["LOCAL_RESEARCH", "HISTORICAL_REPLAY", "INTERNAL_DERIVED_RESULTS"],
     "coverage_not_before": "2000-01-01",
@@ -61,6 +62,8 @@ def test_records_human_source_and_terms_approval_without_buying_or_fetching(tmp_
     ("terminal_outcome_support_documented", False, "must cover"),
     ("approved_universes", ["RUSSELL2000"], "unsupported"),
     ("permitted_uses", ["REDISTRIBUTION"], "unsupported"),
+    ("approved_data_hosts", [], "cannot be empty"),
+    ("approved_data_hosts", ["https://provider.example/path"], "bare lowercase"),
     ("provider_url", "http://provider.example", "HTTPS"),
     ("coverage_not_after", "1999-12-31", "later"),
 ])

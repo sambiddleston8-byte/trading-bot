@@ -187,6 +187,19 @@ learning.
   record cannot subscribe, store credentials, fetch data, certify completeness,
   run a replay or grant performance/trading authority. No provider has been
   approved yet.
+- A sealed replay-dataset admission boundary now links one preregistered replay
+  plan to the exact human-approved provider and authenticated terms, an
+  authenticated content-addressed dataset manifest, all required replay-data
+  roles and contiguous S&P 500/Nasdaq-100 coverage records. The manifest hash
+  must equal the commitment frozen before access, and neither the manifest nor
+  its artifacts may be opened before the plan's declared access time. Exact
+  authenticated terms must predate approval, approval must predate data access,
+  and all manifest, artifact and coverage hosts must be expressly approved.
+  The access-time gate runs before any source blob is authenticated or read,
+  and admission cannot be backdated. Admission authenticates and reconciles
+  metadata only: it does not interpret evaluation
+  observations, train a model, execute a replay, calculate performance or
+  enable any broker connection. No real dataset has been admitted.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
