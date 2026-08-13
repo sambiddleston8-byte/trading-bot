@@ -2,6 +2,7 @@
 
 from core.orchestration.hermes_policy import HermesPermissionPolicyLedger
 from core.orchestration.hermes_emergency_stop import HermesEmergencyStopLedger
+from core.orchestration.hermes_activation import HermesActivationLedger
 from core.orchestration.lesson_proposal import SandboxLessonProposalLedger
 from core.orchestration.experiment_specification import SandboxExperimentSpecificationLedger
 from core.orchestration.experiment_run_manifest import SandboxExperimentRunManifestLedger
@@ -21,6 +22,7 @@ from core.orchestration.replay_execution_policy import ReplayExecutionPolicy
 __all__ = [
     "HermesPermissionPolicyLedger",
     "HermesEmergencyStopLedger",
+    "HermesActivationLedger",
     "SandboxLessonProposalLedger",
     "SandboxExperimentSpecificationLedger",
     "SandboxExperimentRunManifestLedger",

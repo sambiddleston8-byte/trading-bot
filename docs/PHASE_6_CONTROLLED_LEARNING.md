@@ -134,3 +134,21 @@ work must terminate and evidence remains preserved.
 This component deliberately has no clear, resume or activation operation.
 Unknown policies and inactive policies also evaluate as stopped. A separate
 future human-controlled activation design is required before Hermes may run.
+
+## Human-controlled activation and start-time admission
+
+The first activation boundary now exists without activating Hermes. A verified,
+unstopped permission policy may receive only an explicit human-approved future
+window of at most 31 days. The approval pins the exact Git object, named local
+sandbox job and action, concurrency, duration, model-call, per-job cost,
+simulated-exposure and stale-heartbeat limits, plus canonical read/write roots.
+This initial boundary permits no endpoint or credential at all.
+
+A deterministic admission check rejects unknown, stopped, early, expired or
+nearly expired windows, unapproved jobs, code drift and invalid or excessive
+resource requests. A passing check returns the fixed deadline and local
+permissions but still creates no scheduler and starts no job. Network, broker,
+AWS, GitHub-write, promotion, order and live-trading authority remain false.
+An actual scheduled-worker lifecycle and consumption ledger must enforce daily,
+concurrency, heartbeat, failure and cumulative-cost state before any work may
+run.

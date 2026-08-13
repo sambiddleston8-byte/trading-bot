@@ -600,6 +600,15 @@ learning.
 - Phase 6 now has a durable latched Hermes emergency stop. It denies new jobs,
   requires running jobs to terminate, preserves evidence and exposes no resume
   or activation operation. Unknown and inactive policies fail closed as stopped.
+- Phase 6 now has the separate human-controlled activation boundary anticipated
+  by that stop design. A future window is short-lived, pins exact code, local
+  job/action, canonical read/write roots and strict duration, concurrency,
+  model-call, AI-cost, simulated-exposure and heartbeat limits. The initial
+  boundary forbids all endpoints and credentials. Start-time admission fails
+  closed on policy stops, time-window expiry, code drift or excessive requests,
+  but passing still creates no scheduler and starts no job. Runtime lifecycle,
+  daily-consumption, concurrency, repeated-failure and heartbeat enforcement
+  remains a separate prerequisite before any unattended worker can run.
 
 ## Phase 7 work
 
