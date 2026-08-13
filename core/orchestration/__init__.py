@@ -12,6 +12,7 @@ from core.orchestration.strategy_registry import CandidateStrategyRegistryLedger
 from core.orchestration.shadow_test_plan import ShadowTestPlanLedger
 from core.orchestration.shadow_test_result import ShadowTestResultLedger
 from core.orchestration.promotion_review_bundle import PromotionReviewBundleLedger
+from core.orchestration.promotion_decision import PromotionDecisionLedger
 from core.orchestration.robustness_plan import RobustnessTestPlanLedger
 from core.orchestration.robustness_result import RobustnessTestResultLedger
 from core.orchestration.disposable_workspace import DisposableExperimentWorkspace
@@ -33,6 +34,7 @@ __all__ = [
     "ShadowTestPlanLedger",
     "ShadowTestResultLedger",
     "PromotionReviewBundleLedger",
+    "PromotionDecisionLedger",
     "RobustnessTestPlanLedger",
     "RobustnessTestResultLedger",
     "DisposableExperimentWorkspace",
