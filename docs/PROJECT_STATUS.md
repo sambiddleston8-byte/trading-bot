@@ -736,3 +736,10 @@ Issue #21's research-methodology audit is closed; its remaining trust-critical
 actions are tracked by the provider/replay/evidence sequence and
 `docs/QUANT_VALIDITY_AND_PERFORMANCE_AUDIT.md`. PostgreSQL remains
 non-authoritative and Lightsail remains only the planned future destination.
+
+The configured FMP key has now been authenticated and capability-probed without
+printing secrets or financial values. Delisted companies, as-reported
+financials, dividend-adjusted prices and splits are available, while historical
+S&P 500/Nasdaq membership changes and symbol changes return access-denied or
+payment-required responses for the current account. FMP therefore remains supplementary and is not yet qualified
+as the sealed replay provider; see `docs/FMP_PROVIDER_ASSESSMENT.md`.
