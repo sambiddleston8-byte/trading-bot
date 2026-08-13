@@ -10,7 +10,7 @@ from typing import Any, Mapping, Sequence
 from core.decision_ledger import canonical_timestamp
 
 
-POLICY_VERSION = "postgres-authority-cutover-readiness-v1"
+POLICY_VERSION = "postgres-authority-cutover-readiness-v2"
 MINIMUM_CONSECUTIVE_COMPARISONS = 30
 MAX_RESTORE_AGE = timedelta(days=7)
 REQUIRED_MIGRATIONS = {"0001_initial"}
@@ -31,22 +31,53 @@ def assess_postgres_cutover_readiness(
     database_snapshot: Mapping[str, Any],
     local_decision_record_count: int,
     local_decision_tail_hash: str,
-    assessed_at: str | datetime | None = None,
 ) -> dict[str, Any]:
     """Return evidence readiness only; never changes persistence mode."""
 
-    assessed = _timestamp(assessed_at or datetime.now(timezone.utc))
+    assessed = datetime.now(timezone.utc)
     reasons: list[str] = []
     observations = list(comparison_observations)
-    if len(observations) < MINIMUM_CONSECUTIVE_COMPARISONS:
+    sequence_valid = True
+    sequence_numbers: list[int] = []
+    observation_times: list[datetime] = []
+    for item in observations:
+        try:
+            sequence_numbers.append(int(item.get("sequence_number")))
+            observation_times.append(_timestamp(item.get("observed_at")))
+        except (TypeError, ValueError, OverflowError):
+            sequence_valid = False
+            break
+    if sequence_valid and observations:
+        sequence_valid = (
+            all(
+                current == previous + 1
+                for previous, current in zip(sequence_numbers, sequence_numbers[1:])
+            )
+            and all(
+                current > previous
+                for previous, current in zip(observation_times, observation_times[1:])
+            )
+            and observation_times[-1] <= assessed
+        )
+    if not sequence_valid or not observations:
+        reasons.append(
+            "Comparison history requires contiguous sequence numbers and strictly "
+            "increasing, non-future observation times."
+        )
+    trailing_matches = 0
+    for item in reversed(observations):
+        if item.get("status") == "MATCH" and item.get("mismatches") == []:
+            trailing_matches += 1
+        else:
+            break
+    if trailing_matches < MINIMUM_CONSECUTIVE_COMPARISONS:
         reasons.append(
             f"At least {MINIMUM_CONSECUTIVE_COMPARISONS} consecutive comparison observations are required."
         )
-    if any(item.get("status") != "MATCH" or item.get("mismatches") != [] for item in observations):
-        reasons.append("Every comparison observation must be an exact MATCH with no mismatches.")
-    portfolio_ids = [str(item.get("portfolio_id") or "") for item in observations]
+    trailing_observations = observations[-trailing_matches:] if trailing_matches else []
+    portfolio_ids = [str(item.get("portfolio_id") or "") for item in trailing_observations]
     if any(not value for value in portfolio_ids) or len(set(portfolio_ids)) != len(portfolio_ids):
-        reasons.append("Comparison observations require distinct nonblank portfolio IDs.")
+        reasons.append("Trailing matching observations require distinct nonblank portfolio IDs.")
 
     verification = restore_report.get("verification")
     if not isinstance(verification, Mapping) or verification.get("status") != "PASS":
@@ -54,7 +85,7 @@ def assess_postgres_cutover_readiness(
     completed_at = restore_report.get("completed_at")
     try:
         restored = _timestamp(completed_at)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         restored = None
         reasons.append("Restore rehearsal completion time is missing or invalid.")
     if restored is not None and not assessed - MAX_RESTORE_AGE <= restored <= assessed:
@@ -69,7 +100,7 @@ def assess_postgres_cutover_readiness(
     try:
         database_count = int(database_snapshot.get("ledger_record_count"))
         local_count = int(local_decision_record_count)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         database_count = local_count = -1
         reasons.append("Ledger record counts are invalid.")
     database_hash = str(database_snapshot.get("ledger_record_hash") or "")
@@ -82,9 +113,19 @@ def assess_postgres_cutover_readiness(
         or database_hash != local_hash
     ):
         reasons.append("PostgreSQL and local decision-ledger tail hashes must match exactly.")
-    if int(database_snapshot.get("undelivered_outbox_events", -1)) != 0:
+    try:
+        undelivered_outbox_events = int(
+            database_snapshot.get("undelivered_outbox_events", -1)
+        )
+        failed_or_running_job_runs = int(
+            database_snapshot.get("failed_or_running_job_runs", -1)
+        )
+    except (TypeError, ValueError, OverflowError):
+        undelivered_outbox_events = failed_or_running_job_runs = -1
+        reasons.append("Outbox and job-run counters must be valid integers.")
+    if undelivered_outbox_events != 0:
         reasons.append("Every committed outbox event must be delivered before cutover consideration.")
-    if int(database_snapshot.get("failed_or_running_job_runs", -1)) != 0:
+    if failed_or_running_job_runs != 0:
         reasons.append("No failed or still-running database job may remain at cutover consideration.")
 
     reasons = sorted(set(reasons))
@@ -98,8 +139,8 @@ def assess_postgres_cutover_readiness(
         "local_ledger_record_count": local_count,
         "database_ledger_tail_hash": database_hash,
         "local_ledger_tail_hash": local_hash,
-        "undelivered_outbox_events": database_snapshot.get("undelivered_outbox_events"),
-        "failed_or_running_job_runs": database_snapshot.get("failed_or_running_job_runs"),
+        "undelivered_outbox_events": undelivered_outbox_events,
+        "failed_or_running_job_runs": failed_or_running_job_runs,
     }
     ready = not reasons
     return {
@@ -107,7 +148,7 @@ def assess_postgres_cutover_readiness(
         "status": "EVIDENCE_READY_FOR_HUMAN_DECISION" if ready else "BLOCKED",
         "assessed_at": assessed.isoformat(),
         "reasons": reasons,
-        "consecutive_match_count": len(observations),
+        "consecutive_match_count": trailing_matches,
         "minimum_consecutive_match_count": MINIMUM_CONSECUTIVE_COMPARISONS,
         "evidence_snapshot_sha256": hashlib.sha256(
             _canonical_json(evidence).encode("utf-8")
