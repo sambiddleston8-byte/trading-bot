@@ -54,3 +54,18 @@ Future disclosures are excluded. Committee relevance, historical politician
 reliability and subsequent abnormal returns remain explicitly unavailable until
 their own evidence foundations exist. The snapshot is one non-executable
 research factor, never a standalone recommendation or copy trade.
+
+## Point-in-time issuer identity
+
+A reviewed issuer-mapping boundary now prevents a disclosure ticker from being
+treated as a permanent company identity. Each mapping pins the ticker, exact
+disclosed asset name, stable reviewed identifier, effective date range, the
+date-time the mapping became knowable and hashed source evidence. Resolution
+uses the transaction date but excludes mappings learned after the disclosure
+became publicly available. Missing, changed, tampered or conflicting mappings
+remain unresolved.
+
+This foundation does not fetch mapping data and is not yet wired into an active
+political-data connector or activity snapshot. That later integration requires
+an approved source, real reviewed mapping evidence and separate tests. Mapping
+success creates research identity only and cannot recommend or execute a trade.
