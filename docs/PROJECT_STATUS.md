@@ -648,8 +648,15 @@ learning.
 - Phase 10 now implements real local disposable experiment storage: an exact
   marker-authorized root, private manifest and SQLite database, bounded retention
   and safe expiry. Path escapes, symlinks, tampering, early deletion and unknown
-  files fail closed. It is not yet invoked by a runner and touched no repository
-  or research data.
+  files fail closed. A container runner now links this storage to a verified
+  preregistered run manifest and sealed marked-root input. It enforces a pinned
+  image digest, no network, read-only filesystem, no capabilities/privilege
+  escalation, no automatic image pull, an unprivileged user,
+  CPU/memory-plus-swap/process/time limits, forced container-ID cleanup and exactly
+  one attempt. The experiment gets no writable production/workspace mount; a
+  bounded mechanical JSON result is host-captured into SQLite. No real active-
+  pipeline image or sealed dataset has been run, and capture grants no
+  promotion, deployment, broker or trading authority.
 - Phase 10 now assigns complete simulated benchmark-relative outcomes to every
   roadmap effectiveness dimension using pinned point-in-time evidence. Labels
   observed after the decision remain explicit hindsight backfills and cannot

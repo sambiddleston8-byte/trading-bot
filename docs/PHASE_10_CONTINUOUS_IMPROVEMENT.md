@@ -32,8 +32,19 @@ between historical validation and forward paper evidence.
 Issue #141 adds an executable local data-sandbox control. An experiment
 workspace can be created only inside a non-symlink directory bearing the exact
 sandbox-root safety marker. It receives a private manifest and isolated SQLite
-database, a maximum 30-day retention period, and immutable denials for network,
-authoritative writes, AWS, brokers, promotion and trading.
+database. The container runner now consumes only a verified preregistered run
+manifest and a directly-contained sealed input under its own exact safety
+marker. The image digest, input hash, trial count, resources and timeout must
+match that manifest. Docker runs without networking, Linux capabilities or
+privilege escalation, on a read-only filesystem as an unprivileged user, with
+bounded memory, CPU, processes and temporary storage. The experiment receives
+no production or workspace write mount; the host validates a one-MiB JSON
+result and writes it to the disposable SQLite database. An immutable attempt is
+reserved before execution and cannot be repeated after success or failure,
+preventing optional reruns and result shopping. Capturing a result cannot
+promote, deploy, submit an order or enable trading.
+Each workspace retains a maximum 30-day lifetime and immutable denials for
+network access, authoritative writes, AWS, brokers, promotion and trading.
 
 Expiry removes only the two exact managed files and their direct child folder.
 Early deletion, path traversal, symlinks, tampered manifests and unexpected
