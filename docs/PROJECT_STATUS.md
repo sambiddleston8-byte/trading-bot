@@ -805,13 +805,18 @@ boundary. Future BUY or SELL fills are excluded from earlier sessions, included
 fills must come from the proposal set pinned by initial funding, and every
 historical BUY fill requires one value at the exact shared close. This removes a
 look-ahead path where later activity could previously block an earlier daily
-valuation. An immutable paper-position-state ledger now consumes exact FIFO
-lots across decisions, supports partial/full sales, rejects short/oversell and
-pins the as-of execution-chain prefix. Daily valuation pins that snapshot,
-reconciles BUY/SELL gross cash and all recorded fees, and values only remaining
-lots. Any sold ticker with split/dividend history fails closed until event-aware
-lot accounting exists. Simulated fill timestamps are still controlled replay
-inputs, not independently reconciled broker timestamps.
+valuation. Immutable paper-position-state ledgers consume exact FIFO lots across
+decisions, support partial/full sales, reject short/oversell and pin the as-of
+execution-chain prefix. The event-aware state applies supported stock splits
+chronologically, calculates gross USD dividend entitlement at ex-time and
+credits only payments evidenced by the exact close. Daily valuation pins that
+state, reconciles BUY/SELL gross cash, recorded fees and paid dividends, and
+values one current holding per ticker from adjusted shares and one official
+close. Remaining historical BUY cost is disclosed proportionally but is not a
+tax cost basis or realized-profit calculation. Uncertain/unsupported actions,
+FX needs and ambiguous same-time events still fail closed. Simulated fill
+timestamps remain controlled replay inputs, not independently reconciled broker
+timestamps.
 
 Phase 4 now also has a strictly read-only Alpaca paper-account adapter. It uses
 dedicated paper-only environment variables, accepts only Alpaca's official paper
