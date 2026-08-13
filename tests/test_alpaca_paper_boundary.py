@@ -73,6 +73,34 @@ def test_tampering_is_detected_before_another_proposal(tmp_path):
         _proposal(ledger, order_id="PORD-002")
 
 
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("schema_version", "0.1"),
+        ("execution_mode", "LIVE"),
+        ("status", "SUBMITTED"),
+        ("order_type", "LIMIT"),
+        ("time_in_force", "GTC"),
+        ("ticker", "../NVDA"),
+        ("order_id", "unsafe"),
+        ("model_versions", ["not-an-object"]),
+    ],
+)
+def test_rehashed_tampering_cannot_weaken_paper_only_boundary(tmp_path, field, value):
+    from core.broker import alpaca_paper as module
+
+    path = tmp_path / "paper_orders.jsonl"
+    ledger = PaperOrderProposalLedger(path)
+    record = _proposal(ledger)
+    record[field] = value
+    material = {key: item for key, item in record.items() if key != "record_hash"}
+    record["record_hash"] = module._record_hash(material)
+    path.write_text(json.dumps(record) + "\n")
+
+    with pytest.raises(LedgerIntegrityError, match="paper-only boundary"):
+        ledger.verify()
+
+
 def test_explicit_tail_repair_preserves_partial_bytes(tmp_path):
     path = tmp_path / "paper_orders.jsonl"
     ledger = PaperOrderProposalLedger(path)
