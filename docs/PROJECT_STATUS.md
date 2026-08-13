@@ -609,6 +609,15 @@ learning.
   but passing still creates no scheduler and starts no job. Runtime lifecycle,
   daily-consumption, concurrency, repeated-failure and heartbeat enforcement
   remains a separate prerequisite before any unattended worker can run.
+- Phase 6 now implements that immutable lifecycle/accounting prerequisite.
+  Capacity for each admitted future job is atomically reserved before start,
+  including daily count/cost, concurrency, duration, model calls and simulated
+  exposure. Start, heartbeat and terminal events are hash chained; actual use
+  cannot exceed the reservation. Deadline, stale-heartbeat and consecutive-
+  failure violations latch the durable stop before quarantine logging. Stop-
+  admission races and stale success reports fail closed. No scheduler or task
+  is installed or run, and no external, broker, AWS, GitHub-write, promotion,
+  order or trading permission is granted.
 
 ## Phase 7 work
 

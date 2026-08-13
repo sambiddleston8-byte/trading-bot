@@ -123,9 +123,9 @@ rewriting what happened.
 
 - execution of the real active-pipeline experiment image and real sealed data
   through the implemented container/disposable-workspace runner;
-- integration of the implemented short-lived, human-approved activation and
-  start-time admission boundary with a future immutable worker lifecycle ledger
-  that enforces daily use, concurrency, heartbeat and repeated-failure state;
+- integration of the implemented activation, admission and immutable
+  lifecycle/usage controls into a future actual sandbox worker, without
+  weakening their daily-use, concurrency, heartbeat or failure enforcement;
 - a separate AWS staging environment and least-privilege identities;
 - activation of the implemented promotion/rollback evidence bundle only after
   real complete evidence exists; and
