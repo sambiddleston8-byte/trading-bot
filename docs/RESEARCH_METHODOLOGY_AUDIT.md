@@ -262,6 +262,23 @@ reliability may still affect position sizing because sizing is a distinct risk
 question; they cannot change rank. A validator fails if a second authoritative
 ranking stage is declared or if two ranking factors point to the same lineage.
 
+### Historical-universe event foundation
+
+Historical S&P 500 and Nasdaq-100 additions, removals and delistings now have a
+separate append-only, hash-chained event model. Every event preserves its
+effective date, public-availability and retrieval times, source hash and exact
+source location. Snapshots use only events effective by the requested date and
+publicly known by the requested knowledge cutoff; they never substitute the
+current member list. Removals remain in the snapshot history rather than
+disappearing.
+
+A delisting must declare which terminal-outcome evidence will be required, but
+that declaration is not the evidence itself. Consequently snapshots are
+explicitly partial, `coverage_completeness_proven` and
+`terminal_outcome_evidence_complete` remain false, and survivorship-safe replay
+readiness remains false. A later coverage manifest and terminal-outcome ledger
+must close those gaps before historical performance is calculated.
+
 ### Investment-method optimisation that can continue later
 
 - archive content-addressed research runs and richer source provenance;
