@@ -15,8 +15,8 @@ from uuid import uuid4
 
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 from core.performance.daily_position_value import DailyPositionValueLedger
+from core.performance.event_aware_position_state import EventAwarePaperPositionStateLedger
 from core.performance.pinned_support import resolve_pinned_records
-from core.performance.paper_position_state import PaperPositionStateLedger
 from core.performance.portfolio_cash_flow import PortfolioCashFlowLedger
 from core.performance.portfolio_funding import PortfolioFundingLedger
 from core.performance.portfolio_valuation import (
@@ -30,7 +30,7 @@ from core.performance.portfolio_valuation import (
 
 
 DAILY_PORTFOLIO_VALUATION_SCHEMA_VERSION = "1.0"
-DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION = "fifo-sell-aware-daily-portfolio-value-v3"
+DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION = "event-aware-daily-portfolio-value-v4"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 FILL_INCLUSION_POLICY = "FILLED_AT_OR_BEFORE_EXACT_SESSION_CLOSE"
 FORMULA = {
@@ -42,6 +42,7 @@ FORMULA = {
     ),
     "total_equity": "remaining_cash + total_position_market_value",
     "position_weight": "position_market_value / total_equity",
+    "position_market_value": "event_adjusted_open_quantity * official_unadjusted_close",
     "cash_weight": "remaining_cash / total_equity",
     "arithmetic_policy": "EXACT_RATIONAL_WITH_34_DIGIT_DECIMAL_PRESENTATION",
 }
@@ -92,63 +93,103 @@ def _economics(
         item["fill_id"] for item in fills
     }:
         raise ValueError("Position state must pin the exact as-of fill history")
-    sold_tickers = {str(fill["ticker"]) for fill in fills if fill.get("side") == "SELL"}
-    if any(
-        value.get("events_applied")
-        for value in position_values
-        if str(value.get("ticker")) in sold_tickers
-    ):
-        raise ValueError(
-            "Sold tickers with split or dividend history require event-aware lot accounting"
+    action_support_by_fill = {
+        item["fill_id"]: (
+            item["corporate_action_evidence_id"],
+            item["corporate_action_record_hash"],
         )
-    remaining_by_fill = {
-        lot["buy_fill_id"]: _fraction(
-            lot["exact_remaining_quantity"], "remaining lot quantity"
-        )
-        for position in position_state.get("open_positions") or []
-        for lot in position.get("supporting_open_lots") or []
+        for item in position_values
     }
+    position_action_support = {
+        fill_id: (evidence_id, evidence_hash)
+        for fill_id, evidence_id, evidence_hash in zip(
+            sorted(fill["fill_id"] for fill in buy_fills),
+            position_state.get("supporting_corporate_action_evidence_ids") or [],
+            position_state.get("supporting_corporate_action_record_hashes") or [],
+        )
+    }
+    if action_support_by_fill != position_action_support:
+        raise ValueError("Position state and daily values must pin the same action evidence")
     total_entry_cost = Fraction(0)
     total_entry_fees = Fraction(0)
-    total_market_value = Fraction(0)
-    total_dividends = Fraction(0)
-    positions = []
-    for fill in sorted(buy_fills, key=lambda item: item["fill_id"]):
+    for fill in buy_fills:
         gross = _number(fill["gross_value"], "fill gross value")
         fee = _number(fill["fees"], "entry fee", allow_zero=True)
-        entry_cost = gross + fee
-        value = values_by_fill[fill["fill_id"]]
-        exact = value["exact_fractions"]
-        full_market_value = _fraction(exact["position_market_value"], "position market value")
-        dividend_cash = _fraction(
-            exact["cumulative_gross_dividend_cash"], "cumulative dividend cash"
-        )
-        total_entry_cost += entry_cost
+        total_entry_cost += gross + fee
         total_entry_fees += fee
-        original_quantity = _number(fill["filled_quantity"], "original filled quantity")
-        remaining_quantity = remaining_by_fill.get(fill["fill_id"], Fraction(0))
-        if remaining_quantity > original_quantity:
-            raise ValueError("Remaining lot quantity cannot exceed its original BUY quantity")
-        if fill["ticker"] not in sold_tickers and remaining_quantity != original_quantity:
-            raise ValueError("Unsold ticker position state must retain its complete BUY quantity")
-        market_value = full_market_value * remaining_quantity / original_quantity
+
+    values_by_ticker: dict[str, list[Mapping[str, Any]]] = {}
+    for value in position_values:
+        values_by_ticker.setdefault(str(value["ticker"]), []).append(value)
+    dividends_by_ticker: dict[str, Fraction] = {}
+    for event in position_state.get("applied_corporate_actions") or []:
+        if event.get("event_type") == "CASH_DIVIDEND":
+            ticker = str(event["ticker"])
+            dividends_by_ticker[ticker] = dividends_by_ticker.get(ticker, Fraction(0)) + _fraction(
+                event["exact_gross_cash"], "event dividend cash"
+            )
+    total_dividends = _fraction(
+        position_state["exact_fractions"]["cumulative_paid_gross_usd_dividend_cash"],
+        "position-state dividend cash",
+    )
+    if sum(dividends_by_ticker.values(), Fraction(0)) != total_dividends:
+        raise ValueError("Per-ticker dividends must reconcile to position-state dividend cash")
+
+    total_market_value = Fraction(0)
+    positions = []
+    for position_state_item in position_state.get("open_positions") or []:
+        ticker = str(position_state_item["ticker"])
+        ticker_values = sorted(values_by_ticker.get(ticker, []), key=lambda item: item["fill_id"])
+        if not ticker_values:
+            raise ValueError(f"Open position {ticker} has no exact-close price evidence")
+        closes = {
+            _fraction(item["exact_fractions"]["official_unadjusted_close"], "official close")
+            for item in ticker_values
+        }
+        if len(closes) != 1:
+            raise ValueError(f"Historical BUY values for {ticker} must share one official close")
+        close_price = next(iter(closes))
+        quantity = _fraction(position_state_item["exact_open_quantity"], "open quantity")
+        market_value = quantity * close_price
         total_market_value += market_value
-        total_dividends += dividend_cash
-        if remaining_quantity == 0:
-            continue
+        open_lots = position_state_item.get("supporting_open_lots") or []
+        historical_buy_cost = sum(
+            (
+                _fraction(
+                    lot["exact_remaining_historical_buy_cost"],
+                    "remaining historical BUY cost",
+                )
+                for lot in open_lots
+            ),
+            Fraction(0),
+        )
+        contributing_ids = [lot["buy_fill_id"] for lot in open_lots]
+        contributing_values = [values_by_fill[fill_id] for fill_id in contributing_ids]
+        dividend_cash = dividends_by_ticker.get(ticker, Fraction(0))
         positions.append(
             {
-                "ticker": fill["ticker"],
-                "fill_id": fill["fill_id"],
-                "daily_position_value_id": value["result_id"],
-                "daily_position_value_record_hash": value["record_hash"],
-                "recorded_entry_cost": _decimal_string(entry_cost),
-                "remaining_quantity": _decimal_string(remaining_quantity),
+                "ticker": ticker,
+                "supporting_open_buy_fill_ids": contributing_ids,
+                "supporting_open_buy_fill_hashes": [
+                    lot["buy_fill_record_hash"] for lot in open_lots
+                ],
+                "supporting_daily_position_value_ids": [
+                    item["result_id"] for item in contributing_values
+                ],
+                "supporting_daily_position_value_hashes": [
+                    item["record_hash"] for item in contributing_values
+                ],
+                "remaining_quantity": _decimal_string(quantity),
+                "official_unadjusted_close": _decimal_string(close_price),
+                "remaining_historical_buy_cost": _decimal_string(historical_buy_cost),
                 "position_market_value": _decimal_string(market_value),
                 "cumulative_gross_dividend_cash": _decimal_string(dividend_cash),
                 "exact_fractions": {
-                    "recorded_entry_cost": _fraction_material(entry_cost),
-                    "remaining_quantity": _fraction_material(remaining_quantity),
+                    "remaining_quantity": _fraction_material(quantity),
+                    "official_unadjusted_close": _fraction_material(close_price),
+                    "remaining_historical_buy_cost": _fraction_material(
+                        historical_buy_cost
+                    ),
                     "position_market_value": _fraction_material(market_value),
                     "cumulative_gross_dividend_cash": _fraction_material(dividend_cash),
                 },
@@ -212,7 +253,7 @@ class DailyPortfolioValuationLedger:
         position_value_ledger: DailyPositionValueLedger,
         funding_ledger: PortfolioFundingLedger,
         cash_flow_ledger: PortfolioCashFlowLedger,
-        position_state_ledger: PaperPositionStateLedger,
+        position_state_ledger: EventAwarePaperPositionStateLedger,
     ) -> None:
         self.path = Path(path)
         self.position_value_ledger = position_value_ledger

@@ -247,6 +247,7 @@ def _state(
                         "buy_fill_record_hash": item["record_hash"],
                         "acquired_at": item["filled_at"],
                         "remaining": quantity,
+                        "remaining_historical_buy_cost": gross + fee,
                     }
                 )
                 continue
@@ -257,8 +258,12 @@ def _state(
                 raise ValueError(f"SELL for {ticker} exceeds the adjusted open paper position")
             remaining = quantity
             for lot in queue:
+                before = lot["remaining"]
                 consumed = min(lot["remaining"], remaining)
                 lot["remaining"] -= consumed
+                lot["remaining_historical_buy_cost"] *= (
+                    lot["remaining"] / before
+                )
                 remaining -= consumed
                 if remaining == 0:
                     break
@@ -328,6 +333,12 @@ def _state(
                         "acquired_at": lot["acquired_at"],
                         "remaining_quantity": _decimal_string(lot["remaining"]),
                         "exact_remaining_quantity": _fraction_material(lot["remaining"]),
+                        "remaining_historical_buy_cost": _decimal_string(
+                            lot["remaining_historical_buy_cost"]
+                        ),
+                        "exact_remaining_historical_buy_cost": _fraction_material(
+                            lot["remaining_historical_buy_cost"]
+                        ),
                     }
                     for lot in queue
                 ],
