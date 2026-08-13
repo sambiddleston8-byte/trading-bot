@@ -10,7 +10,7 @@ from typing import Any, Mapping, Sequence
 from core.decision_ledger import canonical_timestamp
 
 
-POLICY_VERSION = "purged-forward-chaining-embargo-v1"
+POLICY_VERSION = "purged-forward-chaining-embargo-v2"
 
 
 def _canonical_json(value: Any) -> str:
@@ -82,6 +82,7 @@ class PurgedEmbargoedForwardFolds:
             raise ValueError("test_windows cannot be empty")
         folds: list[dict[str, Any]] = []
         prior_test_end: datetime | None = None
+        prior_embargo_windows: list[tuple[datetime, datetime]] = []
         used_test_ids: set[str] = set()
         for index, window in enumerate(test_windows, start=1):
             test_start = _timestamp(window.get("test_not_before"), "test_not_before")
@@ -100,15 +101,30 @@ class PurgedEmbargoedForwardFolds:
             if used_test_ids.intersection(test_ids):
                 raise ValueError("an observation cannot be reused across test folds")
             purge_boundary = test_start
+            prior_embargo_excluded = [
+                item for item in records
+                if _timestamp(item["decision_at"], "decision_at") < test_start
+                and any(
+                    embargo_start
+                    <= _timestamp(item["decision_at"], "decision_at")
+                    < embargo_end
+                    for embargo_start, embargo_end in prior_embargo_windows
+                )
+            ]
+            prior_embargo_excluded_ids = {
+                item["observation_id"] for item in prior_embargo_excluded
+            }
             train = [
                 item for item in records
                 if _timestamp(item["decision_at"], "decision_at") < test_start
                 and _timestamp(item["label_end_at"], "label_end_at") < purge_boundary
+                and item["observation_id"] not in prior_embargo_excluded_ids
             ]
             purged = [
                 item for item in records
                 if _timestamp(item["decision_at"], "decision_at") < test_start
                 and _timestamp(item["label_end_at"], "label_end_at") >= purge_boundary
+                and item["observation_id"] not in prior_embargo_excluded_ids
             ]
             if not train:
                 raise ValueError("every fold must retain at least one non-overlapping train observation")
@@ -127,18 +143,24 @@ class PurgedEmbargoedForwardFolds:
                 "embargo_not_after": embargo_end.isoformat(),
                 "train_observation_ids": train_ids,
                 "purged_observation_ids": [item["observation_id"] for item in purged],
+                "prior_embargo_excluded_observation_ids": [
+                    item["observation_id"] for item in prior_embargo_excluded
+                ],
                 "test_observation_ids": test_ids,
                 "embargoed_observation_ids": [item["observation_id"] for item in embargoed],
                 "train_count": len(train_ids),
                 "purged_count": len(purged),
+                "prior_embargo_excluded_count": len(prior_embargo_excluded),
                 "test_count": len(test_ids),
                 "embargoed_count": len(embargoed),
                 "train_labels_end_strictly_before_test": True,
+                "prior_fold_embargo_enforced": True,
                 "random_split_used": False,
                 "test_observation_reused": False,
             })
             used_test_ids.update(test_ids)
             prior_test_end = test_end
+            prior_embargo_windows.append((test_end, embargo_end))
         identity = [records, folds, resolved_embargo, POLICY_VERSION]
         return {
             "fold_set_id": "FOLDS-" + hashlib.sha256(
@@ -154,6 +176,7 @@ class PurgedEmbargoedForwardFolds:
             "expanding_training_window": True,
             "outcome_overlap_purged": True,
             "post_test_embargo_declared": True,
+            "post_test_embargo_enforced_in_later_folds": True,
             "random_split_allowed": False,
             "test_period_reuse_allowed": False,
             "model_trained": False,

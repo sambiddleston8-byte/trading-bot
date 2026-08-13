@@ -107,3 +107,37 @@ def test_invalid_transition_fails_before_append(tmp_path):
     assert first["previous_hash"] == GENESIS_HASH
     with pytest.raises(LedgerIntegrityError, match="transition"):
         event(book, source_input_sha256="c" * 64)
+
+
+def test_backfilled_effective_date_cannot_move_backwards(tmp_path):
+    book = ledger(tmp_path)
+    event(book, effective_date="2021-01-02")
+    with pytest.raises(LedgerIntegrityError, match="cannot move backwards"):
+        event(
+            book, event_type="REMOVED", effective_date="2020-06-01",
+            publicly_available_at="2021-02-01T12:00:00+00:00",
+            retrieved_at="2021-02-01T13:00:00+00:00",
+            recorded_at="2021-02-01T14:00:00+00:00",
+        )
+    assert len(book.verify()) == 1
+
+
+def test_snapshot_fails_loudly_when_knowledge_cutoff_hides_required_addition(tmp_path):
+    book = ledger(tmp_path)
+    event(
+        book,
+        publicly_available_at="2020-03-01T12:00:00+00:00",
+        retrieved_at="2020-03-01T13:00:00+00:00",
+        recorded_at="2020-03-01T14:00:00+00:00",
+    )
+    event(
+        book, event_type="REMOVED", effective_date="2021-01-02",
+        publicly_available_at="2020-02-01T12:00:00+00:00",
+        retrieved_at="2020-03-01T13:00:00+00:00",
+        recorded_at="2020-03-01T14:00:00+00:00",
+    )
+    with pytest.raises(LedgerIntegrityError, match="exit without a known member"):
+        book.snapshot(
+            universe="SP500", effective_as_of="2022-01-01T00:00:00+00:00",
+            known_as_of="2020-02-15T00:00:00+00:00",
+        )

@@ -70,6 +70,7 @@ def test_preregisters_inert_faithful_active_route(tmp_path):
     assert record["cost_model"]["pessimistic_cost_multiplier"] == "2"
     for field in (
         "random_split_allowed", "evaluation_period_reuse_allowed",
+        "overlapping_evaluation_window_allowed",
         "metric_substitution_allowed", "optional_stopping_allowed",
         "historical_universe_coverage_bound", "evaluation_dataset_opened",
         "replay_executed", "performance_claim_allowed",
@@ -134,6 +135,32 @@ def test_registration_cannot_be_backdated_or_plan_shopped_for_same_revision(tmp_
                 "HIT_RATE": {"comparison": "AT_LEAST", "threshold": "0.6"},
             },
         )
+
+
+def test_overlapping_evaluation_window_is_rejected_across_revisions(tmp_path):
+    target = ledger(tmp_path)
+    plan(target)
+    with pytest.raises(LedgerIntegrityError, match="overlaps an existing unresolved"):
+        plan(
+            target,
+            git_revision="2" * 40,
+            evaluation_not_before="2022-06-01T00:00:00+00:00",
+            evaluation_not_after="2023-01-31T00:00:00+00:00",
+        )
+    assert len(target.verify()) == 1
+
+
+def test_non_overlapping_evaluation_window_is_allowed_for_new_revision(tmp_path):
+    target = ledger(tmp_path)
+    plan(target)
+    second = plan(
+        target,
+        git_revision="2" * 40,
+        evaluation_not_before="2023-01-01T00:00:00+00:00",
+        evaluation_not_after="2023-06-30T00:00:00+00:00",
+    )
+    assert second["git_revision"] == "2" * 40
+    assert len(target.verify()) == 2
 
 
 @pytest.mark.parametrize("change", [

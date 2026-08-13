@@ -16,7 +16,7 @@ from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_t
 
 
 HISTORICAL_UNIVERSE_SCHEMA_VERSION = "1.0"
-HISTORICAL_UNIVERSE_POLICY_VERSION = "point-in-time-membership-events-v1"
+HISTORICAL_UNIVERSE_POLICY_VERSION = "point-in-time-membership-events-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 TICKER_PATTERN = re.compile(r"^[A-Z][A-Z0-9.-]{0,14}$")
@@ -220,6 +220,7 @@ class HistoricalUniverseEventLedger:
         previous_hash = GENESIS_HASH
         seen_ids: set[str] = set()
         states: dict[tuple[str, str], bool] = {}
+        last_effective_boundaries: dict[tuple[str, str], datetime] = {}
         records = self.records()
         for index, record in enumerate(records, start=1):
             material = {key: value for key, value in record.items() if key != "record_hash"}
@@ -250,6 +251,11 @@ class HistoricalUniverseEventLedger:
             )
             key = (universe, ticker)
             before = states.get(key, False)
+            prior_effective_boundary = last_effective_boundaries.get(key)
+            chronology_valid = (
+                prior_effective_boundary is None
+                or effective_boundary >= prior_effective_boundary
+            )
             transition_valid = (event == "ADDED" and not before) or (
                 event in {"REMOVED", "DELISTED"} and before
             )
@@ -277,10 +283,12 @@ class HistoricalUniverseEventLedger:
                 ))
                 and all(record.get(name) == value for name, value in POLICY.items())
                 and transition_valid
+                and chronology_valid
             )
             if not boundary:
                 raise LedgerIntegrityError(f"Universe-event record {index} violates its boundary.")
             states[key] = after
+            last_effective_boundaries[key] = effective_boundary
             seen_ids.add(expected_id)
             previous_hash = record["record_hash"]
         return records
@@ -304,11 +312,18 @@ class HistoricalUniverseEventLedger:
             and _timestamp(item["effective_boundary_at"]) <= effective_cutoff
             and _timestamp(item["publicly_available_at"]) <= knowledge_cutoff
         ]
-        events.sort(key=lambda item: (item["effective_boundary_at"], item["event_id"]))
+        # ``verify`` requires each ticker's effective dates to be non-decreasing in
+        # append order. Python's stable sort therefore preserves unambiguous order
+        # for same-boundary transitions while interleaving different tickers.
+        events.sort(key=lambda item: item["effective_boundary_at"])
         members: dict[str, dict[str, Any]] = {}
         exclusions: list[dict[str, Any]] = []
         for event in events:
             if event["event_type"] == "ADDED":
+                if event["ticker"] in members:
+                    raise LedgerIntegrityError(
+                        "Historical-universe snapshot contains an impossible duplicate addition."
+                    )
                 members[event["ticker"]] = {
                     "ticker": event["ticker"],
                     "issuer_name": event["issuer_name"],
@@ -317,14 +332,17 @@ class HistoricalUniverseEventLedger:
                 }
             else:
                 member = members.pop(event["ticker"], None)
-                if member is not None:
-                    exclusions.append({
-                        **member,
-                        "exit_event_id": event["event_id"],
-                        "exit_event_record_hash": event["record_hash"],
-                        "exit_type": event["event_type"],
-                        "terminal_outcome_treatment": event["terminal_outcome_treatment"],
-                    })
+                if member is None:
+                    raise LedgerIntegrityError(
+                        "Historical-universe snapshot contains an exit without a known member."
+                    )
+                exclusions.append({
+                    **member,
+                    "exit_event_id": event["event_id"],
+                    "exit_event_record_hash": event["record_hash"],
+                    "exit_type": event["event_type"],
+                    "terminal_outcome_treatment": event["terminal_outcome_treatment"],
+                })
         included = [members[key] for key in sorted(members)]
         exclusions.sort(key=lambda item: (item["ticker"], item["exit_event_id"]))
         identity = [
@@ -372,9 +390,19 @@ class HistoricalUniverseEventLedger:
                 raise LedgerIntegrityError("Historical-universe event already exists.")
             key = (result["universe"], result["ticker"])
             active = False
+            last_effective_boundary: datetime | None = None
             for item in records:
                 if (item["universe"], item["ticker"]) == key:
                     active = item["event_type"] == "ADDED"
+                    last_effective_boundary = _timestamp(item["effective_boundary_at"])
+            result_effective_boundary = _timestamp(result["effective_boundary_at"])
+            if (
+                last_effective_boundary is not None
+                and result_effective_boundary < last_effective_boundary
+            ):
+                raise LedgerIntegrityError(
+                    "Universe event effective date cannot move backwards in append order."
+                )
             if (result["event_type"] == "ADDED") is active:
                 raise LedgerIntegrityError("Universe event is not a valid membership transition.")
             material = {

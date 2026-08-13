@@ -45,6 +45,19 @@ def test_long_horizon_label_at_test_boundary_is_purged():
     assert "B" not in fold["train_observation_ids"]
 
 
+def test_prior_fold_post_test_embargo_is_enforced_in_later_training():
+    result = build(test_windows=[
+        {"test_not_before": "2020-05-01T00:00:00+00:00", "test_not_after": "2020-06-01T00:00:00+00:00"},
+        {"test_not_before": "2020-08-01T00:00:00+00:00", "test_not_after": "2020-10-01T00:00:00+00:00"},
+    ])
+    second = result["folds"][1]
+    assert second["test_observation_ids"] == ["F"]
+    assert second["prior_embargo_excluded_observation_ids"] == ["E"]
+    assert "E" not in second["train_observation_ids"]
+    assert second["prior_fold_embargo_enforced"] is True
+    assert result["post_test_embargo_enforced_in_later_folds"] is True
+
+
 @pytest.mark.parametrize("changes,fragment", [
     ({"embargo_days": 0}, "between"),
     ({"test_windows": []}, "cannot be empty"),
