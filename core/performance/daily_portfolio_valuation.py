@@ -16,6 +16,7 @@ from uuid import uuid4
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 from core.performance.daily_position_value import DailyPositionValueLedger
 from core.performance.pinned_support import resolve_pinned_records
+from core.performance.paper_position_state import PaperPositionStateLedger
 from core.performance.portfolio_cash_flow import PortfolioCashFlowLedger
 from core.performance.portfolio_funding import PortfolioFundingLedger
 from core.performance.portfolio_valuation import (
@@ -29,13 +30,14 @@ from core.performance.portfolio_valuation import (
 
 
 DAILY_PORTFOLIO_VALUATION_SCHEMA_VERSION = "1.0"
-DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION = "cash-reconciled-daily-portfolio-value-v2"
+DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION = "fifo-sell-aware-daily-portfolio-value-v3"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 FILL_INCLUSION_POLICY = "FILLED_AT_OR_BEFORE_EXACT_SESSION_CLOSE"
 FORMULA = {
-    "recorded_entry_cost": "simulated_fill_gross_value + recorded_entry_fee",
+    "recorded_entry_cost": "sum(BUY simulated_fill_gross_value + BUY recorded_fee)",
     "remaining_cash": (
-        "initial_funding - sum(recorded_entry_cost) + cumulative_gross_usd_dividend_cash_pre_tax "
+        "initial_funding + position_state_net_trade_cash_flow "
+        "+ cumulative_gross_usd_dividend_cash_pre_tax "
         "+ cumulative_external_cash_flow"
     ),
     "total_equity": "remaining_cash + total_position_market_value",
@@ -60,8 +62,13 @@ def _number(value: Any, name: str, *, allow_zero: bool = False) -> Fraction:
     return Fraction(resolved)
 
 
-def _valuation_id(portfolio_version: str, session_date: str) -> str:
-    material = [portfolio_version, session_date, DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION]
+def _valuation_id(portfolio_version: str, session_date: str, position_snapshot_id: str) -> str:
+    material = [
+        portfolio_version,
+        session_date,
+        position_snapshot_id,
+        DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION,
+    ]
     return "DPFVAL-" + hashlib.sha256(
         _canonical_json(material).encode("utf-8")
     ).hexdigest()[:32].upper()
@@ -72,34 +79,63 @@ def _economics(
     fills: Sequence[Mapping[str, Any]],
     position_values: Sequence[Mapping[str, Any]],
     flows: Sequence[Mapping[str, Any]],
+    position_state: Mapping[str, Any],
 ) -> dict[str, Any]:
     initial_funding = _fraction(funding["exact_amount"], "initial funding")
     values_by_fill = {item["fill_id"]: item for item in position_values}
+    buy_fills = [fill for fill in fills if fill.get("side") == "BUY"]
     if len(values_by_fill) != len(position_values) or set(values_by_fill) != {
+        item["fill_id"] for item in buy_fills
+    }:
+        raise ValueError("Daily values must match every historical BUY fill exactly once")
+    if set(position_state.get("supporting_fill_ids") or []) != {
         item["fill_id"] for item in fills
     }:
-        raise ValueError("Daily values must match every open fill exactly once")
+        raise ValueError("Position state must pin the exact as-of fill history")
+    sold_tickers = {str(fill["ticker"]) for fill in fills if fill.get("side") == "SELL"}
+    if any(
+        value.get("events_applied")
+        for value in position_values
+        if str(value.get("ticker")) in sold_tickers
+    ):
+        raise ValueError(
+            "Sold tickers with split or dividend history require event-aware lot accounting"
+        )
+    remaining_by_fill = {
+        lot["buy_fill_id"]: _fraction(
+            lot["exact_remaining_quantity"], "remaining lot quantity"
+        )
+        for position in position_state.get("open_positions") or []
+        for lot in position.get("supporting_open_lots") or []
+    }
     total_entry_cost = Fraction(0)
     total_entry_fees = Fraction(0)
     total_market_value = Fraction(0)
     total_dividends = Fraction(0)
     positions = []
-    for fill in sorted(fills, key=lambda item: item["fill_id"]):
-        if fill.get("side") != "BUY":
-            raise ValueError("Sell/rebalance position-state accounting is not implemented")
+    for fill in sorted(buy_fills, key=lambda item: item["fill_id"]):
         gross = _number(fill["gross_value"], "fill gross value")
         fee = _number(fill["fees"], "entry fee", allow_zero=True)
         entry_cost = gross + fee
         value = values_by_fill[fill["fill_id"]]
         exact = value["exact_fractions"]
-        market_value = _fraction(exact["position_market_value"], "position market value")
+        full_market_value = _fraction(exact["position_market_value"], "position market value")
         dividend_cash = _fraction(
             exact["cumulative_gross_dividend_cash"], "cumulative dividend cash"
         )
         total_entry_cost += entry_cost
         total_entry_fees += fee
+        original_quantity = _number(fill["filled_quantity"], "original filled quantity")
+        remaining_quantity = remaining_by_fill.get(fill["fill_id"], Fraction(0))
+        if remaining_quantity > original_quantity:
+            raise ValueError("Remaining lot quantity cannot exceed its original BUY quantity")
+        if fill["ticker"] not in sold_tickers and remaining_quantity != original_quantity:
+            raise ValueError("Unsold ticker position state must retain its complete BUY quantity")
+        market_value = full_market_value * remaining_quantity / original_quantity
         total_market_value += market_value
         total_dividends += dividend_cash
+        if remaining_quantity == 0:
+            continue
         positions.append(
             {
                 "ticker": fill["ticker"],
@@ -107,10 +143,12 @@ def _economics(
                 "daily_position_value_id": value["result_id"],
                 "daily_position_value_record_hash": value["record_hash"],
                 "recorded_entry_cost": _decimal_string(entry_cost),
+                "remaining_quantity": _decimal_string(remaining_quantity),
                 "position_market_value": _decimal_string(market_value),
                 "cumulative_gross_dividend_cash": _decimal_string(dividend_cash),
                 "exact_fractions": {
                     "recorded_entry_cost": _fraction_material(entry_cost),
+                    "remaining_quantity": _fraction_material(remaining_quantity),
                     "position_market_value": _fraction_material(market_value),
                     "cumulative_gross_dividend_cash": _fraction_material(dividend_cash),
                 },
@@ -120,7 +158,11 @@ def _economics(
         (_fraction(item["exact_signed_amount"], "external cash flow") for item in flows),
         Fraction(0),
     )
-    cash = initial_funding - total_entry_cost + total_dividends + cumulative_flow
+    net_trade_cash = _fraction(
+        position_state["exact_fractions"]["net_trade_cash_flow"],
+        "position-state net trade cash flow",
+    )
+    cash = initial_funding + net_trade_cash + total_dividends + cumulative_flow
     if cash < 0:
         raise ValueError("Reconciled daily cash cannot be negative")
     equity = cash + total_market_value
@@ -142,6 +184,7 @@ def _economics(
         "initial_funding": initial_funding,
         "total_recorded_entry_cost": total_entry_cost,
         "total_recorded_entry_fees": total_entry_fees,
+        "position_state_net_trade_cash_flow": net_trade_cash,
         "cumulative_gross_usd_dividend_cash_pre_tax": total_dividends,
         "cumulative_external_cash_flow": cumulative_flow,
         "remaining_cash": cash,
@@ -169,11 +212,13 @@ class DailyPortfolioValuationLedger:
         position_value_ledger: DailyPositionValueLedger,
         funding_ledger: PortfolioFundingLedger,
         cash_flow_ledger: PortfolioCashFlowLedger,
+        position_state_ledger: PaperPositionStateLedger,
     ) -> None:
         self.path = Path(path)
         self.position_value_ledger = position_value_ledger
         self.funding_ledger = funding_ledger
         self.cash_flow_ledger = cash_flow_ledger
+        self.position_state_ledger = position_state_ledger
 
     def records(self) -> list[dict[str, Any]]:
         if not self.path.exists():
@@ -253,16 +298,14 @@ class DailyPortfolioValuationLedger:
         )
         if not fills:
             reasons.append("Verified simulated fills at or before the session close are missing.")
-        if any(item.get("side") != "BUY" for item in fills):
-            reasons.append("Sell/rebalance position-state accounting is not implemented.")
         funding_orders = set(funding.get("proposal_order_ids") or []) if funding else set()
         fill_orders = {item["order_id"] for item in fills}
         if not fill_orders.issubset(funding_orders) or len(fills) != len(fill_orders):
             reasons.append("Every as-of fill must belong to the proposal set pinned by initial funding.")
-        fill_ids = {item["fill_id"] for item in fills}
+        fill_ids = {item["fill_id"] for item in fills if item.get("side") == "BUY"}
         value_fill_ids = {item["fill_id"] for item in values}
         if value_fill_ids != fill_ids or len(values) != len(value_fill_ids):
-            reasons.append("Every as-of fill requires exactly one daily position value for the session.")
+            reasons.append("Every historical BUY fill requires one exact-close daily position value.")
         flows = sorted(
             (
                 item for item in self.cash_flow_ledger.verify()
@@ -311,7 +354,15 @@ class DailyPortfolioValuationLedger:
         if calculated > datetime.now(timezone.utc) + MAX_CLOCK_SKEW:
             return self.not_calculable(version, session, ["calculated_at cannot be in the future."])
         try:
-            economics = _economics(funding, fills, values, flows)
+            position_state = self.position_state_ledger.calculate(
+                portfolio_version=version,
+                as_of=close_at,
+                calculated_at=calculated,
+            )
+        except (LedgerIntegrityError, TypeError, ValueError) as error:
+            return self.not_calculable(version, session, [str(error)])
+        try:
+            economics = _economics(funding, fills, values, flows, position_state)
         except (TypeError, ValueError) as error:
             return self.not_calculable(version, session, [str(error)])
         fills = sorted(fills, key=lambda item: item["fill_id"])
@@ -319,7 +370,7 @@ class DailyPortfolioValuationLedger:
         result = {
             "schema_version": DAILY_PORTFOLIO_VALUATION_SCHEMA_VERSION,
             "calculation_version": DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION,
-            "valuation_id": _valuation_id(version, session),
+            "valuation_id": _valuation_id(version, session, position_state["snapshot_id"]),
             "status": "CALCULATED",
             "scope": "SIMULATED_GROSS_PRE_TAX_DAILY_PORTFOLIO_VALUATION",
             "simulation_only": True,
@@ -331,6 +382,8 @@ class DailyPortfolioValuationLedger:
             "fill_inclusion_policy": FILL_INCLUSION_POLICY,
             "funding_id": funding["funding_id"],
             "funding_record_hash": funding["record_hash"],
+            "position_snapshot_id": position_state["snapshot_id"],
+            "position_snapshot_record_hash": position_state["record_hash"],
             "supporting_fill_ids": [item["fill_id"] for item in fills],
             "supporting_fill_hashes": [item["record_hash"] for item in fills],
             "supporting_position_value_ids": [item["result_id"] for item in values],
@@ -386,12 +439,24 @@ class DailyPortfolioValuationLedger:
             label="cash-flow",
         )
         funding = self.funding_ledger.funding_for(record.get("portfolio_version"))
-        reasons = [*fill_reasons, *value_reasons, *flow_reasons]
+        states, state_reasons = resolve_pinned_records(
+            self.position_state_ledger.verify(),
+            [record.get("position_snapshot_id")],
+            [record.get("position_snapshot_record_hash")],
+            id_field="snapshot_id",
+            label="paper-position-state",
+        )
+        position_state = states[0] if len(states) == 1 else None
+        reasons = [*fill_reasons, *value_reasons, *flow_reasons, *state_reasons]
         if funding is None or funding.get("funding_id") != record.get("funding_id") or funding.get("record_hash") != record.get("funding_record_hash"):
             reasons.append("Pinned funding is missing or changed.")
-        if {item.get("fill_id") for item in fills} != {item.get("fill_id") for item in values}:
-            reasons.append("Pinned daily values do not match pinned fills.")
-        return funding, list(fills), list(values), list(flows), reasons
+        if {item.get("fill_id") for item in fills if item.get("side") == "BUY"} != {
+            item.get("fill_id") for item in values
+        }:
+            reasons.append("Pinned daily values do not match pinned BUY fills.")
+        if position_state is None or position_state.get("as_of") != record.get("effective_at"):
+            reasons.append("Pinned position state is missing or not at the exact close.")
+        return funding, list(fills), list(values), list(flows), position_state, reasons
 
     def verify(self) -> list[dict[str, Any]]:
         previous_hash = GENESIS_HASH
@@ -403,13 +468,13 @@ class DailyPortfolioValuationLedger:
                 raise LedgerIntegrityError(f"Daily-portfolio-valuation chain is broken at record {index}.")
             if record.get("record_hash") != _record_hash(material):
                 raise LedgerIntegrityError(f"Daily-portfolio-valuation record {index} has been modified.")
-            funding, fills, values, flows, reasons = self._pinned_support(record)
-            if reasons or funding is None:
+            funding, fills, values, flows, position_state, reasons = self._pinned_support(record)
+            if reasons or funding is None or position_state is None:
                 raise LedgerIntegrityError(
                     f"Daily-portfolio-valuation record {index} lost supporting evidence."
                 )
             try:
-                economics = _economics(funding, fills, values, flows)
+                economics = _economics(funding, fills, values, flows, position_state)
                 calculated = _as_datetime(record.get("calculated_at"))
                 latest = max(
                     [_as_datetime(funding["recorded_at"])]
@@ -422,7 +487,11 @@ class DailyPortfolioValuationLedger:
                 ) from error
             fills = sorted(fills, key=lambda item: item["fill_id"])
             values = sorted(values, key=lambda item: item["fill_id"])
-            expected_id = _valuation_id(record.get("portfolio_version", ""), record.get("market_session_date", ""))
+            expected_id = _valuation_id(
+                record.get("portfolio_version", ""),
+                record.get("market_session_date", ""),
+                position_state["snapshot_id"],
+            )
             boundary = (
                 record.get("schema_version") == DAILY_PORTFOLIO_VALUATION_SCHEMA_VERSION
                 and record.get("calculation_version") == DAILY_PORTFOLIO_VALUATION_CALCULATION_VERSION
@@ -433,6 +502,8 @@ class DailyPortfolioValuationLedger:
                 and record.get("simulation_only") is True
                 and record.get("currency") == "USD"
                 and record.get("fill_inclusion_policy") == FILL_INCLUSION_POLICY
+                and record.get("position_snapshot_id") == position_state["snapshot_id"]
+                and record.get("position_snapshot_record_hash") == position_state["record_hash"]
                 and record.get("supporting_fill_ids") == [item["fill_id"] for item in fills]
                 and record.get("supporting_fill_hashes") == [item["record_hash"] for item in fills]
                 and record.get("supporting_position_value_ids") == [item["result_id"] for item in values]
