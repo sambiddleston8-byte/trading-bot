@@ -93,6 +93,13 @@ append-only, hash-chained evidence gate before live readiness can be reviewed.
 This repository still supports no live endpoint. A future live capability would
 require a separate human decision, security design, implementation and review
 project.
+
+Phase 10 now has that immutable evidence boundary in
+`core/broker/live_readiness_gate.py`. Each of the ten fixed requirements binds
+an exact HTTPS source, content hash, locator, observation time and independent
+reviewer, with forward-only reassessment history. Complete passing evidence can
+produce only `HUMAN_REVIEW_ELIGIBLE_ONLY`; credentials, network, broker, order,
+deployment, automatic-promotion and live-trading authority remain false.
 ## Read-only paper-account boundary
 
 The first network-capable Alpaca component is deliberately read-only. It accepts
