@@ -152,3 +152,22 @@ AWS, GitHub-write, promotion, order and live-trading authority remain false.
 An actual scheduled-worker lifecycle and consumption ledger must enforce daily,
 concurrency, heartbeat, failure and cumulative-cost state before any work may
 run.
+
+## Immutable worker lifecycle and usage enforcement
+
+That lifecycle boundary now exists without installing or starting a scheduler.
+A future admitted request must atomically reserve its daily job, concurrency,
+model-call, AI-cost, duration and simulated-exposure capacity before a worker
+may start. Request IDs are idempotent but cannot be reused for different work.
+Start, heartbeat, success, failure and quarantine events form one append-only,
+hash-chained history pinned to the exact activation and Git revision. Reported
+model use and cost cannot exceed the reservation.
+
+The guard detects expired deadlines, stale heartbeats and the approved number
+of consecutive failures. It latches the independent durable emergency stop
+before attempting to record quarantine, so a logging failure cannot leave work
+authorised. A stopped policy cannot win a race between admission and
+reservation, and a stale worker cannot report success to evade stopping. The
+ledger itself runs no task, creates no scheduler and grants no network, broker,
+AWS, GitHub-write, promotion, order or live-trading permission. Integration
+with a future actual sandbox worker remains separately human controlled.

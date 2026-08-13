@@ -3,6 +3,7 @@
 from core.orchestration.hermes_policy import HermesPermissionPolicyLedger
 from core.orchestration.hermes_emergency_stop import HermesEmergencyStopLedger
 from core.orchestration.hermes_activation import HermesActivationLedger
+from core.orchestration.hermes_worker_lifecycle import HermesWorkerLifecycleLedger
 from core.orchestration.lesson_proposal import SandboxLessonProposalLedger
 from core.orchestration.experiment_specification import SandboxExperimentSpecificationLedger
 from core.orchestration.experiment_run_manifest import SandboxExperimentRunManifestLedger
@@ -23,6 +24,7 @@ __all__ = [
     "HermesPermissionPolicyLedger",
     "HermesEmergencyStopLedger",
     "HermesActivationLedger",
+    "HermesWorkerLifecycleLedger",
     "SandboxLessonProposalLedger",
     "SandboxExperimentSpecificationLedger",
     "SandboxExperimentRunManifestLedger",
