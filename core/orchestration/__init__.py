@@ -13,6 +13,7 @@ from core.orchestration.promotion_review_bundle import PromotionReviewBundleLedg
 from core.orchestration.robustness_plan import RobustnessTestPlanLedger
 from core.orchestration.robustness_result import RobustnessTestResultLedger
 from core.orchestration.disposable_workspace import DisposableExperimentWorkspace
+from core.orchestration.container_experiment_runner import ContainerExperimentRunner
 from core.orchestration.active_pipeline_replay_plan import ActivePipelineReplayPlanLedger
 from core.orchestration.purged_embargoed_folds import PurgedEmbargoedForwardFolds
 from core.orchestration.replay_execution_policy import ReplayExecutionPolicy
@@ -31,6 +32,7 @@ __all__ = [
     "RobustnessTestPlanLedger",
     "RobustnessTestResultLedger",
     "DisposableExperimentWorkspace",
+    "ContainerExperimentRunner",
     "ActivePipelineReplayPlanLedger",
     "PurgedEmbargoedForwardFolds",
     "ReplayExecutionPolicy",

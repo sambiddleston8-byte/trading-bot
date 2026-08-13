@@ -121,8 +121,8 @@ rewriting what happened.
 
 ## Requirements still to implement
 
-- integration of the implemented per-experiment disposable local SQLite
-  workspace into a future experiment runner;
+- execution of the real active-pipeline experiment image and real sealed data
+  through the implemented container/disposable-workspace runner;
 - activation-time checks of the implemented agent permission, timeout, cost and
   emergency-stop boundaries in every future scheduled worker;
 - a separate AWS staging environment and least-privilege identities;
