@@ -25,6 +25,7 @@ from core.orchestration.authenticated_replay_artifact import (
     load_authenticated_replay_artifact,
     load_authenticated_replay_artifact_bundle,
 )
+from core.orchestration.next_tradable_market_evidence import NextTradableMarketEvidenceLedger
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -50,4 +51,5 @@ __all__ = [
     "ReplayExecutionPolicyLedger",
     "load_authenticated_replay_artifact",
     "load_authenticated_replay_artifact_bundle",
+    "NextTradableMarketEvidenceLedger",
 ]
