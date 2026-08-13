@@ -719,6 +719,13 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   bounded mechanical JSON result is host-captured into SQLite. No real active-
   pipeline image or sealed dataset has been run, and capture grants no
   promotion, deployment, broker or trading authority.
+- Claude's retrospective container-isolation review found that adversarial
+  decimal exponents could exhaust host memory and that an approved input could
+  change between hashing and its Docker mount. Policy v2 bounds decimal
+  exponents, snapshots and rehashes the exact verified bytes in the private
+  disposable workspace, mounts only that read-only snapshot and permits one
+  local experiment container at a time. The real Docker command path still
+  requires a controlled integration rehearsal before any admitted dataset run.
 - Phase 10 now assigns complete simulated benchmark-relative outcomes to every
   roadmap effectiveness dimension using pinned point-in-time evidence. Labels
   observed after the decision remain explicit hindsight backfills and cannot

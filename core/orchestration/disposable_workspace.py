@@ -75,9 +75,9 @@ class DisposableExperimentWorkspace:
     def purge_expired(self,workspace_id:str,*,now:str|datetime|None=None)->dict[str,Any]:
         root=self._verified_root();manifest=self.inspect(workspace_id);current=_timestamp(now or datetime.now(timezone.utc));expires=_timestamp(manifest["expires_at"])
         if current<expires:raise ValueError("workspace retention has not expired")
-        directory=root/workspace_id;allowed={"manifest.json","experiment.sqlite3"};names={item.name for item in directory.iterdir()}
-        if names!=allowed:raise ValueError("workspace contains unexpected files; refusing purge")
-        for name in sorted(allowed):
+        directory=root/workspace_id;required={"manifest.json","experiment.sqlite3"};optional={"verified-input.snapshot"};names={item.name for item in directory.iterdir()}
+        if not required.issubset(names) or names-required-optional:raise ValueError("workspace contains unexpected files; refusing purge")
+        for name in sorted(names):
             target=directory/name
             if target.is_symlink() or not target.is_file():raise ValueError("workspace file safety check failed")
             target.unlink()

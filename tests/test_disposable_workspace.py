@@ -20,6 +20,17 @@ def test_cannot_purge_before_retention_and_purges_exact_files_after(tmp_path):
     with pytest.raises(ValueError,match="not expired"):target.purge_expired(manifest["workspace_id"],now="2026-01-01T23:59:59+00:00")
     result=target.purge_expired(manifest["workspace_id"],now="2026-01-02T00:00:00+00:00")
     assert result["status"]=="PURGED_AFTER_RETENTION" and not (target.root/manifest["workspace_id"]).exists()
+def test_purges_optional_verified_input_snapshot_after_retention(tmp_path):
+    target=manager(tmp_path);manifest=create(target);directory=target.root/manifest["workspace_id"]
+    snapshot=directory/"verified-input.snapshot";snapshot.write_bytes(b"verified bytes");snapshot.chmod(0o444)
+    result=target.purge_expired(manifest["workspace_id"],now="2026-01-02T00:00:00+00:00")
+    assert result["status"]=="PURGED_AFTER_RETENTION" and not directory.exists()
+def test_symlinked_verified_input_snapshot_blocks_purge(tmp_path):
+    target=manager(tmp_path);manifest=create(target);directory=target.root/manifest["workspace_id"]
+    outside=tmp_path/"outside-input";outside.write_bytes(b"preserve")
+    (directory/"verified-input.snapshot").symlink_to(outside)
+    with pytest.raises(ValueError,match="safety check"):target.purge_expired(manifest["workspace_id"],now="2026-01-02T00:00:00+00:00")
+    assert outside.read_bytes()==b"preserve"
 def test_unexpected_file_blocks_purge(tmp_path):
     target=manager(tmp_path);manifest=create(target);directory=target.root/manifest["workspace_id"];(directory/"evidence.txt").write_text("preserve")
     with pytest.raises(ValueError,match="unexpected files"):target.purge_expired(manifest["workspace_id"],now="2026-02-01T00:00:00+00:00")

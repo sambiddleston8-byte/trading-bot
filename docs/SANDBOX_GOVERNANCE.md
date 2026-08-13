@@ -115,6 +115,10 @@ rewriting what happened.
 - rejection of Alpaca live and arbitrary endpoints;
 - no broker credentials, HTTP submission or real-money execution path;
 - Docker services bound locally with workers manually activated;
+- the disposable container experiment runner snapshots the exact verified input
+  bytes into its private workspace before mounting them read-only, limits local
+  execution to one container experiment at a time and rejects result decimals
+  whose exponents could cause unbounded host-side expansion;
 - append-only decisions, proposals, simulated fills, observations, outcomes and
   corporate-action evidence; and
 - explicit user approval before merge, AWS spend or future broker activation.
@@ -123,6 +127,9 @@ rewriting what happened.
 
 - execution of the real active-pipeline experiment image and real sealed data
   through the implemented container/disposable-workspace runner;
+- a real-Docker integration rehearsal of the exact generated isolation command,
+  cleanup path and unprivileged read-only input mount before the runner is used
+  with any admitted dataset;
 - integration of the implemented activation, admission and immutable
   lifecycle/usage controls into a future actual sandbox worker, without
   weakening their daily-use, concurrency, heartbeat or failure enforcement;
