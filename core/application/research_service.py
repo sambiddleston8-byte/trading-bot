@@ -44,7 +44,15 @@ class ResearchService:
         pipeline: type[InvestmentResearchPipeline] = InvestmentResearchPipeline,
     ) -> dict[str, Any]:
         ticker = cls.normalise_ticker(ticker)
-        result = pipeline.analyse(ticker, save=False)
+        analyse_with_telemetry = getattr(pipeline, "analyse_with_telemetry", None)
+        component_telemetry: list[dict[str, Any]] = []
+        if callable(analyse_with_telemetry):
+            result, component_telemetry = analyse_with_telemetry(
+                ticker,
+                save=False,
+            )
+        else:
+            result = pipeline.analyse(ticker, save=False)
         if not isinstance(result, dict):
             raise TypeError("Research pipeline returned an invalid result.")
 
@@ -64,4 +72,5 @@ class ResearchService:
             "path": path,
             "result": result,
             "canonical": result["canonical"],
+            "component_telemetry": component_telemetry,
         }
