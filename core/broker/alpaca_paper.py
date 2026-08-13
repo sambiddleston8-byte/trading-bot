@@ -26,6 +26,14 @@ from core.decision_ledger import (
 ALPACA_PAPER_ENDPOINT = "https://paper-api.alpaca.markets"
 ORDER_LEDGER_SCHEMA_VERSION = "1.0"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+TICKER_PATTERN = re.compile(r"[A-Z][A-Z0-9.-]{0,14}")
+ORDER_ID_PATTERN = re.compile(r"PORD-[A-Z0-9-]{1,59}")
+ORDER_RECORD_FIELDS = {
+    "schema_version", "order_id", "client_order_id", "status", "execution_mode",
+    "created_at", "decision_id", "portfolio_version", "ticker", "side", "quantity",
+    "reference_price", "target_weight", "order_type", "time_in_force",
+    "strategy_version", "model_versions", "git_revision", "previous_hash", "record_hash",
+}
 
 
 class AlpacaPaperConfiguration:
@@ -140,6 +148,53 @@ class PaperOrderProposalLedger:
             order_id = str(record.get("order_id") or "")
             if not order_id or order_id in seen_ids:
                 raise LedgerIntegrityError(f"Invalid or duplicate order ID at record {index}.")
+            try:
+                model_versions = record.get("model_versions")
+                if (
+                    not isinstance(model_versions, list)
+                    or not all(isinstance(item, Mapping) for item in model_versions)
+                ):
+                    raise ValueError("model_versions must be a list of objects")
+                normalised_versions = [normalize_model_version(item) for item in model_versions]
+                boundary_valid = (
+                    set(record) == ORDER_RECORD_FIELDS
+                    and record.get("schema_version") == ORDER_LEDGER_SCHEMA_VERSION
+                    and ORDER_ID_PATTERN.fullmatch(order_id) is not None
+                    and record.get("client_order_id") == (
+                        "SP-" + hashlib.sha256(order_id.encode("utf-8")).hexdigest()[:32]
+                    )
+                    and record.get("status") == "PROPOSED"
+                    and record.get("execution_mode") == "PAPER_ONLY"
+                    and record.get("created_at") == canonical_timestamp(record.get("created_at"))
+                    and bool(_required(record.get("decision_id"), "decision_id"))
+                    and bool(_required(record.get("portfolio_version"), "portfolio_version"))
+                    and TICKER_PATTERN.fullmatch(str(record.get("ticker") or "")) is not None
+                    and record.get("side") in {"BUY", "SELL"}
+                    and record.get("quantity") == _positive_number(record.get("quantity"), "quantity")
+                    and record.get("reference_price") == _positive_number(
+                        record.get("reference_price"), "reference_price"
+                    )
+                    and record.get("target_weight") == _weight(record.get("target_weight"))
+                    and record.get("order_type") == "MARKET"
+                    and record.get("time_in_force") == "DAY"
+                    and bool(_required(record.get("strategy_version"), "strategy_version"))
+                    and bool(normalised_versions)
+                    and normalised_versions == model_versions
+                    and all(
+                        str(item.get("component") or "").strip()
+                        and str(item.get("version") or "").strip()
+                        for item in normalised_versions
+                    )
+                    and bool(_required(record.get("git_revision"), "git_revision"))
+                )
+            except (TypeError, ValueError) as error:
+                raise LedgerIntegrityError(
+                    f"Order ledger record {index} violates the paper-only boundary."
+                ) from error
+            if not boundary_valid:
+                raise LedgerIntegrityError(
+                    f"Order ledger record {index} violates the paper-only boundary."
+                )
             seen_ids.add(order_id)
             previous_hash = record["record_hash"]
         return records
@@ -214,7 +269,7 @@ class PaperOrderProposalLedger:
         if resolved_mode != "PAPER_ONLY":
             raise ValueError("Paper order proposals require PAPER_ONLY execution mode")
         resolved_ticker = str(ticker or "").upper()
-        if not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,14}", resolved_ticker):
+        if TICKER_PATTERN.fullmatch(resolved_ticker) is None:
             raise ValueError("ticker is invalid")
         resolved_side = str(side or "").upper()
         if resolved_side not in {"BUY", "SELL"}:
@@ -231,7 +286,7 @@ class PaperOrderProposalLedger:
         resolved_id = order_id or (
             "PORD-" + hashlib.sha256(logical_key.encode("utf-8")).hexdigest()[:32].upper()
         )
-        if not re.fullmatch(r"PORD-[A-Z0-9-]{1,59}", str(resolved_id)):
+        if ORDER_ID_PATTERN.fullmatch(str(resolved_id)) is None:
             raise ValueError("order_id must use the PORD- safe identifier format")
         client_order_id = "SP-" + hashlib.sha256(str(resolved_id).encode("utf-8")).hexdigest()[:32]
         versions = [normalize_model_version(item) for item in model_versions]
