@@ -244,6 +244,20 @@ def test_later_backdated_fill_does_not_rewrite_historical_snapshot(tmp_path):
     assert target.verify() == [original, revised]
 
 
+def test_later_future_fill_does_not_create_a_needless_as_of_revision(tmp_path):
+    source, target = ledger(
+        tmp_path,
+        [fill("BUY", "BUY", "2025-01-02T15:00:00+00:00", 2, 200)],
+    )
+    original = calculate(target)
+    source.values.append(
+        fill("FUTURE", "BUY", "2025-02-02T15:00:00+00:00", 5, 500)
+    )
+    retry = calculate(target, calculated_at="2025-02-01T21:02:00+00:00")
+    assert retry == original
+    assert target.verify() == [original]
+
+
 def test_mixed_strategy_identity_is_rejected(tmp_path):
     fills = [
         fill("BUY-A", "BUY", "2025-01-02T15:00:00+00:00", 1, 100),

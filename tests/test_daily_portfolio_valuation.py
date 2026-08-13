@@ -10,6 +10,7 @@ from core.performance import (
     DailyMarketObservationLedger,
     DailyPortfolioValuationLedger,
     DailyPositionValueLedger,
+    PaperPositionStateLedger,
     PortfolioFundingLedger,
 )
 
@@ -66,12 +67,18 @@ def chain(
     second_filled_at="2025-01-02T15:02:00+00:00",
     flows=(),
     include_gross_dividend=False,
+    sell_aaa_quantity=None,
 ):
     proposals = PaperOrderProposalLedger(tmp_path / "proposals.jsonl")
-    for order, ticker, quantity, price, weight, side in (
+    proposal_inputs = [
         ("PORD-AAA", "AAA", 2, 100, 0.2, "BUY"),
         ("PORD-BBB", "BBB", 3, 50, 0.15, second_side),
-    ):
+    ]
+    if sell_aaa_quantity is not None:
+        proposal_inputs.append(
+            ("PORD-AAA-SELL", "AAA", sell_aaa_quantity, 115, 0.1, "SELL")
+        )
+    for order, ticker, quantity, price, weight, side in proposal_inputs:
         proposals.propose(
             decision_id=f"DEC-{ticker}",
             portfolio_version="PORT-001",
@@ -100,12 +107,23 @@ def chain(
             order_id="PORD-BBB", fill_price=51, fees=1, filled_at=second_filled_at
         ),
     ]
+    if sell_aaa_quantity is not None:
+        fill_records.append(
+            executions.simulate_full_fill(
+                order_id="PORD-AAA-SELL",
+                fill_price=116,
+                fees=1,
+                filled_at="2025-01-10T15:00:00+00:00",
+            )
+        )
     closes = DailyMarketObservationLedger(tmp_path / "closes.jsonl", executions)
     actions = CorporateActionLedger(tmp_path / "actions.jsonl", executions)
     position_values = DailyPositionValueLedger(tmp_path / "position_values.jsonl", closes, actions)
     prices = {"AAA": "110", "BBB": "55"}
     created_values = []
     for index, fill in enumerate(fill_records):
+        if fill["side"] != "BUY":
+            continue
         if fill["ticker"] == "BBB" and not include_bbb_value:
             continue
         close = closes.observe(
@@ -151,7 +169,11 @@ def chain(
             )
         )
     valuations = DailyPortfolioValuationLedger(
-        tmp_path / "daily_portfolio.jsonl", position_values, funding, CashFlowStub(flows)
+        tmp_path / "daily_portfolio.jsonl",
+        position_values,
+        funding,
+        CashFlowStub(flows),
+        PaperPositionStateLedger(tmp_path / "position_state.jsonl", executions),
     )
     return valuations, position_values, funding, fill_records, created_values
 
@@ -231,14 +253,41 @@ def test_missing_position_value_fails_closed(tmp_path):
     valuations, _, _, _, _ = chain(tmp_path, include_bbb_value=False)
     result = calculate(valuations)
     assert result["status"] == "NOT_CALCULABLE"
-    assert "every as-of fill" in " ".join(result["reasons"]).lower()
+    assert "every historical buy fill" in " ".join(result["reasons"]).lower()
 
 
-def test_sell_or_rebalance_state_fails_closed(tmp_path):
+def test_oversell_without_an_open_position_fails_closed(tmp_path):
     valuations, _, _, _, _ = chain(tmp_path, second_side="SELL")
     result = calculate(valuations)
     assert result["status"] == "NOT_CALCULABLE"
-    assert "Sell/rebalance" in " ".join(result["reasons"])
+    assert "exceeds the cumulative open paper position" in " ".join(result["reasons"])
+
+
+def test_partial_sell_reconciles_remaining_quantity_value_and_cash(tmp_path):
+    valuations, _, _, fills, _ = chain(tmp_path, sell_aaa_quantity=1)
+    result = calculate(valuations)
+    assert result["status"] == "CALCULATED"
+    aaa = next(item for item in result["positions"] if item["ticker"] == "AAA")
+    assert aaa["remaining_quantity"] == "1"
+    assert aaa["position_market_value"] == "110"
+    assert result["position_state_net_trade_cash_flow"] == "-243"
+    assert result["remaining_cash"] == "757"
+    assert result["total_position_market_value"] == "275"
+    assert result["total_equity"] == "1032"
+    sell = next(item for item in fills if item["side"] == "SELL")
+    assert sell["fill_id"] in result["supporting_fill_ids"]
+    assert valuations.verify() == [result]
+
+
+def test_sell_with_any_historical_dividend_event_fails_closed(tmp_path):
+    valuations, _, _, _, _ = chain(
+        tmp_path,
+        sell_aaa_quantity=1,
+        include_gross_dividend=True,
+    )
+    result = calculate(valuations)
+    assert result["status"] == "NOT_CALCULABLE"
+    assert "event-aware lot accounting" in " ".join(result["reasons"])
 
 
 @pytest.mark.parametrize("future_side", ["BUY", "SELL"])

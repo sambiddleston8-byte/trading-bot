@@ -25,7 +25,7 @@ from core.performance.portfolio_valuation import (
 
 
 POSITION_STATE_SCHEMA_VERSION = "1.0"
-POSITION_STATE_CALCULATION_VERSION = "local-paper-fifo-position-state-v1"
+POSITION_STATE_CALCULATION_VERSION = "local-paper-fifo-position-state-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 
 
@@ -44,11 +44,13 @@ def _nonnegative_fraction(value: Any, name: str, *, positive: bool = False) -> F
     return result
 
 
-def _snapshot_id(portfolio_version: str, as_of: datetime, source_fill_tail_hash: str) -> str:
+def _snapshot_id(
+    portfolio_version: str, as_of: datetime, supporting_fill_hashes: Sequence[str]
+) -> str:
     material = [
         portfolio_version,
         as_of.isoformat(),
-        source_fill_tail_hash,
+        list(supporting_fill_hashes),
         POSITION_STATE_CALCULATION_VERSION,
     ]
     return "PSTATE-" + hashlib.sha256(
@@ -228,10 +230,11 @@ class PaperPositionStateLedger:
         identity = _common_identity(eligible)
         state = _state(eligible)
         source_tail_hash = fills[-1]["record_hash"] if fills else GENESIS_HASH
+        supporting_hashes = [fill["record_hash"] for fill in eligible]
         result = {
             "schema_version": POSITION_STATE_SCHEMA_VERSION,
             "calculation_version": POSITION_STATE_CALCULATION_VERSION,
-            "snapshot_id": _snapshot_id(version, effective, source_tail_hash),
+            "snapshot_id": _snapshot_id(version, effective, supporting_hashes),
             "status": "CALCULATED",
             "scope": "LOCAL_SIMULATED_PAPER_POSITION_STATE",
             "simulation_only": True,
@@ -242,7 +245,7 @@ class PaperPositionStateLedger:
             "source_fill_count": len(fills),
             "source_fill_tail_hash": source_tail_hash,
             "supporting_fill_ids": [fill["fill_id"] for fill in eligible],
-            "supporting_fill_record_hashes": [fill["record_hash"] for fill in eligible],
+            "supporting_fill_record_hashes": supporting_hashes,
             "source_knowledge_policy": "VERIFIED_EXECUTION_CHAIN_PREFIX_AT_CALCULATION",
             "fill_inclusion_policy": "PINNED_PREFIX_AND_FILLED_AT_OR_BEFORE_AS_OF",
             "lot_pooling_policy": "PORTFOLIO_VERSION_AND_TICKER_ONLY",
@@ -300,7 +303,9 @@ class PaperPositionStateLedger:
                     f"Paper-position record {index} has invalid support or values."
                 ) from error
             expected_id = _snapshot_id(
-                version, effective, str(record.get("source_fill_tail_hash") or "")
+                version,
+                effective,
+                [str(fill["record_hash"]) for fill in eligible],
             )
             fixed = {
                 "schema_version": POSITION_STATE_SCHEMA_VERSION,
