@@ -42,6 +42,11 @@ licensed-feed contract. Even a passing assessment grants only permission to
 review a separate connector design. See
 `docs/PHASE_7_SOURCE_TERMS_ASSESSMENT.md`.
 
+The current policy never approves official House or Senate sources for
+commercial investment research. Caller-supplied review text cannot override
+that restriction; the currently available route is an expressly licensed
+provider, still subject to separate connector review.
+
 ## Point-in-time activity snapshots
 
 Issue #131 adds deterministic issuer-level research snapshots using only

@@ -32,6 +32,12 @@ review reference, review date and reviewer role. Both the intended use and the
 automated access method must be affirmatively permitted. A commercial provider
 also requires an in-force licensed-feed contract.
 
+Under the current policy, official House and Senate sources are always blocked
+for commercial investment research, even if caller-supplied review fields say
+otherwise. That route requires an expressly licensed provider. Changing this
+rule would require new authoritative grounds, a separately reviewed policy
+change and new evidence; free-text reviewer fields cannot bypass it.
+
 Passing the preflight means only that a separate connector design may be
 reviewed. It does not download data, implement or enable a scraper, approve
 redistribution, create a trading signal, connect to a broker or authorize an
