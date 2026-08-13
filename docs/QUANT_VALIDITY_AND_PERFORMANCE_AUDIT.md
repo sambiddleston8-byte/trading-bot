@@ -52,8 +52,11 @@ learning, AWS scheduling or real-money trading.
 
 ## Performance backlog
 
-1. Profile complete research runs and record provider latency, retry counts,
-   cache hits and per-engine duration.
+1. The first immutable telemetry boundary now records per-ticker research wall
+   duration and COMPLETE/ERROR outcome separately from configured pacing. It
+   deliberately leaves component observations unknown until the active
+   pipeline and provider clients explicitly expose measured provider latency,
+   retry counts, cache hits and per-engine duration.
 2. Centralise provider clients with bounded concurrency, rate limiting,
    retry/backoff, freshness rules and circuit breaking.
 3. Replace the legacy pickle market cache with immutable, versioned Parquet

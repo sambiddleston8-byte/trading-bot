@@ -7,6 +7,10 @@ from pathlib import Path
 from core.application.portfolio_research_batch_service import (
     PortfolioResearchBatchService,
 )
+from core.research_run_telemetry_ledger import (
+    ResearchRunTelemetryLedger,
+    default_sink,
+)
 
 
 def test_next_batch_is_sector_diverse_and_excludes_saved_research():
@@ -159,6 +163,131 @@ def test_resume_only_runs_companies_missing_from_the_checkpoint():
         assert report["completed_count"] == 2
 
     PortfolioResearchBatchService.REPORT_DIRECTORY = original_reports
+
+
+def test_run_emits_success_and_error_telemetry_without_fabricating_components(tmp_path):
+    original_reports = PortfolioResearchBatchService.REPORT_DIRECTORY
+    PortfolioResearchBatchService.REPORT_DIRECTORY = tmp_path
+    observations = []
+
+    def runner(ticker):
+        if ticker == "FAIL":
+            raise TimeoutError("not persisted in telemetry")
+        return {
+            "path": tmp_path / f"{ticker}.json",
+            "canonical": {"decision": "BUY", "audit": {"status": "PASS"}},
+        }
+
+    try:
+        report = PortfolioResearchBatchService.run(
+            [{"ticker": "GOOD"}, {"ticker": "FAIL"}],
+            research_runner=runner,
+            delay_seconds=0,
+            telemetry_sink=observations.append,
+        )
+    finally:
+        PortfolioResearchBatchService.REPORT_DIRECTORY = original_reports
+
+    assert report["completed_count"] == 1
+    assert report["error_count"] == 1
+    assert [item["outcome"] for item in observations] == ["COMPLETE", "ERROR"]
+    assert observations[0]["error_type"] is None
+    assert observations[1]["error_type"] == "TimeoutError"
+    assert all(item["wall_duration_ms"] >= 0 for item in observations)
+    assert all(item["pacing_delay_seconds_configured"] == 0 for item in observations)
+    assert all(item["component_observations"] is None for item in observations)
+
+
+def test_telemetry_failure_cannot_change_batch_result(tmp_path):
+    original_reports = PortfolioResearchBatchService.REPORT_DIRECTORY
+    PortfolioResearchBatchService.REPORT_DIRECTORY = tmp_path
+
+    def broken_sink(_observation):
+        raise OSError("telemetry disk unavailable")
+
+    try:
+        report = PortfolioResearchBatchService.run(
+            [{"ticker": "GOOD"}],
+            research_runner=lambda ticker: {
+                "path": tmp_path / f"{ticker}.json",
+                "canonical": {"decision": "BUY", "audit": {"status": "PASS"}},
+            },
+            delay_seconds=0,
+            telemetry_sink=broken_sink,
+        )
+    finally:
+        PortfolioResearchBatchService.REPORT_DIRECTORY = original_reports
+
+    assert report["status"] == "COMPLETE"
+    assert report["completed_count"] == 1
+    assert report["error_count"] == 0
+
+
+def test_default_sink_writes_verifiable_end_to_end_ledger(tmp_path):
+    original_reports = PortfolioResearchBatchService.REPORT_DIRECTORY
+    PortfolioResearchBatchService.REPORT_DIRECTORY = tmp_path / "reports"
+    ledger_path = tmp_path / "telemetry.jsonl"
+
+    def runner(ticker):
+        if ticker == "FAIL":
+            raise TimeoutError("provider failed")
+        return {
+            "path": tmp_path / f"{ticker}.json",
+            "canonical": {"decision": "BUY", "audit": {"status": "PASS"}},
+        }
+
+    try:
+        report = PortfolioResearchBatchService.run(
+            [{"ticker": "GOOD"}, {"ticker": "FAIL"}],
+            research_runner=runner,
+            delay_seconds=0,
+            telemetry_sink=default_sink(ledger_path),
+        )
+    finally:
+        PortfolioResearchBatchService.REPORT_DIRECTORY = original_reports
+
+    records = ResearchRunTelemetryLedger(ledger_path).verify()
+    assert [(item["ticker"], item["outcome"]) for item in records] == [
+        ("GOOD", "COMPLETE"),
+        ("FAIL", "ERROR"),
+    ]
+    assert [(item["ticker"], item["status"]) for item in report["outcomes"]] == [
+        ("GOOD", "COMPLETE"),
+        ("FAIL", "ERROR"),
+    ]
+
+
+def test_resume_telemetry_keeps_original_sequence_and_accepts_unusual_path(tmp_path):
+    path = tmp_path / "portfolio research résumé.json"
+    path.write_text(
+        json.dumps(
+            {
+                "status": "RUNNING",
+                "requested_count": 2,
+                "companies": [{"ticker": "DONE"}, {"ticker": "NEXT"}],
+                "completed_count": 1,
+                "error_count": 0,
+                "outcomes": [{"ticker": "DONE", "status": "COMPLETE"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    observations = []
+
+    report = PortfolioResearchBatchService.resume(
+        path,
+        research_runner=lambda ticker: {
+            "path": tmp_path / f"{ticker}.json",
+            "canonical": {"decision": "BUY", "audit": {"status": "PASS"}},
+        },
+        delay_seconds=0,
+        telemetry_sink=observations.append,
+    )
+
+    assert report["completed_count"] == 2
+    assert observations[0]["sequence_index"] == 1
+    assert observations[0]["batch_id"].startswith("batch-")
+    assert len(observations[0]["batch_id"]) == 70
 
 
 def test_next_batch_refreshes_completed_records_without_market_signals():

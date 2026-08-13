@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import time
 from datetime import datetime, timezone
@@ -255,6 +256,7 @@ class PortfolioResearchBatchService:
         research_runner: Callable[[str], dict[str, Any]] = ResearchService.run,
         report_path: Path | None = None,
         delay_seconds: float = 1.0,
+        telemetry_sink: Callable[[dict[str, Any]], None] | None = None,
     ) -> dict[str, Any]:
         """Run a bounded batch and checkpoint an auditable outcome report."""
 
@@ -321,15 +323,20 @@ class PortfolioResearchBatchService:
             raise ValueError("Research delay cannot be negative.")
 
         remaining = [
-            company
-            for company in companies
+            (sequence_index, company)
+            for sequence_index, company in enumerate(companies)
             if str(company["ticker"]).upper() not in recorded_tickers
         ]
+        telemetry_batch_id = "batch-" + hashlib.sha256(
+            str(path.resolve()).encode("utf-8")
+        ).hexdigest()
 
-        for index, company in enumerate(remaining):
+        for remaining_index, (sequence_index, company) in enumerate(remaining):
             ticker = str(company["ticker"]).upper()
             if ticker in recorded_tickers:
                 continue
+            started = time.monotonic()
+            result: dict[str, Any] | None = None
             try:
                 result = research_runner(ticker)
                 canonical = result.get("canonical", {})
@@ -354,13 +361,42 @@ class PortfolioResearchBatchService:
                         "error": str(exc),
                     }
                 )
+                outcome, error_type = "ERROR", type(exc).__name__
+            else:
+                outcome, error_type = "COMPLETE", None
+
+            wall_duration_ms = (time.monotonic() - started) * 1000
 
             checkpoint()
+
+            # Measurement is best-effort and has no authority over research.
+            # The deliberate provider-pacing sleep below is not included in
+            # wall_duration_ms and is recorded separately as configuration.
+            if telemetry_sink is not None:
+                try:
+                    telemetry_sink(
+                        {
+                            "batch_id": telemetry_batch_id,
+                            "ticker": ticker,
+                            "sequence_index": sequence_index,
+                            "outcome": outcome,
+                            "error_type": error_type,
+                            "wall_duration_ms": wall_duration_ms,
+                            "pacing_delay_seconds_configured": delay_seconds,
+                            "component_observations": (
+                                result.get("component_telemetry")
+                                if outcome == "COMPLETE" and isinstance(result, dict)
+                                else None
+                            ),
+                        }
+                    )
+                except Exception:
+                    pass
 
             # Market, news and peer data providers need a paced caller.  The
             # checkpoint above means a stop during the delay is still safe to
             # resume without duplicating completed research.
-            if delay_seconds and index < len(remaining) - 1:
+            if delay_seconds and remaining_index < len(remaining) - 1:
                 time.sleep(delay_seconds)
 
         report["status"] = "COMPLETE"
@@ -375,11 +411,13 @@ class PortfolioResearchBatchService:
         batch_size: int = DEFAULT_BATCH_SIZE,
         research_runner: Callable[[str], dict[str, Any]] = ResearchService.run,
         delay_seconds: float = 1.0,
+        telemetry_sink: Callable[[dict[str, Any]], None] | None = None,
     ) -> dict[str, Any]:
         return cls.run(
             cls.next_batch(batch_size),
             research_runner=research_runner,
             delay_seconds=delay_seconds,
+            telemetry_sink=telemetry_sink,
         )
 
     @classmethod
@@ -388,6 +426,7 @@ class PortfolioResearchBatchService:
         report_path: Path,
         research_runner: Callable[[str], dict[str, Any]] = ResearchService.run,
         delay_seconds: float = 1.0,
+        telemetry_sink: Callable[[dict[str, Any]], None] | None = None,
     ) -> dict[str, Any]:
         """Resume a checkpointed batch without repeating saved outcomes."""
 
@@ -406,6 +445,7 @@ class PortfolioResearchBatchService:
             research_runner=research_runner,
             report_path=Path(report_path),
             delay_seconds=delay_seconds,
+            telemetry_sink=telemetry_sink,
         )
 
     @classmethod
