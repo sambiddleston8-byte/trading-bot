@@ -1,0 +1,1176 @@
+from __future__ import annotations
+
+"""Causal, long-only historical execution and validation primitives.
+
+The engine is deliberately data- and strategy-neutral.  It will not run unless
+the caller explicitly supplies a point-in-time, survivorship-complete data
+attestation and terminal outcomes for every instrument that becomes terminal.
+It has no broker, network, credential, or order-submission capability.
+"""
+
+from dataclasses import dataclass, replace
+from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation, ROUND_FLOOR
+import copy
+import hashlib
+import itertools
+import json
+import math
+import random
+from statistics import median
+from typing import Any, Iterable, Mapping, Protocol, Sequence
+
+
+ZERO = Decimal("0")
+ONE = Decimal("1")
+BPS = Decimal("10000")
+ACTION_HOLD = "HOLD"
+ACTION_ENTER_LONG = "ENTER_LONG"
+ACTION_EXIT_LONG = "EXIT_LONG"
+TERMINAL_TYPES = {"DELISTED", "BANKRUPT", "ACQUIRED", "MERGED"}
+
+
+def _decimal(value: Any, name: str, *, positive: bool = False) -> Decimal:
+    try:
+        result = Decimal(str(value))
+    except (InvalidOperation, TypeError, ValueError) as error:
+        raise ValueError(f"{name} must be a finite decimal") from error
+    if not result.is_finite() or result < 0 or (positive and result <= 0):
+        raise ValueError(f"{name} must be {'positive' if positive else 'non-negative'}")
+    return result
+
+
+def _signed_decimal(value: Any, name: str) -> Decimal:
+    try:
+        result = Decimal(str(value))
+    except (InvalidOperation, TypeError, ValueError) as error:
+        raise ValueError(f"{name} must be a finite decimal") from error
+    if not result.is_finite() or result < -ONE:
+        raise ValueError(f"{name} must be finite and cannot be below -100%")
+    return result
+
+
+def _time(value: Any, name: str) -> datetime:
+    if not isinstance(value, datetime) or value.tzinfo is None:
+        raise ValueError(f"{name} must be a timezone-aware datetime")
+    return value.astimezone(timezone.utc)
+
+
+def _canonical_json(value: Any) -> str:
+    def default(item: Any) -> Any:
+        if isinstance(item, Decimal):
+            return format(item, "f")
+        if isinstance(item, datetime):
+            return item.astimezone(timezone.utc).isoformat()
+        raise TypeError(f"unsupported canonical value: {type(item)!r}")
+
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), default=default)
+
+
+@dataclass(frozen=True)
+class ReplayDataAttestation:
+    source_id: str
+    source_content_sha256: str
+    point_in_time_fields_complete: bool
+    survivorship_complete: bool
+    terminal_outcomes_complete: bool
+    corporate_actions_complete: bool
+
+    def validate(self) -> None:
+        if not self.source_id.strip():
+            raise ValueError("source_id is required")
+        digest = self.source_content_sha256.lower()
+        if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
+            raise ValueError("source_content_sha256 must be a SHA-256 digest")
+        if not all(
+            (
+                self.point_in_time_fields_complete,
+                self.survivorship_complete,
+                self.terminal_outcomes_complete,
+                self.corporate_actions_complete,
+            )
+        ):
+            raise ValueError("backtest data is not fully attested for causal survivorship-safe use")
+
+
+@dataclass(frozen=True)
+class MarketBar:
+    symbol: str
+    open_at: datetime
+    close_at: datetime
+    available_at: datetime
+    open: Decimal
+    high: Decimal
+    low: Decimal
+    close: Decimal
+    volume: Decimal
+
+    def __post_init__(self) -> None:
+        symbol = self.symbol.strip().upper()
+        if not symbol:
+            raise ValueError("bar symbol is required")
+        object.__setattr__(self, "symbol", symbol)
+        for field_name in ("open_at", "close_at", "available_at"):
+            object.__setattr__(self, field_name, _time(getattr(self, field_name), field_name))
+        if not self.open_at < self.close_at or self.available_at != self.close_at:
+            raise ValueError("bar must become available exactly at its close")
+        for field_name in ("open", "high", "low", "close", "volume"):
+            object.__setattr__(
+                self,
+                field_name,
+                _decimal(getattr(self, field_name), field_name, positive=True),
+            )
+        if self.low > min(self.open, self.close) or self.high < max(self.open, self.close):
+            raise ValueError("OHLC values are inconsistent")
+
+
+@dataclass(frozen=True)
+class UniverseEvent:
+    symbol: str
+    action: str
+    effective_at: datetime
+    available_at: datetime
+    source_locator: str
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "symbol", self.symbol.strip().upper())
+        if self.action not in {"ADD", "REMOVE"}:
+            raise ValueError("universe action must be ADD or REMOVE")
+        object.__setattr__(self, "effective_at", _time(self.effective_at, "effective_at"))
+        object.__setattr__(self, "available_at", _time(self.available_at, "available_at"))
+        if self.available_at > self.effective_at:
+            raise ValueError("universe event must be public no later than it becomes effective")
+        if not self.symbol or not self.source_locator.strip():
+            raise ValueError("universe event identity and source are required")
+
+
+@dataclass(frozen=True)
+class TerminalOutcome:
+    symbol: str
+    terminal_type: str
+    effective_at: datetime
+    available_at: datetime
+    recovery_per_share: Decimal
+    cash_settled_at: datetime
+    source_locator: str
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "symbol", self.symbol.strip().upper())
+        if self.terminal_type not in TERMINAL_TYPES:
+            raise ValueError("terminal_type is unsupported")
+        object.__setattr__(self, "effective_at", _time(self.effective_at, "effective_at"))
+        object.__setattr__(self, "available_at", _time(self.available_at, "available_at"))
+        object.__setattr__(self, "cash_settled_at", _time(self.cash_settled_at, "cash_settled_at"))
+        object.__setattr__(
+            self,
+            "recovery_per_share",
+            _decimal(self.recovery_per_share, "recovery_per_share"),
+        )
+        if self.available_at > self.effective_at:
+            raise ValueError("terminal outcome must be public no later than it becomes effective")
+        if self.cash_settled_at < self.effective_at:
+            raise ValueError("terminal cash cannot settle before the outcome is effective")
+        if not self.symbol or not self.source_locator.strip():
+            raise ValueError("terminal outcome identity and source are required")
+
+
+@dataclass(frozen=True)
+class CorporateAction:
+    symbol: str
+    action_type: str
+    effective_at: datetime
+    available_at: datetime
+    source_locator: str
+    split_ratio: Decimal = ONE
+    cash_per_share: Decimal = ZERO
+    cash_paid_at: datetime | None = None
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "symbol", self.symbol.strip().upper())
+        if self.action_type not in {"SPLIT", "CASH_DIVIDEND"}:
+            raise ValueError("unsupported corporate action")
+        object.__setattr__(self, "effective_at", _time(self.effective_at, "effective_at"))
+        object.__setattr__(self, "available_at", _time(self.available_at, "available_at"))
+        object.__setattr__(
+            self, "split_ratio", _decimal(self.split_ratio, "split_ratio", positive=True)
+        )
+        object.__setattr__(
+            self, "cash_per_share", _decimal(self.cash_per_share, "cash_per_share")
+        )
+        if self.available_at > self.effective_at:
+            raise ValueError("corporate action must be known no later than its effective time")
+        if self.action_type == "SPLIT":
+            if self.split_ratio == ONE or self.cash_per_share != ZERO or self.cash_paid_at is not None:
+                raise ValueError("split requires only a non-unit split_ratio")
+        else:
+            if self.split_ratio != ONE or self.cash_per_share <= ZERO or self.cash_paid_at is None:
+                raise ValueError("cash dividend requires cash_per_share and cash_paid_at")
+            paid = _time(self.cash_paid_at, "cash_paid_at")
+            if paid < self.effective_at:
+                raise ValueError("cash dividend cannot be paid before its effective time")
+            object.__setattr__(self, "cash_paid_at", paid)
+        if not self.symbol or not self.source_locator.strip():
+            raise ValueError("corporate action identity and source are required")
+
+
+@dataclass(frozen=True)
+class ExchangeFeeTier:
+    prior_monthly_notional_below: Decimal | None
+    variable_bps: Decimal
+    minimum_fee: Decimal = ZERO
+
+    def __post_init__(self) -> None:
+        if self.prior_monthly_notional_below is not None:
+            object.__setattr__(
+                self,
+                "prior_monthly_notional_below",
+                _decimal(
+                    self.prior_monthly_notional_below,
+                    "prior_monthly_notional_below",
+                    positive=True,
+                ),
+            )
+        object.__setattr__(self, "variable_bps", _decimal(self.variable_bps, "variable_bps"))
+        object.__setattr__(self, "minimum_fee", _decimal(self.minimum_fee, "minimum_fee"))
+
+
+@dataclass(frozen=True)
+class ExchangeFeeSchedule:
+    schedule_id: str
+    tiers: tuple[ExchangeFeeTier, ...]
+
+    def __post_init__(self) -> None:
+        if not self.schedule_id.strip() or not self.tiers:
+            raise ValueError("an identified non-empty fee schedule is required")
+        thresholds = [
+            tier.prior_monthly_notional_below
+            for tier in self.tiers
+            if tier.prior_monthly_notional_below is not None
+        ]
+        if thresholds != sorted(thresholds) or self.tiers[-1].prior_monthly_notional_below is not None:
+            raise ValueError("fee tiers must be ascending and end with an open tier")
+
+    def fee(self, notional: Decimal, prior_monthly_notional: Decimal) -> Decimal:
+        for tier in self.tiers:
+            if (
+                tier.prior_monthly_notional_below is None
+                or prior_monthly_notional < tier.prior_monthly_notional_below
+            ):
+                return max(tier.minimum_fee, notional * tier.variable_bps / BPS)
+        raise AssertionError("open fee tier is required")
+
+
+@dataclass(frozen=True)
+class BacktestConfig:
+    initial_cash: Decimal
+    max_equity_risk_per_trade: Decimal = Decimal("0.01")
+    maximum_aggregate_open_risk: Decimal = Decimal("0.06")
+    atr_window: int = 14
+    atr_stop_multiple: Decimal = Decimal("2")
+    baseline_slippage_bps: Decimal = Decimal("10")
+    bid_ask_half_spread_bps: Decimal = Decimal("5")
+    liquidity_impact_bps_at_max_participation: Decimal = Decimal("10")
+    stop_pierce_fill_fraction: Decimal = Decimal("0.5")
+    lagged_liquidity_lookback: int = 20
+    maximum_lagged_volume_participation: Decimal = Decimal("0.02")
+    allow_fractional_shares: bool = False
+    cash_settlement_sessions: int = 1
+    execution_scenario: str = "BASE"
+
+    def __post_init__(self) -> None:
+        for name, positive in (
+            ("initial_cash", True),
+            ("max_equity_risk_per_trade", True),
+            ("maximum_aggregate_open_risk", True),
+            ("atr_stop_multiple", True),
+            ("baseline_slippage_bps", True),
+            ("bid_ask_half_spread_bps", True),
+            ("liquidity_impact_bps_at_max_participation", True),
+            ("maximum_lagged_volume_participation", True),
+            ("stop_pierce_fill_fraction", False),
+        ):
+            object.__setattr__(self, name, _decimal(getattr(self, name), name, positive=positive))
+        if self.max_equity_risk_per_trade > Decimal("0.01"):
+            raise ValueError("max equity risk per trade cannot exceed 1%")
+        if not self.max_equity_risk_per_trade <= self.maximum_aggregate_open_risk <= Decimal("0.10"):
+            raise ValueError("aggregate open risk must be between per-trade risk and 10%")
+        if self.baseline_slippage_bps < Decimal("10"):
+            raise ValueError("baseline slippage cannot be below 0.10%")
+        if not 2 <= self.atr_window or not 2 <= self.lagged_liquidity_lookback:
+            raise ValueError("ATR and liquidity windows must be rolling windows of at least two bars")
+        if not ZERO < self.maximum_lagged_volume_participation <= Decimal("0.10"):
+            raise ValueError("lagged volume participation must be between 0 and 10%")
+        if not ZERO <= self.stop_pierce_fill_fraction <= ONE:
+            raise ValueError("stop pierce fill fraction must be between 0 and 1")
+        if self.cash_settlement_sessions < 1:
+            raise ValueError("cash settlement must take at least one market session")
+        if self.execution_scenario not in {"BASE", "PESSIMISTIC"}:
+            raise ValueError("execution_scenario must be BASE or PESSIMISTIC")
+        if self.execution_scenario == "BASE" and self.stop_pierce_fill_fraction < Decimal("0.5"):
+            raise ValueError("BASE stop-pierce fill must charge at least half the observed pierce")
+        if self.execution_scenario == "PESSIMISTIC" and (
+            self.stop_pierce_fill_fraction != ONE
+            or self.baseline_slippage_bps < Decimal("20")
+            or self.bid_ask_half_spread_bps < Decimal("10")
+            or self.liquidity_impact_bps_at_max_participation < Decimal("20")
+        ):
+            raise ValueError("PESSIMISTIC execution requires doubled costs and full stop pierce")
+        if self.allow_fractional_shares:
+            raise ValueError("fractional shares are not supported by this conservative engine")
+
+
+class CausalStrategy(Protocol):
+    version: str
+
+    def decide(
+        self,
+        symbol: str,
+        history_through_signal_close: tuple[MarketBar, ...],
+        parameters: Mapping[str, Any],
+    ) -> str: ...
+
+
+@dataclass
+class _Position:
+    quantity: Decimal
+    average_entry_price: Decimal
+    entry_total_cost: Decimal
+    stop_price: Decimal
+    opened_at: datetime
+
+
+@dataclass(frozen=True)
+class ExecutionRecord:
+    symbol: str
+    action: str
+    reason: str
+    signal_at: datetime
+    executed_at: datetime
+    reference_price: Decimal
+    execution_price: Decimal
+    requested_quantity: Decimal
+    filled_quantity: Decimal
+    fee: Decimal
+    status: str
+    lagged_liquidity_notional: Decimal
+    bid_ask_half_spread_bps: Decimal
+    baseline_slippage_bps: Decimal
+    liquidity_impact_bps: Decimal
+    total_adverse_execution_bps: Decimal
+
+
+@dataclass(frozen=True)
+class CompletedTrade:
+    symbol: str
+    opened_at: datetime
+    closed_at: datetime
+    entry_total_cost: Decimal
+    exit_net_proceeds: Decimal
+    return_rate: Decimal
+    exit_reason: str
+
+
+@dataclass(frozen=True)
+class BacktestResult:
+    strategy_version: str
+    parameter_hash: str
+    source_id: str
+    fee_schedule_id: str
+    execution_scenario: str
+    starting_equity: Decimal
+    ending_equity: Decimal
+    total_return: Decimal
+    maximum_drawdown: Decimal
+    executions: tuple[ExecutionRecord, ...]
+    completed_trades: tuple[CompletedTrade, ...]
+    equity_curve: tuple[tuple[datetime, Decimal], ...]
+    no_lookahead_contract_enforced: bool = True
+    mechanical_simulation_only: bool = True
+    performance_claim_allowed: bool = False
+    paper_trade_promotion_allowed: bool = False
+    broker_connection_allowed: bool = False
+    orders_submitted: bool = False
+    live_trading_enabled: bool = False
+
+
+def _atr(history: Sequence[MarketBar], window: int) -> Decimal | None:
+    if len(history) < window + 1:
+        return None
+    true_ranges: list[Decimal] = []
+    for prior, current in zip(history[-window - 1 : -1], history[-window:]):
+        true_ranges.append(
+            max(
+                current.high - current.low,
+                abs(current.high - prior.close),
+                abs(current.low - prior.close),
+            )
+        )
+    return sum(true_ranges, ZERO) / Decimal(len(true_ranges))
+
+
+def _lagged_liquidity(history: Sequence[MarketBar], lookback: int) -> Decimal | None:
+    if len(history) < lookback:
+        return None
+    return median([bar.close * bar.volume for bar in history[-lookback:]])
+
+
+def _adverse_price(reference: Decimal, side: str, slippage_bps: Decimal) -> Decimal:
+    direction = ONE if side == "BUY" else -ONE
+    result = reference * (ONE + direction * slippage_bps / BPS)
+    if result <= ZERO:
+        raise ValueError("adverse execution price is non-positive")
+    return result
+
+
+def _execution_cost_bps(
+    config: BacktestConfig,
+    *,
+    reference_price: Decimal,
+    filled_quantity: Decimal,
+    lagged_liquidity_notional: Decimal,
+) -> tuple[Decimal, Decimal]:
+    participation = (
+        filled_quantity * reference_price / lagged_liquidity_notional
+        if lagged_liquidity_notional > ZERO
+        else ZERO
+    )
+    normalized = min(ONE, participation / config.maximum_lagged_volume_participation)
+    impact = config.liquidity_impact_bps_at_max_participation * normalized * normalized
+    total = config.bid_ask_half_spread_bps + config.baseline_slippage_bps + impact
+    return impact, total
+
+
+def _drawdown(curve: Sequence[Decimal]) -> Decimal:
+    peak = curve[0]
+    worst = ZERO
+    for value in curve:
+        peak = max(peak, value)
+        if peak > ZERO:
+            worst = max(worst, ONE - value / peak)
+    return worst
+
+
+def _release_at_after_sessions(
+    rows: Sequence[MarketBar], moment: datetime, sessions: int
+) -> datetime:
+    later_opens = sorted({bar.open_at for bar in rows if bar.open_at > moment})
+    if len(later_opens) < sessions:
+        raise ValueError("insufficient future market sessions to settle sale proceeds")
+    return later_opens[sessions - 1]
+
+
+class GuardrailedBacktestEngine:
+    """Run causal daily-bar simulations with no external effects."""
+
+    def __init__(
+        self,
+        *,
+        config: BacktestConfig,
+        fee_schedule: ExchangeFeeSchedule,
+        data_attestation: ReplayDataAttestation,
+    ) -> None:
+        data_attestation.validate()
+        self.config = config
+        self.fee_schedule = fee_schedule
+        self.data_attestation = data_attestation
+
+    def run(
+        self,
+        *,
+        bars: Iterable[MarketBar],
+        universe_events: Iterable[UniverseEvent],
+        terminal_outcomes: Iterable[TerminalOutcome],
+        corporate_actions: Iterable[CorporateAction],
+        prices_are_unadjusted: bool,
+        strategy: CausalStrategy,
+        parameters: Mapping[str, Any],
+        evaluation_start: datetime,
+        evaluation_end: datetime,
+    ) -> BacktestResult:
+        start = _time(evaluation_start, "evaluation_start")
+        end = _time(evaluation_end, "evaluation_end")
+        if start >= end:
+            raise ValueError("evaluation window is invalid")
+        if not str(getattr(strategy, "version", "")).strip():
+            raise ValueError("strategy version is required")
+        try:
+            strategy_instance = copy.deepcopy(strategy)
+        except Exception as error:
+            raise ValueError("strategy must be independently reproducible for every run") from error
+        if not prices_are_unadjusted:
+            raise ValueError(
+                "back-adjusted prices embed future factors; supply raw point-in-time prices"
+            )
+
+        rows = sorted(tuple(bars), key=lambda item: (item.open_at, item.symbol))
+        if not rows:
+            raise ValueError("market bars are required")
+        by_symbol: dict[str, list[MarketBar]] = {}
+        for row in rows:
+            by_symbol.setdefault(row.symbol, []).append(row)
+        if len(by_symbol) != 1:
+            raise ValueError(
+                "this bounded engine supports one instrument per run; "
+                "portfolio-wide simultaneous order batching is not yet implemented"
+            )
+        for symbol, values in by_symbol.items():
+            if any(left.close_at >= right.open_at for left, right in zip(values, values[1:])):
+                raise ValueError(f"{symbol} bars overlap or are out of order")
+
+        events = sorted(tuple(universe_events), key=lambda item: (item.effective_at, item.available_at, item.symbol))
+        outcomes = sorted(tuple(terminal_outcomes), key=lambda item: (item.effective_at, item.symbol))
+        actions = sorted(
+            tuple(corporate_actions), key=lambda item: (item.effective_at, item.symbol, item.action_type)
+        )
+        if {row.symbol for row in rows} - {event.symbol for event in events if event.action == "ADD"}:
+            raise ValueError("every instrument requires point-in-time universe entry evidence")
+        if len({item.symbol for item in outcomes}) != len(outcomes):
+            raise ValueError("each instrument may have at most one terminal outcome")
+        if len({(item.symbol, item.effective_at, item.action_type) for item in actions}) != len(actions):
+            raise ValueError("corporate actions must be unique")
+
+        cash = self.config.initial_cash
+        positions: dict[str, _Position] = {}
+        histories: dict[str, list[MarketBar]] = {symbol: [] for symbol in by_symbol}
+        pending: dict[str, tuple[str, str, datetime, Decimal | None]] = {}
+        executions: list[ExecutionRecord] = []
+        completed: list[CompletedTrade] = []
+        equity_curve: list[tuple[datetime, Decimal]] = []
+        monthly_notional: dict[tuple[int, int], Decimal] = {}
+        unsettled_cash: list[tuple[datetime, Decimal]] = []
+        last_marks: dict[str, Decimal] = {}
+        terminal_by_symbol = {item.symbol: item for item in outcomes}
+        terminated: set[str] = set()
+        applied_actions: set[tuple[str, datetime, str]] = set()
+        dividend_entitlements: dict[tuple[str, datetime, str], Decimal] = {}
+        paid_dividends: set[tuple[str, datetime, str]] = set()
+
+        for symbol, values in by_symbol.items():
+            if values[-1].close_at >= end:
+                continue
+            has_terminal = any(
+                item.symbol == symbol and item.effective_at <= end for item in outcomes
+            )
+            has_removal = any(
+                item.symbol == symbol and item.action == "REMOVE" and item.effective_at <= end
+                for item in events
+            )
+            if not has_terminal and not has_removal:
+                raise ValueError(
+                    f"{symbol} history ends without an explicit removal or terminal outcome"
+                )
+
+        def eligible(symbol: str, moment: datetime) -> bool:
+            known = [
+                item
+                for item in events
+                if item.symbol == symbol
+                and item.effective_at <= moment
+                and item.available_at <= moment
+            ]
+            return bool(known) and known[-1].action == "ADD" and symbol not in terminated
+
+        def equity() -> Decimal:
+            return cash + sum(amount for _, amount in unsettled_cash) + sum(
+                position.quantity * last_marks.get(symbol, position.average_entry_price)
+                for symbol, position in positions.items()
+            )
+
+        def fee_for(notional: Decimal, moment: datetime) -> Decimal:
+            key = (moment.year, moment.month)
+            return self.fee_schedule.fee(notional, monthly_notional.get(key, ZERO))
+
+        def record_notional(notional: Decimal, moment: datetime) -> None:
+            key = (moment.year, moment.month)
+            monthly_notional[key] = monthly_notional.get(key, ZERO) + notional
+
+        def affordable_quantity(price: Decimal, maximum: Decimal, moment: datetime) -> Decimal:
+            quantity = maximum.to_integral_value(rounding=ROUND_FLOOR)
+            while quantity > ZERO:
+                notional = quantity * price
+                if notional + fee_for(notional, moment) <= cash:
+                    return quantity
+                quantity -= ONE
+            return ZERO
+
+        def close_quantity(
+            *,
+            symbol: str,
+            requested_quantity: Decimal,
+            maximum_fill_quantity: Decimal,
+            reference: Decimal,
+            moment: datetime,
+            signal_at: datetime,
+            reason: str,
+            liquidity: Decimal,
+        ) -> Decimal:
+            nonlocal cash
+            position = positions[symbol]
+            requested = min(requested_quantity, position.quantity).to_integral_value(
+                rounding=ROUND_FLOOR
+            )
+            filled = min(requested, maximum_fill_quantity).to_integral_value(
+                rounding=ROUND_FLOOR
+            )
+            impact_bps, total_cost_bps = _execution_cost_bps(
+                self.config,
+                reference_price=reference,
+                filled_quantity=filled,
+                lagged_liquidity_notional=liquidity,
+            )
+            price = _adverse_price(reference, "SELL", total_cost_bps)
+            notional = filled * price
+            fee = fee_for(notional, moment) if filled > ZERO else ZERO
+            proceeds = notional - fee
+            released_at = _release_at_after_sessions(rows, moment, self.config.cash_settlement_sessions)
+            unsettled_cash.append((released_at, proceeds))
+            record_notional(notional, moment)
+            fraction = filled / position.quantity
+            allocated_cost = position.entry_total_cost * fraction
+            remaining_cost = position.entry_total_cost - allocated_cost
+            executions.append(
+                ExecutionRecord(
+                    symbol, "SELL", reason, signal_at, moment, reference, price,
+                    requested, filled, fee,
+                    "FILLED" if filled == requested else "PARTIALLY_FILLED",
+                    liquidity,
+                    self.config.bid_ask_half_spread_bps,
+                    self.config.baseline_slippage_bps,
+                    impact_bps,
+                    total_cost_bps,
+                )
+            )
+            completed.append(
+                CompletedTrade(
+                    symbol,
+                    position.opened_at,
+                    moment,
+                    allocated_cost,
+                    proceeds,
+                    proceeds / allocated_cost - ONE,
+                    reason,
+                )
+            )
+            if filled == position.quantity:
+                del positions[symbol]
+            else:
+                positions[symbol] = _Position(
+                    position.quantity - filled,
+                    position.average_entry_price,
+                    remaining_cost,
+                    position.stop_price,
+                    position.opened_at,
+                )
+            return filled
+
+        # Each bar is processed at its open and then its close.  Only the
+        # history ending at the current close is ever passed to the strategy.
+        for bar in rows:
+            symbol = bar.symbol
+            history = histories[symbol]
+            last_marks[symbol] = bar.open
+
+            newly_settled = [amount for released_at, amount in unsettled_cash if released_at <= bar.open_at]
+            if newly_settled:
+                cash += sum(newly_settled, ZERO)
+                unsettled_cash[:] = [
+                    item for item in unsettled_cash if item[0] > bar.open_at
+                ]
+
+            for action in actions:
+                key = (action.symbol, action.effective_at, action.action_type)
+                if action.symbol != symbol:
+                    continue
+                if (
+                    action.action_type == "SPLIT"
+                    and key not in applied_actions
+                    and action.effective_at <= bar.open_at
+                ):
+                    applied_actions.add(key)
+                    held = positions.get(symbol)
+                    if held is not None:
+                        quantity = held.quantity * action.split_ratio
+                        if quantity != quantity.to_integral_value():
+                            raise ValueError("split creates unsupported fractional simulated shares")
+                        positions[symbol] = _Position(
+                            quantity,
+                            held.average_entry_price / action.split_ratio,
+                            held.entry_total_cost,
+                            held.stop_price / action.split_ratio,
+                            held.opened_at,
+                        )
+                    history[:] = [
+                        replace(
+                            prior,
+                            open=prior.open / action.split_ratio,
+                            high=prior.high / action.split_ratio,
+                            low=prior.low / action.split_ratio,
+                            close=prior.close / action.split_ratio,
+                            volume=prior.volume * action.split_ratio,
+                        )
+                        for prior in history
+                    ]
+                    if symbol in pending and pending[symbol][3] is not None:
+                        pending_action, pending_reason, pending_at, pending_atr = pending[symbol]
+                        pending[symbol] = (
+                            pending_action,
+                            pending_reason,
+                            pending_at,
+                            pending_atr / action.split_ratio,
+                        )
+                elif action.action_type == "CASH_DIVIDEND":
+                    if key not in applied_actions and action.effective_at <= bar.open_at:
+                        applied_actions.add(key)
+                        held = positions.get(symbol)
+                        dividend_entitlements[key] = held.quantity if held else ZERO
+                    if (
+                        key in dividend_entitlements
+                        and key not in paid_dividends
+                        and action.cash_paid_at is not None
+                        and action.cash_paid_at <= bar.open_at
+                    ):
+                        cash += dividend_entitlements[key] * action.cash_per_share
+                        paid_dividends.add(key)
+
+            outcome = terminal_by_symbol.get(symbol)
+            if outcome and outcome.effective_at <= bar.open_at and symbol not in terminated:
+                terminated.add(symbol)
+                pending.pop(symbol, None)
+                if symbol in positions:
+                    position = positions.pop(symbol)
+                    proceeds = position.quantity * outcome.recovery_per_share
+                    unsettled_cash.append((outcome.cash_settled_at, proceeds))
+                    completed.append(
+                        CompletedTrade(
+                            symbol,
+                            position.opened_at,
+                            outcome.effective_at,
+                            position.entry_total_cost,
+                            proceeds,
+                            proceeds / position.entry_total_cost - ONE,
+                            outcome.terminal_type,
+                        )
+                    )
+                    executions.append(
+                        ExecutionRecord(
+                            symbol, "TERMINAL_SETTLEMENT", outcome.terminal_type,
+                            outcome.available_at, outcome.effective_at,
+                            outcome.recovery_per_share, outcome.recovery_per_share,
+                            position.quantity, position.quantity, ZERO, "FILLED", ZERO,
+                            ZERO, ZERO, ZERO, ZERO,
+                        )
+                    )
+
+            if bar.open_at >= end and symbol in positions:
+                pending[symbol] = ("EXIT_LONG", "EVALUATION_END", end, None)
+            if bar.open_at >= end:
+                pending.pop(symbol, None) if symbol not in positions else None
+
+            order = pending.pop(symbol, None)
+            lagged = _lagged_liquidity(history, self.config.lagged_liquidity_lookback)
+            liquidity = lagged or ZERO
+            capacity_notional = liquidity * self.config.maximum_lagged_volume_participation
+            if order and (bar.open_at < end or order[0] == "EXIT_LONG"):
+                action, reason, signal_at, stored_atr = order
+                if action == "ENTER_LONG" and symbol not in positions and eligible(symbol, signal_at):
+                    atr = stored_atr
+                    if atr is not None and liquidity > ZERO:
+                        risk_per_share = atr * self.config.atr_stop_multiple
+                        portfolio_equity = equity()
+                        open_risk = sum(
+                            max(ZERO, held.average_entry_price - held.stop_price) * held.quantity
+                            for held in positions.values()
+                        )
+                        risk_budget = min(
+                            portfolio_equity * self.config.max_equity_risk_per_trade,
+                            max(
+                                ZERO,
+                                portfolio_equity * self.config.maximum_aggregate_open_risk
+                                - open_risk,
+                            ),
+                        )
+                        requested = (risk_budget / risk_per_share).to_integral_value(rounding=ROUND_FLOOR)
+                        maximum_cost_bps = (
+                            self.config.bid_ask_half_spread_bps
+                            + self.config.baseline_slippage_bps
+                            + self.config.liquidity_impact_bps_at_max_participation
+                        )
+                        maximum_price = _adverse_price(bar.open, "BUY", maximum_cost_bps)
+                        capacity = (capacity_notional / maximum_price).to_integral_value(rounding=ROUND_FLOOR)
+                        filled = affordable_quantity(maximum_price, min(requested, capacity), bar.open_at)
+                        impact_bps, total_cost_bps = _execution_cost_bps(
+                            self.config,
+                            reference_price=bar.open,
+                            filled_quantity=filled,
+                            lagged_liquidity_notional=liquidity,
+                        )
+                        fill_price = _adverse_price(bar.open, "BUY", total_cost_bps)
+                        notional = filled * fill_price
+                        fee = fee_for(notional, bar.open_at) if filled > ZERO else ZERO
+                        if filled > ZERO:
+                            cash -= notional + fee
+                            record_notional(notional, bar.open_at)
+                            positions[symbol] = _Position(
+                                filled,
+                                fill_price,
+                                notional + fee,
+                                fill_price - risk_per_share,
+                                bar.open_at,
+                            )
+                        executions.append(
+                            ExecutionRecord(
+                                symbol, "BUY", reason, signal_at, bar.open_at,
+                                bar.open, fill_price, requested, filled, fee,
+                                "FILLED" if filled == requested and filled > ZERO else (
+                                    "PARTIALLY_FILLED_CANCELED" if filled > ZERO else "REJECTED"
+                                ),
+                                liquidity,
+                                self.config.bid_ask_half_spread_bps,
+                                self.config.baseline_slippage_bps,
+                                impact_bps,
+                                total_cost_bps,
+                            )
+                        )
+                elif action == "EXIT_LONG" and symbol in positions:
+                    capacity = (capacity_notional / bar.open).to_integral_value(rounding=ROUND_FLOOR)
+                    requested = positions[symbol].quantity
+                    filled = close_quantity(
+                        symbol=symbol,
+                        requested_quantity=requested,
+                        maximum_fill_quantity=capacity,
+                        reference=bar.open,
+                        moment=bar.open_at,
+                        signal_at=signal_at,
+                        reason=reason,
+                        liquidity=liquidity,
+                    ) if capacity > ZERO else ZERO
+                    if filled < requested:
+                        pending[symbol] = ("EXIT_LONG", reason, signal_at, None)
+
+            if symbol in positions:
+                position = positions[symbol]
+                if bar.open <= position.stop_price:
+                    stop_reference = bar.open
+                elif bar.low <= position.stop_price:
+                    stop_reference = position.stop_price - (
+                        (position.stop_price - bar.low)
+                        * self.config.stop_pierce_fill_fraction
+                    )
+                else:
+                    stop_reference = None
+                if stop_reference is not None:
+                    capacity = (capacity_notional / stop_reference).to_integral_value(rounding=ROUND_FLOOR)
+                    if capacity > ZERO:
+                        requested = position.quantity
+                        filled = close_quantity(
+                            symbol=symbol,
+                            requested_quantity=requested,
+                            maximum_fill_quantity=capacity,
+                            reference=stop_reference,
+                            moment=(bar.open_at if bar.open <= position.stop_price else bar.close_at),
+                            signal_at=bar.open_at,
+                            reason="HARD_ATR_STOP",
+                            liquidity=liquidity,
+                        )
+                        if filled < requested:
+                            pending[symbol] = ("EXIT_LONG", "HARD_ATR_STOP", bar.open_at, None)
+
+            last_marks[symbol] = bar.close
+            history.append(bar)
+            if start <= bar.close_at < end and eligible(symbol, bar.close_at):
+                action = strategy_instance.decide(symbol, tuple(history), parameters)
+                if action not in {ACTION_HOLD, ACTION_ENTER_LONG, ACTION_EXIT_LONG}:
+                    raise ValueError("strategy returned an unsupported action")
+                if action == ACTION_ENTER_LONG and symbol not in positions and symbol not in pending:
+                    atr = _atr(history, self.config.atr_window)
+                    if atr is not None:
+                        pending[symbol] = (action, "STRATEGY_SIGNAL", bar.close_at, atr)
+                elif action == ACTION_EXIT_LONG and symbol in positions:
+                    pending[symbol] = (action, "STRATEGY_SIGNAL", bar.close_at, None)
+            elif start <= bar.close_at < end and symbol in positions and not eligible(symbol, bar.close_at):
+                pending[symbol] = ("EXIT_LONG", "UNIVERSE_REMOVAL", bar.close_at, None)
+            if start <= bar.close_at <= end:
+                equity_curve.append((bar.close_at, equity()))
+
+        for outcome in outcomes:
+            if outcome.symbol in positions and outcome.effective_at <= end:
+                position = positions.pop(outcome.symbol)
+                proceeds = position.quantity * outcome.recovery_per_share
+                unsettled_cash.append((outcome.cash_settled_at, proceeds))
+                completed.append(
+                    CompletedTrade(
+                        outcome.symbol, position.opened_at, outcome.effective_at,
+                        position.entry_total_cost, proceeds,
+                        proceeds / position.entry_total_cost - ONE,
+                        outcome.terminal_type,
+                    )
+                )
+        if positions:
+            raise ValueError("evaluation lacks a next-bar, liquidity-capped exit for open positions")
+        if not equity_curve:
+            raise ValueError("evaluation window contains no completed bars")
+
+        ending = cash + sum(amount for _, amount in unsettled_cash)
+        curve_values = [self.config.initial_cash, *[item[1] for item in equity_curve], ending]
+        parameter_hash = hashlib.sha256(_canonical_json(parameters).encode()).hexdigest()
+        return BacktestResult(
+            str(strategy_instance.version),
+            parameter_hash,
+            self.data_attestation.source_id,
+            self.fee_schedule.schedule_id,
+            self.config.execution_scenario,
+            self.config.initial_cash,
+            ending,
+            ending / self.config.initial_cash - ONE,
+            _drawdown(curve_values),
+            tuple(executions),
+            tuple(completed),
+            tuple(equity_curve),
+        )
+
+    def run_base_and_pessimistic(self, **inputs: Any) -> Mapping[str, BacktestResult]:
+        """Run the exact same sealed inputs under separate cost assumptions."""
+        if self.config.execution_scenario != "BASE":
+            raise ValueError("scenario comparison must start from a BASE engine")
+        materialized = dict(inputs)
+        for name in ("bars", "universe_events", "terminal_outcomes", "corporate_actions"):
+            materialized[name] = tuple(materialized.get(name, ()))
+        base = self.run(**materialized)
+        pessimistic_config = replace(
+            self.config,
+            execution_scenario="PESSIMISTIC",
+            baseline_slippage_bps=max(
+                Decimal("20"), self.config.baseline_slippage_bps * Decimal("2")
+            ),
+            bid_ask_half_spread_bps=max(
+                Decimal("10"), self.config.bid_ask_half_spread_bps * Decimal("2")
+            ),
+            liquidity_impact_bps_at_max_participation=max(
+                Decimal("20"),
+                self.config.liquidity_impact_bps_at_max_participation * Decimal("2"),
+            ),
+            maximum_lagged_volume_participation=(
+                self.config.maximum_lagged_volume_participation / Decimal("2")
+            ),
+            stop_pierce_fill_fraction=ONE,
+        )
+        pessimistic = GuardrailedBacktestEngine(
+            config=pessimistic_config,
+            fee_schedule=self.fee_schedule,
+            data_attestation=self.data_attestation,
+        ).run(**materialized)
+        return {"BASE": base, "PESSIMISTIC": pessimistic}
+
+
+@dataclass(frozen=True)
+class ChronologicalSplit:
+    in_sample_start: datetime
+    in_sample_end: datetime
+    out_of_sample_start: datetime
+    out_of_sample_end: datetime
+    execution_buffer_end: datetime
+    settlement_buffer_end: datetime
+    in_sample_fraction: Decimal = Decimal("0.60")
+    out_of_sample_fraction: Decimal = Decimal("0.40")
+
+
+def strict_sixty_forty_split(bars: Iterable[MarketBar]) -> ChronologicalSplit:
+    closes = sorted({bar.close_at for bar in bars})
+    if len(closes) < 12:
+        raise ValueError(
+            "at least ten measured sessions plus exit and settlement sessions are required"
+        )
+    measured = closes[:-2]
+    cut = math.floor(len(measured) * 0.60)
+    return ChronologicalSplit(
+        measured[0],
+        measured[cut - 1],
+        measured[cut],
+        measured[-1],
+        closes[-2],
+        closes[-1],
+    )
+
+
+@dataclass(frozen=True)
+class MonteCarloResult:
+    iterations: int
+    seed: int
+    drawdown_p50: Decimal
+    drawdown_p95: Decimal
+    worst_drawdown: Decimal
+
+
+def monte_carlo_trade_order_risk(
+    equity_fraction_returns: Sequence[Decimal], *, iterations: int = 2_000, seed: int = 0
+) -> MonteCarloResult:
+    values = tuple(_signed_decimal(item, "trade return") for item in equity_fraction_returns)
+    if len(values) < 2 or iterations < 100:
+        raise ValueError("Monte Carlo requires at least two trades and 100 iterations")
+    generator = random.Random(seed)
+    drawdowns: list[Decimal] = []
+    for _ in range(iterations):
+        order = [values[generator.randrange(len(values))] for _ in range(len(values))]
+        equity = ONE
+        curve = [equity]
+        for value in order:
+            equity *= ONE + value
+            curve.append(equity)
+        drawdowns.append(_drawdown(curve))
+    drawdowns.sort()
+
+    def percentile(fraction: Decimal) -> Decimal:
+        index = min(len(drawdowns) - 1, math.ceil(float(fraction) * len(drawdowns)) - 1)
+        return drawdowns[index]
+
+    return MonteCarloResult(
+        iterations,
+        seed,
+        percentile(Decimal("0.50")),
+        percentile(Decimal("0.95")),
+        drawdowns[-1],
+    )
+
+
+@dataclass(frozen=True)
+class WalkForwardSelection:
+    split: ChronologicalSplit
+    selected_parameters: Mapping[str, Any]
+    selected_parameter_hash: str
+    in_sample_fold_scores: tuple[Decimal, ...]
+    out_of_sample_result: BacktestResult
+    monte_carlo: MonteCarloResult | None
+    out_of_sample_opened_only_after_selection: bool = True
+
+
+class WalkForwardOptimizer:
+    """Select parameters inside the first 60%, then open the final 40% once."""
+
+    def __init__(self, engine: GuardrailedBacktestEngine, validation_folds: int = 3) -> None:
+        if validation_folds < 2:
+            raise ValueError("walk-forward validation requires at least two folds")
+        self.engine = engine
+        self.validation_folds = validation_folds
+
+    def validate(
+        self,
+        *,
+        bars: Sequence[MarketBar],
+        universe_events: Sequence[UniverseEvent],
+        terminal_outcomes: Sequence[TerminalOutcome],
+        corporate_actions: Sequence[CorporateAction],
+        prices_are_unadjusted: bool,
+        strategy: CausalStrategy,
+        parameter_grid: Mapping[str, Sequence[Any]],
+        monte_carlo_iterations: int = 2_000,
+        monte_carlo_seed: int = 0,
+    ) -> WalkForwardSelection:
+        if not parameter_grid or any(not values for values in parameter_grid.values()):
+            raise ValueError("a non-empty parameter grid is required")
+        split = strict_sixty_forty_split(bars)
+        in_sample_closes = sorted(
+            {
+                bar.close_at
+                for bar in bars
+                if split.in_sample_start <= bar.close_at <= split.in_sample_end
+            }
+        )
+        # The final two in-sample sessions are never measured.  They exist only
+        # to liquidate and settle the last fold without touching OOS data.
+        fold_measurement_closes = in_sample_closes[:-2]
+        all_closes = sorted({bar.close_at for bar in bars})
+        initial_train = max(2, len(fold_measurement_closes) // 2)
+        remaining = len(fold_measurement_closes) - initial_train
+        if remaining < self.validation_folds:
+            raise ValueError("insufficient in-sample sessions for walk-forward folds")
+        fold_size = remaining // self.validation_folds
+        if fold_size < 3:
+            raise ValueError("each walk-forward fold needs signal, measurement, and exit sessions")
+        keys = tuple(sorted(parameter_grid))
+        candidates = [
+            dict(zip(keys, combination))
+            for combination in itertools.product(*(parameter_grid[key] for key in keys))
+        ]
+        scored: list[tuple[Decimal, Decimal, str, Mapping[str, Any], tuple[Decimal, ...]]] = []
+        for candidate in candidates:
+            fold_returns: list[Decimal] = []
+            fold_drawdowns: list[Decimal] = []
+            for fold in range(self.validation_folds):
+                validation_start_index = initial_train + fold * fold_size
+                start = fold_measurement_closes[validation_start_index]
+                end_index = min(
+                    validation_start_index + fold_size - 2,
+                    len(fold_measurement_closes) - 2,
+                )
+                if end_index <= validation_start_index:
+                    raise ValueError("insufficient in-sample sessions for non-overlapping folds")
+                end = fold_measurement_closes[end_index]
+                global_end_index = all_closes.index(end) + 2
+                if global_end_index >= len(all_closes):
+                    raise ValueError("walk-forward fold lacks exit and settlement sessions")
+                permitted_through = all_closes[global_end_index]
+                sealed_fold_bars = [
+                    bar for bar in bars if bar.close_at <= permitted_through
+                ]
+                result = self.engine.run(
+                    bars=sealed_fold_bars,
+                    universe_events=universe_events,
+                    terminal_outcomes=terminal_outcomes,
+                    corporate_actions=corporate_actions,
+                    prices_are_unadjusted=prices_are_unadjusted,
+                    strategy=strategy,
+                    parameters=candidate,
+                    evaluation_start=start,
+                    evaluation_end=end,
+                )
+                fold_returns.append(result.total_return)
+                fold_drawdowns.append(result.maximum_drawdown)
+            candidate_hash = hashlib.sha256(_canonical_json(candidate).encode()).hexdigest()
+            scored.append(
+                (
+                    median(fold_returns),
+                    -median(fold_drawdowns),
+                    candidate_hash,
+                    candidate,
+                    tuple(fold_returns),
+                )
+            )
+        _, _, selected_hash, selected, fold_scores = max(
+            scored, key=lambda item: (item[0], item[1], -int(item[2], 16))
+        )
+        sealed_oos_bars = [
+            bar for bar in bars if bar.close_at <= split.settlement_buffer_end
+        ]
+        oos = self.engine.run(
+            bars=sealed_oos_bars,
+            universe_events=universe_events,
+            terminal_outcomes=terminal_outcomes,
+            corporate_actions=corporate_actions,
+            prices_are_unadjusted=prices_are_unadjusted,
+            strategy=strategy,
+            parameters=selected,
+            evaluation_start=split.out_of_sample_start,
+            evaluation_end=split.out_of_sample_end,
+        )
+        monte_carlo = None
+        grouped_pnl: dict[tuple[str, datetime], Decimal] = {}
+        for item in oos.completed_trades:
+            key = (item.symbol, item.opened_at)
+            grouped_pnl[key] = grouped_pnl.get(key, ZERO) + (
+                item.exit_net_proceeds - item.entry_total_cost
+            )
+        returns = [pnl / oos.starting_equity for pnl in grouped_pnl.values()]
+        if len(returns) >= 2:
+            monte_carlo = monte_carlo_trade_order_risk(
+                returns,
+                iterations=monte_carlo_iterations,
+                seed=monte_carlo_seed,
+            )
+        return WalkForwardSelection(
+            split,
+            selected,
+            selected_hash,
+            fold_scores,
+            oos,
+            monte_carlo,
+        )
