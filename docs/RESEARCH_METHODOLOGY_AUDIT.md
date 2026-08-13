@@ -226,6 +226,13 @@ coordinated workstreams.
   enabled while trust-critical methodology gates are open; and
 - continue normal tests, GitHub reviews and immutable version tracking.
 
+The research batch now has an optional immutable, tamper-evident measurement
+sink for per-ticker wall duration and COMPLETE/ERROR outcomes. Deliberate
+provider pacing is recorded separately and telemetry failures cannot alter the
+research report. Component observations remain explicitly unknown until
+`InvestmentResearchPipeline` and the provider layer expose real measurements;
+the ledger does not fabricate zero retries, cache misses or provider timings.
+
 ### Trust-critical work required before paper-order submission
 
 1. Add genuine point-in-time availability metadata to decision inputs.
