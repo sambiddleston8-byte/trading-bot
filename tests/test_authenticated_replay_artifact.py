@@ -3,6 +3,7 @@ import json
 import pytest
 
 from core.orchestration.authenticated_replay_artifact import (
+    load_authenticated_backtest_artifact_bundle,
     load_authenticated_replay_artifact,
     load_authenticated_replay_artifact_bundle,
 )
@@ -62,6 +63,76 @@ def bundle(**changes):
     return load_authenticated_replay_artifact_bundle(admission_ledger=admission,content_ledger=contents,admission_id="RDA-1")
 
 
+def backtest_environment(*, role_changes=None, coverage_changes=None):
+    admission, contents = environment()
+    roots = {
+        role: json.loads(contents.values[f"SRC-{index}"][1])
+        for index, role in enumerate((
+            "TOTAL_RETURN_PRICES", "MARKET_CALENDARS_AND_HALTS",
+            "CORPORATE_ACTIONS", "DELISTING_OUTCOMES",
+        ))
+    }
+    roots["CORPORATE_ACTIONS"].update(schema_version="1.2", rows=[{
+        **corporate(), "economics": {"split_ratio": "2"},
+    }])
+    roots["DELISTING_OUTCOMES"]["schema_version"] = "1.2"
+    roots["UNIVERSE_MEMBERSHIP"] = {
+        "schema_version": "1.2", "artifact_role": "UNIVERSE_MEMBERSHIP",
+        "coverage": coverage("UNIVERSE_MEMBERSHIP", universe_id="SP500"),
+        "rows": [{
+            "ticker": "AAPL", "event_id": "m1", "version": 1,
+            "membership_action": "ADD", "effective_at": "2022-04-01T09:00:00Z",
+            "available_at": "2022-04-01T08:00:00Z", "record_status": "ACTIVE",
+            "supersedes_version": None, "source_row_locator": "m1",
+        }],
+        "initial_membership_states": [{
+            "ticker": "AAPL", "state": "NON_MEMBER", "as_of_at": FROM,
+            "available_at": FROM, "source_row_locator": "ms1",
+        }],
+    }
+    roots["RAW_DAILY_SESSION_BARS"] = {
+        "schema_version": "1.2", "artifact_role": "RAW_DAILY_SESSION_BARS",
+        "coverage": coverage(
+            "RAW_DAILY_SESSION_BARS",
+            observation_representation="SESSION_AGGREGATE_OHLCV",
+            adjustment_basis="RAW_UNADJUSTED", quote_currency="USD",
+        ),
+        "rows": [{
+            "ticker": "AAPL", "session_opens_at": "2022-04-01T09:30:00Z",
+            "session_closes_at": "2022-04-01T16:00:00Z",
+            "available_at": "2022-04-01T16:00:01Z", "open": "100",
+            "high": "105", "low": "99", "close": "103", "volume": "1000000",
+            "source_row_locator": "b1",
+        }],
+    }
+    for role, changes in (role_changes or {}).items():
+        roots[role].update(changes)
+    for role, changes in (coverage_changes or {}).items():
+        roots[role]["coverage"].update(changes)
+    contents.values = {}
+    admission.record["artifacts"] = []
+    for index, role in enumerate(roots):
+        identifier = f"BACKTEST-{index}"
+        record = {
+            "content_evidence_id": identifier, "record_hash": f"{index + 1:x}" * 64,
+            "source_input_sha256": f"{index + 2:x}" * 64,
+        }
+        contents.values[identifier] = (
+            record, json.dumps(roots[role], separators=(",", ":")).encode()
+        )
+        admission.record["artifacts"].append({
+            "role": role, "content_evidence_id": identifier,
+        })
+    return admission, contents
+
+
+def backtest_bundle(**changes):
+    admission, contents = backtest_environment(**changes)
+    return load_authenticated_backtest_artifact_bundle(
+        admission_ledger=admission, content_ledger=contents, admission_id="RDA-1"
+    )
+
+
 def test_loads_exact_point_in_time_bundle_without_execution():
     result=bundle();row=result["artifacts"]["TOTAL_RETURN_PRICES"]["rows"][0]
     assert row["quote_observed_at"]=="2022-04-01T10:00:00.000000+00:00"
@@ -70,6 +141,82 @@ def test_loads_exact_point_in_time_bundle_without_execution():
     assert result["plan_coverage_adequacy_proven"] is False
     assert result["provider_completeness_attested_not_independently_proven"] is True
     for field in ("observation_selected","replay_executed","costs_calculated","fills_generated","performance_calculated","network_allowed","broker_connection_allowed","orders_submitted","live_trading_enabled"): assert result[field] is False
+
+
+def test_loads_authenticated_backtest_roles_without_claiming_readiness_or_execution():
+    result = backtest_bundle()
+    assert set(result["artifacts"]) == {
+        "TOTAL_RETURN_PRICES", "MARKET_CALENDARS_AND_HALTS", "CORPORATE_ACTIONS",
+        "DELISTING_OUTCOMES", "UNIVERSE_MEMBERSHIP", "RAW_DAILY_SESSION_BARS",
+    }
+    assert result["quote_currency"] == "USD"
+    assert result["artifacts"]["RAW_DAILY_SESSION_BARS"]["rows"][0]["open"] == "100"
+    membership = result["artifacts"]["UNIVERSE_MEMBERSHIP"]
+    assert membership["resolved_membership_states"]["AAPL"]["resolved_state"] == "MEMBER"
+    assert result["authenticated_engine_input_roles_present"] is True
+    for field in (
+        "backtest_input_ready", "performance_claim_allowed",
+        "paper_broker_submission_enabled", "broker_connection_allowed",
+        "orders_submitted", "live_trading_enabled",
+    ):
+        assert result[field] is False
+
+
+def test_version_1_1_execution_rows_keep_their_original_shape():
+    result = bundle(
+        actions=[corporate()], outcomes=[outcome()],
+    )
+    assert "economics" not in result["artifacts"]["CORPORATE_ACTIONS"]["rows"][0]
+    assert "settlement" not in result["artifacts"]["DELISTING_OUTCOMES"]["rows"][0]
+
+
+def test_backtest_schema_rejects_impossible_bars_and_dividend_payment_chronology():
+    admission, contents = backtest_environment()
+    record, payload = contents.values["BACKTEST-5"]
+    root = json.loads(payload); root["rows"][0]["low"] = "104"
+    contents.values["BACKTEST-5"] = (record, json.dumps(root).encode())
+    with pytest.raises(ValueError, match="OHLC"):
+        load_authenticated_backtest_artifact_bundle(
+            admission_ledger=admission, content_ledger=contents, admission_id="RDA-1"
+        )
+    with pytest.raises(ValueError, match="paid before"):
+        backtest_bundle(role_changes={"CORPORATE_ACTIONS": {"rows": [{
+            **corporate(), "event_type": "CASH_DIVIDEND", "economics": {
+                "cash_per_share": "1", "currency": "USD", "cash_paid_at": FROM,
+            },
+        }]}})
+
+
+def test_backtest_bundle_reconciles_explicit_event_cash_currency():
+    with pytest.raises(ValueError, match="cash currency"):
+        backtest_bundle(role_changes={"CORPORATE_ACTIONS": {"rows": [{
+            **corporate(), "event_type": "CASH_DIVIDEND", "economics": {
+                "cash_per_share": "1", "currency": "GBP",
+                "cash_paid_at": "2022-04-01T13:00:00Z",
+            },
+        }]}})
+
+
+def test_backtest_loader_requires_economic_and_population_schema_1_2():
+    admission, contents = backtest_environment()
+    record, payload = contents.values["BACKTEST-2"]
+    root = json.loads(payload); root["schema_version"] = "1.1"
+    for row in root["rows"]: row.pop("economics")
+    contents.values["BACKTEST-2"] = (record, json.dumps(root).encode())
+    with pytest.raises(ValueError, match="require schema 1.2"):
+        load_authenticated_backtest_artifact_bundle(
+            admission_ledger=admission, content_ledger=contents, admission_id="RDA-1"
+        )
+
+
+def test_membership_actions_must_alternate_from_authenticated_initial_state():
+    with pytest.raises(ValueError, match="do not alternate"):
+        backtest_bundle(role_changes={"UNIVERSE_MEMBERSHIP": {"rows": [{
+            "ticker": "AAPL", "event_id": "m1", "version": 1,
+            "membership_action": "REMOVE", "effective_at": "2022-04-01T09:00:00Z",
+            "available_at": "2022-04-01T08:00:00Z", "record_status": "ACTIVE",
+            "supersedes_version": None, "source_row_locator": "m1",
+        }]}})
 
 
 def test_aggregated_prices_and_post_cutoff_rows_fail():

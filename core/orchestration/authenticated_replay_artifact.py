@@ -14,11 +14,22 @@ from core.orchestration.replay_dataset_admission import ReplayDatasetAdmissionLe
 
 
 SCHEMA_VERSION = "1.1"
+BACKTEST_SCHEMA_VERSION = "1.2"
 ROLES = (
     "TOTAL_RETURN_PRICES", "MARKET_CALENDARS_AND_HALTS",
     "CORPORATE_ACTIONS", "DELISTING_OUTCOMES",
 )
+BACKTEST_ROLES = ROLES + ("UNIVERSE_MEMBERSHIP", "RAW_DAILY_SESSION_BARS")
+ROLE_SCHEMA_VERSIONS = {
+    "TOTAL_RETURN_PRICES": {SCHEMA_VERSION},
+    "MARKET_CALENDARS_AND_HALTS": {SCHEMA_VERSION, BACKTEST_SCHEMA_VERSION},
+    "CORPORATE_ACTIONS": {SCHEMA_VERSION, BACKTEST_SCHEMA_VERSION},
+    "DELISTING_OUTCOMES": {SCHEMA_VERSION, BACKTEST_SCHEMA_VERSION},
+    "UNIVERSE_MEMBERSHIP": {BACKTEST_SCHEMA_VERSION},
+    "RAW_DAILY_SESSION_BARS": {BACKTEST_SCHEMA_VERSION},
+}
 IDENTIFIER = re.compile(r"^[A-Z0-9][A-Z0-9._-]{0,31}$")
+ISO_CURRENCY = re.compile(r"^[A-Z]{3}$")
 DECIMAL_TEXT = re.compile(r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$")
 COMMON_COVERAGE_KEYS = {
     "tickers", "covers_from_at", "through_at", "knowledge_as_of_at",
@@ -27,6 +38,10 @@ COMMON_COVERAGE_KEYS = {
 PRICE_KEYS = {
     "ticker", "observation_kind", "quote_observed_at", "trade_observed_at",
     "available_at", "bid", "ask", "last", "volume", "source_row_locator",
+}
+BAR_KEYS = {
+    "ticker", "session_opens_at", "session_closes_at", "available_at",
+    "open", "high", "low", "close", "volume", "source_row_locator",
 }
 CALENDAR_KEYS = {
     "ticker", "starts_at", "ends_at", "available_at", "status", "source_row_locator"
@@ -37,9 +52,15 @@ VERSIONED_COMMON = {
 }
 CORPORATE_KEYS = VERSIONED_COMMON | {"event_type"}
 DELISTING_KEYS = VERSIONED_COMMON | {"terminal_type"}
+CORPORATE_KEYS_V12 = CORPORATE_KEYS | {"economics"}
+DELISTING_KEYS_V12 = DELISTING_KEYS | {"settlement"}
+MEMBERSHIP_KEYS = VERSIONED_COMMON | {"membership_action"}
 INITIAL_STATE_KEYS = {
     "ticker", "state", "terminal_type", "as_of_at", "available_at",
     "source_row_locator",
+}
+INITIAL_MEMBERSHIP_KEYS = {
+    "ticker", "state", "as_of_at", "available_at", "source_row_locator",
 }
 AMBIGUITY_PRECEDENCE = {
     "NONE": 0,
@@ -120,11 +141,22 @@ def _enum(value: Any, name: str, allowed: set[str]) -> str:
     return result
 
 
+def _currency(value: Any, name: str = "currency") -> str:
+    result = _text(value, name, 3)
+    if not ISO_CURRENCY.fullmatch(result):
+        raise ValueError(f"{name} must be a three-letter uppercase currency code")
+    return result
+
+
 def _coverage(value: Any, role: str) -> tuple[dict[str, Any], datetime, datetime, datetime]:
-    extra = (
-        {"observation_representation", "adjustment_basis"}
-        if role == "TOTAL_RETURN_PRICES" else set()
-    )
+    if role == "TOTAL_RETURN_PRICES":
+        extra = {"observation_representation", "adjustment_basis"}
+    elif role == "RAW_DAILY_SESSION_BARS":
+        extra = {"observation_representation", "adjustment_basis", "quote_currency"}
+    elif role == "UNIVERSE_MEMBERSHIP":
+        extra = {"universe_id"}
+    else:
+        extra = set()
     source = _object(value, COMMON_COVERAGE_KEYS | extra, "coverage")
     tickers = [_ticker(item) for item in _sequence(source["tickers"], "tickers")]
     if not tickers or tickers != sorted(tickers) or len(tickers) != len(set(tickers)):
@@ -153,6 +185,19 @@ def _coverage(value: Any, role: str) -> tuple[dict[str, Any], datetime, datetime
             "observation_representation": "POINT_IN_TIME_QUOTE_AND_TRADE",
             "adjustment_basis": "RAW_UNADJUSTED",
         })
+    elif role == "RAW_DAILY_SESSION_BARS":
+        if (
+            source["observation_representation"] != "SESSION_AGGREGATE_OHLCV"
+            or source["adjustment_basis"] != "RAW_UNADJUSTED"
+        ):
+            raise ValueError("daily-bar representation or adjustment basis is invalid")
+        result.update({
+            "observation_representation": "SESSION_AGGREGATE_OHLCV",
+            "adjustment_basis": "RAW_UNADJUSTED",
+            "quote_currency": _currency(source["quote_currency"], "quote_currency"),
+        })
+    elif role == "UNIVERSE_MEMBERSHIP":
+        result["universe_id"] = _text(source["universe_id"], "universe_id", 100)
     return result, start, end, knowledge
 
 
@@ -205,6 +250,52 @@ def _price_rows(
     return rows
 
 
+def _bar_rows(
+    values: Any, tickers: set[str], start: datetime, end: datetime, knowledge: datetime
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []; locators: set[str] = set()
+    for value in _sequence(values, "rows"):
+        row = _object(value, BAR_KEYS, "daily bar row")
+        ticker = _ticker(row["ticker"])
+        opens = _time(row["session_opens_at"], "session_opens_at")
+        closes = _time(row["session_closes_at"], "session_closes_at")
+        available = _time(row["available_at"], "available_at")
+        if (
+            ticker not in tickers
+            or not start <= opens < closes <= end
+            or closes > available
+            or available > knowledge
+        ):
+            raise ValueError("daily bar chronology or ticker is invalid")
+        resolved = {
+            "ticker": ticker,
+            "session_opens_at": opens.isoformat(timespec="microseconds"),
+            "session_closes_at": closes.isoformat(timespec="microseconds"),
+            "available_at": available.isoformat(timespec="microseconds"),
+            "open": _decimal(row["open"], "open", positive=True),
+            "high": _decimal(row["high"], "high", positive=True),
+            "low": _decimal(row["low"], "low", positive=True),
+            "close": _decimal(row["close"], "close", positive=True),
+            "volume": _decimal(row["volume"], "volume", positive=False),
+            "source_row_locator": _locator(row["source_row_locator"], locators),
+        }
+        if (
+            Decimal(resolved["low"]) > min(Decimal(resolved["open"]), Decimal(resolved["close"]))
+            or Decimal(resolved["high"]) < max(Decimal(resolved["open"]), Decimal(resolved["close"]))
+            or Decimal(resolved["low"]) > Decimal(resolved["high"])
+        ):
+            raise ValueError("daily bar OHLC values are inconsistent")
+        rows.append(resolved)
+    key = lambda item: (
+        item["ticker"], item["session_opens_at"], item["session_closes_at"],
+        item["available_at"], item["source_row_locator"],
+    )
+    semantics = [(item["ticker"], item["session_opens_at"]) for item in rows]
+    if len(semantics) != len(set(semantics)) or rows != sorted(rows, key=key):
+        raise ValueError("daily bars must be semantically unique and canonically sorted")
+    return rows
+
+
 def _calendar_rows(
     values: Any, tickers: set[str], start: datetime, end: datetime, knowledge: datetime
 ) -> list[dict[str, Any]]:
@@ -244,9 +335,14 @@ def _calendar_rows(
 
 def _versioned_rows(
     values: Any, role: str, tickers: set[str], start: datetime, end: datetime,
-    knowledge: datetime,
+    knowledge: datetime, schema_version: str = SCHEMA_VERSION,
 ) -> list[dict[str, Any]]:
-    keys = CORPORATE_KEYS if role == "CORPORATE_ACTIONS" else DELISTING_KEYS
+    if role == "CORPORATE_ACTIONS":
+        keys = CORPORATE_KEYS_V12 if schema_version == BACKTEST_SCHEMA_VERSION else CORPORATE_KEYS
+    elif role == "DELISTING_OUTCOMES":
+        keys = DELISTING_KEYS_V12 if schema_version == BACKTEST_SCHEMA_VERSION else DELISTING_KEYS
+    else:
+        keys = MEMBERSHIP_KEYS
     rows: list[dict[str, Any]] = []; locators: set[str] = set()
     for value in _sequence(values, "rows"):
         row = _object(value, keys, "versioned event row")
@@ -267,17 +363,29 @@ def _versioned_rows(
         }
         if role == "CORPORATE_ACTIONS":
             result["event_type"] = _enum(
-                row["event_type"], "event_type", {"SPLIT", "SYMBOL_CHANGE", "OTHER"}
+                row["event_type"], "event_type",
+                {"SPLIT", "CASH_DIVIDEND", "SYMBOL_CHANGE", "OTHER"},
             )
-        else:
+            if schema_version == BACKTEST_SCHEMA_VERSION:
+                result["economics"] = _corporate_economics(
+                    row["event_type"], row["economics"], status, effective, ticker
+                )
+        elif role == "DELISTING_OUTCOMES":
             terminal = row["terminal_type"]
             if status == "ACTIVE":
                 result["terminal_type"] = _enum(
-                    terminal, "terminal_type", {"DELISTED", "ACQUIRED", "BANKRUPT", "OTHER_TERMINAL"}
+                    terminal, "terminal_type",
+                    {"DELISTED", "ACQUIRED", "BANKRUPT", "MERGED", "OTHER_TERMINAL"},
                 )
             elif terminal is not None:
                 raise ValueError("retracted terminal outcomes must have null terminal_type")
             else: result["terminal_type"] = None
+            if schema_version == BACKTEST_SCHEMA_VERSION:
+                result["settlement"] = _terminal_settlement(row["settlement"], status, effective)
+        else:
+            result["membership_action"] = _enum(
+                row["membership_action"], "membership_action", {"ADD", "REMOVE"}
+            )
         rows.append(result)
     chain_key = lambda item: (item["ticker"], item["event_id"], item["version"])
     ordered = sorted(rows, key=chain_key)
@@ -305,6 +413,60 @@ def _versioned_rows(
     return rows
 
 
+def _corporate_economics(
+    event_type: Any, value: Any, status: str, effective: datetime, ticker: str,
+) -> dict[str, Any] | None:
+    if status == "RETRACTED":
+        if value is not None: raise ValueError("retracted corporate actions require null economics")
+        return None
+    kind = str(event_type)
+    if kind == "SPLIT":
+        source = _object(value, {"split_ratio"}, "split economics")
+        ratio = _decimal(source["split_ratio"], "split_ratio", positive=True)
+        if ratio == "1": raise ValueError("split_ratio must not equal one")
+        return {"split_ratio": ratio}
+    if kind == "CASH_DIVIDEND":
+        source = _object(value, {"cash_per_share", "currency", "cash_paid_at"}, "dividend economics")
+        paid = _time(source["cash_paid_at"], "cash_paid_at")
+        if paid < effective:
+            raise ValueError("dividend cash cannot be paid before effective_at")
+        return {
+            "cash_per_share": _decimal(source["cash_per_share"], "cash_per_share", positive=True),
+            "currency": _currency(source["currency"]),
+            "cash_paid_at": paid.isoformat(timespec="microseconds"),
+        }
+    if kind == "SYMBOL_CHANGE":
+        source = _object(value, {"new_ticker"}, "symbol-change economics")
+        new_ticker = _ticker(source["new_ticker"])
+        if new_ticker == ticker:
+            raise ValueError("symbol change must identify a different ticker")
+        return {"new_ticker": new_ticker}
+    _object(value, set(), "other corporate-action economics")
+    return {}
+
+
+def _terminal_settlement(value: Any, status: str, effective: datetime) -> dict[str, Any] | None:
+    if status == "RETRACTED":
+        if value is not None: raise ValueError("retracted terminal outcomes require null settlement")
+        return None
+    source = _object(
+        value,
+        {"recovery_per_share", "currency", "cash_settled_at", "recovery_basis"},
+        "terminal settlement",
+    )
+    settled = _time(source["cash_settled_at"], "cash_settled_at")
+    if settled < effective: raise ValueError("terminal cash cannot settle before effective_at")
+    return {
+        "recovery_per_share": _decimal(source["recovery_per_share"], "recovery_per_share", positive=False),
+        "currency": _currency(source["currency"]),
+        "cash_settled_at": settled.isoformat(timespec="microseconds"),
+        "recovery_basis": _enum(
+            source["recovery_basis"], "recovery_basis",
+            {"FINAL_CASH_CONSIDERATION", "LIQUIDATION_DISTRIBUTION", "ZERO_RECOVERY_CONFIRMED", "UNKNOWN"},
+        ),
+    }
+
+
 def _initial_states(
     values: Any, tickers: set[str], start: datetime, knowledge: datetime,
     reserved_locators: set[str] | None = None,
@@ -318,11 +480,50 @@ def _initial_states(
             raise ValueError("initial instrument state boundary is invalid")
         terminal=row["terminal_type"]
         if state == "ACTIVE" and terminal is not None: raise ValueError("ACTIVE initial state requires null terminal_type")
-        if state == "TERMINAL": terminal=_enum(terminal,"terminal_type",{"DELISTED","ACQUIRED","BANKRUPT","OTHER_TERMINAL"})
+        if state == "TERMINAL": terminal=_enum(terminal,"terminal_type",{"DELISTED","ACQUIRED","BANKRUPT","MERGED","OTHER_TERMINAL"})
         rows.append({"ticker":ticker,"state":state,"terminal_type":terminal,"as_of_at":as_of.isoformat(timespec="microseconds"),"available_at":available.isoformat(timespec="microseconds"),"source_row_locator":_locator(row["source_row_locator"],locators)})
     if [item["ticker"] for item in rows] != sorted(tickers):
         raise ValueError("initial states must contain every ticker exactly once in order")
     return rows
+
+
+def _initial_membership_states(
+    values: Any, tickers: set[str], start: datetime, knowledge: datetime,
+    reserved_locators: set[str],
+) -> list[dict[str, Any]]:
+    rows=[];locators=set(reserved_locators)
+    for value in _sequence(values, "initial_membership_states"):
+        row=_object(value,INITIAL_MEMBERSHIP_KEYS,"initial membership state")
+        ticker=_ticker(row["ticker"]);state=_enum(row["state"],"state",{"MEMBER","NON_MEMBER"})
+        as_of=_time(row["as_of_at"],"as_of_at");available=_time(row["available_at"],"available_at")
+        if ticker not in tickers or as_of != start or available > start or available > knowledge:
+            raise ValueError("initial membership state boundary is invalid")
+        rows.append({"ticker":ticker,"state":state,"as_of_at":as_of.isoformat(timespec="microseconds"),"available_at":available.isoformat(timespec="microseconds"),"source_row_locator":_locator(row["source_row_locator"],locators)})
+    if [item["ticker"] for item in rows] != sorted(tickers):
+        raise ValueError("initial membership states must contain every ticker exactly once in order")
+    return rows
+
+
+def _membership_state(rows:list[dict[str,Any]],states:list[dict[str,Any]])->dict[str,dict[str,Any]]:
+    result={}
+    for anchor in states:
+        ticker=anchor["ticker"];state=anchor["state"];incoherent=False
+        chains={}
+        for row in rows:
+            if row["ticker"]==ticker:chains.setdefault(row["event_id"],[]).append(row)
+        finals=[max(chain,key=lambda item:item["version"]) for chain in chains.values()]
+        active=sorted(
+            (item for item in finals if item["record_status"]=="ACTIVE"),
+            key=lambda item:(item["effective_at"],item["available_at"],item["event_id"]),
+        )
+        for item in active:
+            target="MEMBER" if item["membership_action"]=="ADD" else "NON_MEMBER"
+            if target==state:incoherent=True
+            state=target
+        if incoherent:
+            raise ValueError("membership events do not alternate from the authenticated initial state")
+        result[ticker]={"initial_state":anchor,"canonical_events":active,"resolved_state":state,"membership_incoherent":incoherent}
+    return result
 
 
 def _delisting_ambiguity(
@@ -409,26 +610,90 @@ def _load_source(admission_ledger, content_ledger, admission_id, role):
     return admission,content,source
 
 
-def load_authenticated_replay_artifact(*,admission_ledger:ReplayDatasetAdmissionLedger,content_ledger:AuthenticatedSourceContentLedger,admission_id:str,role:str)->dict[str,Any]:
-    resolved=_text(role,"role").upper()
-    if resolved not in ROLES: raise ValueError("role is outside the execution artifact boundary")
-    admission,content,source=_load_source(admission_ledger,content_ledger,admission_id,resolved)
-    root_keys={"schema_version","artifact_role","coverage","rows"}|({"initial_instrument_states"} if resolved=="DELISTING_OUTCOMES" else set())
-    root=_object(source,root_keys,"artifact")
-    if root["schema_version"]!=SCHEMA_VERSION or root["artifact_role"]!=resolved: raise ValueError("artifact schema or role is unsupported")
-    coverage,start,end,knowledge=_coverage(root["coverage"],resolved); tickers=set(coverage["tickers"])
-    states=[]; ticker_state={}
-    if resolved=="TOTAL_RETURN_PRICES": rows=_price_rows(root["rows"],tickers,start,end,knowledge)
-    elif resolved=="MARKET_CALENDARS_AND_HALTS": rows=_calendar_rows(root["rows"],tickers,start,end,knowledge)
+def load_authenticated_replay_artifact(
+    *, admission_ledger: ReplayDatasetAdmissionLedger,
+    content_ledger: AuthenticatedSourceContentLedger, admission_id: str, role: str,
+) -> dict[str, Any]:
+    resolved = _text(role, "role").upper()
+    if resolved not in BACKTEST_ROLES:
+        raise ValueError("role is outside the authenticated replay artifact boundary")
+    admission, content, source = _load_source(
+        admission_ledger, content_ledger, admission_id, resolved
+    )
+    root_keys = {"schema_version", "artifact_role", "coverage", "rows"}
+    if resolved == "DELISTING_OUTCOMES":
+        root_keys.add("initial_instrument_states")
+    elif resolved == "UNIVERSE_MEMBERSHIP":
+        root_keys.add("initial_membership_states")
+    root = _object(source, root_keys, "artifact")
+    schema_version = root["schema_version"]
+    if (
+        schema_version not in ROLE_SCHEMA_VERSIONS[resolved]
+        or root["artifact_role"] != resolved
+    ):
+        raise ValueError("artifact schema or role is unsupported")
+    coverage, start, end, knowledge = _coverage(root["coverage"], resolved)
+    tickers = set(coverage["tickers"])
+    states: list[dict[str, Any]] = []
+    ticker_state: dict[str, dict[str, Any]] = {}
+    membership_states: list[dict[str, Any]] = []
+    membership_state: dict[str, dict[str, Any]] = {}
+    if resolved == "TOTAL_RETURN_PRICES":
+        rows = _price_rows(root["rows"], tickers, start, end, knowledge)
+    elif resolved == "RAW_DAILY_SESSION_BARS":
+        rows = _bar_rows(root["rows"], tickers, start, end, knowledge)
+    elif resolved == "MARKET_CALENDARS_AND_HALTS":
+        rows = _calendar_rows(root["rows"], tickers, start, end, knowledge)
     else:
-        rows=_versioned_rows(root["rows"],resolved,tickers,start,end,knowledge)
-        if resolved=="DELISTING_OUTCOMES":
-            states=_initial_states(
-                root["initial_instrument_states"],tickers,start,knowledge,
-                {item["source_row_locator"] for item in rows},
+        rows = _versioned_rows(
+            root["rows"], resolved, tickers, start, end, knowledge, schema_version
+        )
+        row_locators = {item["source_row_locator"] for item in rows}
+        if resolved == "DELISTING_OUTCOMES":
+            states = _initial_states(
+                root["initial_instrument_states"], tickers, start, knowledge, row_locators
             )
-            rows,ticker_state=_delisting_ambiguity(rows,states,start)
-    return {"schema_version":SCHEMA_VERSION,"artifact_role":resolved,"admission_id":admission["admission_id"],"admission_record_hash":admission["record_hash"],"replay_plan_id":admission["replay_plan_id"],"replay_plan_record_hash":admission["replay_plan_record_hash"],"dataset_commitment_sha256":admission["dataset_commitment_sha256"],"content_evidence_id":content["content_evidence_id"],"content_record_hash":content["record_hash"],"source_input_sha256":content["source_input_sha256"],"coverage":coverage,"rows":rows,"initial_instrument_states":states,"resolved_ticker_states":ticker_state,"source_bytes_authenticated":True,"artifact_structure_validated":True,"provider_completeness_attested_not_independently_proven":True,"plan_coverage_adequacy_proven":False,"observation_selected":False,"replay_executed":False,"costs_calculated":False,"fills_generated":False,"performance_calculated":False,"network_allowed":False,"broker_connection_allowed":False,"orders_submitted":False,"live_trading_enabled":False}
+            rows, ticker_state = _delisting_ambiguity(rows, states, start)
+        elif resolved == "UNIVERSE_MEMBERSHIP":
+            membership_states = _initial_membership_states(
+                root["initial_membership_states"], tickers, start, knowledge, row_locators
+            )
+            membership_state = _membership_state(rows, membership_states)
+    result = {
+        "schema_version": schema_version,
+        "artifact_role": resolved,
+        "admission_id": admission["admission_id"],
+        "admission_record_hash": admission["record_hash"],
+        "replay_plan_id": admission["replay_plan_id"],
+        "replay_plan_record_hash": admission["replay_plan_record_hash"],
+        "dataset_commitment_sha256": admission["dataset_commitment_sha256"],
+        "content_evidence_id": content["content_evidence_id"],
+        "content_record_hash": content["record_hash"],
+        "source_input_sha256": content["source_input_sha256"],
+        "coverage": coverage,
+        "rows": rows,
+        "initial_instrument_states": states,
+        "resolved_ticker_states": ticker_state,
+        "source_bytes_authenticated": True,
+        "artifact_structure_validated": True,
+        "provider_completeness_attested_not_independently_proven": True,
+        "plan_coverage_adequacy_proven": False,
+        "observation_selected": False,
+        "replay_executed": False,
+        "costs_calculated": False,
+        "fills_generated": False,
+        "performance_calculated": False,
+        "network_allowed": False,
+        "broker_connection_allowed": False,
+        "orders_submitted": False,
+        "live_trading_enabled": False,
+    }
+    if resolved == "UNIVERSE_MEMBERSHIP":
+        result.update({
+            "initial_membership_states": membership_states,
+            "resolved_membership_states": membership_state,
+        })
+    return result
 
 
 def load_authenticated_replay_artifact_bundle(*,admission_ledger:ReplayDatasetAdmissionLedger,content_ledger:AuthenticatedSourceContentLedger,admission_id:str)->dict[str,Any]:
@@ -438,3 +703,86 @@ def load_authenticated_replay_artifact_bundle(*,admission_ledger:ReplayDatasetAd
         if any(coverage[field]!=first[field] for field in ("tickers","covers_from_at","through_at","knowledge_as_of_at")):
             raise ValueError("execution artifacts must share exact ticker, coverage, and knowledge boundaries")
     return {"schema_version":SCHEMA_VERSION,"record_type":"AUTHENTICATED_BITEMPORAL_REPLAY_ARTIFACT_BUNDLE","admission_id":next(iter(artifacts.values()))["admission_id"],"replay_plan_id":next(iter(artifacts.values()))["replay_plan_id"],"tickers":first["tickers"],"covers_from_at":first["covers_from_at"],"through_at":first["through_at"],"shared_knowledge_as_of_at":first["knowledge_as_of_at"],"artifacts":artifacts,"cross_role_header_boundaries_reconciled":True,"cross_role_financial_coherence_proven":False,"plan_coverage_adequacy_proven":False,"provider_completeness_attested_not_independently_proven":True,"observation_selected":False,"replay_executed":False,"costs_calculated":False,"fills_generated":False,"performance_calculated":False,"network_allowed":False,"broker_connection_allowed":False,"orders_submitted":False,"live_trading_enabled":False}
+
+
+def load_authenticated_backtest_artifact_bundle(
+    *, admission_ledger: ReplayDatasetAdmissionLedger,
+    content_ledger: AuthenticatedSourceContentLedger, admission_id: str,
+) -> dict[str, Any]:
+    """Load immutable engine inputs without claiming the replay is safe or complete."""
+    artifacts = {
+        role: load_authenticated_replay_artifact(
+            admission_ledger=admission_ledger,
+            content_ledger=content_ledger,
+            admission_id=admission_id,
+            role=role,
+        )
+        for role in BACKTEST_ROLES
+    }
+    required_v12 = {
+        "CORPORATE_ACTIONS", "DELISTING_OUTCOMES",
+        "UNIVERSE_MEMBERSHIP", "RAW_DAILY_SESSION_BARS",
+    }
+    if any(
+        artifacts[role]["schema_version"] != BACKTEST_SCHEMA_VERSION
+        for role in required_v12
+    ):
+        raise ValueError("backtest economic and population artifacts require schema 1.2")
+    coverages = [item["coverage"] for item in artifacts.values()]
+    first = coverages[0]
+    for coverage in coverages[1:]:
+        if any(
+            coverage[field] != first[field]
+            for field in (
+                "tickers", "covers_from_at", "through_at", "knowledge_as_of_at"
+            )
+        ):
+            raise ValueError(
+                "backtest artifacts must share exact ticker, coverage, and knowledge boundaries"
+            )
+    quote_currency = artifacts["RAW_DAILY_SESSION_BARS"]["coverage"]["quote_currency"]
+    currencies = {
+        economics["currency"]
+        for row in artifacts["CORPORATE_ACTIONS"]["rows"]
+        if (economics := row.get("economics")) and "currency" in economics
+    } | {
+        settlement["currency"]
+        for row in artifacts["DELISTING_OUTCOMES"]["rows"]
+        if (settlement := row.get("settlement")) and "currency" in settlement
+    }
+    if currencies - {quote_currency}:
+        raise ValueError("event cash currency must match the raw daily-bar quote currency")
+    anchor = next(iter(artifacts.values()))
+    return {
+        "schema_version": BACKTEST_SCHEMA_VERSION,
+        "record_type": "AUTHENTICATED_BACKTEST_REPLAY_ARTIFACT_BUNDLE",
+        "admission_id": anchor["admission_id"],
+        "admission_record_hash": anchor["admission_record_hash"],
+        "replay_plan_id": anchor["replay_plan_id"],
+        "replay_plan_record_hash": anchor["replay_plan_record_hash"],
+        "dataset_commitment_sha256": anchor["dataset_commitment_sha256"],
+        "tickers": first["tickers"],
+        "covers_from_at": first["covers_from_at"],
+        "through_at": first["through_at"],
+        "shared_knowledge_as_of_at": first["knowledge_as_of_at"],
+        "quote_currency": quote_currency,
+        "artifacts": artifacts,
+        "cross_role_header_boundaries_reconciled": True,
+        "explicit_cash_currencies_reconciled": True,
+        "authenticated_engine_input_roles_present": True,
+        "cross_role_financial_coherence_proven": False,
+        "plan_coverage_adequacy_proven": False,
+        "provider_completeness_attested_not_independently_proven": True,
+        "backtest_input_ready": False,
+        "observation_selected": False,
+        "replay_executed": False,
+        "costs_calculated": False,
+        "fills_generated": False,
+        "performance_calculated": False,
+        "performance_claim_allowed": False,
+        "paper_broker_submission_enabled": False,
+        "network_allowed": False,
+        "broker_connection_allowed": False,
+        "orders_submitted": False,
+        "live_trading_enabled": False,
+    }

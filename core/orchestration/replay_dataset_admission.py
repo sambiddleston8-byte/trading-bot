@@ -29,6 +29,7 @@ REQUIRED_ROLES = {
     "POINT_IN_TIME_FUNDAMENTALS",
     "MARKET_CALENDARS_AND_HALTS",
 }
+OPTIONAL_ROLES = {"RAW_DAILY_SESSION_BARS"}
 PLAN_UNIVERSES = {
     "SP500": {"SP500"},
     "NASDAQ100": {"NASDAQ100"},
@@ -72,11 +73,11 @@ def _normalise_artifacts(
     for value in values:
         role = _required(value.get("role"), "artifact role").upper()
         content_id = _required(value.get("content_evidence_id"), "content_evidence_id")
-        if role not in REQUIRED_ROLES or role in seen_roles:
+        if role not in REQUIRED_ROLES | OPTIONAL_ROLES or role in seen_roles:
             raise ValueError("dataset artifacts contain an unsupported or duplicate role reference")
         artifacts.append({"role": role, "content_evidence_id": content_id})
         seen_roles.add(role)
-    if {item["role"] for item in artifacts} != REQUIRED_ROLES:
+    if not REQUIRED_ROLES.issubset({item["role"] for item in artifacts}):
         raise ValueError("dataset artifacts must cover every required replay-data role")
     return sorted(artifacts, key=lambda item: (item["role"], item["content_evidence_id"]))
 

@@ -160,6 +160,17 @@ def test_manifest_rejects_two_artifacts_claiming_the_same_role(tmp_path):
         _manifest(json.dumps(parsed).encode())
 
 
+def test_manifest_accepts_optional_raw_daily_bars_without_changing_required_roles(tmp_path):
+    values = inputs(tmp_path)
+    _, payload = values[2].read_verified(values[5]["content_evidence_id"])
+    parsed = json.loads(payload)
+    parsed["artifacts"].append({
+        "role": "RAW_DAILY_SESSION_BARS", "content_evidence_id": "CONTENT-BARS",
+    })
+    artifacts, _ = _manifest(json.dumps(parsed).encode())
+    assert {item["role"] for item in artifacts} == REQUIRED_ROLES | {"RAW_DAILY_SESSION_BARS"}
+
+
 def test_manifest_cannot_be_opened_before_preregistered_access_time(tmp_path):
     values = inputs(tmp_path, plan_access="2099-04-01T00:00:00+00:00")
     ledger, terms, manifest = target(tmp_path, values)
