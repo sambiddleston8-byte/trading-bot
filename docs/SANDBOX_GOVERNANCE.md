@@ -123,8 +123,9 @@ rewriting what happened.
 
 - execution of the real active-pipeline experiment image and real sealed data
   through the implemented container/disposable-workspace runner;
-- activation-time checks of the implemented agent permission, timeout, cost and
-  emergency-stop boundaries in every future scheduled worker;
+- integration of the implemented short-lived, human-approved activation and
+  start-time admission boundary with a future immutable worker lifecycle ledger
+  that enforces daily use, concurrency, heartbeat and repeated-failure state;
 - a separate AWS staging environment and least-privilege identities;
 - activation of the implemented promotion/rollback evidence bundle only after
   real complete evidence exists; and
