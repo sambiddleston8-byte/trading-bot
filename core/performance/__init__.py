@@ -39,6 +39,7 @@ from core.performance.portfolio_valuation import SimulatedPortfolioValuationLedg
 from core.performance.prediction_outcome_pair import PredictionOutcomePairLedger
 from core.performance.prediction_evaluation_policy import PredictionEvaluationPolicyLedger
 from core.performance.periodic_turnover import PeriodicTurnoverLedger
+from core.performance.paper_position_state import PaperPositionStateLedger
 from core.performance.relative_total_return import RelativeTotalReturnLedger
 from core.performance.risk_free_index_observation import RiskFreeIndexObservationLedger
 from core.performance.round_trip_execution import SimulatedRoundTripExecutionLedger
@@ -87,6 +88,7 @@ __all__ = [
     "PredictionOutcomePairLedger",
     "PredictionEvaluationPolicyLedger",
     "PeriodicTurnoverLedger",
+    "PaperPositionStateLedger",
     "RelativeTotalReturnLedger",
     "RiskFreeIndexObservationLedger",
     "SimulatedRoundTripExecutionLedger",
