@@ -121,6 +121,11 @@ learning.
   and the former blended decision rating is display-only. Risk and evidence
   factors may still affect position sizing, but cannot create extra votes in
   candidate ordering.
+- Historical S&P 500/Nasdaq-100 membership now has an immutable point-in-time
+  event foundation for additions, removals and delistings. Snapshots respect
+  both effective and public-availability cutoffs and retain exclusions. They
+  remain explicitly partial and cannot claim survivorship-safe replay until
+  full coverage and actual terminal-outcome evidence are separately proven.
 - Issue #25 starts Phase 5 with immutable raw asset/S&P 500 price observations
   at entry, 1-day, 1-week, 1-, 3-, 6-, 12- and 24-month horizons. Each record is
   linked to a verified simulated fill and preserves separate asset/benchmark
