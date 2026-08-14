@@ -3,8 +3,8 @@ from __future__ import annotations
 """Causal, long-only historical execution and validation primitives.
 
 The engine is deliberately data- and strategy-neutral.  It will not run unless
-the caller explicitly supplies a point-in-time, survivorship-complete data
-attestation and terminal outcomes for every instrument that becomes terminal.
+an authenticated-evidence adapter supplies a point-in-time, survivorship-safe
+data receipt and terminal outcomes for every instrument that becomes terminal.
 It has no broker, network, credential, or order-submission capability.
 """
 
@@ -28,6 +28,15 @@ ACTION_HOLD = "HOLD"
 ACTION_ENTER_LONG = "ENTER_LONG"
 ACTION_EXIT_LONG = "EXIT_LONG"
 TERMINAL_TYPES = {"DELISTED", "BANKRUPT", "ACQUIRED", "MERGED"}
+AUTHENTICATED_REPLAY_ROLES = {
+    "CORPORATE_ACTIONS",
+    "DELISTING_OUTCOMES",
+    "MARKET_CALENDARS_AND_HALTS",
+    "RAW_DAILY_SESSION_BARS",
+    "TOTAL_RETURN_PRICES",
+    "UNIVERSE_MEMBERSHIP",
+}
+_ATTESTATION_FACTORY_TOKEN = object()
 
 
 def _decimal(value: Any, name: str, *, positive: bool = False) -> Decimal:
@@ -67,30 +76,78 @@ def _canonical_json(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), default=default)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, init=False)
 class ReplayDataAttestation:
     source_id: str
     source_content_sha256: str
-    point_in_time_fields_complete: bool
-    survivorship_complete: bool
-    terminal_outcomes_complete: bool
-    corporate_actions_complete: bool
+    validation_receipt_sha256: str
+    derivation_policy_version: str
+    evidence_role_hashes: tuple[tuple[str, str], ...]
+
+    def __init__(
+        self,
+        *,
+        source_id: str,
+        source_content_sha256: str,
+        validation_receipt_sha256: str,
+        derivation_policy_version: str,
+        evidence_role_hashes: tuple[tuple[str, str], ...],
+        _factory_token: object | None = None,
+    ) -> None:
+        if _factory_token is not _ATTESTATION_FACTORY_TOKEN:
+            raise ValueError(
+                "ReplayDataAttestation must be derived from authenticated replay artifacts"
+            )
+        object.__setattr__(self, "source_id", source_id)
+        object.__setattr__(self, "source_content_sha256", source_content_sha256)
+        object.__setattr__(self, "validation_receipt_sha256", validation_receipt_sha256)
+        object.__setattr__(self, "derivation_policy_version", derivation_policy_version)
+        object.__setattr__(self, "evidence_role_hashes", evidence_role_hashes)
+        self.validate()
+
+    @classmethod
+    def _from_authenticated_artifacts(
+        cls,
+        *,
+        source_id: str,
+        source_content_sha256: str,
+        validation_receipt_sha256: str,
+        derivation_policy_version: str,
+        evidence_role_hashes: tuple[tuple[str, str], ...],
+    ) -> ReplayDataAttestation:
+        return cls(
+            source_id=source_id,
+            source_content_sha256=source_content_sha256,
+            validation_receipt_sha256=validation_receipt_sha256,
+            derivation_policy_version=derivation_policy_version,
+            evidence_role_hashes=evidence_role_hashes,
+            _factory_token=_ATTESTATION_FACTORY_TOKEN,
+        )
 
     def validate(self) -> None:
         if not self.source_id.strip():
             raise ValueError("source_id is required")
-        digest = self.source_content_sha256.lower()
-        if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
-            raise ValueError("source_content_sha256 must be a SHA-256 digest")
-        if not all(
-            (
-                self.point_in_time_fields_complete,
-                self.survivorship_complete,
-                self.terminal_outcomes_complete,
-                self.corporate_actions_complete,
-            )
+        for name in ("source_content_sha256", "validation_receipt_sha256"):
+            digest = getattr(self, name).lower()
+            if len(digest) != 64 or any(
+                character not in "0123456789abcdef" for character in digest
+            ):
+                raise ValueError(f"{name} must be a SHA-256 digest")
+        if not self.derivation_policy_version.strip():
+            raise ValueError("derivation_policy_version is required")
+        if (
+            tuple(sorted(self.evidence_role_hashes)) != self.evidence_role_hashes
+            or len({role for role, _ in self.evidence_role_hashes})
+            != len(self.evidence_role_hashes)
+            or {role for role, _ in self.evidence_role_hashes}
+            != AUTHENTICATED_REPLAY_ROLES
         ):
-            raise ValueError("backtest data is not fully attested for causal survivorship-safe use")
+            raise ValueError("authenticated evidence must pin every required replay role once")
+        for _, digest in self.evidence_role_hashes:
+            if len(digest) != 64 or any(
+                character not in "0123456789abcdef" for character in digest.lower()
+            ):
+                raise ValueError("every authenticated replay role requires a SHA-256 pin")
 
 
 @dataclass(frozen=True)
@@ -112,14 +169,15 @@ class MarketBar:
         object.__setattr__(self, "symbol", symbol)
         for field_name in ("open_at", "close_at", "available_at"):
             object.__setattr__(self, field_name, _time(getattr(self, field_name), field_name))
-        if not self.open_at < self.close_at or self.available_at != self.close_at:
-            raise ValueError("bar must become available exactly at its close")
-        for field_name in ("open", "high", "low", "close", "volume"):
+        if not self.open_at < self.close_at or self.available_at < self.close_at:
+            raise ValueError("bar cannot become available before its close")
+        for field_name in ("open", "high", "low", "close"):
             object.__setattr__(
                 self,
                 field_name,
                 _decimal(getattr(self, field_name), field_name, positive=True),
             )
+        object.__setattr__(self, "volume", _decimal(self.volume, "volume"))
         if self.low > min(self.open, self.close) or self.high < max(self.open, self.close):
             raise ValueError("OHLC values are inconsistent")
 
@@ -375,6 +433,7 @@ class BacktestResult:
     strategy_version: str
     parameter_hash: str
     source_id: str
+    validation_receipt_sha256: str
     fee_schedule_id: str
     execution_scenario: str
     starting_equity: Decimal
@@ -516,6 +575,8 @@ class GuardrailedBacktestEngine:
         for symbol, values in by_symbol.items():
             if any(left.close_at >= right.open_at for left, right in zip(values, values[1:])):
                 raise ValueError(f"{symbol} bars overlap or are out of order")
+            if any(left.available_at >= right.open_at for left, right in zip(values, values[1:])):
+                raise ValueError(f"{symbol} bar was not available before the next session open")
 
         events = sorted(tuple(universe_events), key=lambda item: (item.effective_at, item.available_at, item.symbol))
         outcomes = sorted(tuple(terminal_outcomes), key=lambda item: (item.effective_at, item.symbol))
@@ -877,18 +938,18 @@ class GuardrailedBacktestEngine:
 
             last_marks[symbol] = bar.close
             history.append(bar)
-            if start <= bar.close_at < end and eligible(symbol, bar.close_at):
+            if start <= bar.close_at < end and eligible(symbol, bar.available_at):
                 action = strategy_instance.decide(symbol, tuple(history), parameters)
                 if action not in {ACTION_HOLD, ACTION_ENTER_LONG, ACTION_EXIT_LONG}:
                     raise ValueError("strategy returned an unsupported action")
                 if action == ACTION_ENTER_LONG and symbol not in positions and symbol not in pending:
                     atr = _atr(history, self.config.atr_window)
                     if atr is not None:
-                        pending[symbol] = (action, "STRATEGY_SIGNAL", bar.close_at, atr)
+                        pending[symbol] = (action, "STRATEGY_SIGNAL", bar.available_at, atr)
                 elif action == ACTION_EXIT_LONG and symbol in positions:
-                    pending[symbol] = (action, "STRATEGY_SIGNAL", bar.close_at, None)
-            elif start <= bar.close_at < end and symbol in positions and not eligible(symbol, bar.close_at):
-                pending[symbol] = ("EXIT_LONG", "UNIVERSE_REMOVAL", bar.close_at, None)
+                    pending[symbol] = (action, "STRATEGY_SIGNAL", bar.available_at, None)
+            elif start <= bar.close_at < end and symbol in positions and not eligible(symbol, bar.available_at):
+                pending[symbol] = ("EXIT_LONG", "UNIVERSE_REMOVAL", bar.available_at, None)
             if start <= bar.close_at <= end:
                 equity_curve.append((bar.close_at, equity()))
 
@@ -917,6 +978,7 @@ class GuardrailedBacktestEngine:
             str(strategy_instance.version),
             parameter_hash,
             self.data_attestation.source_id,
+            self.data_attestation.validation_receipt_sha256,
             self.fee_schedule.schedule_id,
             self.config.execution_scenario,
             self.config.initial_cash,
