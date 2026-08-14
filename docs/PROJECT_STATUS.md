@@ -1071,3 +1071,12 @@ rechecks current evidence freshness and preserves both account- and stop-
 identity latches. This remains synthetic and explicitly does not prove the
 broker holds those shares; all enforcement and submission capabilities stay
 off until later authenticated broker reconciliation and execution-stress gates.
+
+Phase 4 now also has an inactive human-supplied BASE/PESSIMISTIC execution-cost
+policy and exact PESSIMISTIC shadow calculator. It reuses the replay engine's
+0.10% minimum baseline slippage and doubled pessimistic-cost rules, moves BUY
+prices up and SELL prices down, applies configured commission once and prevents
+worse SELL proceeds from lowering conservative risk notional. The evidence
+remains reference-price-only and explicitly lacks authenticated prices, broker
+reconciliation, volume calibration, complete regulatory/borrow fees, cash or
+position sufficiency, enforcement and every order-submission capability.
