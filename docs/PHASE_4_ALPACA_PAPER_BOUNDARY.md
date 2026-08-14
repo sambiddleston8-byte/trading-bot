@@ -219,3 +219,25 @@ The result is explicitly internal arithmetic only. The quantities are not yet
 broker-reconciled or cryptographically authenticated, broker quantity
 sufficiency is not proven, and risk enforcement, stressed prices, fees, routing,
 submission, recommendation and live trading all remain disabled.
+
+## Pessimistic execution-price and configured-fee evidence
+
+An inactive human-preregistered paper execution policy now reuses the same exact
+BASE/PESSIMISTIC contract as the guardrailed replay engine. It accepts no hidden
+cost defaults: both scenarios must supply commission, spread, slippage, latency,
+market impact, participation and order-age assumptions. Baseline slippage cannot
+fall below 0.10%, and every pessimistic per-side cost must be at least twice its
+base value.
+
+A separate shadow calculator applies only the pinned PESSIMISTIC scenario to a
+verified paper proposal. BUY prices move adversely upward and SELL prices move
+adversely downward; configured commission is calculated once on stressed gross
+notional. SELL conservative risk notional uses the greater of reference and
+stressed gross value before adding the fee, so worse expected proceeds cannot
+make the risk measure look smaller.
+
+This proves only exact internal stress arithmetic. The proposal reference price
+is not authenticated, no volume evidence or calibrated impact model exists, and
+regulatory fees, borrow costs and other applicable charges remain incomplete.
+The policy is inactive and no cash/position sufficiency, risk enforcement,
+broker access, route, submission, recommendation or live trading is enabled.
