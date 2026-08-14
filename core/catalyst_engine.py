@@ -1,15 +1,41 @@
 import json
 import os
-import re
 import xml.etree.ElementTree as ET
 
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
-from urllib.parse import quote
-
-import requests
-
 from core.data_sources.sec_access import SECJSONClient, SECProviderError
+from core.data_sources.public_read_access import (
+    GOOGLE_NEWS_ENDPOINT,
+    PublicReadError,
+    PublicTextClient,
+)
+
+
+def _reject_unsafe_rss_prolog(text):
+    """Walk the XML prolog in linear time and reject declarations/entities."""
+    position = 0
+    length = len(text)
+    while True:
+        while position < length and text[position].isspace():
+            position += 1
+        if text.startswith("<!--", position):
+            end = text.find("-->", position + 4)
+            if end < 0:
+                raise ValueError("unterminated RSS comment")
+            position = end + 3
+            continue
+        if text.startswith("<?", position):
+            end = text.find("?>", position + 2)
+            if end < 0:
+                raise ValueError("unterminated RSS processing instruction")
+            position = end + 2
+            continue
+        break
+
+    token = text[position:position + 10].upper()
+    if token.startswith("<!DOCTYPE") or token.startswith("<!ENTITY"):
+        raise ValueError("unsupported RSS declaration")
 
 
 class CatalystEngine:
@@ -22,6 +48,7 @@ class CatalystEngine:
         recent_days=30,
         sec_client=None,
         session=None,
+        public_client=None,
     ):
 
         self.cache_path = cache_path
@@ -58,7 +85,10 @@ class CatalystEngine:
         self.sec_client = sec_client or SECJSONClient(
             user_agent="SamAndPatTradingBot/1.0"
         )
-        self.session = session or requests.Session()
+        self.public_client = public_client or PublicTextClient(
+            GOOGLE_NEWS_ENDPOINT,
+            session=session,
+        )
 
     # ============================================================
     # TIME
@@ -160,38 +190,6 @@ class CatalystEngine:
                 indent=2,
                 default=str,
             )
-
-    # ============================================================
-    # HTTP GET
-    # ============================================================
-
-    def request(
-        self,
-        url,
-        timeout=15,
-    ):
-
-        try:
-
-            response = (
-                self.session.get(
-                    url,
-                    timeout=timeout,
-                )
-            )
-
-            response.raise_for_status()
-
-            return response
-
-        except Exception as error:
-
-            print(
-                f"Request failed: "
-                f"{error}"
-            )
-
-            return None
 
     # ============================================================
     # SEC TICKER MAP
@@ -1066,40 +1064,31 @@ class CatalystEngine:
             else symbol
         )
 
-        query = quote(
-            f'"{search_term}" stock'
-        )
-
-        url = (
-            "https://news.google.com/rss/"
-            f"search?q={query}"
-            "&hl=en-US"
-            "&gl=US"
-            "&ceid=US:en"
-        )
-
-        response = self.request(
-            url,
-            timeout=15,
-        )
-
-        if response is None:
-
-            return []
+        query = f'"{search_term}" stock'
 
         try:
+            text = self.public_client.get_text(
+                "https://news.google.com/rss/search",
+                params={
+                    "q": query,
+                    "hl": "en-US",
+                    "gl": "US",
+                    "ceid": "US:en",
+                },
+                accept="application/rss+xml,application/xml,text/xml",
+            )
+            _reject_unsafe_rss_prolog(text)
 
             root = (
                 ET.fromstring(
-                    response.content
+                    text
                 )
             )
 
-        except Exception as error:
+        except (PublicReadError, ET.ParseError, TypeError, ValueError):
 
             print(
-                f"{symbol}: news RSS parse failed: "
-                f"{error}"
+                f"{symbol}: news RSS could not be retrieved safely."
             )
 
             return []

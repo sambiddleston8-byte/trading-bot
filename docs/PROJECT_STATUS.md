@@ -946,6 +946,19 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   Tests use injected fakes and no SEC request was made. This migration
   does not authenticate filing semantics, prove point-in-time completeness,
   activate collection or authorize any broker or trading action.
+- The remaining direct non-broker public reads—two current-universe CSVs, three
+  FRED graph CSVs and Google News RSS—now use fixed-host/path, no-redirect,
+  strict-text boundaries with post-receipt parsing-size limits, separate shared
+  pacing, narrow retry and secret-free failures. FRED rejects non-finite or
+  calendar-gapped calculation windows and RSS rejects
+  document/entity declarations before parsing. Fake-only tests prove the three
+  callers use injected clients; a deterministic `core/` scan confines the
+  common `requests.get`, `session.get` and `self.session.get` call shapes to the
+  shared coordinator and two existing PAPER-only broker read boundaries. This
+  does not authenticate third-party contents:
+  current constituent CSVs remain non-historical and inadmissible for replay,
+  the RSS path has no qualified point-in-time semantics, and a current FRED
+  graph read is not a historical availability record. No request was made.
 - Successful supplementary-provider calls and failures that reach the safe
   optional-provider boundary now contribute separately named, secret-free
   access-duration and retry-count observations to the existing append-only
