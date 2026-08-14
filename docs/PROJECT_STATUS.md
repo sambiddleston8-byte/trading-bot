@@ -1056,3 +1056,10 @@ ticker and the aggregate must reconcile exactly to the pinned market values;
 fractional shares are handled without binary floating-point arithmetic. This
 removes the data-shape gap for future SELL sufficiency calculations but remains
 synthetic, unreconciled, unauthenticated and unable to assess or route an order.
+
+The matching open-order quantity ledger now proves that every pinned pending
+order is represented exactly once with the same ticker and side, and that its
+remaining quantity multiplied by its risk mark price equals the pinned
+notional. Exact pending BUY and SELL totals are recomputed. This allows a future
+SELL check to deduct shares already reserved by pending SELL orders, but it does
+not yet perform that check or permit any broker action.
