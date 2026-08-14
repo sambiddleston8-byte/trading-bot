@@ -27,6 +27,10 @@ from core.orchestration.authenticated_replay_artifact import (
     load_authenticated_replay_artifact_bundle,
 )
 from core.orchestration.next_tradable_market_evidence import NextTradableMarketEvidenceLedger
+from core.orchestration.replay_backtest_inputs import (
+    AuthenticatedBacktestInputs,
+    load_authenticated_backtest_inputs,
+)
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -54,4 +58,6 @@ __all__ = [
     "load_authenticated_replay_artifact",
     "load_authenticated_replay_artifact_bundle",
     "NextTradableMarketEvidenceLedger",
+    "AuthenticatedBacktestInputs",
+    "load_authenticated_backtest_inputs",
 ]

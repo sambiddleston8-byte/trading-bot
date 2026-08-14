@@ -57,13 +57,15 @@ def attestation(**changes):
     values = {
         "source_id": "SEALED-SOURCE-1",
         "source_content_sha256": "a" * 64,
-        "point_in_time_fields_complete": True,
-        "survivorship_complete": True,
-        "terminal_outcomes_complete": True,
-        "corporate_actions_complete": True,
+        "validation_receipt_sha256": "b" * 64,
+        "derivation_policy_version": "test-authenticated-fixture-v1",
+        "evidence_role_hashes": tuple(sorted((role, "c" * 64) for role in (
+            "CORPORATE_ACTIONS", "DELISTING_OUTCOMES", "MARKET_CALENDARS_AND_HALTS",
+            "RAW_DAILY_SESSION_BARS", "TOTAL_RETURN_PRICES", "UNIVERSE_MEMBERSHIP",
+        ))),
     }
     values.update(changes)
-    return ReplayDataAttestation(**values)
+    return ReplayDataAttestation._from_authenticated_artifacts(**values)
 
 
 def fees():
@@ -147,6 +149,7 @@ def test_signal_uses_closed_history_and_executes_at_next_open_with_costs():
     assert sell.total_adverse_execution_bps >= Decimal("15")
     assert buy.fee > 0 and sell.fee > 0
     assert strategy.calls == []  # each run receives an isolated strategy copy
+    assert result.validation_receipt_sha256 == engine().data_attestation.validation_receipt_sha256
     assert result.broker_connection_allowed is False
     assert result.orders_submitted is False
     assert result.live_trading_enabled is False
@@ -381,21 +384,47 @@ def test_adjusted_price_inputs_and_multi_symbol_runs_fail_closed():
         )
 
 
-@pytest.mark.parametrize(
-    "change",
-    [
-        {"point_in_time_fields_complete": False},
-        {"survivorship_complete": False},
-        {"terminal_outcomes_complete": False},
-        {"corporate_actions_complete": False},
-    ],
-)
-def test_incomplete_data_attestation_fails_closed(change):
-    with pytest.raises(ValueError, match="not fully attested"):
-        GuardrailedBacktestEngine(
-            config=BacktestConfig(initial_cash=Decimal("100000")),
-            fee_schedule=fees(),
-            data_attestation=attestation(**change),
+def test_callers_cannot_construct_or_omit_authenticated_attestation_role_pins():
+    with pytest.raises(ValueError, match="derived from authenticated"):
+        ReplayDataAttestation(
+            source_id="CALLER-ASSERTION", source_content_sha256="a" * 64,
+            validation_receipt_sha256="b" * 64,
+            derivation_policy_version="caller-v1", evidence_role_hashes=(),
+        )
+    with pytest.raises(ValueError, match="every required replay role"):
+        attestation(evidence_role_hashes=())
+
+
+def test_bar_availability_after_close_is_signal_time_and_must_precede_next_open():
+    market = bars(12)
+    delayed = [
+        MarketBar(
+            symbol=row.symbol, open_at=row.open_at, close_at=row.close_at,
+            available_at=row.close_at + timedelta(seconds=5), open=row.open,
+            high=row.high, low=row.low, close=row.close, volume=row.volume,
+        )
+        for row in market
+    ]
+    result = run(engine(),
+        bars=delayed, universe_events=membership(), terminal_outcomes=[],
+        strategy=EnterThenExit(),
+        parameters={"enter_on_history_count": 4, "exit_on_history_count": 7},
+        evaluation_start=market[0].close_at, evaluation_end=market[9].open_at,
+    )
+    buy = next(row for row in result.executions if row.action == "BUY")
+    assert buy.signal_at == delayed[3].available_at
+    too_late = list(delayed)
+    too_late[3] = MarketBar(
+        symbol=delayed[3].symbol, open_at=delayed[3].open_at,
+        close_at=delayed[3].close_at, available_at=delayed[4].open_at,
+        open=delayed[3].open, high=delayed[3].high, low=delayed[3].low,
+        close=delayed[3].close, volume=delayed[3].volume,
+    )
+    with pytest.raises(ValueError, match="not available before"):
+        run(engine(), bars=too_late, universe_events=membership(), terminal_outcomes=[],
+            strategy=EnterThenExit(),
+            parameters={"enter_on_history_count": 4, "exit_on_history_count": 7},
+            evaluation_start=market[0].close_at, evaluation_end=market[9].open_at,
         )
 
 
@@ -451,7 +480,7 @@ class SpyEngine:
         value = Decimal(str(kwargs["parameters"]["score"])) / Decimal("100")
         start = kwargs["evaluation_start"]
         return BacktestResult(
-            "spy-v1", "f" * 64, "SOURCE", "FEES", "BASE", Decimal("100"),
+            "spy-v1", "f" * 64, "SOURCE", "e" * 64, "FEES", "BASE", Decimal("100"),
             Decimal("100") * (1 + value), value, Decimal("0.1"), (), (), ((start, Decimal("100")),),
         )
 
