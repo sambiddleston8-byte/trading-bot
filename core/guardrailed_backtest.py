@@ -717,6 +717,13 @@ class GuardrailedBacktestEngine:
         rows = sorted(tuple(bars), key=lambda item: (item.open_at, item.symbol))
         if not rows:
             raise ValueError("market bars are required")
+        schedule_validator = getattr(
+            strategy_instance, "validate_market_schedule", None
+        )
+        if schedule_validator is not None:
+            if not callable(schedule_validator):
+                raise ValueError("strategy market-schedule validator is invalid")
+            schedule_validator(tuple(rows), self.data_attestation)
         by_symbol: dict[str, list[MarketBar]] = {}
         for row in rows:
             by_symbol.setdefault(row.symbol, []).append(row)
@@ -1437,6 +1444,13 @@ class GuardrailedBacktestEngine:
                     )
                 )
                 snapshot("TERMINAL_SETTLEMENT", processed_at, outcome.symbol)
+        completion_validator = getattr(
+            strategy_instance, "validate_replay_completion", None
+        )
+        if completion_validator is not None:
+            if not callable(completion_validator):
+                raise ValueError("strategy replay-completion validator is invalid")
+            completion_validator()
         if positions:
             raise ValueError("evaluation lacks a next-bar, liquidity-capped exit for open positions")
         if not equity_curve:

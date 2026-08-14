@@ -23,6 +23,17 @@ method works out of sample.
 | 9 — Buzz | Fail-closed local manifest defines channels, identities and denied powers. | User-approved local installation, key handling, relay/storage configuration and a security-tested pilot. | Intentionally deferred; Buzz is not installed or connected. |
 | 10 — continuous improvement | Preregistered experiments, purged/embargoed folds, robustness enforcement, disposable container runner, a fail-closed active-pipeline image-approval ledger, a canonical sealed experiment-control contract, effectiveness cohorts and human promotion decisions exist. The runner requires one verified approval matching the preregistered image digest, Git revision and dependency lock, then separately snapshots and mounts the exact whitelisted experiment instructions. | Qualified sealed real historical data, an actual digest-pinned image built from the active pipeline, independent review evidence, controlled integration rehearsal, actual out-of-sample/robustness/shadow evidence, and later human decisions. | The image and control boundaries are tested, but no real image is built or approved and no experiment has run. Improvement cannot be measured until Phase 5 evidence and provider gates clear. |
 
+Phase 5 also has a fixed-mapping causal adapter for verified immutable
+decisions. It derives the earliest eligible close from a canonical schedule,
+pins the replay-source attestation, rechecks both against the exact
+authenticated engine bars and requires every registered signal to be consumed
+inside the evaluation window. It emits each recorded instruction once at that
+bound close, so the guardrailed engine can execute no earlier than the following
+bar.
+This is useful execution evidence for decisions that already exist, but it does
+not historically regenerate the research process, qualify source data, prove
+investment value or create a track record.
+
 ## Current provider-spending decision
 
 FMP and EODHD support answers now confirm that neither currently proves the
@@ -56,8 +67,11 @@ prevent continued use of current/free entitlements for supplementary research.
 3. Qualify and, only after separate human approval, admit a genuinely sealed
    point-in-time dataset covering membership removals, delistings, terminal
    outcomes, corporate actions, total return, corrections and market calendars.
-4. Run the active pipeline through the no-network container under its frozen
-   preregistration, then record mechanical out-of-sample and robustness results.
+4. Use the recorded-decision adapter for bounded causal execution diagnostics,
+   then run the active pipeline itself through the no-network container under
+   its frozen preregistration and record mechanical out-of-sample and
+   robustness results. Do not treat the adapter as a substitute for replaying
+   research generation.
 5. Accumulate the fixed future shadow/paper evidence before any strategy
    promotion decision or performance claim.
 
