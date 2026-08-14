@@ -186,3 +186,17 @@ time fail closed.
 This proves internal quantity/price/value identity for future SELL sufficiency
 checks. It does not prove broker reconciliation, payload authenticity, execution
 price, risk-policy compliance or permission to route an order.
+
+## Exact open-order quantity evidence
+
+A companion ledger now pins every open order from the same normalized risk
+snapshot. Each order reference must appear exactly once with the same ticker and
+side, and exact remaining quantity multiplied by exact risk mark price must
+equal its pinned remaining notional. The canonical order and exact BUY and SELL
+totals are independently recomputed; empty evidence is accepted only when the
+pinned snapshot has no open orders.
+
+This closes the data-shape gap needed to deduct already-reserved SELL quantities
+before assessing a new simulated sale. It remains synthetic, unreconciled and
+unauthenticated, and cannot assess a risk policy, route an order or enable paper
+or live submission.
