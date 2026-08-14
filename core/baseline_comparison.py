@@ -1,6 +1,6 @@
 import math
 
-import yfinance as yf
+from core.data_sources.yahoo_history_access import YahooHistoryClient
 
 
 class BaselineComparison:
@@ -9,10 +9,12 @@ class BaselineComparison:
         self,
         benchmark="^GSPC",
         initial_capital=100000,
+        history_client=None,
     ):
 
         self.benchmark = benchmark
         self.initial_capital = initial_capital
+        self.history_client = history_client or YahooHistoryClient()
 
     # --------------------------------
     # Historical Data
@@ -27,24 +29,21 @@ class BaselineComparison:
 
         try:
 
-            data = yf.Ticker(
-                symbol
-            ).history(
+            data = self.history_client.history(
+                symbol,
                 start=start,
                 end=end,
                 auto_adjust=True,
-            )
+            ).frame
 
             if data.empty:
                 return None
 
             return data
 
-        except Exception as error:
+        except Exception:
 
-            print(
-                f"{symbol} failed: {error}"
-            )
+            print("Yahoo history read failed.")
 
             return None
 

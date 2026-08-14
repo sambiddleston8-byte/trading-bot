@@ -82,6 +82,41 @@ def test_shared_provider_state_paces_separate_client_instances():
     assert result.metadata.total_wait_seconds == 1.0
 
 
+def test_opaque_sdk_calls_are_paced_once_without_retry_or_exception_leakage():
+    clock = Clock()
+    first = coordinator(clock, minimum_interval_seconds=1, failure_threshold=2)
+    second = coordinator(clock, minimum_interval_seconds=1, failure_threshold=2)
+    calls = []
+
+    result = first.call_once(lambda: calls.append("first") or {"safe": True})
+    secret = "token=never-expose"
+    with pytest.raises(ProviderAccessError) as caught:
+        second.call_once(lambda: (_ for _ in ()).throw(RuntimeError(secret)))
+
+    assert result.value == {"safe": True}
+    assert calls == ["first"]
+    assert clock.sleeps == [1.0]
+    assert caught.value.reason_code == "SDK_CALL_FAILURE"
+    assert secret not in str(caught.value)
+    assert caught.value.__cause__ is None
+    assert caught.value.metadata.attempts == 1
+    assert caught.value.metadata.retry_count == 0
+
+
+def test_opaque_sdk_failures_open_the_shared_circuit():
+    clock = Clock()
+    client = coordinator(clock, failure_threshold=1)
+    calls = []
+
+    with pytest.raises(ProviderAccessError, match="read failed"):
+        client.call_once(lambda: (_ for _ in ()).throw(RuntimeError("private")))
+    with pytest.raises(ProviderAccessError) as caught:
+        client.call_once(lambda: calls.append("unexpected"))
+
+    assert caught.value.reason_code == "CIRCUIT_OPEN"
+    assert calls == []
+
+
 def test_503_retries_once_and_clamps_retry_after_without_recording_request():
     clock = Clock()
     client = coordinator(clock, base_backoff_seconds=0.25, retry_after_cap_seconds=2)

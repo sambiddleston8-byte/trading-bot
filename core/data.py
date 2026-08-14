@@ -1,13 +1,13 @@
-import yfinance as yf
+from core.data_sources.yahoo_history_access import YahooHistoryClient
 
 
-def get_data(symbol, period="6mo"):
-    stock = yf.Ticker(symbol)
-    return stock.history(period=period)
+def get_data(symbol, period="6mo", *, history_client=None):
+    client = history_client or YahooHistoryClient()
+    return client.history(symbol, period=period).frame
 
 
-def get_price(symbol):
-    data = get_data(symbol)
+def get_price(symbol, *, history_client=None):
+    data = get_data(symbol, history_client=history_client)
 
     if data.empty:
         return None

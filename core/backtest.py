@@ -1,7 +1,10 @@
-import yfinance as yf
+from core.data_sources.yahoo_history_access import YahooHistoryAccessError, YahooHistoryClient
 
 
 class BacktestEngine:
+
+    def __init__(self, history_client=None):
+        self.history_client = history_client or YahooHistoryClient()
 
     def get_return(
         self,
@@ -9,7 +12,10 @@ class BacktestEngine:
         period="1y",
     ):
 
-        history = yf.Ticker(symbol).history(period=period)
+        try:
+            history = self.history_client.history(symbol, period=period).frame
+        except (YahooHistoryAccessError, TypeError, ValueError):
+            return None
 
         if len(history) < 2:
             return None
@@ -27,9 +33,11 @@ class BacktestEngine:
     ):
 
         stock = self.get_return(symbol, period)
+        if stock is None:
+            return None
         market = self.get_return(benchmark, period)
 
-        if stock is None or market is None:
+        if market is None:
             return None
 
         return {

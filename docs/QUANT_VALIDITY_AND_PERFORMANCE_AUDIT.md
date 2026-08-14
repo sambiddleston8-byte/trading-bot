@@ -37,6 +37,16 @@ learning, AWS scheduling or real-money trading.
   files are left untouched and are never opened. The sidecar explicitly records
   that Yahoo's adjusted data is back-adjusted, non-point-in-time,
   non-survivorship-safe and inadmissible as replay evidence.
+- The cache and six legacy price loaders now share an injected yfinance caller
+  boundary. It paces entry across client instances, invokes the opaque SDK once
+  per call without speculative retries, redacts failures, validates finite
+  positive closes before fresh use or cache reuse and carries false point-in-
+  time, survivorship-safety and replay-admission flags at the boundary. Legacy
+  callers retain only the validated frame and gain no evidence authority. It
+  cannot count or constrain yfinance's internal HTTP
+  operations, authenticate returned content or establish historical
+  availability. Remaining yfinance research and learning callers are outside
+  this batch.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive reads now share one
   secret-safe access coordinator. It applies process-wide provider pacing, at
   most one retry for connection failures or HTTP 502/503/504, capped backoff,

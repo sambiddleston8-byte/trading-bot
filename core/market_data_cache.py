@@ -13,7 +13,11 @@ import tempfile
 from typing import Any
 
 import pandas as pd
-import yfinance as yf
+
+from core.data_sources.yahoo_history_access import (
+    YahooHistoryClient,
+    validate_yahoo_history_frame,
+)
 
 
 SCHEMA_VERSION = "1.0"
@@ -82,10 +86,15 @@ def _atomic_write_once(path: Path, payload: bytes) -> None:
 class MarketDataCache:
     """Cache legacy adjusted Yahoo frames without treating them as replay evidence."""
 
-    def __init__(self, directory: str | Path = "data/market_cache") -> None:
+    def __init__(
+        self,
+        directory: str | Path = "data/market_cache",
+        history_client: Any = None,
+    ) -> None:
         self.directory = Path(directory)
         self.snapshot_root = self.directory / FORMAT_DIRECTORY
         self.snapshot_root.mkdir(parents=True, exist_ok=True)
+        self.history_client = history_client or YahooHistoryClient()
 
     def _symbol_directory(self, symbol: str) -> Path:
         resolved = str(symbol).strip()
@@ -111,17 +120,21 @@ class MarketDataCache:
         return query, identifier
 
     def _fetch(self, symbol: str, start: Any, end: Any) -> pd.DataFrame:
-        return yf.Ticker(symbol).history(start=start, end=end, auto_adjust=True)
+        return self.history_client.history(
+            symbol,
+            start=start,
+            end=end,
+            auto_adjust=True,
+        ).frame
 
     @staticmethod
     def _validate_frame(data: Any) -> pd.DataFrame:
         if not isinstance(data, pd.DataFrame) or data.empty:
             raise ValueError("market-data snapshot must be a nonempty pandas DataFrame")
-        if not isinstance(data.index, pd.DatetimeIndex):
-            raise ValueError("market-data snapshot requires a DatetimeIndex")
-        if not data.index.is_monotonic_increasing or not data.index.is_unique:
-            raise ValueError("market-data snapshot index must be sorted and unique")
-        return data
+        try:
+            return validate_yahoo_history_frame(data)
+        except ValueError:
+            raise ValueError("market-data snapshot has invalid price evidence") from None
 
     def download(self, symbol: str, start: Any = "2018-01-01", end: Any = None) -> pd.DataFrame:
         print(f"Downloading {symbol}...")

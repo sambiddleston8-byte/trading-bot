@@ -1,4 +1,4 @@
-import yfinance as yf
+from core.data_sources.yahoo_history_access import YahooHistoryClient
 
 from datetime import datetime
 
@@ -8,9 +8,11 @@ class SystemBacktest:
     def __init__(
         self,
         benchmark="^GSPC",
+        history_client=None,
     ):
 
         self.benchmark = benchmark
+        self.history_client = history_client or YahooHistoryClient()
 
     # --------------------------------
     # Historical Price Data
@@ -25,23 +27,20 @@ class SystemBacktest:
 
         try:
 
-            data = yf.Ticker(
-                symbol
-            ).history(
+            data = self.history_client.history(
+                symbol,
                 start=start,
                 end=end,
-            )
+            ).frame
 
             if data.empty:
                 return None
 
             return data
 
-        except Exception as error:
+        except Exception:
 
-            print(
-                f"{symbol} data failed: {error}"
-            )
+            print("Yahoo history read failed.")
 
             return None
 

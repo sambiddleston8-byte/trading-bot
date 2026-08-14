@@ -1,11 +1,12 @@
-import yfinance as yf
+from core.data_sources.yahoo_history_access import YahooHistoryClient
 
 
 class BenchmarkEngine:
 
-    def __init__(self, benchmark="^GSPC"):
+    def __init__(self, benchmark="^GSPC", history_client=None):
 
         self.benchmark = benchmark
+        self.history_client = history_client or YahooHistoryClient()
 
     def get_return(
         self,
@@ -15,12 +16,11 @@ class BenchmarkEngine:
 
         try:
 
-            data = yf.Ticker(
-                self.benchmark
-            ).history(
+            data = self.history_client.history(
+                self.benchmark,
                 start=start_date,
                 end=end_date,
-            )
+            ).frame
 
             if data.empty:
                 return None

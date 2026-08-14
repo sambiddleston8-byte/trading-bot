@@ -88,6 +88,12 @@ class ProviderHTTPResult:
     metadata: ProviderAttemptMetadata
 
 
+@dataclass(frozen=True)
+class ProviderCallResult:
+    value: Any
+    metadata: ProviderAttemptMetadata
+
+
 def safe_access_dict(value: Any) -> dict[str, Any] | None:
     """Return a freshly built whitelisted access dict, or None when unusable.
 
@@ -397,3 +403,46 @@ class ProviderAccessCoordinator:
             return ProviderHTTPResult(response=response, metadata=metadata)
 
         raise AssertionError("provider access attempt loop terminated unexpectedly")
+
+    def call_once(self, operation: Callable[[], Any]) -> ProviderCallResult:
+        """Pace one opaque provider-SDK call without inventing retry semantics.
+
+        SDKs may perform several internal requests and may already retry.  This
+        boundary therefore coordinates only caller entry, makes exactly one SDK
+        invocation and deliberately exposes no raw exception detail.
+        """
+        if not callable(operation):
+            raise TypeError("provider operation must be callable")
+        self._circuit_allows_request()
+        started = self.clock()
+        total_wait = self._reserve_request_slot()
+        try:
+            value = operation()
+        except Exception:
+            circuit = self._record_failure()
+            raise ProviderAccessError(
+                f"{self.provider_name} read failed.",
+                reason_code="SDK_CALL_FAILURE",
+                metadata=ProviderAttemptMetadata(
+                    provider=self.provider_name,
+                    attempts=1,
+                    retry_count=0,
+                    retried_status_codes=(),
+                    total_wait_seconds=round(total_wait, 9),
+                    elapsed_seconds=round(max(0.0, self.clock() - started), 9),
+                    circuit_state=circuit,
+                ),
+            ) from None
+
+        return ProviderCallResult(
+            value=value,
+            metadata=ProviderAttemptMetadata(
+                provider=self.provider_name,
+                attempts=1,
+                retry_count=0,
+                retried_status_codes=(),
+                total_wait_seconds=round(total_wait, 9),
+                elapsed_seconds=round(max(0.0, self.clock() - started), 9),
+                circuit_state=self._record_success(),
+            ),
+        )
