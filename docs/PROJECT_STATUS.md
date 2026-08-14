@@ -743,6 +743,29 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   enforcement. Human names remain unauthenticated assertions and result metrics
   remain hash-pinned rather than deterministically derived from artifacts, so
   the chain stays unwired and cannot operationally promote, deploy or trade.
+- The authenticated guardrailed replay engine now emits an exact sizing trace
+  for every accepted or rejected simulated order and an ordered portfolio-state
+  trace after each cash, corporate-action, fill, terminal and session-close
+  event. Cash, unsettled proceeds, equity, position cost, ATR stop, liquidity,
+  fee and risk-budget constraints are preserved rather than reconstructed from
+  summary returns. Partial exits remain individual execution records, while
+  profit is calculated once for the complete entry-to-final-exit round trip so
+  purchase cost cannot be redistributed between partial sales.
+- Completed mechanical replay runs can now be written to a private append-only,
+  SHA-256 hash-chained audit ledger. Each run is bound to the authenticated
+  source admission, source and role hashes, validation receipt, strategy and
+  parameter versions, engine policy/configuration, fee schedule, scenario,
+  evaluation window and Git commit. Candidate arithmetic is checked before the
+  durable append and again during verification; execution/sizing, purchase
+  cost, all exit proceeds, portfolio state, return and drawdown must reconcile.
+  Valid no-trade runs remain recordable and all broker, order, paper-promotion,
+  performance-claim and live-trading permissions remain false. No real sealed
+  dataset has been replayed and no track record has been created.
+- Claude's focused red-team reviews found a missing rejected-exit trace and two
+  progressively subtler partial-exit cost-allocation weaknesses. The engine was
+  changed to whole-round-trip accounting, regression coverage was added, and
+  Claude returned PASS on authentication, append integrity and the final
+  financial reconciliation design.
 
 ## Safety invariants
 

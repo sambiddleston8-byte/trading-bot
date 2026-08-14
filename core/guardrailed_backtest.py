@@ -36,6 +36,7 @@ AUTHENTICATED_REPLAY_ROLES = {
     "TOTAL_RETURN_PRICES",
     "UNIVERSE_MEMBERSHIP",
 }
+ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v2"
 _ATTESTATION_FACTORY_TOKEN = object()
 
 
@@ -393,6 +394,8 @@ class _Position:
     quantity: Decimal
     average_entry_price: Decimal
     entry_total_cost: Decimal
+    original_entry_total_cost: Decimal
+    realized_exit_proceeds: Decimal
     stop_price: Decimal
     opened_at: datetime
 
@@ -429,6 +432,50 @@ class CompletedTrade:
 
 
 @dataclass(frozen=True)
+class SizingDecisionTrace:
+    """Exact pre-fill limits used for one simulated order decision."""
+
+    symbol: str
+    action: str
+    reason: str
+    signal_at: datetime
+    evaluated_at: datetime
+    portfolio_equity_before: Decimal
+    settled_cash_before: Decimal
+    unsettled_cash_before: Decimal
+    position_quantity_before: Decimal
+    open_risk_before: Decimal
+    risk_per_share: Decimal | None
+    risk_budget: Decimal | None
+    risk_quantity_limit: Decimal | None
+    liquidity_notional: Decimal
+    liquidity_quantity_limit: Decimal
+    cash_quantity_limit: Decimal | None
+    requested_quantity: Decimal
+    filled_quantity: Decimal
+    limiting_constraints: tuple[str, ...]
+    stop_price_after: Decimal | None
+
+
+@dataclass(frozen=True)
+class PortfolioStateTrace:
+    """Deterministic cash, position and mark state after a simulation event."""
+
+    sequence: int
+    as_of_at: datetime
+    event_type: str
+    symbol: str
+    settled_cash: Decimal
+    unsettled_cash: Decimal
+    equity: Decimal
+    position_quantity: Decimal
+    average_entry_price: Decimal | None
+    position_cost_basis: Decimal
+    stop_price: Decimal | None
+    mark_price: Decimal | None
+
+
+@dataclass(frozen=True)
 class BacktestResult:
     strategy_version: str
     parameter_hash: str
@@ -443,6 +490,14 @@ class BacktestResult:
     executions: tuple[ExecutionRecord, ...]
     completed_trades: tuple[CompletedTrade, ...]
     equity_curve: tuple[tuple[datetime, Decimal], ...]
+    sizing_decisions: tuple[SizingDecisionTrace, ...] = ()
+    portfolio_states: tuple[PortfolioStateTrace, ...] = ()
+    evaluation_start: datetime | None = None
+    evaluation_end: datetime | None = None
+    source_content_sha256: str = ""
+    evidence_role_hashes: tuple[tuple[str, str], ...] = ()
+    engine_policy_version: str = ENGINE_POLICY_VERSION
+    engine_config_sha256: str = ""
     no_lookahead_contract_enforced: bool = True
     mechanical_simulation_only: bool = True
     performance_claim_allowed: bool = False
@@ -597,6 +652,8 @@ class GuardrailedBacktestEngine:
         executions: list[ExecutionRecord] = []
         completed: list[CompletedTrade] = []
         equity_curve: list[tuple[datetime, Decimal]] = []
+        sizing_decisions: list[SizingDecisionTrace] = []
+        portfolio_states: list[PortfolioStateTrace] = []
         monthly_notional: dict[tuple[int, int], Decimal] = {}
         unsettled_cash: list[tuple[datetime, Decimal]] = []
         last_marks: dict[str, Decimal] = {}
@@ -637,6 +694,28 @@ class GuardrailedBacktestEngine:
                 for symbol, position in positions.items()
             )
 
+        def unsettled_total() -> Decimal:
+            return sum((amount for _, amount in unsettled_cash), ZERO)
+
+        def snapshot(event_type: str, moment: datetime, symbol: str) -> None:
+            position = positions.get(symbol)
+            portfolio_states.append(
+                PortfolioStateTrace(
+                    sequence=len(portfolio_states) + 1,
+                    as_of_at=moment,
+                    event_type=event_type,
+                    symbol=symbol,
+                    settled_cash=cash,
+                    unsettled_cash=unsettled_total(),
+                    equity=equity(),
+                    position_quantity=position.quantity if position else ZERO,
+                    average_entry_price=position.average_entry_price if position else None,
+                    position_cost_basis=position.entry_total_cost if position else ZERO,
+                    stop_price=position.stop_price if position else None,
+                    mark_price=last_marks.get(symbol),
+                )
+            )
+
         def fee_for(notional: Decimal, moment: datetime) -> Decimal:
             key = (moment.year, moment.month)
             return self.fee_schedule.fee(notional, monthly_notional.get(key, ZERO))
@@ -653,6 +732,85 @@ class GuardrailedBacktestEngine:
                     return quantity
                 quantity -= ONE
             return ZERO
+
+        def record_unfilled_exit(
+            *, symbol: str, requested: Decimal, reference: Decimal,
+            moment: datetime, signal_at: datetime, reason: str, liquidity: Decimal,
+            constraint: str,
+        ) -> None:
+            position = positions[symbol]
+            impact_bps, total_cost_bps = _execution_cost_bps(
+                self.config,
+                reference_price=reference,
+                filled_quantity=ZERO,
+                lagged_liquidity_notional=liquidity,
+            )
+            executions.append(
+                ExecutionRecord(
+                    symbol, "SELL", reason, signal_at, moment, reference,
+                    _adverse_price(reference, "SELL", total_cost_bps),
+                    requested, ZERO, ZERO, "REJECTED", liquidity,
+                    self.config.bid_ask_half_spread_bps,
+                    self.config.baseline_slippage_bps,
+                    impact_bps, total_cost_bps,
+                )
+            )
+            sizing_decisions.append(
+                SizingDecisionTrace(
+                    symbol=symbol, action="SELL", reason=reason,
+                    signal_at=signal_at, evaluated_at=moment,
+                    portfolio_equity_before=equity(), settled_cash_before=cash,
+                    unsettled_cash_before=unsettled_total(),
+                    position_quantity_before=position.quantity,
+                    open_risk_before=max(
+                        ZERO, position.average_entry_price - position.stop_price
+                    ) * position.quantity,
+                    risk_per_share=None, risk_budget=None,
+                    risk_quantity_limit=None, liquidity_notional=liquidity,
+                    liquidity_quantity_limit=ZERO, cash_quantity_limit=None,
+                    requested_quantity=requested, filled_quantity=ZERO,
+                    limiting_constraints=(constraint,),
+                    stop_price_after=position.stop_price,
+                )
+            )
+
+        def record_unfilled_entry(
+            *, symbol: str, reference: Decimal, moment: datetime,
+            signal_at: datetime, reason: str, liquidity: Decimal,
+            portfolio_equity: Decimal, settled_before: Decimal,
+            unsettled_before: Decimal, open_risk: Decimal,
+            risk_per_share: Decimal, risk_budget: Decimal | None,
+            constraint: str,
+        ) -> None:
+            impact_bps, total_cost_bps = _execution_cost_bps(
+                self.config, reference_price=reference,
+                filled_quantity=ZERO, lagged_liquidity_notional=liquidity,
+            )
+            executions.append(
+                ExecutionRecord(
+                    symbol, "BUY", reason, signal_at, moment, reference,
+                    _adverse_price(reference, "BUY", total_cost_bps),
+                    ZERO, ZERO, ZERO, "REJECTED", liquidity,
+                    self.config.bid_ask_half_spread_bps,
+                    self.config.baseline_slippage_bps,
+                    impact_bps, total_cost_bps,
+                )
+            )
+            sizing_decisions.append(
+                SizingDecisionTrace(
+                    symbol=symbol, action="BUY", reason=reason,
+                    signal_at=signal_at, evaluated_at=moment,
+                    portfolio_equity_before=portfolio_equity,
+                    settled_cash_before=settled_before,
+                    unsettled_cash_before=unsettled_before,
+                    position_quantity_before=ZERO, open_risk_before=open_risk,
+                    risk_per_share=risk_per_share, risk_budget=risk_budget,
+                    risk_quantity_limit=ZERO, liquidity_notional=liquidity,
+                    liquidity_quantity_limit=ZERO, cash_quantity_limit=ZERO,
+                    requested_quantity=ZERO, filled_quantity=ZERO,
+                    limiting_constraints=(constraint,), stop_price_after=None,
+                )
+            )
 
         def close_quantity(
             *,
@@ -673,6 +831,13 @@ class GuardrailedBacktestEngine:
             filled = min(requested, maximum_fill_quantity).to_integral_value(
                 rounding=ROUND_FLOOR
             )
+            equity_before = equity()
+            settled_before = cash
+            unsettled_before = unsettled_total()
+            open_risk_before = sum(
+                max(ZERO, held.average_entry_price - held.stop_price) * held.quantity
+                for held in positions.values()
+            )
             impact_bps, total_cost_bps = _execution_cost_bps(
                 self.config,
                 reference_price=reference,
@@ -689,6 +854,7 @@ class GuardrailedBacktestEngine:
             fraction = filled / position.quantity
             allocated_cost = position.entry_total_cost * fraction
             remaining_cost = position.entry_total_cost - allocated_cost
+            total_exit_proceeds = position.realized_exit_proceeds + proceeds
             executions.append(
                 ExecutionRecord(
                     symbol, "SELL", reason, signal_at, moment, reference, price,
@@ -701,27 +867,58 @@ class GuardrailedBacktestEngine:
                     total_cost_bps,
                 )
             )
-            completed.append(
-                CompletedTrade(
-                    symbol,
-                    position.opened_at,
-                    moment,
-                    allocated_cost,
-                    proceeds,
-                    proceeds / allocated_cost - ONE,
-                    reason,
-                )
-            )
             if filled == position.quantity:
+                completed.append(
+                    CompletedTrade(
+                        symbol,
+                        position.opened_at,
+                        moment,
+                        position.original_entry_total_cost,
+                        total_exit_proceeds,
+                        total_exit_proceeds / position.original_entry_total_cost - ONE,
+                        reason,
+                    )
+                )
                 del positions[symbol]
             else:
                 positions[symbol] = _Position(
                     position.quantity - filled,
                     position.average_entry_price,
                     remaining_cost,
+                    position.original_entry_total_cost,
+                    total_exit_proceeds,
                     position.stop_price,
                     position.opened_at,
                 )
+            sizing_decisions.append(
+                SizingDecisionTrace(
+                    symbol=symbol,
+                    action="SELL",
+                    reason=reason,
+                    signal_at=signal_at,
+                    evaluated_at=moment,
+                    portfolio_equity_before=equity_before,
+                    settled_cash_before=settled_before,
+                    unsettled_cash_before=unsettled_before,
+                    position_quantity_before=position.quantity,
+                    open_risk_before=open_risk_before,
+                    risk_per_share=None,
+                    risk_budget=None,
+                    risk_quantity_limit=None,
+                    liquidity_notional=liquidity,
+                    liquidity_quantity_limit=maximum_fill_quantity,
+                    cash_quantity_limit=None,
+                    requested_quantity=requested,
+                    filled_quantity=filled,
+                    limiting_constraints=(
+                        ("LIQUIDITY_CAP",) if filled < requested else ("POSITION_QUANTITY",)
+                    ),
+                    stop_price_after=(
+                        positions[symbol].stop_price if symbol in positions else None
+                    ),
+                )
+            )
+            snapshot("POST_SIMULATED_SELL", moment, symbol)
             return filled
 
         # Each bar is processed at its open and then its close.  Only the
@@ -737,6 +934,7 @@ class GuardrailedBacktestEngine:
                 unsettled_cash[:] = [
                     item for item in unsettled_cash if item[0] > bar.open_at
                 ]
+                snapshot("CASH_SETTLEMENT", bar.open_at, symbol)
 
             for action in actions:
                 key = (action.symbol, action.effective_at, action.action_type)
@@ -757,9 +955,12 @@ class GuardrailedBacktestEngine:
                             quantity,
                             held.average_entry_price / action.split_ratio,
                             held.entry_total_cost,
+                            held.original_entry_total_cost,
+                            held.realized_exit_proceeds,
                             held.stop_price / action.split_ratio,
                             held.opened_at,
                         )
+                        snapshot("STOCK_SPLIT", bar.open_at, symbol)
                     history[:] = [
                         replace(
                             prior,
@@ -792,12 +993,20 @@ class GuardrailedBacktestEngine:
                     ):
                         cash += dividend_entitlements[key] * action.cash_per_share
                         paid_dividends.add(key)
+                        snapshot("CASH_DIVIDEND", bar.open_at, symbol)
 
             outcome = terminal_by_symbol.get(symbol)
             if outcome and outcome.effective_at <= bar.open_at and symbol not in terminated:
                 terminated.add(symbol)
                 pending.pop(symbol, None)
                 if symbol in positions:
+                    portfolio_equity_before = equity()
+                    settled_before = cash
+                    unsettled_before = unsettled_total()
+                    open_risk_before = sum(
+                        max(ZERO, held.average_entry_price - held.stop_price) * held.quantity
+                        for held in positions.values()
+                    )
                     position = positions.pop(symbol)
                     proceeds = position.quantity * outcome.recovery_per_share
                     unsettled_cash.append((outcome.cash_settled_at, proceeds))
@@ -806,9 +1015,11 @@ class GuardrailedBacktestEngine:
                             symbol,
                             position.opened_at,
                             outcome.effective_at,
-                            position.entry_total_cost,
-                            proceeds,
-                            proceeds / position.entry_total_cost - ONE,
+                            position.original_entry_total_cost,
+                            position.realized_exit_proceeds + proceeds,
+                            (position.realized_exit_proceeds + proceeds)
+                            / position.original_entry_total_cost
+                            - ONE,
                             outcome.terminal_type,
                         )
                     )
@@ -821,6 +1032,27 @@ class GuardrailedBacktestEngine:
                             ZERO, ZERO, ZERO, ZERO,
                         )
                     )
+                    sizing_decisions.append(
+                        SizingDecisionTrace(
+                            symbol=symbol, action="TERMINAL_SETTLEMENT",
+                            reason=outcome.terminal_type,
+                            signal_at=outcome.available_at,
+                            evaluated_at=outcome.effective_at,
+                            portfolio_equity_before=portfolio_equity_before,
+                            settled_cash_before=settled_before,
+                            unsettled_cash_before=unsettled_before,
+                            position_quantity_before=position.quantity,
+                            open_risk_before=open_risk_before,
+                            risk_per_share=None, risk_budget=None,
+                            risk_quantity_limit=None, liquidity_notional=ZERO,
+                            liquidity_quantity_limit=ZERO, cash_quantity_limit=None,
+                            requested_quantity=position.quantity,
+                            filled_quantity=position.quantity,
+                            limiting_constraints=("MANDATORY_TERMINAL_OUTCOME",),
+                            stop_price_after=None,
+                        )
+                    )
+                    snapshot("TERMINAL_SETTLEMENT", outcome.effective_at, symbol)
 
             if bar.open_at >= end and symbol in positions:
                 pending[symbol] = ("EXIT_LONG", "EVALUATION_END", end, None)
@@ -833,15 +1065,39 @@ class GuardrailedBacktestEngine:
             capacity_notional = liquidity * self.config.maximum_lagged_volume_participation
             if order and (bar.open_at < end or order[0] == "EXIT_LONG"):
                 action, reason, signal_at, stored_atr = order
-                if action == "ENTER_LONG" and symbol not in positions and eligible(symbol, signal_at):
+                if action == "ENTER_LONG" and symbol not in positions:
                     atr = stored_atr
-                    if atr is not None and liquidity > ZERO:
-                        risk_per_share = atr * self.config.atr_stop_multiple
-                        portfolio_equity = equity()
-                        open_risk = sum(
-                            max(ZERO, held.average_entry_price - held.stop_price) * held.quantity
-                            for held in positions.values()
+                    portfolio_equity = equity()
+                    settled_before = cash
+                    unsettled_before = unsettled_total()
+                    open_risk = sum(
+                        max(ZERO, held.average_entry_price - held.stop_price) * held.quantity
+                        for held in positions.values()
+                    )
+                    risk_per_share = (
+                        atr * self.config.atr_stop_multiple if atr is not None else ZERO
+                    )
+                    if not eligible(symbol, bar.open_at):
+                        record_unfilled_entry(
+                            symbol=symbol, reference=bar.open, moment=bar.open_at,
+                            signal_at=signal_at, reason=reason, liquidity=liquidity,
+                            portfolio_equity=portfolio_equity,
+                            settled_before=settled_before,
+                            unsettled_before=unsettled_before, open_risk=open_risk,
+                            risk_per_share=risk_per_share, risk_budget=None,
+                            constraint="UNIVERSE_INELIGIBLE_AT_EXECUTION",
                         )
+                    elif risk_per_share <= ZERO:
+                        record_unfilled_entry(
+                            symbol=symbol, reference=bar.open, moment=bar.open_at,
+                            signal_at=signal_at, reason=reason, liquidity=liquidity,
+                            portfolio_equity=portfolio_equity,
+                            settled_before=settled_before,
+                            unsettled_before=unsettled_before, open_risk=open_risk,
+                            risk_per_share=risk_per_share, risk_budget=ZERO,
+                            constraint="NO_POSITIVE_ATR_RISK_DISTANCE",
+                        )
+                    else:
                         risk_budget = min(
                             portfolio_equity * self.config.max_equity_risk_per_trade,
                             max(
@@ -858,7 +1114,8 @@ class GuardrailedBacktestEngine:
                         )
                         maximum_price = _adverse_price(bar.open, "BUY", maximum_cost_bps)
                         capacity = (capacity_notional / maximum_price).to_integral_value(rounding=ROUND_FLOOR)
-                        filled = affordable_quantity(maximum_price, min(requested, capacity), bar.open_at)
+                        cash_capacity = affordable_quantity(maximum_price, requested, bar.open_at)
+                        filled = min(requested, capacity, cash_capacity)
                         impact_bps, total_cost_bps = _execution_cost_bps(
                             self.config,
                             reference_price=bar.open,
@@ -875,9 +1132,44 @@ class GuardrailedBacktestEngine:
                                 filled,
                                 fill_price,
                                 notional + fee,
+                                notional + fee,
+                                ZERO,
                                 fill_price - risk_per_share,
                                 bar.open_at,
                             )
+                        constraints = []
+                        if capacity < requested:
+                            constraints.append("LIQUIDITY_CAP")
+                        if cash_capacity < requested:
+                            constraints.append("CASH_AND_FEES")
+                        if not constraints:
+                            constraints.append("RISK_BUDGET")
+                        sizing_decisions.append(
+                            SizingDecisionTrace(
+                                symbol=symbol,
+                                action="BUY",
+                                reason=reason,
+                                signal_at=signal_at,
+                                evaluated_at=bar.open_at,
+                                portfolio_equity_before=portfolio_equity,
+                                settled_cash_before=settled_before,
+                                unsettled_cash_before=unsettled_before,
+                                position_quantity_before=ZERO,
+                                open_risk_before=open_risk,
+                                risk_per_share=risk_per_share,
+                                risk_budget=risk_budget,
+                                risk_quantity_limit=requested,
+                                liquidity_notional=liquidity,
+                                liquidity_quantity_limit=capacity,
+                                cash_quantity_limit=cash_capacity,
+                                requested_quantity=requested,
+                                filled_quantity=filled,
+                                limiting_constraints=tuple(constraints),
+                                stop_price_after=(
+                                    positions[symbol].stop_price if symbol in positions else None
+                                ),
+                            )
+                        )
                         executions.append(
                             ExecutionRecord(
                                 symbol, "BUY", reason, signal_at, bar.open_at,
@@ -892,19 +1184,28 @@ class GuardrailedBacktestEngine:
                                 total_cost_bps,
                             )
                         )
+                        snapshot("POST_SIMULATED_BUY", bar.open_at, symbol)
                 elif action == "EXIT_LONG" and symbol in positions:
                     capacity = (capacity_notional / bar.open).to_integral_value(rounding=ROUND_FLOOR)
                     requested = positions[symbol].quantity
-                    filled = close_quantity(
-                        symbol=symbol,
-                        requested_quantity=requested,
-                        maximum_fill_quantity=capacity,
-                        reference=bar.open,
-                        moment=bar.open_at,
-                        signal_at=signal_at,
-                        reason=reason,
-                        liquidity=liquidity,
-                    ) if capacity > ZERO else ZERO
+                    if capacity > ZERO:
+                        filled = close_quantity(
+                            symbol=symbol,
+                            requested_quantity=requested,
+                            maximum_fill_quantity=capacity,
+                            reference=bar.open,
+                            moment=bar.open_at,
+                            signal_at=signal_at,
+                            reason=reason,
+                            liquidity=liquidity,
+                        )
+                    else:
+                        record_unfilled_exit(
+                            symbol=symbol, requested=requested, reference=bar.open,
+                            moment=bar.open_at, signal_at=signal_at, reason=reason,
+                            liquidity=liquidity, constraint="LIQUIDITY_CAP",
+                        )
+                        filled = ZERO
                     if filled < requested:
                         pending[symbol] = ("EXIT_LONG", reason, signal_at, None)
 
@@ -921,8 +1222,8 @@ class GuardrailedBacktestEngine:
                     stop_reference = None
                 if stop_reference is not None:
                     capacity = (capacity_notional / stop_reference).to_integral_value(rounding=ROUND_FLOOR)
+                    requested = position.quantity
                     if capacity > ZERO:
-                        requested = position.quantity
                         filled = close_quantity(
                             symbol=symbol,
                             requested_quantity=requested,
@@ -935,6 +1236,19 @@ class GuardrailedBacktestEngine:
                         )
                         if filled < requested:
                             pending[symbol] = ("EXIT_LONG", "HARD_ATR_STOP", bar.open_at, None)
+                    else:
+                        stop_moment = (
+                            bar.open_at if bar.open <= position.stop_price else bar.close_at
+                        )
+                        record_unfilled_exit(
+                            symbol=symbol, requested=requested, reference=stop_reference,
+                            moment=stop_moment, signal_at=bar.open_at,
+                            reason="HARD_ATR_STOP", liquidity=liquidity,
+                            constraint="LIQUIDITY_CAP",
+                        )
+                        pending[symbol] = (
+                            "EXIT_LONG", "HARD_ATR_STOP", bar.open_at, None
+                        )
 
             last_marks[symbol] = bar.close
             history.append(bar)
@@ -952,20 +1266,59 @@ class GuardrailedBacktestEngine:
                 pending[symbol] = ("EXIT_LONG", "UNIVERSE_REMOVAL", bar.available_at, None)
             if start <= bar.close_at <= end:
                 equity_curve.append((bar.close_at, equity()))
+                snapshot("SESSION_CLOSE", bar.close_at, symbol)
 
         for outcome in outcomes:
             if outcome.symbol in positions and outcome.effective_at <= end:
+                portfolio_equity_before = equity()
+                settled_before = cash
+                unsettled_before = unsettled_total()
+                open_risk_before = sum(
+                    max(ZERO, held.average_entry_price - held.stop_price) * held.quantity
+                    for held in positions.values()
+                )
                 position = positions.pop(outcome.symbol)
                 proceeds = position.quantity * outcome.recovery_per_share
                 unsettled_cash.append((outcome.cash_settled_at, proceeds))
                 completed.append(
                     CompletedTrade(
                         outcome.symbol, position.opened_at, outcome.effective_at,
-                        position.entry_total_cost, proceeds,
-                        proceeds / position.entry_total_cost - ONE,
+                        position.original_entry_total_cost,
+                        position.realized_exit_proceeds + proceeds,
+                        (position.realized_exit_proceeds + proceeds)
+                        / position.original_entry_total_cost - ONE,
                         outcome.terminal_type,
                     )
                 )
+                executions.append(
+                    ExecutionRecord(
+                        outcome.symbol, "TERMINAL_SETTLEMENT", outcome.terminal_type,
+                        outcome.available_at, outcome.effective_at,
+                        outcome.recovery_per_share, outcome.recovery_per_share,
+                        position.quantity, position.quantity, ZERO, "FILLED", ZERO,
+                        ZERO, ZERO, ZERO, ZERO,
+                    )
+                )
+                sizing_decisions.append(
+                    SizingDecisionTrace(
+                        symbol=outcome.symbol, action="TERMINAL_SETTLEMENT",
+                        reason=outcome.terminal_type, signal_at=outcome.available_at,
+                        evaluated_at=outcome.effective_at,
+                        portfolio_equity_before=portfolio_equity_before,
+                        settled_cash_before=settled_before,
+                        unsettled_cash_before=unsettled_before,
+                        position_quantity_before=position.quantity,
+                        open_risk_before=open_risk_before,
+                        risk_per_share=None, risk_budget=None,
+                        risk_quantity_limit=None, liquidity_notional=ZERO,
+                        liquidity_quantity_limit=ZERO, cash_quantity_limit=None,
+                        requested_quantity=position.quantity,
+                        filled_quantity=position.quantity,
+                        limiting_constraints=("MANDATORY_TERMINAL_OUTCOME",),
+                        stop_price_after=None,
+                    )
+                )
+                snapshot("TERMINAL_SETTLEMENT", outcome.effective_at, outcome.symbol)
         if positions:
             raise ValueError("evaluation lacks a next-bar, liquidity-capped exit for open positions")
         if not equity_curve:
@@ -974,6 +1327,16 @@ class GuardrailedBacktestEngine:
         ending = cash + sum(amount for _, amount in unsettled_cash)
         curve_values = [self.config.initial_cash, *[item[1] for item in equity_curve], ending]
         parameter_hash = hashlib.sha256(_canonical_json(parameters).encode()).hexdigest()
+        engine_config_hash = hashlib.sha256(
+            _canonical_json({
+                "engine_policy_version": ENGINE_POLICY_VERSION,
+                "config": self.config.__dict__,
+                "fee_schedule": {
+                    "schedule_id": self.fee_schedule.schedule_id,
+                    "tiers": [tier.__dict__ for tier in self.fee_schedule.tiers],
+                },
+            }).encode()
+        ).hexdigest()
         return BacktestResult(
             str(strategy_instance.version),
             parameter_hash,
@@ -988,6 +1351,14 @@ class GuardrailedBacktestEngine:
             tuple(executions),
             tuple(completed),
             tuple(equity_curve),
+            tuple(sizing_decisions),
+            tuple(portfolio_states),
+            evaluation_start=start,
+            evaluation_end=end,
+            source_content_sha256=self.data_attestation.source_content_sha256,
+            evidence_role_hashes=self.data_attestation.evidence_role_hashes,
+            engine_policy_version=ENGINE_POLICY_VERSION,
+            engine_config_sha256=engine_config_hash,
         )
 
     def run_base_and_pessimistic(self, **inputs: Any) -> Mapping[str, BacktestResult]:
