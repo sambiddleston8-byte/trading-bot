@@ -12,12 +12,13 @@ import os
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from core.broker.provider_paper_kill_switch import validate_kill_switch_prefix
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 from core.performance.pinned_support import resolve_pinned_records
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "provider-paper-sell-quantity-shadow-v1"
+POLICY_VERSION = "provider-paper-sell-quantity-shadow-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 STATUSES = frozenset(
     {
@@ -33,7 +34,7 @@ QUANTITY_FIELDS = (
     "available_sell_quantity",
     "proposed_sell_quantity",
     "risk_snapshot_age_seconds",
-    "max_account_snapshot_age_seconds",
+    "max_risk_snapshot_age_seconds",
 )
 CHECK_FIELDS = (
     "base_order_notional_within_limit",
@@ -144,16 +145,40 @@ def _amount(value: Any, name: str, *, positive: bool = False) -> Fraction:
     return Fraction(decimal)
 
 
-def _fraction(material: Any, name: str) -> Fraction:
+def _fraction(
+    material: Any, name: str, *, non_negative: bool = False, positive: bool = False
+) -> Fraction:
     if not isinstance(material, Mapping) or set(material) != {"numerator", "denominator"}:
         raise ValueError(f"{name} exact fraction has an invalid field alphabet")
     try:
-        denominator = int(material["denominator"])
-        value = Fraction(int(material["numerator"]), denominator)
+        raw_numerator = material["numerator"]
+        raw_denominator = material["denominator"]
+        if (
+            isinstance(raw_numerator, (bool, float))
+            or isinstance(raw_denominator, (bool, float))
+            or not isinstance(raw_numerator, (int, str))
+            or not isinstance(raw_denominator, (int, str))
+        ):
+            raise ValueError
+        numerator_text = str(raw_numerator)
+        denominator_text = str(raw_denominator)
+        if (
+            numerator_text != numerator_text.strip()
+            or denominator_text != denominator_text.strip()
+            or not numerator_text.removeprefix("-").isdigit()
+            or not denominator_text.isdigit()
+        ):
+            raise ValueError
+        denominator = int(denominator_text)
+        value = Fraction(int(numerator_text), denominator)
     except (TypeError, ValueError, ZeroDivisionError) as error:
         raise ValueError(f"{name} exact fraction is invalid") from error
     if denominator <= 0:
         raise ValueError(f"{name} denominator must be positive")
+    if (non_negative or positive) and value < 0:
+        raise ValueError(f"{name} must be non-negative")
+    if positive and value == 0:
+        raise ValueError(f"{name} must be positive")
     return value
 
 
@@ -398,6 +423,7 @@ class ProviderPaperSellQuantityAssessmentLedger:
                 held += _fraction(
                     exact_by_ticker[raw_ticker].get("long_quantity"),
                     "held long quantity",
+                    non_negative=True,
                 )
         if raw_tickers != set(exact_by_ticker):
             raise ValueError("Position quantity lists do not exactly align")
@@ -436,6 +462,7 @@ class ProviderPaperSellQuantityAssessmentLedger:
                 pending_sell += _fraction(
                     exact_by_order[order_hash].get("remaining_quantity"),
                     "pending SELL quantity",
+                    non_negative=True,
                 )
         if raw_order_hashes != set(exact_by_order):
             raise ValueError("Open-order quantity lists do not exactly align")
@@ -454,8 +481,8 @@ class ProviderPaperSellQuantityAssessmentLedger:
         risk_time = _timestamp(risk.get("observed_at"))
         risk_age = _duration_seconds(recorded - risk_time)
         maximum_age = _amount(
-            policy.get("max_account_snapshot_age_seconds"),
-            "maximum snapshot age",
+            policy.get("max_risk_snapshot_age_seconds"),
+            "maximum risk snapshot age",
             positive=True,
         )
         if risk_age < 0:
@@ -507,7 +534,7 @@ class ProviderPaperSellQuantityAssessmentLedger:
             "available_sell_quantity": available,
             "proposed_sell_quantity": proposed,
             "risk_snapshot_age_seconds": risk_age,
-            "max_account_snapshot_age_seconds": maximum_age,
+            "max_risk_snapshot_age_seconds": maximum_age,
         }
         assessed_text = assessed.isoformat()
         return {
@@ -643,14 +670,7 @@ class ProviderPaperSellQuantityAssessmentLedger:
                 if isinstance(count, bool) or not isinstance(count, int) or count < 0 or count > len(kills):
                     raise ValueError("kill-switch record count is invalid")
                 assessed = _timestamp(record.get("assessed_at"))
-                if any(
-                    _timestamp(stop.get("triggered_at")) > assessed
-                    for stop in kills[:count]
-                ) or any(
-                    _timestamp(stop.get("triggered_at")) <= assessed
-                    for stop in kills[count:]
-                ):
-                    raise ValueError("kill-switch prefix is not causally complete")
+                validate_kill_switch_prefix(kills, count, record.get("recorded_at"))
                 expected = self._build(
                     shadow,
                     proposal,
@@ -707,6 +727,37 @@ class ProviderPaperSellQuantityAssessmentLedger:
             fcntl.flock(kill_descriptor, fcntl.LOCK_EX)
             fcntl.flock(descriptor, fcntl.LOCK_EX)
             kills = self.kill_switch_ledger.verify()
+            append_time = datetime.now(timezone.utc)
+            if recorded > append_time + MAX_CLOCK_SKEW:
+                raise ValueError("recorded_at cannot be in the future")
+            if recorded < append_time - MAX_CLOCK_SKEW:
+                raise ValueError("recorded_at must be within five minutes of the current clock")
+            effective_recorded = max(recorded, append_time)
+            records = self.verify()
+            kill_count = len(kills)
+            kill_head = kills[-1]["record_hash"] if kills else GENESIS_HASH
+            identity = _identity(
+                shadow,
+                position,
+                orders,
+                kill_count,
+                kill_head,
+                assessed.isoformat(),
+            )
+            existing = next(
+                (
+                    item
+                    for item in records
+                    if item["sell_quantity_assessment_id"] == identity
+                ),
+                None,
+            )
+            if existing is not None:
+                if allow_existing:
+                    return existing
+                raise LedgerIntegrityError(
+                    f"SELL quantity assessment {identity} already exists."
+                )
             result = self._build(
                 shadow,
                 proposal,
@@ -715,28 +766,9 @@ class ProviderPaperSellQuantityAssessmentLedger:
                 orders,
                 kills,
                 assessed,
-                recorded,
+                effective_recorded,
                 enforce_current_recording=True,
             )
-            records = self.verify()
-            existing = next(
-                (
-                    item
-                    for item in records
-                    if item["sell_quantity_assessment_id"]
-                    == result["sell_quantity_assessment_id"]
-                ),
-                None,
-            )
-            if existing:
-                ignored = {"previous_hash", "record_hash", "recorded_at"}
-                if allow_existing and {
-                    key: value for key, value in existing.items() if key not in ignored
-                } == {key: value for key, value in result.items() if key not in ignored}:
-                    return existing
-                raise LedgerIntegrityError(
-                    f"SELL quantity assessment {result['sell_quantity_assessment_id']} already exists."
-                )
             prior = next(
                 (
                     item

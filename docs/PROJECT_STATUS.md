@@ -1025,7 +1025,10 @@ requires separate exact settlement evidence before recording a cash snapshot.
 Phase 4 now also has an inactive provider-paper risk-policy foundation and a
 one-way account-scoped local stop. A human must supply every future limit; the
 record binds exact order, position, gross-exposure, daily-loss and snapshot-age
-limits to one hashed Alpaca paper account, portfolio, strategy and Git revision.
+limits, with separate account and risk evidence ages, to one hashed Alpaca
+paper account, portfolio, strategy and Git revision. Stop records distinguish
+the claimed trigger time from the real append time, preventing later backdated
+stops from either disappearing or corrupting valid historical assessments.
 Replacement policies cannot escape an existing account/stop-identity latch.
 The ledgers explicitly state that limits are not yet enforced, no order route
 exists and the local hashes are neither externally anchored nor cryptographically
@@ -1080,3 +1083,13 @@ worse SELL proceeds from lowering conservative risk notional. The evidence
 remains reference-price-only and explicitly lacks authenticated prices, broker
 reconciliation, volume calibration, complete regulatory/borrow fees, cash or
 position sufficiency, enforcement and every order-submission capability.
+
+The combined Phase 4 operational assessment now redoes those internal checks in
+one fail-closed record. It reserves settled cash for all pending BUYs using the
+pessimistic cost policy, rechecks exact SELL availability, independently bounds
+account, risk, shadow, stress and proposal-reference ages, and preserves the
+complete permanent-stop prefix under the shared lock. Passing internal
+arithmetic still produces `BLOCKED_EXTERNAL_EVIDENCE_REQUIRED`: authenticated
+broker evidence, reconciliation, liquidity/impact data, complete fees, external
+anchoring and a separate future human decision remain mandatory. It has no
+credentials, network request, order route, paper submission or live capability.

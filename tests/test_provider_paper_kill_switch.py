@@ -17,6 +17,7 @@ POLICY_BASE = {
     "max_gross_exposure_usd": "20000",
     "max_daily_loss_usd": "750",
     "max_account_snapshot_age_seconds": 120,
+    "max_risk_snapshot_age_seconds": 60,
     "kill_switch_identifier": "switch-v1",
     "decided_by": "Sam",
     "decision_reference": "synthetic-test-policy-1",

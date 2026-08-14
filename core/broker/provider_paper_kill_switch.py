@@ -8,7 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 from core.broker.provider_paper_risk_policy import ProviderPaperRiskControlPolicyLedger
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
@@ -16,7 +16,7 @@ from core.performance.pinned_support import resolve_pinned_records
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "durable-latched-provider-paper-kill-switch-v1"
+POLICY_VERSION = "durable-latched-provider-paper-kill-switch-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 ALLOWED_SOURCES = {"HUMAN", "RISK_MONITOR", "SYSTEM_FAILURE_GUARD"}
 FIXED_FALSE_FIELDS = (
@@ -35,7 +35,7 @@ FIXED_FALSE_FIELDS = (
 RECORD_FIELDS = frozenset(
     {
         "schema_version", "stop_policy_version", "stop_id", "record_type", "status",
-        "triggered_at", "triggered_by", "trigger_source", "reason", "policy_id",
+        "triggered_at", "recorded_at", "triggered_by", "trigger_source", "reason", "policy_id",
         "policy_record_hash", "account_reference_sha256", "kill_switch_identifier",
         "trading_halted",
         "previous_hash", "record_hash",
@@ -78,6 +78,7 @@ def _stop_id(
     account_reference_sha256: str,
     kill_switch_identifier: str,
     triggered_at: str,
+    recorded_at: str,
     source: str,
     reason: str,
     triggered_by: str,
@@ -90,6 +91,7 @@ def _stop_id(
                 account_reference_sha256,
                 kill_switch_identifier,
                 triggered_at,
+                recorded_at,
                 source,
                 reason,
                 triggered_by,
@@ -97,6 +99,19 @@ def _stop_id(
             ]
         ).encode("utf-8")
     ).hexdigest()[:32].upper()
+
+
+def validate_kill_switch_prefix(
+    records: Sequence[Mapping[str, Any]], count: Any, recorded_at: str | datetime
+) -> None:
+    """Require the prefix to equal the stop ledger state when the assessment was recorded."""
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0 or count > len(records):
+        raise ValueError("kill-switch record count is invalid")
+    boundary_time = _timestamp(recorded_at)
+    if any(_timestamp(stop.get("recorded_at")) > boundary_time for stop in records[:count]):
+        raise ValueError("kill-switch prefix includes a stop recorded later")
+    if any(_timestamp(stop.get("recorded_at")) <= boundary_time for stop in records[count:]):
+        raise ValueError("kill-switch prefix omits an already-recorded stop")
 
 
 class ProviderPaperKillSwitchLedger:
@@ -162,16 +177,6 @@ class ProviderPaperKillSwitchLedger:
         result = {
             "schema_version": SCHEMA_VERSION,
             "stop_policy_version": POLICY_VERSION,
-            "stop_id": _stop_id(
-                policy["policy_id"],
-                policy["record_hash"],
-                account_hash,
-                identifier,
-                triggered.isoformat(),
-                source,
-                resolved_reason,
-                triggered_by_name,
-            ),
             "record_type": "PROVIDER_PAPER_KILL_SWITCH_LATCHED_STOP",
             "status": "STOPPED_LATCHED",
             "triggered_at": triggered.isoformat(),
@@ -231,6 +236,7 @@ class ProviderPaperKillSwitchLedger:
             policy = policies[0]
             try:
                 triggered = _timestamp(record.get("triggered_at"))
+                recorded = _timestamp(record.get("recorded_at"))
                 source = _required(record.get("trigger_source"), "trigger_source", 50).upper()
                 reason = _required(record.get("reason"), "reason")
                 triggered_by = _required(record.get("triggered_by"), "triggered_by", 100)
@@ -249,6 +255,7 @@ class ProviderPaperKillSwitchLedger:
                 account_hash,
                 policy["kill_switch_identifier"],
                 triggered.isoformat(),
+                recorded.isoformat(),
                 source,
                 reason,
                 triggered_by,
@@ -267,7 +274,12 @@ class ProviderPaperKillSwitchLedger:
                 and account_hash == policy["account_reference_sha256"]
                 and record.get("kill_switch_identifier") == policy["kill_switch_identifier"]
                 and triggered >= _timestamp(policy["recorded_at"])
-                and triggered <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
+                and triggered <= recorded + MAX_CLOCK_SKEW
+                and recorded <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
+                and (
+                    index == 1
+                    or recorded >= _timestamp(records[index - 2].get("recorded_at"))
+                )
                 and source in ALLOWED_SOURCES
                 and record.get("trading_halted") is True
                 and all(record.get(field) is False for field in FIXED_FALSE_FIELDS)
@@ -314,8 +326,28 @@ class ProviderPaperKillSwitchLedger:
                 raise LedgerIntegrityError(
                     "Provider-paper account or kill-switch identity is already stopped and latched."
                 )
-            material = {
+            recorded = datetime.now(timezone.utc)
+            if records:
+                prior_recorded = _timestamp(records[-1]["recorded_at"])
+                if recorded < prior_recorded:
+                    recorded = prior_recorded
+            completed = {
                 **result,
+                "recorded_at": recorded.isoformat(),
+                "stop_id": _stop_id(
+                    result["policy_id"],
+                    result["policy_record_hash"],
+                    result["account_reference_sha256"],
+                    result["kill_switch_identifier"],
+                    result["triggered_at"],
+                    recorded.isoformat(),
+                    result["trigger_source"],
+                    result["reason"],
+                    result["triggered_by"],
+                ),
+            }
+            material = {
+                **completed,
                 "previous_hash": records[-1]["record_hash"] if records else GENESIS_HASH,
             }
             record = {**material, "record_hash": _record_hash(material)}
