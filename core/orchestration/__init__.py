@@ -51,6 +51,10 @@ from core.orchestration.authenticated_execution_profile import (
     AuthenticatedExecutionProfile,
     resolve_authenticated_execution_profile,
 )
+from core.orchestration.active_pipeline_replay_context import (
+    ActivePipelineReplayContext,
+    ActivePipelineReplayContextLedger,
+)
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -90,4 +94,6 @@ __all__ = [
     "ReplayStrategySpecificationLedger",
     "AuthenticatedExecutionProfile",
     "resolve_authenticated_execution_profile",
+    "ActivePipelineReplayContext",
+    "ActivePipelineReplayContextLedger",
 ]
