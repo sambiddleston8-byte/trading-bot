@@ -17,6 +17,7 @@ BASE = {
     "max_gross_exposure_usd": "20000",
     "max_daily_loss_usd": "750",
     "max_account_snapshot_age_seconds": 120,
+    "max_risk_snapshot_age_seconds": 60,
     "kill_switch_identifier": "local-provider-paper-kill-switch-v1",
     "decided_by": "Sam",
     "decision_reference": "human-provider-paper-risk-policy-1",
@@ -106,6 +107,13 @@ def test_invalid_snapshot_age_is_rejected(tmp_path, value):
     ledger = ProviderPaperRiskControlPolicyLedger(tmp_path / "risk_policy.jsonl")
     with pytest.raises(ValueError):
         register(ledger, max_account_snapshot_age_seconds=value)
+
+
+@pytest.mark.parametrize("value", [0, 3601, "not-an-int"])
+def test_invalid_risk_snapshot_age_is_rejected(tmp_path, value):
+    ledger = ProviderPaperRiskControlPolicyLedger(tmp_path / "risk_policy.jsonl")
+    with pytest.raises(ValueError):
+        register(ledger, max_risk_snapshot_age_seconds=value)
 
 
 def test_concurrent_retry_is_idempotent(tmp_path):

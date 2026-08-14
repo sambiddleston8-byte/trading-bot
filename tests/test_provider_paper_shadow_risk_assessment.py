@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 import json
 
 import pytest
@@ -85,6 +86,7 @@ def build(
         "max_gross_exposure_usd": "3000",
         "max_daily_loss_usd": "200",
         "max_account_snapshot_age_seconds": 120,
+        "max_risk_snapshot_age_seconds": 120,
         "kill_switch_identifier": "paper-stop-v1",
         "decided_by": "Sam",
         "decision_reference": "synthetic-shadow-policy",
@@ -169,7 +171,11 @@ def test_buy_within_limits_is_shadow_only_and_never_submittable(tmp_path):
     assert result["current_conservative_gross_exposure_usd"] == "1000"
     assert result["projected_conservative_gross_exposure_usd"] == "1500"
     assert result["daily_loss_usd"] == "100"
-    assert result["risk_snapshot_age_seconds"] == "25"
+    expected_age = (
+        datetime.fromisoformat(result["recorded_at"])
+        - datetime.fromisoformat(values["snapshot"]["observed_at"])
+    ).total_seconds()
+    assert Decimal(result["risk_snapshot_age_seconds"]) == Decimal(str(expected_age))
     assert result["mathematical_shadow_checks_pass"] is True
     assert result["previous_hash"] == GENESIS_HASH
     for field in (
@@ -207,7 +213,7 @@ def test_buy_within_limits_is_shadow_only_and_never_submittable(tmp_path):
             "gross_exposure_within_limit",
         ),
         ({"max_daily_loss_usd": "50"}, "daily_loss_within_limit"),
-        ({"max_account_snapshot_age_seconds": 10}, "risk_snapshot_fresh"),
+        ({"max_risk_snapshot_age_seconds": 10}, "risk_snapshot_fresh"),
     ],
 )
 def test_each_limit_breach_is_reported_without_submission(
@@ -309,7 +315,7 @@ def test_real_recording_time_marks_old_snapshot_stale(tmp_path):
     result = assess(values)
     assert result["risk_snapshot_fresh"] is False
     assert result["status"] == "SHADOW_LIMIT_BREACH_INACTIVE_UNRECONCILED"
-    assert result["risk_snapshot_age_seconds"] == "3595"
+    assert Decimal(result["risk_snapshot_age_seconds"]) >= Decimal("3600")
 
 
 def test_assessment_and_stop_writes_serialize_on_shared_kill_lock(tmp_path):

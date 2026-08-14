@@ -120,12 +120,14 @@ connection by itself and enables no trading.
 Phase 4 now also has a human-preregistered paper-risk policy and a one-way local
 stop ledger. A policy is bound to one hashed Alpaca paper-account reference, one
 portfolio and strategy version, explicit order/position/gross-exposure/daily-loss
-limits, account-snapshot freshness and a named stop identity. Monetary values
+limits, separate account- and risk-snapshot freshness bounds and a named stop identity. Monetary values
 have no defaults and must be exact positive decimal inputs. Registration remains
 `PREREGISTERED_INACTIVE` and cannot activate broker access or order submission.
 
 A stop is pinned to the verified policy and follows the account or stop identity
-across replacement policies. It has no clear or resume method. Unknown policies,
+across replacement policies. It separately records the claimed trigger time and
+the system append time, so a later backdated stop blocks future work without
+rewriting valid earlier assessments. It has no clear or resume method. Unknown policies,
 inactive policies and latched policies all report that work is not allowed.
 
 These local hash chains are tamper-evident under the repository's append-only
@@ -241,3 +243,28 @@ is not authenticated, no volume evidence or calibrated impact model exists, and
 regulatory fees, borrow costs and other applicable charges remain incomplete.
 The policy is inactive and no cash/position sufficiency, risk enforcement,
 broker access, route, submission, recommendation or live trading is enabled.
+
+## Combined paper-operational assessment
+
+The final local Phase 4 calculation now combines the pinned risk comparison,
+exact SELL quantity evidence where applicable, pessimistic execution evidence,
+settled cash, every account-wide pending BUY commitment and the permanent-stop
+prefix. Existing pending BUYs receive the same adverse-price and configured-fee
+uplift as the new proposal. A BUY must fit within settled cash after those
+commitments; a SELL must fit within held shares after pending sells, including
+recording an explicit block when the account is already over-reserved.
+
+Account evidence, risk evidence, the shadow calculation, execution-stress
+evidence and the proposal reference are all age-bounded by pinned policy values.
+The assessment uses its real append time, rather than a caller-supplied earlier
+time, when testing freshness. Stop prefixes are complete as of that append time:
+an already-recorded stop cannot be removed, while a genuinely later stop does
+not corrupt the historical result.
+
+This is still a blocking calculation, not an operational broker gate. Even when
+all internal arithmetic passes, the result is
+`BLOCKED_EXTERNAL_EVIDENCE_REQUIRED`. Authenticated prices, positions, orders
+and cash; broker reconciliation; volume and market-impact evidence; complete
+fees and borrow costs; cryptographic/external anchoring; and a separate future
+human activation decision are mandatory. Network access, credentials, order
+routing, paper submission, recommendations and live trading remain false.

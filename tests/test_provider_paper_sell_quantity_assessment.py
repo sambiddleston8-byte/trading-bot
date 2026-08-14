@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 import json
 
 import pytest
@@ -153,6 +154,7 @@ def build(
         "max_gross_exposure_usd": "3000",
         "max_daily_loss_usd": "200",
         "max_account_snapshot_age_seconds": 120,
+        "max_risk_snapshot_age_seconds": 120,
         "kill_switch_identifier": "paper-stop-v1",
         "decided_by": "Sam",
         "decision_reference": "synthetic-sell-policy",
@@ -251,8 +253,12 @@ def test_sell_uses_held_minus_reserved_quantity_and_remains_inactive(tmp_path):
     assert result["pending_sell_quantity"] == "3"
     assert result["available_sell_quantity"] == "7"
     assert result["proposed_sell_quantity"] == "2"
-    assert result["risk_snapshot_age_seconds"] == "55"
-    assert result["max_account_snapshot_age_seconds"] == "120"
+    expected_age = (
+        datetime.fromisoformat(result["recorded_at"])
+        - datetime.fromisoformat(values["risk"]["observed_at"])
+    ).total_seconds()
+    assert Decimal(result["risk_snapshot_age_seconds"]) == Decimal(str(expected_age))
+    assert result["max_risk_snapshot_age_seconds"] == "120"
     assert result["sell_quantity_evidence_complete"] is True
     assert result["sell_quantity_within_available"] is True
     assert result["mathematical_shadow_checks_pass"] is True
@@ -311,11 +317,19 @@ def test_base_limit_failure_remains_a_composite_failure(tmp_path):
     assert result["mathematical_shadow_checks_pass"] is False
 
 
-def test_fresh_base_shadow_cannot_reuse_stale_quantities(tmp_path):
+def test_fresh_base_shadow_cannot_reuse_stale_quantities(tmp_path, monkeypatch):
     values = build(
-        tmp_path, policy_changes={"max_account_snapshot_age_seconds": 40}
+        tmp_path, policy_changes={"max_risk_snapshot_age_seconds": 180}
     )
     assert values["shadow"]["risk_snapshot_fresh"] is True
+    from core.broker import provider_paper_sell_quantity_assessment as module
+
+    class LaterDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return datetime.now(timezone.utc) + timedelta(seconds=240)
+
+    monkeypatch.setattr(module, "datetime", LaterDateTime)
     result = assess(values)
     assert result["base_risk_snapshot_fresh"] is True
     assert result["current_risk_snapshot_fresh"] is False
@@ -351,6 +365,7 @@ def test_stop_shared_by_replacement_policy_identity_cannot_be_dropped(tmp_path):
         max_gross_exposure_usd="3000",
         max_daily_loss_usd="200",
         max_account_snapshot_age_seconds=120,
+        max_risk_snapshot_age_seconds=120,
         kill_switch_identifier="paper-stop-v1",
         decided_by="Sam",
         decision_reference="replacement-policy-same-permanent-stop",

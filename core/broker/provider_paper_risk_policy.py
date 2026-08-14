@@ -16,7 +16,7 @@ from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_t
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "provider-paper-risk-control-policy-v1"
+POLICY_VERSION = "provider-paper-risk-control-policy-v2"
 MINIMUM_LEAD_TIME = timedelta(minutes=5)
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -55,7 +55,8 @@ RECORD_FIELDS = frozenset(
     {
         "schema_version", "policy_version", "policy_id", "status", "record_type",
         "broker", "environment", "account_reference_sha256", "portfolio_version",
-        "strategy_version", "max_account_snapshot_age_seconds", "kill_switch_identifier",
+        "strategy_version", "max_account_snapshot_age_seconds",
+        "max_risk_snapshot_age_seconds", "kill_switch_identifier",
         "effective_not_before", "recorded_at", "decided_by", "decision_reference",
         "human_decision_confirmed", "denied_actions", "git_revision",
         "previous_hash", "record_hash",
@@ -136,7 +137,8 @@ def _policy_id(
     portfolio_version: str,
     strategy_version: str,
     limits: dict[str, str],
-    snapshot_age: int,
+    account_snapshot_age: int,
+    risk_snapshot_age: int,
     kill_switch_identifier: str,
     recorded_at: str,
     decided_by: str,
@@ -144,7 +146,8 @@ def _policy_id(
 ) -> str:
     material = [
         "PROVIDER_PAPER_RISK", effective, git_revision, account_hash, portfolio_version,
-        strategy_version, dict(limits), snapshot_age, kill_switch_identifier,
+        strategy_version, dict(limits), account_snapshot_age, risk_snapshot_age,
+        kill_switch_identifier,
         recorded_at, decided_by, decision_reference, POLICY_VERSION,
     ]
     return "PPRISK-" + hashlib.sha256(
@@ -197,6 +200,7 @@ class ProviderPaperRiskControlPolicyLedger:
         max_gross_exposure_usd: Any,
         max_daily_loss_usd: Any,
         max_account_snapshot_age_seconds: Any,
+        max_risk_snapshot_age_seconds: Any,
         kill_switch_identifier: str,
         decided_by: str,
         decision_reference: str,
@@ -237,7 +241,12 @@ class ProviderPaperRiskControlPolicyLedger:
             raise ValueError(
                 "max_order_notional_usd must be <= max_position_notional_usd <= max_gross_exposure_usd"
             )
-        snapshot_age = _bounded_snapshot_age(max_account_snapshot_age_seconds)
+        account_snapshot_age = _bounded_snapshot_age(
+            max_account_snapshot_age_seconds, "max_account_snapshot_age_seconds"
+        )
+        risk_snapshot_age = _bounded_snapshot_age(
+            max_risk_snapshot_age_seconds, "max_risk_snapshot_age_seconds"
+        )
         kill_switch_id = _required(kill_switch_identifier, "kill_switch_identifier")
         git = _required(git_revision, "git_revision")
         decided = _required(decided_by, "decided_by")
@@ -247,7 +256,13 @@ class ProviderPaperRiskControlPolicyLedger:
             "policy_version": POLICY_VERSION,
             "policy_id": _policy_id(
                 effective.isoformat(), git, account_hash, portfolio, strategy,
-                limits, snapshot_age, kill_switch_id, recorded.isoformat(), decided, decision_ref,
+                limits,
+                account_snapshot_age,
+                risk_snapshot_age,
+                kill_switch_id,
+                recorded.isoformat(),
+                decided,
+                decision_ref,
             ),
             "status": "PREREGISTERED_INACTIVE",
             "record_type": "HUMAN_APPROVED_PROVIDER_PAPER_RISK_CONTROL_POLICY",
@@ -257,7 +272,8 @@ class ProviderPaperRiskControlPolicyLedger:
             "portfolio_version": portfolio,
             "strategy_version": strategy,
             **limits,
-            "max_account_snapshot_age_seconds": snapshot_age,
+            "max_account_snapshot_age_seconds": account_snapshot_age,
+            "max_risk_snapshot_age_seconds": risk_snapshot_age,
             "kill_switch_identifier": kill_switch_id,
             "effective_not_before": effective.isoformat(),
             "recorded_at": recorded.isoformat(),
@@ -290,7 +306,14 @@ class ProviderPaperRiskControlPolicyLedger:
                 limits = {
                     name: _decimal_limit(record.get(name), name) for name in MONETARY_LIMIT_FIELDS
                 }
-                snapshot_age = _bounded_snapshot_age(record.get("max_account_snapshot_age_seconds"))
+                account_snapshot_age = _bounded_snapshot_age(
+                    record.get("max_account_snapshot_age_seconds"),
+                    "max_account_snapshot_age_seconds",
+                )
+                risk_snapshot_age = _bounded_snapshot_age(
+                    record.get("max_risk_snapshot_age_seconds"),
+                    "max_risk_snapshot_age_seconds",
+                )
                 kill_switch_id = _required(record.get("kill_switch_identifier"), "kill_switch_identifier")
                 git = _required(record.get("git_revision"), "git_revision")
                 decided = _required(record.get("decided_by"), "decided_by")
@@ -301,7 +324,13 @@ class ProviderPaperRiskControlPolicyLedger:
                 ) from error
             expected_id = _policy_id(
                 effective.isoformat(), git, account_hash, portfolio, strategy,
-                limits, snapshot_age, kill_switch_id, recorded.isoformat(), decided, decision_ref,
+                limits,
+                account_snapshot_age,
+                risk_snapshot_age,
+                kill_switch_id,
+                recorded.isoformat(),
+                decided,
+                decision_ref,
             )
             relationship_valid = (
                 Decimal(limits["max_order_notional_usd"])
@@ -323,7 +352,8 @@ class ProviderPaperRiskControlPolicyLedger:
                 and recorded <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
                 and relationship_valid
                 and all(record.get(name) == value for name, value in limits.items())
-                and record.get("max_account_snapshot_age_seconds") == snapshot_age
+                and record.get("max_account_snapshot_age_seconds") == account_snapshot_age
+                and record.get("max_risk_snapshot_age_seconds") == risk_snapshot_age
                 and record.get("kill_switch_identifier") == kill_switch_id
                 and record.get("denied_actions") == DENIED_ACTIONS
                 and all(record.get(field) is False for field in FIXED_FALSE_FIELDS)

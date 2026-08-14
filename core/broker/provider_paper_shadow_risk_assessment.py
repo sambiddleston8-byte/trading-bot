@@ -12,12 +12,13 @@ import os
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from core.broker.provider_paper_kill_switch import validate_kill_switch_prefix
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 from core.performance.pinned_support import resolve_pinned_records
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "provider-paper-shadow-risk-assessment-v1"
+POLICY_VERSION = "provider-paper-shadow-risk-assessment-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 STATUSES = {
     "SHADOW_BLOCKED_LATCHED_STOP",
@@ -138,14 +139,40 @@ def _amount(value: Any, name: str, *, positive: bool = False) -> Fraction:
     return Fraction(decimal)
 
 
-def _fraction(material: Any, name: str) -> Fraction:
+def _fraction(
+    material: Any, name: str, *, non_negative: bool = False, positive: bool = False
+) -> Fraction:
+    if not isinstance(material, Mapping) or set(material) != {"numerator", "denominator"}:
+        raise ValueError(f"{name} exact fraction has an invalid field alphabet")
     try:
-        denominator = int(material["denominator"])
-        value = Fraction(int(material["numerator"]), denominator)
-    except (KeyError, TypeError, ValueError, ZeroDivisionError) as error:
+        raw_numerator = material["numerator"]
+        raw_denominator = material["denominator"]
+        if (
+            isinstance(raw_numerator, (bool, float))
+            or isinstance(raw_denominator, (bool, float))
+            or not isinstance(raw_numerator, (int, str))
+            or not isinstance(raw_denominator, (int, str))
+        ):
+            raise ValueError
+        numerator_text = str(raw_numerator)
+        denominator_text = str(raw_denominator)
+        if (
+            numerator_text != numerator_text.strip()
+            or denominator_text != denominator_text.strip()
+            or not numerator_text.removeprefix("-").isdigit()
+            or not denominator_text.isdigit()
+        ):
+            raise ValueError
+        denominator = int(denominator_text)
+        value = Fraction(int(numerator_text), denominator)
+    except (TypeError, ValueError, ZeroDivisionError) as error:
         raise ValueError(f"{name} exact fraction is invalid") from error
     if denominator <= 0:
         raise ValueError(f"{name} denominator must be positive")
+    if (non_negative or positive) and value < 0:
+        raise ValueError(f"{name} must be non-negative")
+    if positive and value == 0:
+        raise ValueError(f"{name} must be positive")
     return value
 
 
@@ -358,20 +385,28 @@ class ProviderPaperShadowRiskAssessmentLedger:
         current_ticker = Fraction(0)
         for raw, fraction in zip(positions, position_fractions):
             if raw.get("ticker") == ticker:
-                current_ticker = _fraction(
-                    fraction.get("long_market_value_usd"), "position exposure"
+                current_ticker += _fraction(
+                    fraction.get("long_market_value_usd"),
+                    "position exposure",
+                    non_negative=True,
                 )
         pending_ticker_buy = Fraction(0)
         for raw, fraction in zip(orders, order_fractions):
             if raw.get("ticker") == ticker and raw.get("side") == "BUY":
                 pending_ticker_buy += _fraction(
-                    fraction.get("remaining_notional_usd"), "pending order exposure"
+                    fraction.get("remaining_notional_usd"),
+                    "pending order exposure",
+                    non_negative=True,
                 )
 
         current_gross = _fraction(
-            exact.get("conservative_gross_exposure_usd"), "current gross exposure"
+            exact.get("conservative_gross_exposure_usd"),
+            "current gross exposure",
+            non_negative=True,
         )
-        daily_loss = _fraction(exact.get("daily_loss_usd"), "daily loss")
+        daily_loss = _fraction(
+            exact.get("daily_loss_usd"), "daily loss", non_negative=True
+        )
         projected_ticker = current_ticker + pending_ticker_buy
         projected_gross = current_gross
         if side == "BUY":
@@ -394,7 +429,9 @@ class ProviderPaperShadowRiskAssessmentLedger:
         }
         snapshot_age = _duration_seconds(recorded - snapshot_time)
         maximum_age = _amount(
-            policy.get("max_account_snapshot_age_seconds"), "maximum snapshot age", positive=True
+            policy.get("max_risk_snapshot_age_seconds"),
+            "maximum risk snapshot age",
+            positive=True,
         )
 
         kill_count = len(kill_prefix)
@@ -532,6 +569,9 @@ class ProviderPaperShadowRiskAssessmentLedger:
                     raise ValueError("kill-switch record count is invalid")
                 if count < 0 or count > len(kill_records):
                     raise ValueError("kill-switch pinned prefix is unavailable")
+                validate_kill_switch_prefix(
+                    kill_records, count, record.get("recorded_at")
+                )
                 expected = self._build(
                     proposal,
                     policy,
@@ -585,33 +625,41 @@ class ProviderPaperShadowRiskAssessmentLedger:
             fcntl.flock(kill_descriptor, fcntl.LOCK_EX)
             fcntl.flock(descriptor, fcntl.LOCK_EX)
             kill_records = self.kill_switch_ledger.verify()
+            append_time = datetime.now(timezone.utc)
+            if recorded > append_time + MAX_CLOCK_SKEW:
+                raise ValueError("recorded_at cannot be in the future")
+            if recorded < append_time - MAX_CLOCK_SKEW:
+                raise ValueError("recorded_at must be within five minutes of the current clock")
+            effective_recorded = max(recorded, append_time)
+            records = self.verify()
+            kill_count = len(kill_records)
+            kill_head = kill_records[-1]["record_hash"] if kill_records else GENESIS_HASH
+            identity = _assessment_id(
+                proposal,
+                policy,
+                snapshot,
+                kill_count,
+                kill_head,
+                assessed.isoformat(),
+            )
+            existing = next(
+                (item for item in records if item["assessment_id"] == identity), None
+            )
+            if existing is not None:
+                if allow_existing:
+                    return existing
+                raise LedgerIntegrityError(
+                    f"Shadow-risk assessment {identity} already exists."
+                )
             result = self._build(
                 proposal,
                 policy,
                 snapshot,
                 kill_records,
                 assessed,
-                recorded,
+                effective_recorded,
                 enforce_current_recording=True,
             )
-            records = self.verify()
-            existing = next(
-                (
-                    item
-                    for item in records
-                    if item["assessment_id"] == result["assessment_id"]
-                ),
-                None,
-            )
-            if existing:
-                ignored = {"previous_hash", "record_hash", "recorded_at"}
-                if allow_existing and {
-                    key: value for key, value in existing.items() if key not in ignored
-                } == {key: value for key, value in result.items() if key not in ignored}:
-                    return existing
-                raise LedgerIntegrityError(
-                    f"Shadow-risk assessment {result['assessment_id']} already exists."
-                )
             prior = next(
                 (
                     item
