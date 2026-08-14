@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any, Mapping, Sequence
 from urllib.parse import urlsplit
 
@@ -19,22 +20,57 @@ from core.portfolio.historical_universe_coverage import HistoricalUniverseCovera
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "sealed-replay-dataset-admission-v1"
+POLICY_VERSION_V1 = "sealed-replay-dataset-admission-v1"
+POLICY_VERSION_V2 = "sealed-replay-dataset-admission-v2"
+POLICY_VERSION = POLICY_VERSION_V2
 MAX_CLOCK_SKEW = timedelta(minutes=5)
-REQUIRED_ROLES = {
+REQUIRED_ROLES = frozenset({
     "UNIVERSE_MEMBERSHIP",
     "DELISTING_OUTCOMES",
     "CORPORATE_ACTIONS",
     "TOTAL_RETURN_PRICES",
     "POINT_IN_TIME_FUNDAMENTALS",
     "MARKET_CALENDARS_AND_HALTS",
-}
-OPTIONAL_ROLES = {"RAW_DAILY_SESSION_BARS"}
+})
+# v1 admitted exactly the required roles plus raw session bars; v2 keeps that
+# alphabet and adds the six point-in-time roles below.  Neither set may shrink.
+OPTIONAL_ROLES = frozenset({"RAW_DAILY_SESSION_BARS"})
+_V2_ADDITIONAL_OPTIONAL_ROLES = frozenset({
+    "POINT_IN_TIME_ANALYST_AND_EARNINGS_ESTIMATES",
+    "POINT_IN_TIME_CORPORATE_EVENTS",
+    "POINT_IN_TIME_NEWS",
+    "POINT_IN_TIME_MACRO_SERIES",
+    "POINT_IN_TIME_SPECIALIST_RESEARCH",
+    "POINT_IN_TIME_SUPPLEMENTAL_PROVIDER_EVIDENCE",
+})
+OPTIONAL_ROLES_BY_POLICY_VERSION: Mapping[str, frozenset[str]] = MappingProxyType({
+    POLICY_VERSION_V1: OPTIONAL_ROLES,
+    POLICY_VERSION_V2: OPTIONAL_ROLES | _V2_ADDITIONAL_OPTIONAL_ROLES,
+})
 PLAN_UNIVERSES = {
     "SP500": {"SP500"},
     "NASDAQ100": {"NASDAQ100"},
     "SP500_AND_NASDAQ100": {"SP500", "NASDAQ100"},
 }
+
+
+def admittable_roles_for(policy_version: str) -> frozenset[str]:
+    """Return the immutable role alphabet a given admission policy version admits.
+
+    Any version that is not an exact known string fails closed; an admission is
+    never validated against a wider alphabet than the one it recorded.
+    """
+    if not isinstance(policy_version, str):
+        raise ValueError(
+            f"unsupported replay-dataset admission policy version: {policy_version!r}"
+        )
+    try:
+        optional_roles = OPTIONAL_ROLES_BY_POLICY_VERSION[policy_version]
+    except KeyError:
+        raise ValueError(
+            f"unsupported replay-dataset admission policy version: {policy_version!r}"
+        ) from None
+    return REQUIRED_ROLES | optional_roles
 
 
 def _canonical_json(value: Any) -> str:
@@ -67,14 +103,18 @@ def _write_all(descriptor: int, payload: bytes) -> None:
 
 def _normalise_artifacts(
     values: Sequence[Mapping[str, Any]],
+    policy_version: str,
 ) -> list[dict[str, str]]:
+    admittable = admittable_roles_for(policy_version)
     artifacts: list[dict[str, str]] = []
     seen_roles: set[str] = set()
     for value in values:
         role = _required(value.get("role"), "artifact role").upper()
         content_id = _required(value.get("content_evidence_id"), "content_evidence_id")
-        if role not in REQUIRED_ROLES | OPTIONAL_ROLES or role in seen_roles:
-            raise ValueError("dataset artifacts contain an unsupported or duplicate role reference")
+        if role in seen_roles:
+            raise ValueError("dataset artifacts contain a duplicate role reference")
+        if role not in admittable:
+            raise ValueError("dataset artifacts contain an unsupported role reference")
         artifacts.append({"role": role, "content_evidence_id": content_id})
         seen_roles.add(role)
     if not REQUIRED_ROLES.issubset({item["role"] for item in artifacts}):
@@ -102,7 +142,9 @@ def dataset_commitment(manifest_payload: bytes) -> str:
     return hashlib.sha256(manifest_payload).hexdigest()
 
 
-def _manifest(payload: bytes) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+def _manifest(
+    payload: bytes, policy_version: str
+) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
     try:
         value = json.loads(payload)
     except (UnicodeDecodeError, json.JSONDecodeError) as error:
@@ -117,7 +159,7 @@ def _manifest(payload: bytes) -> tuple[list[dict[str, str]], list[dict[str, str]
     ):
         raise ValueError("sealed dataset manifest type or version is unsupported")
     return (
-        _normalise_artifacts(value.get("artifacts") or []),
+        _normalise_artifacts(value.get("artifacts") or [], policy_version),
         _normalise_coverage_refs(value.get("coverage_references") or []),
     )
 
@@ -170,7 +212,24 @@ class ReplayDatasetAdmissionLedger:
         admitted_by: str,
         admitted_at: str | datetime | None = None,
         allow_existing: bool = True,
+        compatibility_policy_version: str | None = None,
     ) -> dict[str, Any]:
+        """Link verified prerequisites for one replay plan under the newest policy.
+
+        ``compatibility_policy_version`` is not a general version selector: it is
+        the single explicit facility for re-creating a superseded v1 admission
+        whose recorded bytes must stay identical.  Nothing else may stamp a
+        version other than :data:`POLICY_VERSION`.
+        """
+        policy_version = POLICY_VERSION
+        if compatibility_policy_version is not None:
+            admittable_roles_for(compatibility_policy_version)
+            if compatibility_policy_version != POLICY_VERSION_V1:
+                raise ValueError(
+                    "only the superseded v1 policy may be stamped for compatibility"
+                )
+            policy_version = POLICY_VERSION_V1
+        admittable_roles_for(policy_version)
         admitted = _timestamp(admitted_at or datetime.now(timezone.utc))
         now = datetime.now(timezone.utc)
         if not now - MAX_CLOCK_SKEW <= admitted <= now + MAX_CLOCK_SKEW:
@@ -181,6 +240,7 @@ class ReplayDatasetAdmissionLedger:
             terms_content_evidence_id=terms_content_evidence_id,
             dataset_manifest_content_evidence_id=dataset_manifest_content_evidence_id,
             admitted_at=admitted,
+            policy_version=policy_version,
         )
         commitment = prerequisites["manifest"]["source_input_sha256"]
         normalized_artifacts = prerequisites["artifacts"]
@@ -200,7 +260,7 @@ class ReplayDatasetAdmissionLedger:
         }
         record = {
             "schema_version": SCHEMA_VERSION,
-            "policy_version": POLICY_VERSION,
+            "policy_version": policy_version,
             "admission_id": "RDA-" + hashlib.sha256(
                 _canonical_json(identity).encode("utf-8")
             ).hexdigest()[:32].upper(),
@@ -234,6 +294,7 @@ class ReplayDatasetAdmissionLedger:
         terms_content_evidence_id: str,
         dataset_manifest_content_evidence_id: str,
         admitted_at: datetime,
+        policy_version: str,
     ) -> dict[str, Any]:
         plans = {item["replay_plan_id"]: item for item in self.plan_ledger.verify()}
         plan = plans.get(_required(replay_plan_id, "replay_plan_id"))
@@ -287,7 +348,7 @@ class ReplayDatasetAdmissionLedger:
         commitment = dataset_commitment(manifest_payload)
         if commitment != plan["sealed_evaluation_dataset_commitment_sha256"]:
             raise ValueError("sealed dataset manifest does not match the preregistered commitment")
-        artifacts, coverage_references = _manifest(manifest_payload)
+        artifacts, coverage_references = _manifest(manifest_payload, policy_version)
         artifact_records = []
         approved_hosts = set(approval["approved_data_hosts"])
         if urlsplit(manifest["source_uri"]).hostname not in approved_hosts:
@@ -376,6 +437,8 @@ class ReplayDatasetAdmissionLedger:
                 admitted = _timestamp(record.get("admitted_at"))
                 if admitted > datetime.now(timezone.utc) + MAX_CLOCK_SKEW:
                     raise ValueError("admitted_at cannot be in the future")
+                policy_version = record.get("policy_version")
+                admittable_roles_for(policy_version)
                 resolved = self._resolve(
                     replay_plan_id=record.get("replay_plan_id"),
                     source_approval_id=record.get("source_approval_id"),
@@ -384,6 +447,7 @@ class ReplayDatasetAdmissionLedger:
                         "dataset_manifest_content_evidence_id"
                     ),
                     admitted_at=admitted,
+                    policy_version=policy_version,
                 )
                 artifacts = resolved["artifacts"]
                 coverage_refs = resolved["coverage_references"]
@@ -420,7 +484,7 @@ class ReplayDatasetAdmissionLedger:
             )
             boundary = (
                 record.get("schema_version") == SCHEMA_VERSION
-                and record.get("policy_version") == POLICY_VERSION
+                and record.get("policy_version") in OPTIONAL_ROLES_BY_POLICY_VERSION
                 and record.get("record_type") == "SEALED_REPLAY_DATASET_METADATA_ADMISSION"
                 and record.get("status") == "PREREQUISITES_LINKED_AWAITING_CONTROLLED_REPLAY"
                 and record.get("admission_id") == expected_id

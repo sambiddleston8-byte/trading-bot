@@ -9,6 +9,11 @@ compares those needs with the roles the sealed dataset admission ledger can
 admit.  Engines whose needs cannot yet be met are reported as uncovered; they
 are never treated as satisfied.
 
+Coverage follows evidence, not permission: only a role an admission record
+actually carries as an authenticated artifact counts.  The record's own policy
+version merely bounds which roles it was allowed to carry, and is used solely to
+report the roles no such record could ever carry (``unadmittable_roles``).
+
 Callers must pass an admission record obtained from
 ``ReplayDatasetAdmissionLedger.verify()``.  This module structurally checks the
 identity, version and fixed-boundary fields such a record carries, but it opens
@@ -23,11 +28,17 @@ from typing import Any, Mapping
 
 from core.orchestration.active_pipeline_replay_context import REQUIRED_ENGINE_KEYS
 from core.orchestration.replay_dataset_admission import (
-    OPTIONAL_ROLES,
-    POLICY_VERSION as ADMISSION_POLICY_VERSION,
+    OPTIONAL_ROLES_BY_POLICY_VERSION as ADMISSION_OPTIONAL_ROLES_BY_POLICY_VERSION,
+    POLICY_VERSION_V1 as ADMISSION_POLICY_VERSION_V1,
+    POLICY_VERSION_V2 as ADMISSION_POLICY_VERSION_V2,
     REQUIRED_ROLES,
     SCHEMA_VERSION as ADMISSION_SCHEMA_VERSION,
+    admittable_roles_for,
 )
+
+# Retained for callers that still expect "the" admission policy version; new
+# admissions are v2, so this alias tracks the newest supported version.
+ADMISSION_POLICY_VERSION = ADMISSION_POLICY_VERSION_V2
 
 
 SCHEMA_VERSION = "1.0"
@@ -48,7 +59,11 @@ INPUT_KINDS = frozenset(
     {DATASET_ARTIFACTS, DERIVED_ONLY, SEALED_LEARNING_STATE, SEALED_SOURCE_EVIDENCE}
 )
 
-ADMITTED_ROLES = frozenset(REQUIRED_ROLES) | frozenset(OPTIONAL_ROLES)
+KNOWN_ADMISSION_POLICY_VERSIONS = frozenset(ADMISSION_OPTIONAL_ROLES_BY_POLICY_VERSION)
+# The broadest role alphabet any currently-supported admission policy can
+# admit; used to bound the engine contract itself, independent of any one
+# admission record's own (possibly older) policy version.
+NEWEST_ADMITTED_ROLES = admittable_roles_for(ADMISSION_POLICY_VERSION_V2)
 
 # Identity and boundary fields every real admission record carries.
 ADMISSION_IDENTITY_FIELDS = (
@@ -217,10 +232,17 @@ def declared_artifact_roles() -> frozenset[str]:
     return frozenset().union(*(roles for _, roles in REPLAY_ENGINE_INPUTS.values()))
 
 
-def unadmittable_roles() -> frozenset[str]:
-    """Return declared roles the admission ledger has no role definition for."""
+def unadmittable_roles(
+    policy_version: str = ADMISSION_POLICY_VERSION_V2,
+) -> frozenset[str]:
+    """Return declared roles the given admission policy version cannot admit.
 
-    return declared_artifact_roles() - ADMITTED_ROLES
+    The default reports the roles no currently-supported policy can admit; an
+    older version reports what a record stamped with that version could never
+    have carried.  An unknown version fails closed.
+    """
+
+    return declared_artifact_roles() - admittable_roles_for(policy_version)
 
 
 def verify_contract_integrity() -> None:
@@ -250,17 +272,24 @@ def verify_contract_integrity() -> None:
             raise ValueError(f"{key} consumes dataset artifacts but declares no role")
         if DATASET_ARTIFACTS not in kinds and roles:
             raise ValueError(f"{key} declares artifact roles but is not artifact-backed")
+        if not roles <= NEWEST_ADMITTED_ROLES:
+            raise ValueError(f"{key} declares a role outside the newest admission alphabet")
 
 
-def _admitted_roles(admission_record: Mapping[str, Any]) -> tuple[str, ...]:
+def _admitted_roles(admission_record: Mapping[str, Any]) -> tuple[tuple[str, ...], str]:
     """Structurally check one already-chain-verified admission record."""
 
     if not isinstance(admission_record, Mapping):
         raise ValueError("a verified replay-dataset admission record is required")
     if admission_record.get("schema_version") != ADMISSION_SCHEMA_VERSION:
         raise ValueError("admission record schema version is unsupported")
-    if admission_record.get("policy_version") != ADMISSION_POLICY_VERSION:
+    policy_version = admission_record.get("policy_version")
+    if (
+        not isinstance(policy_version, str)
+        or policy_version not in KNOWN_ADMISSION_POLICY_VERSIONS
+    ):
         raise ValueError("admission record policy version is unsupported")
+    admittable = admittable_roles_for(policy_version)
     if admission_record.get("record_type") != ADMISSION_RECORD_TYPE:
         raise ValueError("admission record type is not a sealed dataset admission")
     if admission_record.get("status") != ADMISSION_STATUS:
@@ -290,7 +319,7 @@ def _admitted_roles(admission_record: Mapping[str, Any]) -> tuple[str, ...]:
         identifier = str(artifact.get("content_evidence_id") or "").strip()
         if not role or not identifier:
             raise ValueError("each admitted artifact must name a role and content id")
-        if role not in ADMITTED_ROLES:
+        if role not in admittable:
             raise ValueError(f"admission record contains an unknown artifact role: {role}")
         if role in roles:
             raise ValueError(f"admission record repeats artifact role: {role}")
@@ -300,18 +329,30 @@ def _admitted_roles(admission_record: Mapping[str, Any]) -> tuple[str, ...]:
         raise ValueError(
             f"admission record is missing required artifact roles: {missing}"
         )
-    return tuple(sorted(roles))
+    return tuple(sorted(roles)), policy_version
 
 
 def _derive(
     contract_snapshot: tuple[tuple[str, tuple[str, ...], tuple[str, ...]], ...],
     admitted_roles: tuple[str, ...],
+    admission_policy_version: str,
 ) -> dict[str, tuple[Any, ...]]:
-    """Derive every result field from the snapshot and the admitted roles."""
+    """Derive every result field from the snapshot, the admitted roles and the
+    admission record's own policy version's role alphabet."""
 
+    admittable = admittable_roles_for(admission_policy_version)
     if {key for key, _, _ in contract_snapshot} != set(REQUIRED_ENGINE_KEYS):
         raise ValueError("contract snapshot must cover exactly the sealed engine keys")
     available = set(admitted_roles)
+    # The admitted roles must remain a self-consistent reading of a real record
+    # under its own policy version, so no copy can pair one version's alphabet
+    # with another version's artifacts.
+    if len(available) != len(admitted_roles) or list(admitted_roles) != sorted(available):
+        raise ValueError("admitted roles must be unique and sorted")
+    if not available <= admittable:
+        raise ValueError("admitted roles fall outside the admission policy alphabet")
+    if not REQUIRED_ROLES <= available:
+        raise ValueError("admitted roles must include every required artifact role")
     declared: set[str] = set()
     dataset: list[str] = []
     covered: list[str] = []
@@ -340,7 +381,7 @@ def _derive(
     return {
         "covered_engine_keys": tuple(covered),
         "uncovered_engine_role_pairs": tuple(sorted(uncovered)),
-        "unadmittable_roles": tuple(sorted(declared - ADMITTED_ROLES)),
+        "unadmittable_roles": tuple(sorted(declared - admittable)),
         "dataset_artifact_engine_keys": tuple(dataset),
         "derived_only_engine_keys": tuple(derived),
         "sealed_learning_state_engine_keys": tuple(learning),
@@ -353,6 +394,7 @@ class ReplayInputCoverage:
     """Inert coverage answer; it admits nothing and executes nothing."""
 
     admitted_roles: tuple[str, ...]
+    admission_policy_version: str
     covered_engine_keys: tuple[str, ...]
     uncovered_engine_role_pairs: tuple[tuple[str, str], ...]
     unadmittable_roles: tuple[str, ...]
@@ -371,7 +413,9 @@ class ReplayInputCoverage:
         # Spend the authority immediately so no copy of this object -- including
         # one made by dataclasses.replace -- can inherit a usable issuance right.
         object.__setattr__(self, "_authority", None)
-        expected = _derive(self.contract_snapshot, self.admitted_roles)
+        expected = _derive(
+            self.contract_snapshot, self.admitted_roles, self.admission_policy_version
+        )
         if {name: getattr(self, name) for name in expected} != expected:
             raise ValueError(
                 "coverage result fields do not match the sealed contract snapshot"
@@ -402,6 +446,7 @@ class ReplayInputCoverage:
                 else "REPLAY_INPUT_COVERAGE_INCOMPLETE_NOT_EXECUTED"
             ),
             "admitted_roles": list(self.admitted_roles),
+            "admission_policy_version": self.admission_policy_version,
             "covered_engine_keys": list(self.covered_engine_keys),
             "uncovered_engine_role_pairs": [
                 list(pair) for pair in self.uncovered_engine_role_pairs
@@ -446,12 +491,13 @@ def verify_replay_input_coverage(
     """
 
     verify_contract_integrity()
-    admitted = _admitted_roles(admission_record)
+    admitted, admission_policy_version = _admitted_roles(admission_record)
     snapshot = _snapshot()
 
     return ReplayInputCoverage(
         admitted_roles=admitted,
+        admission_policy_version=admission_policy_version,
         contract_snapshot=snapshot,
-        **_derive(snapshot, admitted),
+        **_derive(snapshot, admitted, admission_policy_version),
         _authority=_COVERAGE_AUTHORITY,
     )

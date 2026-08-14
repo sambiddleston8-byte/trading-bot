@@ -847,23 +847,26 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   derived-plus-sealed-learning-state, valuation quality is derived-plus-sealed-
   source-evidence, and authenticated sources is sealed source evidence only.
   Nine engines are artifact-backed and thirteen need no dataset artifact.
-  Against the admission ledger's six required roles, only market regime is
-  covered, and eight engines are uncovered: fundamental and valuation need
-  point-in-time analyst and earnings estimates (both import `AnalystSource` and
-  `EarningsSource`); market signals needs raw daily session bars, which the
-  ledger treats as optional, because it scores volume confirmation, volume ratio
-  and support/resistance; and news, catalyst, macro environment, specialist
-  research and supplemental evidence each need a role the ledger has no
-  definition for at all. Those needs are reported as uncovered and are never
-  treated as admitted. The issued answer carries a private construction
+  Admission policy v1 remains frozen for historical-ledger verification. New
+  admissions use v2, which adds optional point-in-time roles for analyst and
+  earnings estimates, corporate events, news, macro series, specialist research
+  and supplemental-provider evidence while retaining optional raw daily session
+  bars. Permission is not evidence: against a v2 admission containing only the
+  six required artifacts, only market regime is covered and the same eight
+  engines remain uncovered. Coverage changes only when a verified admission
+  actually contains the relevant authenticated artifact. The policy version is
+  carried into the deterministic coverage payload and digest; v1 records still
+  report the six newer roles as unadmittable, while v2 records report them as
+  admissible but absent. The issued answer carries a private construction
   authority, snapshots the whole engine kind and role mapping so later mutation
   cannot change its payload or digest, and structurally requires the identity,
   version and fixed-boundary fields a real admission record carries — though
   hash-chain verification remains the caller's prerequisite. The contract is
   pure and inert: it opens no dataset, reads no bytes and fixes dataset access,
   replay execution, performance-claim and broker/order/live authority false.
-  Admitting the missing roles or formally narrowing the preregistered pipeline
-  scope is the next decision before any point-in-time adapter is written.
+  No real data has been admitted under the new roles. Point-in-time adapter
+  boundaries are the next safe implementation step; they must not invent,
+  download or imply the existence of provider evidence.
 - A preregistered replay execution policy now derives the only permitted
   simulator configuration for each exact BASE or PESSIMISTIC scenario. The
   derived profile fixes risk limits, ATR sizing, commission, spread, at least

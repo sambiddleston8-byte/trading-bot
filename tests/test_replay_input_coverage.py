@@ -11,9 +11,13 @@ from core.orchestration.replay_input_coverage import (
     ADMISSION_FIXED_FALSE,
     ADMISSION_FIXED_TRUE,
     ADMISSION_IDENTITY_FIELDS,
+    ADMISSION_POLICY_VERSION,
+    ADMISSION_POLICY_VERSION_V1,
+    ADMISSION_POLICY_VERSION_V2,
     DATASET_ARTIFACTS,
     DERIVED_ONLY,
     FIXED_FALSE_FIELDS,
+    NEWEST_ADMITTED_ROLES,
     REPLAY_ENGINE_INPUTS,
     SEALED_LEARNING_STATE,
     SEALED_SOURCE_EVIDENCE,
@@ -26,6 +30,20 @@ from core.orchestration.replay_input_coverage import (
     verify_replay_input_coverage,
 )
 
+
+# The six point-in-time roles only a v2 admission may carry, and the full v2
+# alphabet a maximally-supplied admission would list.
+V2_ONLY_ROLES = (
+    "POINT_IN_TIME_ANALYST_AND_EARNINGS_ESTIMATES",
+    "POINT_IN_TIME_CORPORATE_EVENTS",
+    "POINT_IN_TIME_MACRO_SERIES",
+    "POINT_IN_TIME_NEWS",
+    "POINT_IN_TIME_SPECIALIST_RESEARCH",
+    "POINT_IN_TIME_SUPPLEMENTAL_PROVIDER_EVIDENCE",
+)
+ALL_V2_ROLES = tuple(
+    sorted(set(REQUIRED_ROLES) | set(OPTIONAL_ROLES) | set(V2_ONLY_ROLES))
+)
 
 EXPECTED_DATASET = (
     "catalyst",
@@ -65,13 +83,13 @@ EXPECTED_DERIVED = (
 )
 
 
-def admission(roles=None):
+def admission(roles=None, policy_version=ADMISSION_POLICY_VERSION):
     """Build one admission record shape; no ledger, no dataset, no bytes."""
 
     resolved = sorted(REQUIRED_ROLES) if roles is None else list(roles)
     return {
         "schema_version": module.ADMISSION_SCHEMA_VERSION,
-        "policy_version": module.ADMISSION_POLICY_VERSION,
+        "policy_version": policy_version,
         "record_type": module.ADMISSION_RECORD_TYPE,
         "status": module.ADMISSION_STATUS,
         **{name: f"VALUE-{name}" for name in ADMISSION_IDENTITY_FIELDS},
@@ -127,18 +145,56 @@ def test_hybrid_and_single_kind_dependencies_are_represented_exactly():
     )
 
 
-def test_current_admission_roles_leave_eight_engines_uncovered():
-    coverage = verify_replay_input_coverage(admission())
+@pytest.mark.parametrize(
+    "policy_version,expected_unadmittable",
+    [
+        (ADMISSION_POLICY_VERSION_V1, V2_ONLY_ROLES),
+        (ADMISSION_POLICY_VERSION_V2, ()),
+    ],
+)
+def test_required_only_admission_leaves_eight_engines_uncovered_under_both_policies(
+    policy_version, expected_unadmittable
+):
+    coverage = verify_replay_input_coverage(admission(policy_version=policy_version))
 
+    assert coverage.admission_policy_version == policy_version
     assert coverage.admitted_roles == tuple(sorted(REQUIRED_ROLES))
     assert coverage.covered_engine_keys == EXPECTED_COVERED
+    assert len(coverage.covered_engine_keys) == 1
     assert coverage.uncovered_engine_role_pairs == EXPECTED_UNCOVERED
+    assert len(coverage.uncovered_engine_role_pairs) == 8
     assert len(coverage.uncovered_engine_keys) == 8
+    assert coverage.unadmittable_roles == expected_unadmittable
+    assert len(coverage.unadmittable_roles) == len(expected_unadmittable)
     assert coverage.is_complete is False
 
 
+def test_unadmittable_roles_follow_the_record_policy_version():
+    v1 = verify_replay_input_coverage(
+        admission(policy_version=ADMISSION_POLICY_VERSION_V1)
+    )
+    v2 = verify_replay_input_coverage(
+        admission(policy_version=ADMISSION_POLICY_VERSION_V2)
+    )
+
+    # Identical artifacts, identical coverage -- only what could ever be
+    # admitted differs, and it is read off the record's own version.
+    assert v1.admitted_roles == v2.admitted_roles
+    assert v1.covered_engine_keys == v2.covered_engine_keys
+    assert v1.uncovered_engine_role_pairs == v2.uncovered_engine_role_pairs
+    assert v1.unadmittable_roles == V2_ONLY_ROLES
+    assert v2.unadmittable_roles == ()
+    assert unadmittable_roles(ADMISSION_POLICY_VERSION_V1) == frozenset(V2_ONLY_ROLES)
+    assert unadmittable_roles(ADMISSION_POLICY_VERSION_V2) == frozenset()
+    assert unadmittable_roles() == frozenset()
+    with pytest.raises(ValueError, match="unsupported replay-dataset admission policy"):
+        unadmittable_roles("sealed-replay-dataset-admission-v0")
+
+
 def test_uncovered_roles_are_reported_but_never_treated_as_admitted():
-    coverage = verify_replay_input_coverage(admission())
+    coverage = verify_replay_input_coverage(
+        admission(policy_version=ADMISSION_POLICY_VERSION_V1)
+    )
     needed = {role for _, role in coverage.uncovered_engine_role_pairs}
 
     assert set(coverage.unadmittable_roles) <= needed
@@ -147,8 +203,24 @@ def test_uncovered_roles_are_reported_but_never_treated_as_admitted():
     assert set(coverage.unadmittable_roles).isdisjoint(
         set(REQUIRED_ROLES) | set(OPTIONAL_ROLES)
     )
-    assert unadmittable_roles() == frozenset(coverage.unadmittable_roles)
     assert declared_artifact_roles() >= needed
+
+
+def test_policy_permission_alone_never_grants_coverage():
+    """v2 permits every declared role, yet permission covers nothing."""
+
+    coverage = verify_replay_input_coverage(admission())
+
+    assert coverage.admission_policy_version == ADMISSION_POLICY_VERSION_V2
+    assert declared_artifact_roles() <= NEWEST_ADMITTED_ROLES
+    assert coverage.unadmittable_roles == ()
+    # Every v2-only role is permitted and none is carried, so none is covered.
+    assert set(V2_ONLY_ROLES) <= {
+        role for _, role in coverage.uncovered_engine_role_pairs
+    }
+    assert set(V2_ONLY_ROLES).isdisjoint(coverage.admitted_roles)
+    assert coverage.covered_engine_keys == EXPECTED_COVERED
+    assert coverage.is_complete is False
 
 
 def test_optional_raw_session_bars_change_market_signal_coverage():
@@ -163,6 +235,117 @@ def test_optional_raw_session_bars_change_market_signal_coverage():
     assert "market_signals" not in with_bars.uncovered_engine_keys
     assert len(with_bars.uncovered_engine_role_pairs) == 7
     assert with_bars.is_complete is False
+
+
+def test_a_v2_only_news_artifact_covers_the_news_engine():
+    coverage = verify_replay_input_coverage(
+        admission(sorted(set(REQUIRED_ROLES) | {"POINT_IN_TIME_NEWS"}))
+    )
+
+    assert coverage.covered_engine_keys == ("market_regime", "news")
+    assert len(coverage.covered_engine_keys) == 2
+    assert len(coverage.uncovered_engine_role_pairs) == 7
+    assert "news" not in coverage.uncovered_engine_keys
+    assert coverage.unadmittable_roles == ()
+    assert coverage.is_complete is False
+
+
+def test_v1_rejects_v2_only_roles_that_v2_accepts():
+    roles = sorted(set(REQUIRED_ROLES) | {"POINT_IN_TIME_NEWS"})
+
+    with pytest.raises(ValueError, match="unknown artifact role: POINT_IN_TIME_NEWS"):
+        verify_replay_input_coverage(
+            admission(roles, policy_version=ADMISSION_POLICY_VERSION_V1)
+        )
+
+    covered = verify_replay_input_coverage(
+        admission(roles, policy_version=ADMISSION_POLICY_VERSION_V2)
+    )
+    assert "POINT_IN_TIME_NEWS" in covered.admitted_roles
+
+    # v1 still admits its own optional role, so the split is additive only.
+    bars = verify_replay_input_coverage(
+        admission(
+            sorted(set(REQUIRED_ROLES) | set(OPTIONAL_ROLES)),
+            policy_version=ADMISSION_POLICY_VERSION_V1,
+        )
+    )
+    assert bars.covered_engine_keys == ("market_regime", "market_signals")
+    assert bars.unadmittable_roles == V2_ONLY_ROLES
+
+
+def test_a_fully_supplied_v2_admission_covers_every_dataset_engine():
+    record = admission(ALL_V2_ROLES)
+    coverage = verify_replay_input_coverage(record)
+
+    assert len(record["artifacts"]) == 13
+    assert coverage.admitted_roles == ALL_V2_ROLES
+    assert len(coverage.admitted_roles) == 13
+    assert coverage.covered_engine_keys == EXPECTED_DATASET
+    assert len(coverage.covered_engine_keys) == 9
+    assert coverage.uncovered_engine_role_pairs == ()
+    assert coverage.uncovered_engine_keys == ()
+    assert coverage.unadmittable_roles == ()
+    assert coverage.is_complete is True
+
+    payload = coverage.as_dict()
+    assert payload["status"] == "REPLAY_INPUT_COVERAGE_COMPLETE_NOT_EXECUTED"
+    assert payload["faithful_replay_input_coverage_complete"] is True
+    assert payload["contract_is_inert"] is True
+    # Complete input coverage still grants no execution or trading authority.
+    assert all(payload[name] is False for name in FIXED_FALSE_FIELDS)
+    for name in (
+        "evaluation_dataset_opened",
+        "dataset_artifact_bytes_read",
+        "replay_executed",
+        "performance_calculated",
+        "performance_claim_allowed",
+        "paper_broker_submission_enabled",
+        "broker_connection_allowed",
+        "order_submitted",
+        "live_trading_enabled",
+    ):
+        assert payload[name] is False
+
+
+def test_admission_policy_version_is_derived_carried_and_hashed():
+    v1 = verify_replay_input_coverage(
+        admission(policy_version=ADMISSION_POLICY_VERSION_V1)
+    )
+    v2 = verify_replay_input_coverage(
+        admission(policy_version=ADMISSION_POLICY_VERSION_V2)
+    )
+
+    assert v1.admission_policy_version == ADMISSION_POLICY_VERSION_V1
+    assert v2.admission_policy_version == ADMISSION_POLICY_VERSION_V2
+    assert v1.as_dict()["admission_policy_version"] == ADMISSION_POLICY_VERSION_V1
+    assert v2.as_dict()["admission_policy_version"] == ADMISSION_POLICY_VERSION_V2
+    # The coverage policy version is this module's own and stays independent.
+    assert v1.as_dict()["policy_version"] == module.POLICY_VERSION
+    assert v2.as_dict()["policy_version"] == module.POLICY_VERSION
+    assert v1 != v2
+    assert v1.coverage_sha256() != v2.coverage_sha256()
+    assert v1.coverage_sha256() == verify_replay_input_coverage(
+        admission(policy_version=ADMISSION_POLICY_VERSION_V1)
+    ).coverage_sha256()
+
+
+@pytest.mark.parametrize(
+    "version",
+    [
+        "",
+        None,
+        3,
+        ["sealed-replay-dataset-admission-v1"],
+        "sealed-replay-dataset-admission-v0",
+        "sealed-replay-dataset-admission-v3",
+        "SEALED-REPLAY-DATASET-ADMISSION-V2",
+        "active-pipeline-replay-input-coverage-v2",
+    ],
+)
+def test_unknown_admission_policy_version_fails_closed(version):
+    with pytest.raises(ValueError, match="policy version is unsupported"):
+        verify_replay_input_coverage({**admission(), "policy_version": version})
 
 
 @pytest.mark.parametrize("dropped", sorted(REQUIRED_ROLES))
@@ -224,10 +407,18 @@ def test_admission_authority_flag_must_stay_false(name):
 def test_unknown_duplicate_or_misshaped_artifacts_fail_closed():
     unknown = admission()
     unknown["artifacts"].append(
-        {"role": "POINT_IN_TIME_NEWS", "content_evidence_id": "SRC-NEWS"}
+        {"role": "POINT_IN_TIME_SATELLITE_IMAGERY", "content_evidence_id": "SRC-SAT"}
     )
     with pytest.raises(ValueError, match="unknown artifact role"):
         verify_replay_input_coverage(unknown)
+
+    # "Unknown" is relative to the record's own version, never to the newest.
+    v1_only = admission(policy_version=ADMISSION_POLICY_VERSION_V1)
+    v1_only["artifacts"].append(
+        {"role": "POINT_IN_TIME_MACRO_SERIES", "content_evidence_id": "SRC-MACRO"}
+    )
+    with pytest.raises(ValueError, match="unknown artifact role"):
+        verify_replay_input_coverage(v1_only)
 
     duplicate = admission()
     duplicate["artifacts"].append(
@@ -250,6 +441,7 @@ def test_unknown_duplicate_or_misshaped_artifacts_fail_closed():
 def test_coverage_cannot_be_fabricated_by_direct_construction():
     fields = {
         "admitted_roles": (),
+        "admission_policy_version": ADMISSION_POLICY_VERSION_V2,
         "covered_engine_keys": tuple(sorted(REQUIRED_ENGINE_KEYS)),
         "uncovered_engine_role_pairs": (),
         "unadmittable_roles": (),
@@ -284,6 +476,8 @@ def test_issued_coverage_cannot_be_forged_through_dataclasses_replace():
         {"uncovered_engine_role_pairs": ()},
         {"covered_engine_keys": tuple(sorted(REQUIRED_ENGINE_KEYS))},
         {"admitted_roles": tuple(sorted(declared_artifact_roles()))},
+        {"admission_policy_version": ADMISSION_POLICY_VERSION_V1},
+        {"unadmittable_roles": ()},
         {},
     ):
         with pytest.raises(PermissionError, match="verify_replay_input_coverage"):
@@ -306,6 +500,41 @@ def test_replayed_authority_cannot_smuggle_inconsistent_result_fields():
         replace(issued, dataset_artifact_engine_keys=(), _authority=authority)
     with pytest.raises(ValueError, match="snapshot must cover exactly"):
         replace(issued, contract_snapshot=(), _authority=authority)
+
+    # A version swap cannot be smuggled in either: the v1 alphabet re-derives
+    # six unadmittable roles the stored answer does not carry.
+    with pytest.raises(ValueError, match="do not match the sealed contract snapshot"):
+        replace(
+            issued,
+            admission_policy_version=ADMISSION_POLICY_VERSION_V1,
+            _authority=authority,
+        )
+    with pytest.raises(ValueError, match="unsupported replay-dataset admission policy"):
+        replace(
+            issued,
+            admission_policy_version="sealed-replay-dataset-admission-v0",
+            _authority=authority,
+        )
+    # Nor may one version's alphabet be paired with another version's roles.
+    with pytest.raises(ValueError, match="outside the admission policy alphabet"):
+        replace(
+            issued,
+            admitted_roles=tuple(sorted(set(REQUIRED_ROLES) | {"POINT_IN_TIME_NEWS"})),
+            admission_policy_version=ADMISSION_POLICY_VERSION_V1,
+            _authority=authority,
+        )
+    with pytest.raises(ValueError, match="must be unique and sorted"):
+        replace(
+            issued,
+            admitted_roles=tuple(reversed(sorted(REQUIRED_ROLES))),
+            _authority=authority,
+        )
+    with pytest.raises(ValueError, match="must include every required artifact role"):
+        replace(
+            issued,
+            admitted_roles=tuple(sorted(REQUIRED_ROLES))[1:],
+            _authority=authority,
+        )
 
     faithful = replace(issued, _authority=authority)
     assert faithful == issued
@@ -334,6 +563,7 @@ def test_normal_issuance_remains_the_only_route_to_a_valid_answer():
         ("artifact_without_role", "declares no role"),
         ("derived_with_role", "not artifact-backed"),
         ("malformed_role", "malformed artifact role"),
+        ("role_outside_newest_alphabet", "outside the newest admission alphabet"),
     ],
 )
 def test_contract_drift_or_tampering_fails_closed(monkeypatch, mutation, fragment):
@@ -352,6 +582,13 @@ def test_contract_drift_or_tampering_fails_closed(monkeypatch, mutation, fragmen
         tampered["decision"] = (
             frozenset({DERIVED_ONLY}),
             frozenset({"TOTAL_RETURN_PRICES"}),
+        )
+    elif mutation == "role_outside_newest_alphabet":
+        # Well-formed but outside every supported alphabet: the contract may
+        # never claim a role no admission policy could ever admit.
+        tampered["news"] = (
+            frozenset({DATASET_ARTIFACTS}),
+            frozenset({"POINT_IN_TIME_SATELLITE_IMAGERY"}),
         )
     else:
         tampered["news"] = (
