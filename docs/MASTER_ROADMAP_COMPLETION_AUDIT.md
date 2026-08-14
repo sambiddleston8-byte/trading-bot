@@ -34,6 +34,18 @@ This is useful execution evidence for decisions that already exist, but it does
 not historically regenerate the research process, qualify source data, prove
 investment value or create a track record.
 
+The faithful active-pipeline route now also has an inert sealed-context
+prerequisite. It binds the verified replay plan and approved no-network image to
+every research-engine dependency, factor-lineage policy, strictly ordered
+preregistered in-window as-of schedule, Git/dependency identities and immutable
+learning/source-evidence digests. It
+fixes all write, fallback, degraded-completion, broker, promotion and
+performance authority false. Its full canonical dependency manifest is recorded
+once per plan in an append-only ledger before evaluation-data access, and the
+verified context remains embargoed from a future runner until the real access
+date. It does not execute the pipeline; fail-closed stage handling and context-
+backed dependency injection remain the next software step.
+
 ## Current provider-spending decision
 
 FMP and EODHD support answers now confirm that neither currently proves the
@@ -68,10 +80,11 @@ prevent continued use of current/free entitlements for supplementary research.
    point-in-time dataset covering membership removals, delistings, terminal
    outcomes, corporate actions, total return, corrections and market calendars.
 4. Use the recorded-decision adapter for bounded causal execution diagnostics,
-   then run the active pipeline itself through the no-network container under
-   its frozen preregistration and record mechanical out-of-sample and
-   robustness results. Do not treat the adapter as a substitute for replaying
-   research generation.
+   then wire the active pipeline fail-closed to its sealed replay context and
+   run it through the no-network container under its frozen preregistration.
+   Record only mechanical out-of-sample and robustness results. Do not treat the
+   adapter or the inert context as a substitute for replaying research
+   generation.
 5. Accumulate the fixed future shadow/paper evidence before any strategy
    promotion decision or performance claim.
 

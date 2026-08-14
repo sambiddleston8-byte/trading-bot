@@ -814,6 +814,24 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   This is a causal execution diagnostic for decisions that already exist. It
   does not recreate how the research decision was generated, qualify historical
   data, prove investment value or create a track record.
+- The next active-pipeline replay boundary is now explicit and fail-closed. An
+  inert canonical context must reconcile one verified replay plan with one
+  approved no-network runner image, the exact Git revision and dependency lock,
+  all 22 research-engine dependencies, the ambient factor-lineage policy, a
+  strictly ordered preregistered in-window as-of schedule, the sealed learning-
+  state digest and authenticated
+  source-ledger/blob-manifest digests. The master-decision and factor-lineage
+  identities must match their preregistered component identities. Network,
+  provider fallback, filesystem writes, mutable learning, degraded-stage
+  completion, broker/order/deployment/promotion and performance-claim authority
+  are all fixed false. The full canonical context is preregistered once per plan
+  in an append-only ledger before the plan's evaluation-data-access embargo;
+  the verified context is not released to a future runner until the real clock
+  reaches that embargo. The context intentionally has no execution method: it
+  closes the false-sealing and post-access engine-selection gaps identified by
+  Claude before dependency injection is added. The pipeline has not yet been
+  wired to the context, no image or real dataset has been admitted, and no
+  replay or performance claim exists.
 - A preregistered replay execution policy now derives the only permitted
   simulator configuration for each exact BASE or PESSIMISTIC scenario. The
   derived profile fixes risk limits, ATR sizing, commission, spread, at least
