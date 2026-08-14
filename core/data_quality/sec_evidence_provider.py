@@ -1,6 +1,6 @@
-import json
-import urllib.request
 from datetime import datetime, timezone
+
+from core.data_sources.sec_access import SECJSONClient
 
 
 class SECEvidenceProvider:
@@ -43,26 +43,9 @@ class SECEvidenceProvider:
         url,
     ):
 
-        request = urllib.request.Request(
-            url,
-            headers={
-                "User-Agent":
-                    cls.USER_AGENT,
-                "Accept":
-                    "application/json",
-            },
-        )
-
-        with urllib.request.urlopen(
-            request,
-            timeout=20,
-        ) as response:
-
-            return json.loads(
-                response.read().decode(
-                    "utf-8"
-                )
-            )
+        return SECJSONClient(
+            user_agent=cls.USER_AGENT,
+        ).get_json(url)
 
     # ========================================================
     # TICKER → CIK

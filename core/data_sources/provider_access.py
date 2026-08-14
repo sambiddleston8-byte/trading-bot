@@ -333,7 +333,10 @@ class ProviderAccessCoordinator:
         params: Mapping[str, Any] | None = None,
         headers: Mapping[str, str] | None = None,
         timeout: float = 20,
+        allow_redirects: bool | None = None,
     ) -> ProviderHTTPResult:
+        if allow_redirects is not None and not isinstance(allow_redirects, bool):
+            raise TypeError("allow_redirects must be a boolean or None")
         self._circuit_allows_request()
         started = self.clock()
         total_wait = 0.0
@@ -342,12 +345,14 @@ class ProviderAccessCoordinator:
         for attempt in range(1, self.policy.maximum_attempts + 1):
             total_wait += self._reserve_request_slot()
             try:
-                response = session.get(
-                    url,
-                    params=params,
-                    headers=headers,
-                    timeout=timeout,
-                )
+                request_kwargs = {
+                    "params": params,
+                    "headers": headers,
+                    "timeout": timeout,
+                }
+                if allow_redirects is not None:
+                    request_kwargs["allow_redirects"] = allow_redirects
+                response = session.get(url, **request_kwargs)
             except requests.RequestException:
                 if attempt < self.policy.maximum_attempts:
                     delay = self.policy.base_backoff_seconds * (2 ** (attempt - 1))

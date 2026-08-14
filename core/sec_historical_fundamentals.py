@@ -1,7 +1,4 @@
-import time
-
-import requests
-
+from core.data_sources.sec_access import SECJSONClient, SECProviderError
 from core.historical_fundamentals import HistoricalFundamentals
 
 
@@ -10,17 +7,15 @@ class SECHistoricalFundamentals:
     def __init__(
         self,
         user_agent="Sam Trading Bot research@example.com",
+        sec_client=None,
+        cache=None,
     ):
 
         self.user_agent = user_agent
 
-        self.headers = {
-            "User-Agent": self.user_agent,
-            "Accept-Encoding": "gzip, deflate",
-            "Accept": "application/json",
-        }
+        self.sec_client = sec_client or SECJSONClient(user_agent=user_agent)
 
-        self.cache = HistoricalFundamentals()
+        self.cache = cache or HistoricalFundamentals()
 
         self.company_tickers = {}
 
@@ -41,15 +36,7 @@ class SECHistoricalFundamentals:
 
             try:
 
-                response = requests.get(
-                    url,
-                    headers=self.headers,
-                    timeout=30,
-                )
-
-                response.raise_for_status()
-
-                data = response.json()
+                data = self.sec_client.get_json(url)
 
                 for item in data.values():
 
@@ -76,10 +63,10 @@ class SECHistoricalFundamentals:
 
                     return
 
-            except Exception as error:
+            except (SECProviderError, AttributeError, KeyError, TypeError, ValueError):
 
                 print(
-                    f"SEC mapping failed: {error}"
+                    "SEC mapping failed."
                 )
 
         # Known fallback mappings
@@ -144,26 +131,12 @@ class SECHistoricalFundamentals:
 
         try:
 
-            response = requests.get(
-                url,
-                headers=self.headers,
-                timeout=30,
-            )
+            return self.sec_client.get_json(url)
 
-            response.raise_for_status()
-
-            time.sleep(0.15)
-
-            return response.json()
-
-        except Exception as error:
+        except (SECProviderError, TypeError, ValueError):
 
             print(
-                f"{symbol}: SEC company facts failed:"
-            )
-
-            print(
-                error
+                f"{symbol}: SEC company facts failed."
             )
 
             return {}
