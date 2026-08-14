@@ -6,13 +6,13 @@ from core.orchestration.replay_execution_policy import ReplayExecutionPolicy
 SCENARIOS = {
     "BASE": {
         "commission_bps_per_side": "1", "spread_bps_per_side": "2",
-        "slippage_bps_per_side": "3", "latency_bps_per_side": "1",
+        "slippage_bps_per_side": "10", "latency_bps_per_side": "1",
         "market_impact_bps_per_side": "2", "maximum_volume_participation_rate": "0.05",
         "maximum_order_age_minutes": "30",
     },
     "PESSIMISTIC": {
         "commission_bps_per_side": "2", "spread_bps_per_side": "4",
-        "slippage_bps_per_side": "6", "latency_bps_per_side": "2",
+        "slippage_bps_per_side": "20", "latency_bps_per_side": "2",
         "market_impact_bps_per_side": "4", "maximum_volume_participation_rate": "0.02",
         "maximum_order_age_minutes": "60",
     },
@@ -51,8 +51,9 @@ def test_identity_is_deterministic():
 
 @pytest.mark.parametrize("changes,fragment", [
     ({"BASE": {"spread_bps_per_side": "0.5"}}, "at least 1"),
+    ({"BASE": {"slippage_bps_per_side": "9.9"}}, "0.10%"),
     ({"BASE": {"maximum_volume_participation_rate": "0.11"}}, "10%"),
-    ({"PESSIMISTIC": {"slippage_bps_per_side": "5"}}, "twice"),
+    ({"PESSIMISTIC": {"slippage_bps_per_side": "19"}}, "twice"),
     ({"PESSIMISTIC": {"maximum_volume_participation_rate": "0.06"}}, "must not exceed"),
     ({"PESSIMISTIC": {"maximum_order_age_minutes": "20"}}, "must not be shorter"),
 ])

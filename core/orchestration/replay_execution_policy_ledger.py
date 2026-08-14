@@ -17,7 +17,7 @@ from core.orchestration.replay_execution_policy import ReplayExecutionPolicy
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "preregistered-replay-execution-policy-v1"
+POLICY_VERSION = "preregistered-replay-execution-policy-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 BASE_TO_PLAN_COST = {
     "commission_bps_per_side": "commission_bps_per_side",

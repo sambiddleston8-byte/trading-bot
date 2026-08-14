@@ -8,10 +8,11 @@ import json
 from typing import Any, Mapping
 
 
-POLICY_VERSION = "next-tradable-participation-capped-execution-v1"
+POLICY_VERSION = "next-tradable-participation-capped-execution-v2"
 SCENARIOS = ("BASE", "PESSIMISTIC")
 MINIMUM_COST_BPS = Decimal("1")
 MAXIMUM_PARTICIPATION_RATE = Decimal("0.10")
+MINIMUM_BASELINE_SLIPPAGE_BPS = Decimal("10")
 
 
 def _canonical_json(value: Any) -> str:
@@ -63,6 +64,10 @@ def _scenario(name: str, value: Mapping[str, Any]) -> dict[str, str]:
         )
     ):
         raise ValueError(f"{name} non-commission costs must each be at least 1 basis point")
+    if Decimal(result["slippage_bps_per_side"]) < MINIMUM_BASELINE_SLIPPAGE_BPS:
+        raise ValueError(
+            f"{name} slippage must be at least 10 basis points (0.10%)"
+        )
     if Decimal(result["maximum_volume_participation_rate"]) > MAXIMUM_PARTICIPATION_RATE:
         raise ValueError(f"{name} maximum participation cannot exceed 10%")
     return result

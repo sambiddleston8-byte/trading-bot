@@ -9,13 +9,13 @@ from core.orchestration.replay_execution_policy_ledger import ReplayExecutionPol
 SCENARIOS = {
     "BASE": {
         "commission_bps_per_side": "1", "spread_bps_per_side": "2",
-        "slippage_bps_per_side": "3", "latency_bps_per_side": "1",
+        "slippage_bps_per_side": "10", "latency_bps_per_side": "1",
         "market_impact_bps_per_side": "2", "maximum_volume_participation_rate": "0.05",
         "maximum_order_age_minutes": "30",
     },
     "PESSIMISTIC": {
         "commission_bps_per_side": "2", "spread_bps_per_side": "4",
-        "slippage_bps_per_side": "6", "latency_bps_per_side": "2",
+        "slippage_bps_per_side": "20", "latency_bps_per_side": "2",
         "market_impact_bps_per_side": "4", "maximum_volume_participation_rate": "0.02",
         "maximum_order_age_minutes": "60",
     },
@@ -39,7 +39,7 @@ def plan(access=None):
         "cost_model": {
             "commission_bps_per_side": "1.0",
             "bid_ask_half_spread_bps_per_side": "2.00",
-            "slippage_bps_per_side": "3", "latency_bps_per_side": "1",
+            "slippage_bps_per_side": "10", "latency_bps_per_side": "1",
             "market_impact_bps_per_side": "2", "pessimistic_cost_multiplier": "2.0",
         },
     }
