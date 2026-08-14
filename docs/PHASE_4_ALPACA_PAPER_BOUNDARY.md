@@ -115,6 +115,29 @@ provided. Missing credentials return `NOT_CONFIGURED`; unsupported status,
 currency, schema or any non-paper endpoint fails closed. This adds no broker
 connection by itself and enables no trading.
 
+## Unauthenticated exact-byte capture admission
+
+The first broker-evidence admission stage can retain exact operator-supplied
+bytes representing an Alpaca PAPER `/v2/account` response. It performs no
+network request, reads no credential and accepts no other broker, environment,
+endpoint shape or capture method. The payload must be strict JSON with one exact
+non-empty string account ID matching the caller's hashed account reference.
+
+The raw payload is content-addressed and stored in an owner-only, read-only blob;
+the append-only ledger stores its hash, byte length and non-identifying local
+attestor rather than the account ID. File links, ambiguous JSON, weak permissions,
+oversized content, conflicting observation times and later tampering fail closed.
+
+This proves only that particular local bytes were retained unchanged. It does
+not prove that Alpaca produced them, that transport was authenticated, that the
+account is reconciled or that cash is settled. Every authenticity, settlement,
+reconciliation, recommendation, review and trading-authority flag remains
+false. No real broker payload has been admitted. A later, separately reviewed
+stage must reconcile an authenticated capture to semantic account, position,
+order and settlement evidence. Until then, the operator-supplied settled-cash
+input used by the combined assessment remains unauthenticated and the assessment
+must stay blocked.
+
 ## Inactive risk policy and account-scoped stop foundation
 
 Phase 4 now also has a human-preregistered paper-risk policy and a one-way local

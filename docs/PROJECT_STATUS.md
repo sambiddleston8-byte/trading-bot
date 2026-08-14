@@ -1022,6 +1022,17 @@ host, returns hashed account/payload references and has no order method. Because
 the account response alone does not prove settled versus unsettled cash, it
 requires separate exact settlement evidence before recording a cash snapshot.
 
+The first paper-broker evidence-admission stage now retains exact
+operator-supplied Alpaca PAPER account-response bytes in owner-only,
+content-addressed storage and records only their hashes in a tamper-evident
+ledger. Strict JSON identity binding, file-link and permission checks, size
+limits and forward-only observations protect the local evidence. This is
+explicitly unauthenticated byte retention, not proof of broker origin,
+reconciliation, settlement or readiness. No real payload has been admitted;
+the second semantic reconciliation stage is not implemented, and the existing
+operator-supplied settled-cash input remains unauthenticated. Credentials,
+network access, recommendations and all order or trading authority remain off.
+
 Phase 4 now also has an inactive provider-paper risk-policy foundation and a
 one-way account-scoped local stop. A human must supply every future limit; the
 record binds exact order, position, gross-exposure, daily-loss and snapshot-age

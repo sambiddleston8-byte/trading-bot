@@ -43,6 +43,7 @@ from core.broker.provider_paper_execution_stress_evidence import (
 from core.broker.provider_paper_operational_assessment import (
     ProviderPaperOperationalAssessmentLedger,
 )
+from core.broker.paper_broker_capture import PaperBrokerCaptureLedger
 
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
@@ -66,4 +67,5 @@ __all__ = [
     "ProviderPaperExecutionStressPolicyLedger",
     "ProviderPaperExecutionStressEvidenceLedger",
     "ProviderPaperOperationalAssessmentLedger",
+    "PaperBrokerCaptureLedger",
 ]
