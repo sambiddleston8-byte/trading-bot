@@ -47,6 +47,11 @@ from core.broker.paper_broker_capture import PaperBrokerCaptureLedger
 from core.broker.paper_broker_account_reconciliation import (
     PaperBrokerAccountReconciliationLedger,
 )
+from core.broker.provider_paper_evidence_collection import (
+    AlpacaPaperReadOnlyCollector,
+    PaperEvidenceCollectionError,
+    PaperReadOnlyCollectionBundleLedger,
+)
 
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
@@ -72,4 +77,7 @@ __all__ = [
     "ProviderPaperOperationalAssessmentLedger",
     "PaperBrokerCaptureLedger",
     "PaperBrokerAccountReconciliationLedger",
+    "AlpacaPaperReadOnlyCollector",
+    "PaperEvidenceCollectionError",
+    "PaperReadOnlyCollectionBundleLedger",
 ]
