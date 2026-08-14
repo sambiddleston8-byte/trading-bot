@@ -334,7 +334,8 @@ pessimistic cost stress and fixed acceptance/rejection metrics. Random splits,
 test-period reuse, metric substitution and optional stopping are prohibited.
 Registration must match the actual append time, each Git revision gets only one
 binding plan, non-commission costs have conservative one-basis-point minimums,
-and the pessimistic stress multiplier is at least two.
+baseline slippage separately has a 10-basis-point floor, and the pessimistic
+stress multiplier is at least two.
 
 This is a plan boundary, not a backtest. Historical-universe source approval
 remains required, no real evaluation dataset is opened, no replay is executed,
@@ -353,6 +354,18 @@ cancellations, cash/position/settlement/fractional-share checks and applicable
 regulatory or borrow costs. Base and pessimistic scenarios are separate; each
 pessimistic cost is at least twice base and must pass. This is a policy only:
 it generates no fill, performance result, broker request or order.
+
+The authenticated simulator now derives its exact configuration from that
+preregistered execution policy instead of accepting caller-selected costs. The
+BASE profile has a 0.10% minimum adverse slippage floor and both scenarios bind
+commission, spread, latency, nonlinear lagged-liquidity impact, participation,
+maximum order age, settlement and stop treatment. The immutable run audit
+recomputes these execution economics and remains incomplete until the same
+authenticated plan, strategy, dataset and Git revision have both BASE and
+PESSIMISTIC records. If daily bars cannot demonstrate execution or cancellation
+within the declared age window, the simulator rejects the run rather than
+inventing an intraday fill. This still creates no performance or promotion
+claim, and no real replay has been executed.
 
 Historical replay data now also has an immutable human source-approval
 boundary. Approval pins the provider/product, provider and terms URLs, exact

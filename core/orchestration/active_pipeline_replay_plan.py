@@ -16,10 +16,11 @@ from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_t
 
 
 SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "faithful-active-pipeline-replay-preregistration-v2"
+POLICY_VERSION = "faithful-active-pipeline-replay-preregistration-v3"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 MINIMUM_EVALUATION_SPAN = timedelta(days=90)
 MINIMUM_NON_COMMISSION_COST_BPS = Decimal("1")
+MINIMUM_BASELINE_SLIPPAGE_BPS = Decimal("10")
 MINIMUM_PESSIMISTIC_COST_MULTIPLIER = Decimal("2")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 GIT_PATTERN = re.compile(r"^[0-9a-f]{40,64}$")
@@ -252,6 +253,11 @@ class ActivePipelineReplayPlanLedger:
         ):
             raise ValueError("every non-commission cost must be at least 1 basis point")
         if (
+            Decimal(cost_model["slippage_bps_per_side"])
+            < MINIMUM_BASELINE_SLIPPAGE_BPS
+        ):
+            raise ValueError("baseline slippage must be at least 10 basis points (0.10%)")
+        if (
             Decimal(cost_model["pessimistic_cost_multiplier"])
             < MINIMUM_PESSIMISTIC_COST_MULTIPLIER
         ):
@@ -381,6 +387,8 @@ class ActivePipelineReplayPlanLedger:
                         "latency_bps_per_side", "market_impact_bps_per_side",
                     )
                 )
+                and Decimal(identity["cost_model"]["slippage_bps_per_side"])
+                >= MINIMUM_BASELINE_SLIPPAGE_BPS
                 and Decimal(identity["cost_model"]["pessimistic_cost_multiplier"])
                 >= MINIMUM_PESSIMISTIC_COST_MULTIPLIER
                 and registered <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW

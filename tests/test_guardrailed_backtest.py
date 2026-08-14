@@ -141,6 +141,7 @@ def test_signal_uses_closed_history_and_executes_at_next_open_with_costs():
     assert buy.total_adverse_execution_bps == (
         buy.bid_ask_half_spread_bps
         + buy.baseline_slippage_bps
+        + buy.latency_adverse_bps
         + buy.liquidity_impact_bps
     )
     assert sell.signal_at == market[6].close_at
@@ -333,6 +334,50 @@ def test_base_and_pessimistic_scenarios_are_separate_and_pessimistic_is_costlier
     assert results["BASE"].execution_scenario == "BASE"
     assert results["PESSIMISTIC"].execution_scenario == "PESSIMISTIC"
     assert results["PESSIMISTIC"].ending_equity <= results["BASE"].ending_equity
+    assert results["BASE"].fee_schedule_id != results["PESSIMISTIC"].fee_schedule_id
+    pessimistic_buy = next(
+        row for row in results["PESSIMISTIC"].executions if row.action == "BUY"
+    )
+    assert pessimistic_buy.latency_adverse_bps >= Decimal("2")
+
+
+def test_authenticated_comparison_requires_exact_policy_derived_profiles():
+    market = bars(12)
+    base = engine()
+    authenticated = GuardrailedBacktestEngine(
+        config=base.config,
+        fee_schedule=ExchangeFeeSchedule(
+            "REXP-1-BASE-COMMISSION", base.fee_schedule.tiers
+        ),
+        data_attestation=base.data_attestation,
+    )
+    with pytest.raises(ValueError, match="exact policy-derived"):
+        authenticated.run_base_and_pessimistic(
+            bars=market,
+            universe_events=membership(),
+            terminal_outcomes=[],
+            corporate_actions=[],
+            prices_are_unadjusted=True,
+            strategy=EnterThenExit(),
+            parameters={"enter_on_history_count": 4, "exit_on_history_count": 7},
+            evaluation_start=market[0].close_at,
+            evaluation_end=market[9].open_at,
+        )
+
+
+def test_daily_engine_fails_closed_when_order_age_requires_missing_intraday_data():
+    market = bars(12)
+    with pytest.raises(ValueError, match="daily bars cannot safely infer"):
+        run(
+            engine(maximum_order_age_minutes=Decimal("60")),
+            bars=market,
+            universe_events=membership(),
+            terminal_outcomes=[],
+            strategy=EnterThenExit(),
+            parameters={"enter_on_history_count": 4, "exit_on_history_count": 7},
+            evaluation_start=market[0].close_at,
+            evaluation_end=market[9].open_at,
+        )
 
 
 def test_lagged_liquidity_caps_and_cancels_entry_remainder():
@@ -402,6 +447,63 @@ def test_terminal_outcome_realises_bankruptcy_recovery_without_survivor_drop():
     assert result.completed_trades[0].exit_reason == "BANKRUPT"
     assert result.completed_trades[0].exit_net_proceeds == 0
     assert result.completed_trades[0].return_rate == -1
+
+
+def test_mid_session_terminal_outcome_is_recorded_when_the_engine_processes_it():
+    market = bars(9)
+    effective_at = market[5].open_at + timedelta(hours=3)
+    terminal = TerminalOutcome(
+        "AAA", "DELISTED", effective_at, market[5].open_at,
+        Decimal("0"), market[7].open_at, "terminal:mid-session",
+    )
+    result = run(
+        engine(),
+        bars=market,
+        universe_events=membership(),
+        terminal_outcomes=[terminal],
+        strategy=EnterThenExit(),
+        parameters={"enter_on_history_count": 4, "exit_on_history_count": 99},
+        evaluation_start=market[0].close_at,
+        evaluation_end=market[8].open_at,
+    )
+    execution = next(
+        row for row in result.executions if row.action == "TERMINAL_SETTLEMENT"
+    )
+    sizing = next(
+        row for row in result.sizing_decisions if row.action == "TERMINAL_SETTLEMENT"
+    )
+    assert result.completed_trades[0].closed_at == effective_at
+    assert execution.executed_at == market[6].open_at
+    assert sizing.evaluated_at == market[6].open_at
+    assert list(row.as_of_at for row in result.portfolio_states) == sorted(
+        row.as_of_at for row in result.portfolio_states
+    )
+
+
+def test_final_session_terminal_outcome_is_recorded_at_the_evaluation_boundary():
+    market = bars(7)
+    effective_at = market[6].open_at + timedelta(hours=3)
+    evaluation_end = market[6].open_at + timedelta(hours=4)
+    terminal = TerminalOutcome(
+        "AAA", "DELISTED", effective_at, market[6].open_at,
+        Decimal("0"), evaluation_end, "terminal:final-session",
+    )
+    result = run(
+        engine(),
+        bars=market,
+        universe_events=membership(),
+        terminal_outcomes=[terminal],
+        strategy=EnterThenExit(),
+        parameters={"enter_on_history_count": 4, "exit_on_history_count": 99},
+        evaluation_start=market[0].close_at,
+        evaluation_end=evaluation_end,
+    )
+    execution = next(
+        row for row in result.executions if row.action == "TERMINAL_SETTLEMENT"
+    )
+    assert result.completed_trades[0].closed_at == effective_at
+    assert execution.executed_at == evaluation_end
+    assert result.portfolio_states[-1].as_of_at == evaluation_end
 
 
 def test_terminal_outcome_cannot_be_published_after_effective_date():

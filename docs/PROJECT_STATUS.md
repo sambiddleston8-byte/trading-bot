@@ -149,8 +149,9 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   impact costs, pessimistic stress and fixed success/failure metrics. It cannot
   open the test data, execute a replay, claim performance or connect to a
   broker. Plans cannot be backdated or shopped: a frozen Git revision gets one
-  binding plan, with minimum non-commission costs and at least 2x pessimistic
-  stress. A real plan awaits an approved historical-universe source and a
+  binding plan, with minimum non-commission costs, a separate 0.10% baseline
+  slippage floor and at least 2x pessimistic stress. A real plan awaits an
+  approved historical-universe source and a
   genuinely sealed dataset.
 - Deterministic purged and embargoed forward folds now prevent long-horizon
   outcomes from leaking across training/test boundaries. Each observation pins
@@ -779,6 +780,20 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   route, but no real strategy has been preregistered and no sealed replay has
   run. Claude passed the ledger and binding reviews after retracting a proposed
   date-type defect that the canonical conversion and regression tests disproved.
+- A preregistered replay execution policy now derives the only permitted
+  simulator configuration for each exact BASE or PESSIMISTIC scenario. The
+  derived profile fixes risk limits, ATR sizing, commission, spread, at least
+  0.10% baseline slippage, latency, nonlinear lagged-liquidity impact,
+  participation, settlement, order age and stop-pierce treatment; it also pins
+  the complete canonical configuration and fee schedule hash. A daily-bar run
+  fails closed if the declared maximum order age expires before the next bar,
+  because the missing intraday cancellation cannot be reconstructed safely.
+  Replay-run audit policy v3 revalidates the execution-policy parent and exact
+  per-fill economics, and a separate completeness gate requires one matching
+  BASE/PESSIMISTIC pair before the replay is considered complete. This creates
+  no performance claim, paper-trading approval, broker request or live-trading
+  authority. No real replay has been run, and Claude review is still required
+  before this bounded implementation can be merged.
 
 ## Safety invariants
 

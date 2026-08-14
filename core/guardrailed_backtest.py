@@ -396,12 +396,14 @@ class BacktestConfig:
     atr_stop_multiple: Decimal = Decimal("2")
     baseline_slippage_bps: Decimal = Decimal("10")
     bid_ask_half_spread_bps: Decimal = Decimal("5")
+    latency_adverse_bps: Decimal = Decimal("0")
     liquidity_impact_bps_at_max_participation: Decimal = Decimal("10")
     stop_pierce_fill_fraction: Decimal = Decimal("0.5")
     lagged_liquidity_lookback: int = 20
     maximum_lagged_volume_participation: Decimal = Decimal("0.02")
     allow_fractional_shares: bool = False
     cash_settlement_sessions: int = 1
+    maximum_order_age_minutes: Decimal = Decimal("10080")
     execution_scenario: str = "BASE"
 
     def __post_init__(self) -> None:
@@ -412,9 +414,11 @@ class BacktestConfig:
             ("atr_stop_multiple", True),
             ("baseline_slippage_bps", True),
             ("bid_ask_half_spread_bps", True),
+            ("latency_adverse_bps", False),
             ("liquidity_impact_bps_at_max_participation", True),
             ("maximum_lagged_volume_participation", True),
             ("stop_pierce_fill_fraction", False),
+            ("maximum_order_age_minutes", True),
         ):
             object.__setattr__(self, name, _decimal(getattr(self, name), name, positive=positive))
         if self.max_equity_risk_per_trade > Decimal("0.01"):
@@ -484,6 +488,7 @@ class ExecutionRecord:
     lagged_liquidity_notional: Decimal
     bid_ask_half_spread_bps: Decimal
     baseline_slippage_bps: Decimal
+    latency_adverse_bps: Decimal
     liquidity_impact_bps: Decimal
     total_adverse_execution_bps: Decimal
 
@@ -566,6 +571,7 @@ class BacktestResult:
     evidence_role_hashes: tuple[tuple[str, str], ...] = ()
     engine_policy_version: str = ENGINE_POLICY_VERSION
     engine_config_sha256: str = ""
+    engine_config_canonical_json: str = ""
     strategy_entrypoint: str = ""
     strategy_source_sha256: str = ""
     no_lookahead_contract_enforced: bool = True
@@ -620,8 +626,27 @@ def _execution_cost_bps(
     )
     normalized = min(ONE, participation / config.maximum_lagged_volume_participation)
     impact = config.liquidity_impact_bps_at_max_participation * normalized * normalized
-    total = config.bid_ask_half_spread_bps + config.baseline_slippage_bps + impact
+    total = (
+        config.bid_ask_half_spread_bps
+        + config.baseline_slippage_bps
+        + config.latency_adverse_bps
+        + impact
+    )
     return impact, total
+
+
+def canonical_engine_configuration(
+    config: BacktestConfig,
+    fee_schedule: ExchangeFeeSchedule,
+) -> str:
+    return _canonical_json({
+        "engine_policy_version": ENGINE_POLICY_VERSION,
+        "config": config.__dict__,
+        "fee_schedule": {
+            "schedule_id": fee_schedule.schedule_id,
+            "tiers": [tier.__dict__ for tier in fee_schedule.tiers],
+        },
+    })
 
 
 def _drawdown(curve: Sequence[Decimal]) -> Decimal:
@@ -825,6 +850,7 @@ class GuardrailedBacktestEngine:
                     requested, ZERO, ZERO, "REJECTED", liquidity,
                     self.config.bid_ask_half_spread_bps,
                     self.config.baseline_slippage_bps,
+                    self.config.latency_adverse_bps,
                     impact_bps, total_cost_bps,
                 )
             )
@@ -866,6 +892,7 @@ class GuardrailedBacktestEngine:
                     ZERO, ZERO, ZERO, "REJECTED", liquidity,
                     self.config.bid_ask_half_spread_bps,
                     self.config.baseline_slippage_bps,
+                    self.config.latency_adverse_bps,
                     impact_bps, total_cost_bps,
                 )
             )
@@ -936,6 +963,7 @@ class GuardrailedBacktestEngine:
                     liquidity,
                     self.config.bid_ask_half_spread_bps,
                     self.config.baseline_slippage_bps,
+                    self.config.latency_adverse_bps,
                     impact_bps,
                     total_cost_bps,
                 )
@@ -1070,6 +1098,7 @@ class GuardrailedBacktestEngine:
 
             outcome = terminal_by_symbol.get(symbol)
             if outcome and outcome.effective_at <= bar.open_at and symbol not in terminated:
+                processed_at = bar.open_at
                 terminated.add(symbol)
                 pending.pop(symbol, None)
                 if symbol in positions:
@@ -1099,10 +1128,10 @@ class GuardrailedBacktestEngine:
                     executions.append(
                         ExecutionRecord(
                             symbol, "TERMINAL_SETTLEMENT", outcome.terminal_type,
-                            outcome.available_at, outcome.effective_at,
+                            outcome.available_at, processed_at,
                             outcome.recovery_per_share, outcome.recovery_per_share,
                             position.quantity, position.quantity, ZERO, "FILLED", ZERO,
-                            ZERO, ZERO, ZERO, ZERO,
+                            ZERO, ZERO, ZERO, ZERO, ZERO,
                         )
                     )
                     sizing_decisions.append(
@@ -1110,7 +1139,7 @@ class GuardrailedBacktestEngine:
                             symbol=symbol, action="TERMINAL_SETTLEMENT",
                             reason=outcome.terminal_type,
                             signal_at=outcome.available_at,
-                            evaluated_at=outcome.effective_at,
+                            evaluated_at=processed_at,
                             portfolio_equity_before=portfolio_equity_before,
                             settled_cash_before=settled_before,
                             unsettled_cash_before=unsettled_before,
@@ -1125,7 +1154,7 @@ class GuardrailedBacktestEngine:
                             stop_price_after=None,
                         )
                     )
-                    snapshot("TERMINAL_SETTLEMENT", outcome.effective_at, symbol)
+                    snapshot("TERMINAL_SETTLEMENT", processed_at, symbol)
 
             if bar.open_at >= end and symbol in positions:
                 pending[symbol] = ("EXIT_LONG", "EVALUATION_END", end, None)
@@ -1138,6 +1167,14 @@ class GuardrailedBacktestEngine:
             capacity_notional = liquidity * self.config.maximum_lagged_volume_participation
             if order and (bar.open_at < end or order[0] == "EXIT_LONG"):
                 action, reason, signal_at, stored_atr = order
+                order_age_seconds = Decimal(
+                    str((bar.open_at - signal_at).total_seconds())
+                )
+                if order_age_seconds > self.config.maximum_order_age_minutes * Decimal("60"):
+                    raise ValueError(
+                        "pending order exceeded the configured maximum age; "
+                        "daily bars cannot safely infer the missing intraday cancellation"
+                    )
                 if action == "ENTER_LONG" and symbol not in positions:
                     atr = stored_atr
                     portfolio_equity = equity()
@@ -1183,6 +1220,7 @@ class GuardrailedBacktestEngine:
                         maximum_cost_bps = (
                             self.config.bid_ask_half_spread_bps
                             + self.config.baseline_slippage_bps
+                            + self.config.latency_adverse_bps
                             + self.config.liquidity_impact_bps_at_max_participation
                         )
                         maximum_price = _adverse_price(bar.open, "BUY", maximum_cost_bps)
@@ -1253,6 +1291,7 @@ class GuardrailedBacktestEngine:
                                 liquidity,
                                 self.config.bid_ask_half_spread_bps,
                                 self.config.baseline_slippage_bps,
+                                self.config.latency_adverse_bps,
                                 impact_bps,
                                 total_cost_bps,
                             )
@@ -1343,6 +1382,12 @@ class GuardrailedBacktestEngine:
 
         for outcome in outcomes:
             if outcome.symbol in positions and outcome.effective_at <= end:
+                latest_state_at = (
+                    portfolio_states[-1].as_of_at
+                    if portfolio_states
+                    else outcome.effective_at
+                )
+                processed_at = max(outcome.effective_at, end, latest_state_at)
                 portfolio_equity_before = equity()
                 settled_before = cash
                 unsettled_before = unsettled_total()
@@ -1366,17 +1411,17 @@ class GuardrailedBacktestEngine:
                 executions.append(
                     ExecutionRecord(
                         outcome.symbol, "TERMINAL_SETTLEMENT", outcome.terminal_type,
-                        outcome.available_at, outcome.effective_at,
+                        outcome.available_at, processed_at,
                         outcome.recovery_per_share, outcome.recovery_per_share,
                         position.quantity, position.quantity, ZERO, "FILLED", ZERO,
-                        ZERO, ZERO, ZERO, ZERO,
+                        ZERO, ZERO, ZERO, ZERO, ZERO,
                     )
                 )
                 sizing_decisions.append(
                     SizingDecisionTrace(
                         symbol=outcome.symbol, action="TERMINAL_SETTLEMENT",
                         reason=outcome.terminal_type, signal_at=outcome.available_at,
-                        evaluated_at=outcome.effective_at,
+                        evaluated_at=processed_at,
                         portfolio_equity_before=portfolio_equity_before,
                         settled_cash_before=settled_before,
                         unsettled_cash_before=unsettled_before,
@@ -1391,7 +1436,7 @@ class GuardrailedBacktestEngine:
                         stop_price_after=None,
                     )
                 )
-                snapshot("TERMINAL_SETTLEMENT", outcome.effective_at, outcome.symbol)
+                snapshot("TERMINAL_SETTLEMENT", processed_at, outcome.symbol)
         if positions:
             raise ValueError("evaluation lacks a next-bar, liquidity-capped exit for open positions")
         if not equity_curve:
@@ -1400,15 +1445,11 @@ class GuardrailedBacktestEngine:
         ending = cash + sum(amount for _, amount in unsettled_cash)
         curve_values = [self.config.initial_cash, *[item[1] for item in equity_curve], ending]
         parameter_hash = strategy_parameter_hash(parameters)
+        engine_config_canonical_json = canonical_engine_configuration(
+            self.config, self.fee_schedule
+        )
         engine_config_hash = hashlib.sha256(
-            _canonical_json({
-                "engine_policy_version": ENGINE_POLICY_VERSION,
-                "config": self.config.__dict__,
-                "fee_schedule": {
-                    "schedule_id": self.fee_schedule.schedule_id,
-                    "tiers": [tier.__dict__ for tier in self.fee_schedule.tiers],
-                },
-            }).encode()
+            engine_config_canonical_json.encode("utf-8")
         ).hexdigest()
         return BacktestResult(
             str(strategy_instance.version),
@@ -1432,6 +1473,7 @@ class GuardrailedBacktestEngine:
             evidence_role_hashes=self.data_attestation.evidence_role_hashes,
             engine_policy_version=ENGINE_POLICY_VERSION,
             engine_config_sha256=engine_config_hash,
+            engine_config_canonical_json=engine_config_canonical_json,
             strategy_entrypoint=strategy_entrypoint,
             strategy_source_sha256=strategy_source_sha256,
         )
@@ -1440,6 +1482,10 @@ class GuardrailedBacktestEngine:
         """Run the exact same sealed inputs under separate cost assumptions."""
         if self.config.execution_scenario != "BASE":
             raise ValueError("scenario comparison must start from a BASE engine")
+        if self.fee_schedule.schedule_id.endswith("-BASE-COMMISSION"):
+            raise ValueError(
+                "authenticated comparison requires exact policy-derived scenario profiles"
+            )
         materialized = dict(inputs)
         for name in ("bars", "universe_events", "terminal_outcomes", "corporate_actions"):
             materialized[name] = tuple(materialized.get(name, ()))
@@ -1453,6 +1499,9 @@ class GuardrailedBacktestEngine:
             bid_ask_half_spread_bps=max(
                 Decimal("10"), self.config.bid_ask_half_spread_bps * Decimal("2")
             ),
+            latency_adverse_bps=max(
+                Decimal("2"), self.config.latency_adverse_bps * Decimal("2")
+            ),
             liquidity_impact_bps_at_max_participation=max(
                 Decimal("20"),
                 self.config.liquidity_impact_bps_at_max_participation * Decimal("2"),
@@ -1460,11 +1509,23 @@ class GuardrailedBacktestEngine:
             maximum_lagged_volume_participation=(
                 self.config.maximum_lagged_volume_participation / Decimal("2")
             ),
+            maximum_order_age_minutes=self.config.maximum_order_age_minutes * Decimal("2"),
             stop_pierce_fill_fraction=ONE,
+        )
+        pessimistic_fee_schedule = ExchangeFeeSchedule(
+            f"{self.fee_schedule.schedule_id}-PESSIMISTIC",
+            tuple(
+                ExchangeFeeTier(
+                    tier.prior_monthly_notional_below,
+                    tier.variable_bps * Decimal("2"),
+                    tier.minimum_fee * Decimal("2"),
+                )
+                for tier in self.fee_schedule.tiers
+            ),
         )
         pessimistic = GuardrailedBacktestEngine(
             config=pessimistic_config,
-            fee_schedule=self.fee_schedule,
+            fee_schedule=pessimistic_fee_schedule,
             data_attestation=self.data_attestation,
         ).run(**materialized)
         return {"BASE": base, "PESSIMISTIC": pessimistic}

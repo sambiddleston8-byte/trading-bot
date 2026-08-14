@@ -24,10 +24,13 @@ from core.guardrailed_backtest import (
     SizingDecisionTrace,
 )
 from core.orchestration.replay_backtest_inputs import load_authenticated_backtest_inputs
+from core.orchestration.authenticated_execution_profile import (
+    resolve_authenticated_execution_profile,
+)
 
 
-SCHEMA_VERSION = "1.1"
-POLICY_VERSION = "authenticated-replay-run-audit-v2"
+SCHEMA_VERSION = "1.2"
+POLICY_VERSION = "authenticated-replay-run-audit-v3"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 GIT_REVISION = re.compile(r"^[0-9a-f]{40}(?:[0-9a-f]{24})?$")
@@ -48,6 +51,11 @@ STRATEGY_BINDING_FIELDS = {
     "replay_plan_evaluation_end",
     "strategy_specification_id", "strategy_specification_record_hash",
     "strategy_entrypoint", "strategy_source_sha256",
+}
+EXECUTION_BINDING_FIELDS = {
+    "execution_profile_version", "replay_execution_policy_record_id",
+    "replay_execution_policy_record_hash", "execution_policy_id",
+    "execution_policy_version",
 }
 
 
@@ -142,6 +150,11 @@ def _result_payload(result: BacktestResult) -> dict[str, Any]:
         "engine_config_sha256": _hash(
             result.engine_config_sha256, "engine_config_sha256"
         ),
+        "engine_config_canonical_json": _required(
+            result.engine_config_canonical_json,
+            "engine_config_canonical_json",
+            100_000,
+        ),
         "fee_schedule_id": _required(result.fee_schedule_id, "fee_schedule_id"),
         "execution_scenario": _required(
             result.execution_scenario, "execution_scenario"
@@ -174,11 +187,13 @@ class ReplayRunAuditLedger:
         admission_ledger: Any,
         content_ledger: Any,
         strategy_ledger: Any,
+        execution_policy_ledger: Any,
     ) -> None:
         self.path = Path(path)
         self.admission_ledger = admission_ledger
         self.content_ledger = content_ledger
         self.strategy_ledger = strategy_ledger
+        self.execution_policy_ledger = execution_policy_ledger
 
     def _verify_authenticated_parent(self, payload: Mapping[str, Any]) -> dict[str, str]:
         inputs = load_authenticated_backtest_inputs(
@@ -195,6 +210,16 @@ class ReplayRunAuditLedger:
         if len(specifications) != 1:
             raise ValueError("replay plan requires exactly one verified strategy specification")
         specification = specifications[0]
+        policies = [
+            item for item in self.execution_policy_ledger.verify()
+            if item.get("replay_plan_id") == inputs.replay_plan_id
+        ]
+        if len(policies) != 1:
+            raise ValueError("replay plan requires exactly one verified execution policy")
+        policy = policies[0]
+        profile = resolve_authenticated_execution_profile(
+            policy, payload["execution_scenario"]
+        )
         binding = {
             "replay_plan_id": inputs.replay_plan_id,
             "replay_plan_record_hash": inputs.replay_plan_record_hash,
@@ -208,6 +233,15 @@ class ReplayRunAuditLedger:
             "strategy_specification_record_hash": specification["record_hash"],
             "strategy_entrypoint": specification["strategy_entrypoint"],
             "strategy_source_sha256": specification["strategy_source_sha256"],
+            "execution_profile_version": profile.profile_version,
+            "replay_execution_policy_record_id": (
+                profile.replay_execution_policy_record_id
+            ),
+            "replay_execution_policy_record_hash": (
+                profile.replay_execution_policy_record_hash
+            ),
+            "execution_policy_id": profile.execution_policy_id,
+            "execution_policy_version": profile.execution_policy_version,
         }
         if (
             inputs.admission_id != payload["source_id"]
@@ -226,6 +260,12 @@ class ReplayRunAuditLedger:
             != payload["evaluation_start"]
             or specification["replay_plan_evaluation_end"]
             != payload["evaluation_end"]
+            or profile.replay_plan_record_hash != inputs.replay_plan_record_hash
+            or profile.engine_config_canonical_json
+            != payload["engine_config_canonical_json"]
+            or profile.engine_config_sha256 != payload["engine_config_sha256"]
+            or profile.fee_schedule.schedule_id != payload["fee_schedule_id"]
+            or profile.scenario != payload["execution_scenario"]
             or any(
                 field in payload and payload[field] != expected
                 for field, expected in binding.items()
@@ -267,6 +307,7 @@ class ReplayRunAuditLedger:
             "source_content_sha256": payload["source_content_sha256"],
             "validation_receipt_sha256": payload["validation_receipt_sha256"],
             **{field: payload[field] for field in sorted(STRATEGY_BINDING_FIELDS)},
+            **{field: payload[field] for field in sorted(EXECUTION_BINDING_FIELDS)},
             "strategy_version": payload["strategy_version"],
             "parameter_hash": payload["parameter_hash"],
             "engine_policy_version": payload["engine_policy_version"],
@@ -390,6 +431,8 @@ class ReplayRunAuditLedger:
                     and record.get("previous_hash") == previous
                     and record.get("record_hash") == _record_hash(material)
                     and GIT_REVISION.fullmatch(str(record.get("git_revision") or "")) is not None
+                    and record.get("git_revision")
+                    == record.get("replay_plan_git_revision")
                     and recorded >= _time(record["evaluation_end"])
                     and bool(_required(record.get("recorded_by"), "recorded_by", 100))
                     and all(record.get(field) is False for field in FIXED_FALSE)
@@ -407,17 +450,58 @@ class ReplayRunAuditLedger:
             previous = record["record_hash"]
         return records
 
+    def require_paired_scenarios(
+        self,
+        *,
+        replay_plan_id: str,
+        strategy_specification_id: str,
+    ) -> dict[str, dict[str, Any]]:
+        """Return the required pair or fail; this makes no promotion claim."""
+        plan = _required(replay_plan_id, "replay_plan_id")
+        strategy = _required(
+            strategy_specification_id, "strategy_specification_id"
+        )
+        matches = [
+            item for item in self.verify()
+            if item["replay_plan_id"] == plan
+            and item["strategy_specification_id"] == strategy
+        ]
+        by_scenario = {item["execution_scenario"]: item for item in matches}
+        if len(matches) != 2 or set(by_scenario) != {"BASE", "PESSIMISTIC"}:
+            raise ValueError(
+                "audited replay is incomplete until BASE and PESSIMISTIC both exist"
+            )
+        common = (
+            "source_id", "source_content_sha256", "validation_receipt_sha256",
+            "replay_plan_id", "replay_plan_record_hash", "dataset_commitment_sha256",
+            "strategy_specification_id", "strategy_specification_record_hash",
+            "strategy_entrypoint", "strategy_source_sha256", "strategy_version",
+            "parameter_hash", "evaluation_start", "evaluation_end", "git_revision",
+            "replay_execution_policy_record_id", "replay_execution_policy_record_hash",
+            "execution_policy_id", "execution_policy_version",
+        )
+        if any(
+            by_scenario["BASE"][field] != by_scenario["PESSIMISTIC"][field]
+            for field in common
+        ):
+            raise LedgerIntegrityError(
+                "BASE and PESSIMISTIC records do not share one authenticated identity"
+            )
+        return by_scenario
+
 
 def _result_payload_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
     required = {
         "strategy_version", "parameter_hash", "source_id", "source_content_sha256",
         "validation_receipt_sha256", "evidence_role_hashes", "engine_policy_version",
-        "engine_config_sha256", "fee_schedule_id", "execution_scenario",
+        "engine_config_sha256", "engine_config_canonical_json",
+        "fee_schedule_id", "execution_scenario",
         "evaluation_start", "evaluation_end", "starting_equity", "ending_equity",
         "total_return", "maximum_drawdown", "executions", "completed_trades",
         "equity_curve", "sizing_decisions", "portfolio_states",
         "no_lookahead_contract_enforced", "mechanical_simulation_only", *FIXED_FALSE,
         *STRATEGY_BINDING_FIELDS,
+        *EXECUTION_BINDING_FIELDS,
     }
     if set(record) != required | METADATA_FIELDS:
         raise ValueError("replay-run audit has missing or unsupported fields")
@@ -439,11 +523,28 @@ def _result_payload_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
         "engine_config_sha256", "replay_plan_record_hash",
         "dataset_commitment_sha256", "strategy_specification_record_hash",
         "strategy_source_sha256",
+        "replay_execution_policy_record_hash",
     ):
         _hash(record[name], name)
+    engine_config_canonical = _required(
+        record["engine_config_canonical_json"], "engine_config_canonical_json", 100_000
+    )
+    if hashlib.sha256(engine_config_canonical.encode("utf-8")).hexdigest() != record[
+        "engine_config_sha256"
+    ]:
+        raise ValueError("engine configuration hash no longer matches its exact content")
+    try:
+        engine_config_value = json.loads(engine_config_canonical)
+    except json.JSONDecodeError as error:
+        raise ValueError("engine configuration is not canonical JSON") from error
+    if _canonical_json(engine_config_value) != engine_config_canonical:
+        raise ValueError("engine configuration JSON is not canonical")
+    _validate_engine_execution_economics(record, engine_config_value)
     _git_revision(record["replay_plan_git_revision"])
     for name in (
         "replay_plan_id", "strategy_specification_id", "strategy_entrypoint",
+        "execution_profile_version", "replay_execution_policy_record_id",
+        "execution_policy_id", "execution_policy_version",
     ):
         _required(record[name], name, 300)
     _time(record["replay_plan_evaluation_start"])
@@ -537,6 +638,104 @@ def _finite_decimal(
     return resolved
 
 
+def _validate_engine_execution_economics(
+    record: Mapping[str, Any], engine: Any,
+) -> None:
+    if not isinstance(engine, Mapping) or set(engine) != {
+        "engine_policy_version", "config", "fee_schedule"
+    }:
+        raise ValueError("engine configuration has an unsupported structure")
+    config = engine["config"]
+    fee_schedule = engine["fee_schedule"]
+    if not isinstance(config, Mapping) or not isinstance(fee_schedule, Mapping):
+        raise ValueError("engine configuration sections are malformed")
+    if (
+        engine["engine_policy_version"] != record["engine_policy_version"]
+        or config.get("execution_scenario") != record["execution_scenario"]
+        or fee_schedule.get("schedule_id") != record["fee_schedule_id"]
+        or _finite_decimal(config.get("initial_cash"), "initial_cash", positive=True)
+        != _finite_decimal(record["starting_equity"], "starting_equity", positive=True)
+    ):
+        raise ValueError("result identity does not match its engine configuration")
+    tiers = fee_schedule.get("tiers")
+    if not isinstance(tiers, list) or len(tiers) != 1 or not isinstance(tiers[0], Mapping):
+        raise ValueError("authenticated replay requires one exact commission tier")
+    tier = tiers[0]
+    if set(tier) != {
+        "prior_monthly_notional_below", "variable_bps", "minimum_fee"
+    } or tier["prior_monthly_notional_below"] is not None:
+        raise ValueError("authenticated replay commission tier changed")
+    commission = _finite_decimal(tier["variable_bps"], "commission_bps", non_negative=True)
+    minimum = _finite_decimal(tier["minimum_fee"], "minimum_fee", non_negative=True)
+    spread = _finite_decimal(
+        config.get("bid_ask_half_spread_bps"), "bid_ask_half_spread_bps",
+        non_negative=True,
+    )
+    slippage = _finite_decimal(
+        config.get("baseline_slippage_bps"), "baseline_slippage_bps",
+        non_negative=True,
+    )
+    latency = _finite_decimal(
+        config.get("latency_adverse_bps"), "latency_adverse_bps",
+        non_negative=True,
+    )
+    maximum_impact = _finite_decimal(
+        config.get("liquidity_impact_bps_at_max_participation"),
+        "liquidity_impact_bps_at_max_participation", non_negative=True,
+    )
+    maximum_participation = _finite_decimal(
+        config.get("maximum_lagged_volume_participation"),
+        "maximum_lagged_volume_participation", positive=True,
+    )
+    for item in record["executions"]:
+        filled = _finite_decimal(item["filled_quantity"], "filled_quantity")
+        price = _finite_decimal(item["execution_price"], "execution_price", positive=True)
+        fee = _finite_decimal(item["fee"], "fee", non_negative=True)
+        if item["action"] == "TERMINAL_SETTLEMENT":
+            terminal_costs = (
+                "bid_ask_half_spread_bps",
+                "baseline_slippage_bps",
+                "latency_adverse_bps",
+                "liquidity_impact_bps",
+                "total_adverse_execution_bps",
+            )
+            if fee != 0 or any(
+                _finite_decimal(item[field], field, non_negative=True) != 0
+                for field in terminal_costs
+            ):
+                raise ValueError(
+                    "terminal settlement cannot carry commission or execution costs"
+                )
+            continue
+        expected_fee = max(minimum, filled * price * commission / Decimal("10000")) if filled else Decimal("0")
+        if fee != expected_fee:
+            raise ValueError("execution commission no longer matches the policy-derived tier")
+        reference = _finite_decimal(item["reference_price"], "reference_price", positive=True)
+        liquidity = _finite_decimal(
+            item["lagged_liquidity_notional"], "lagged_liquidity_notional",
+            non_negative=True,
+        )
+        participation = filled * reference / liquidity if liquidity > 0 else Decimal("0")
+        normalized = min(Decimal("1"), participation / maximum_participation)
+        expected_impact = maximum_impact * normalized * normalized
+        impact = _finite_decimal(item["liquidity_impact_bps"], "liquidity_impact_bps")
+        total = spread + slippage + latency + expected_impact
+        direction = Decimal("1") if item["action"] == "BUY" else Decimal("-1")
+        expected_price = reference * (Decimal("1") + direction * total / Decimal("10000"))
+        if (
+            item["bid_ask_half_spread_bps"] != _canonical_decimal(spread)
+            or item["baseline_slippage_bps"] != _canonical_decimal(slippage)
+            or item["latency_adverse_bps"] != _canonical_decimal(latency)
+            or impact != expected_impact
+            or _finite_decimal(
+                item["total_adverse_execution_bps"], "total_adverse_execution_bps"
+            ) != total
+            or price != expected_price
+            or filled * reference > liquidity * maximum_participation
+        ):
+            raise ValueError("execution economics no longer match the policy-derived engine")
+
+
 def _exact_fields(item: Any, expected: set[str], name: str) -> Mapping[str, Any]:
     if not isinstance(item, Mapping) or set(item) != expected:
         raise ValueError(f"{name} has missing or unsupported fields")
@@ -560,13 +759,14 @@ def _validate_execution(value: Any) -> None:
         raise ValueError("execution fill exceeds request")
     for name in (
         "lagged_liquidity_notional", "bid_ask_half_spread_bps",
-        "baseline_slippage_bps", "liquidity_impact_bps",
+        "baseline_slippage_bps", "latency_adverse_bps", "liquidity_impact_bps",
         "total_adverse_execution_bps",
     ):
         _finite_decimal(item[name], name, non_negative=True)
     total_bps = sum(
         (_finite_decimal(item[name], name, non_negative=True) for name in (
-            "bid_ask_half_spread_bps", "baseline_slippage_bps", "liquidity_impact_bps"
+            "bid_ask_half_spread_bps", "baseline_slippage_bps",
+            "latency_adverse_bps", "liquidity_impact_bps"
         )), Decimal("0")
     )
     if total_bps != _finite_decimal(
