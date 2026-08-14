@@ -24,6 +24,11 @@ from core.orchestration.container_experiment_control import (
     ContainerExperimentControl,
     resolve_container_experiment_control,
 )
+from core.orchestration.recorded_decision_signal import (
+    RecordedDecisionSignal,
+    RecordedDecisionSignalLedger,
+    RecordedDecisionSignalStrategy,
+)
 from core.orchestration.active_pipeline_replay_plan import ActivePipelineReplayPlanLedger
 from core.orchestration.purged_embargoed_folds import PurgedEmbargoedForwardFolds
 from core.orchestration.replay_execution_policy import ReplayExecutionPolicy
@@ -68,6 +73,9 @@ __all__ = [
     "ContainerExperimentRunner",
     "ContainerExperimentControl",
     "resolve_container_experiment_control",
+    "RecordedDecisionSignal",
+    "RecordedDecisionSignalLedger",
+    "RecordedDecisionSignalStrategy",
     "ActivePipelineReplayPlanLedger",
     "PurgedEmbargoedForwardFolds",
     "ReplayExecutionPolicy",

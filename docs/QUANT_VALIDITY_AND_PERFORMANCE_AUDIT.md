@@ -43,6 +43,17 @@ learning, AWS scheduling or real-money trading.
   and a consecutive-failure circuit breaker. Authentication, quota and other
   terminal responses are never retried. Safe attempt, wait and elapsed-time
   metadata is returned without URLs, parameters, headers or response bodies.
+- A verified recorded-decision adapter now provides an intermediate causal
+  execution check: an immutable decision is bound to an exact later market
+  close using a fixed recommendation-to-action mapping. The close must be the
+  earliest eligible close in a canonical schedule whose replay-source
+  attestation and timestamps are rechecked against the exact authenticated bars
+  supplied to the guardrailed engine. Every registered signal must be consumed
+  inside the evaluation window, and the engine can act only from the following
+  bar. It is intentionally narrower than
+  the required faithful pipeline replay because it tests execution economics
+  for already-recorded decisions, not the historical validity of the research
+  process that produced them.
 
 ## Trust-critical backlog before paper submission or learning
 
@@ -51,7 +62,9 @@ learning, AWS scheduling or real-money trading.
 2. Archive historical index membership, removals and delisted outcomes to
    prevent survivorship bias.
 3. Build one faithful replay of `InvestmentResearchPipeline` through
-   `MasterPortfolioDecisionEngine` and `PortfolioEngine`.
+   `MasterPortfolioDecisionEngine` and `PortfolioEngine`. The recorded-decision
+   adapter is a causal execution foundation only and does not complete this
+   item.
 4. Model turnover, fees, bid-ask spread, adverse slippage, liquidity limits and
    next-tradable-price execution without inventing precision.
 5. Reserve a final untouched out-of-sample period and pre-register success and

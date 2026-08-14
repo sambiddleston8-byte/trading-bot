@@ -798,6 +798,22 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   route, but no real strategy has been preregistered and no sealed replay has
   run. Claude passed the ledger and binding reviews after retracting a proposed
   date-type defect that the canonical conversion and regression tests disproved.
+- Verified immutable investment decisions can now be converted into one
+  tamper-evident, simulation-only signal per ticker and market close. The
+  mapping is fixed (`BUY`/`STRONG_BUY` enter, `AVOID` exit, and
+  `HOLD`/`WATCHLIST` do nothing), preserves the original data/decision/model/
+  portfolio/Git identities and cannot carry broker, order, promotion or live-
+  trading authority. The strategy adapter accepts only a verified signal
+  ledger, derives the earliest eligible close from a complete canonical market
+  schedule, pins the replay-source attestation and revalidates both against the
+  exact authenticated bars received by the engine. It emits each instruction
+  once at that bound close, and the run fails if any registered instruction is
+  skipped or falls outside the evaluation window. The existing guardrailed
+  engine therefore executes no earlier than the following bar's open with its
+  configured fees, spread, slippage, latency and risk controls.
+  This is a causal execution diagnostic for decisions that already exist. It
+  does not recreate how the research decision was generated, qualify historical
+  data, prove investment value or create a track record.
 - A preregistered replay execution policy now derives the only permitted
   simulator configuration for each exact BASE or PESSIMISTIC scenario. The
   derived profile fixes risk limits, ATR sizing, commission, spread, at least
