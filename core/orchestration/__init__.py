@@ -62,6 +62,11 @@ from core.orchestration.sealed_replay_invocation import (
     describe_engine_registry,
     learning_state_digest,
 )
+from core.orchestration.replay_input_coverage import (
+    ReplayInputCoverage,
+    unadmittable_roles,
+    verify_replay_input_coverage,
+)
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -108,4 +113,7 @@ __all__ = [
     "authenticated_source_snapshot_digests",
     "describe_engine_registry",
     "learning_state_digest",
+    "ReplayInputCoverage",
+    "unadmittable_roles",
+    "verify_replay_input_coverage",
 ]

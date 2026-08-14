@@ -51,6 +51,22 @@ file; the approved no-network/read-only container must enforce that process
 boundary. No real image or dataset has been admitted, no production invocation
 has been issued, and no replay or performance claim exists.
 
+An inert input-coverage contract now states, for each of the 22 sealed engine
+keys, which dependency kinds it combines — admitted dataset artifact roles,
+earlier stage output, the sealed learning state, sealed source evidence — and
+compares those needs with the roles the dataset admission ledger can admit. It
+records a larger gap than first assumed. Against the six required roles only
+market regime is covered. News, corporate-event catalyst, macro,
+specialist-research and supplemental-provider inputs have no admitted role at
+all; fundamental and valuation additionally need point-in-time analyst and
+earnings estimates; and market signals needs the optional raw daily session
+bars for its volume and support/resistance scores. Eight of the nine
+artifact-backed engines therefore cannot yet be replayed from authenticated
+point-in-time data. Until those roles are admitted or the preregistered pipeline
+scope is formally narrowed, a faithful replay of the whole research route is not
+achievable. The contract reads no dataset bytes, admits nothing and executes
+nothing.
+
 ## Current provider-spending decision
 
 FMP and EODHD support answers now confirm that neither currently proves the
