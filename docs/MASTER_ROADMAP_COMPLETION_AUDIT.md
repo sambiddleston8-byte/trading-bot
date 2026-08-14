@@ -23,6 +23,16 @@ method works out of sample.
 | 9 — Buzz | Fail-closed local manifest defines channels, identities and denied powers. | User-approved local installation, key handling, relay/storage configuration and a security-tested pilot. | Intentionally deferred; Buzz is not installed or connected. |
 | 10 — continuous improvement | Preregistered experiments, purged/embargoed folds, robustness enforcement, disposable container runner, effectiveness cohorts and human promotion decisions exist. | Qualified sealed real historical data, reviewed active-pipeline image, actual out-of-sample/robustness/shadow evidence, and later human decisions. | Cannot truthfully measure improvement until Phase 5 evidence and provider gates clear. |
 
+## Current provider-spending decision
+
+FMP and EODHD support answers now confirm that neither currently proves the
+combined S&P 500/Nasdaq-100 point-in-time mandate. EODHD additionally confirmed
+limited ticker history, no correction history and post-cancellation deletion
+duties. The incremental recurring-data budget is therefore **GBP 0** until
+complete representative evidence supports a specific purchase. This decision
+is recorded in `docs/HISTORICAL_PROVIDER_DECISION_2026-08-14.md`; it does not
+prevent continued use of current/free entitlements for supplementary research.
+
 ## Cross-cutting claims that remain prohibited
 
 - The platform has not demonstrated repeatable out-of-sample investment value.
