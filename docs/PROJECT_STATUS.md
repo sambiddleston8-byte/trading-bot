@@ -1033,6 +1033,16 @@ the second semantic reconciliation stage is not implemented, and the existing
 operator-supplied settled-cash input remains unauthenticated. Credentials,
 network access, recommendations and all order or trading authority remain off.
 
+The matching account-field reconciliation foundation now re-reads one verified
+retained capture and pins one verified cash snapshot. It requires exact account,
+time, ACTIVE/USD, cash, buying-power and equity agreement plus matching canonical
+payload provenance, while storing no raw account ID or financial amounts. The
+cash-snapshot ledger was hardened at the same boundary against float money,
+unsafe links/modes, unbounded files and backward writes. The result remains
+explicitly unauthenticated and does not reconcile settlement, positions, orders
+or previous-close evidence. No real source record has been admitted and no
+network, broker or trading capability is enabled.
+
 Phase 4 now also has an inactive provider-paper risk-policy foundation and a
 one-way account-scoped local stop. A human must supply every future limit; the
 record binds exact order, position, gross-exposure, daily-loss and snapshot-age

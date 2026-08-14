@@ -133,10 +133,30 @@ not prove that Alpaca produced them, that transport was authenticated, that the
 account is reconciled or that cash is settled. Every authenticity, settlement,
 reconciliation, recommendation, review and trading-authority flag remains
 false. No real broker payload has been admitted. A later, separately reviewed
-stage must reconcile an authenticated capture to semantic account, position,
-order and settlement evidence. Until then, the operator-supplied settled-cash
-input used by the combined assessment remains unauthenticated and the assessment
-must stay blocked.
+stage must reconcile authenticated account, position, order and settlement
+evidence. Until then, the operator-supplied settled-cash input used by the
+combined assessment remains unauthenticated and the assessment must stay blocked.
+
+## Unauthenticated account-field reconciliation
+
+A separate ledger now compares one verified retained capture with one verified
+paper-account cash snapshot. It re-reads the exact captured bytes and requires
+the account identity, observation time, ACTIVE status, USD currency, total cash,
+buying power and equity to match. The captured object's canonical hash must also
+match the snapshot source hash, while the distinct raw-byte hash remains pinned.
+
+The reconciliation record stores no account ID or financial amounts. It stores
+only source identities and hashes, timestamps and narrowly derived match flags.
+The cash-snapshot dependency now rejects binary floating-point money, unsafe
+file links and permissions, oversized files and backward observations before
+append.
+
+The result is always `ACCOUNT_FIELDS_RECONCILED_UNAUTHENTICATED`. It proves local
+semantic consistency, not broker origin or transport authentication. Settled
+versus unsettled cash, positions, open orders and previous-close evidence remain
+unreconciled. No real capture or reconciliation has been recorded, and the
+component cannot access credentials, make a network request, recommend, route or
+submit any paper or live order.
 
 ## Inactive risk policy and account-scoped stop foundation
 

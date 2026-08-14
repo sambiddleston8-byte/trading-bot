@@ -12,10 +12,31 @@ import os
 from pathlib import Path
 from typing import Any
 
+from core.broker.paper_broker_capture import (
+    MAX_LEDGER_BYTES,
+    _check_regular_descriptor,
+    _fsync_directory,
+    _no_follow,
+    _private_directory,
+    _read_private_file,
+)
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 SCHEMA_VERSION = "1.0"
 POLICY_VERSION = "paper-broker-cash-snapshot-v1"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
+RECORD_FIELDS = frozenset(
+    {
+        "schema_version", "policy_version", "snapshot_id", "record_type", "status",
+        "broker", "broker_environment", "account_reference_sha256", "observed_at",
+        "recorded_at", "currency", "cash", "settled_cash", "unsettled_cash",
+        "buying_power", "equity", "exact_fractions", "source_payload_sha256",
+        "source_payload_stored", "paper_account_confirmed",
+        "long_only_cash_account_semantics", "gross_pre_tax_performance_relabelled",
+        "tax_liability_estimated", "broker_reconciliation_complete", "order_submitted",
+        "performance_metric_calculated", "recommendation_provided", "learning_eligible",
+        "track_record_claim", "live_trading_enabled", "previous_hash", "record_hash",
+    }
+)
 
 
 def _canonical_json(value: Any) -> str:
@@ -60,6 +81,10 @@ def _timestamp(value: str | datetime) -> datetime:
 
 
 def _amount(value: Any, name: str) -> Fraction:
+    if isinstance(value, (bool, float)) or not isinstance(value, (str, Decimal)):
+        raise ValueError(f"{name} must be an exact decimal string or Decimal")
+    if isinstance(value, str) and (not value or value != value.strip()):
+        raise ValueError(f"{name} must be an exact decimal string or Decimal")
     try:
         decimal = Decimal(str(value))
     except (InvalidOperation, TypeError, ValueError) as error:
@@ -91,25 +116,36 @@ class PaperBrokerAccountSnapshotLedger:
     def records(self) -> list[dict[str, Any]]:
         if not self.path.exists():
             return []
-        raw = self.path.read_bytes()
+        try:
+            raw = _read_private_file(
+                self.path,
+                mode=0o600,
+                name="Paper-account snapshot ledger",
+                maximum_bytes=MAX_LEDGER_BYTES,
+            )
+        except OSError as error:
+            raise LedgerIntegrityError("Paper-account snapshot ledger is unsafe.") from error
         if raw and not raw.endswith(b"\n"):
             raise LedgerIntegrityError("Paper-account snapshot has an incomplete final line.")
+        try:
+            lines = raw.decode("utf-8").splitlines()
+        except UnicodeDecodeError as error:
+            raise LedgerIntegrityError("Paper-account snapshot ledger is not UTF-8.") from error
         records = []
-        with self.path.open("r", encoding="utf-8") as source:
-            for line_number, line in enumerate(source, start=1):
-                if not line.strip():
-                    raise LedgerIntegrityError(f"Blank paper-account snapshot at {line_number}.")
-                try:
-                    record = json.loads(line)
-                except json.JSONDecodeError as error:
-                    raise LedgerIntegrityError(
-                        f"Invalid paper-account snapshot JSON at {line_number}."
-                    ) from error
-                if not isinstance(record, dict):
-                    raise LedgerIntegrityError(
-                        f"Paper-account snapshot {line_number} is not an object."
-                    )
-                records.append(record)
+        for line_number, line in enumerate(lines, start=1):
+            if not line.strip():
+                raise LedgerIntegrityError(f"Blank paper-account snapshot at {line_number}.")
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as error:
+                raise LedgerIntegrityError(
+                    f"Invalid paper-account snapshot JSON at {line_number}."
+                ) from error
+            if not isinstance(record, dict):
+                raise LedgerIntegrityError(
+                    f"Paper-account snapshot {line_number} is not an object."
+                )
+            records.append(record)
         return records
 
     def record(
@@ -202,6 +238,8 @@ class PaperBrokerAccountSnapshotLedger:
             ):
                 raise LedgerIntegrityError(f"Paper-account snapshot {index} has been modified.")
             try:
+                if set(record) != RECORD_FIELDS:
+                    raise ValueError("record field alphabet is invalid")
                 account_hash = _required(
                     record.get("account_reference_sha256"), "account_reference_sha256", 64
                 )
@@ -255,9 +293,18 @@ class PaperBrokerAccountSnapshotLedger:
         return records
 
     def _append(self, result: dict[str, Any], *, allow_existing: bool):
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        descriptor = os.open(self.path.with_suffix(self.path.suffix + ".lock"), os.O_CREAT | os.O_RDWR, 0o600)
+        _private_directory(self.path.parent)
+        lock_path = self.path.with_suffix(self.path.suffix + ".lock")
         try:
+            descriptor = os.open(
+                lock_path, os.O_CREAT | os.O_RDWR | _no_follow(), 0o600
+            )
+        except OSError as error:
+            raise LedgerIntegrityError("Paper-account snapshot lock is unsafe.") from error
+        try:
+            _check_regular_descriptor(
+                descriptor, mode=0o600, name="Paper-account snapshot lock"
+            )
             fcntl.flock(descriptor, fcntl.LOCK_EX)
             records = self.verify()
             existing = next((item for item in records if item["snapshot_id"] == result["snapshot_id"]), None)
@@ -266,14 +313,35 @@ class PaperBrokerAccountSnapshotLedger:
                 if allow_existing and {k: v for k, v in existing.items() if k not in ignored} == {k: v for k, v in result.items() if k not in ignored}:
                     return existing
                 raise LedgerIntegrityError(f"Paper snapshot {result['snapshot_id']} already exists.")
+            prior = next(
+                (
+                    item
+                    for item in reversed(records)
+                    if item["account_reference_sha256"]
+                    == result["account_reference_sha256"]
+                ),
+                None,
+            )
+            if prior is not None and _timestamp(result["observed_at"]) <= _timestamp(
+                prior["observed_at"]
+            ):
+                raise ValueError("observed_at must move forward for each paper account")
             material = {**result, "previous_hash": records[-1]["record_hash"] if records else GENESIS_HASH}
             record = {**material, "record_hash": _record_hash(material)}
-            target = os.open(self.path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+            target = os.open(
+                self.path,
+                os.O_WRONLY | os.O_CREAT | os.O_APPEND | _no_follow(),
+                0o600,
+            )
             try:
+                _check_regular_descriptor(
+                    target, mode=0o600, name="Paper-account snapshot ledger"
+                )
                 _write_all(target, (_canonical_json(record) + "\n").encode("utf-8"))
                 os.fsync(target)
             finally:
                 os.close(target)
+            _fsync_directory(self.path.parent)
             return record
         finally:
             fcntl.flock(descriptor, fcntl.LOCK_UN)
