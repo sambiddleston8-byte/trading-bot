@@ -26,8 +26,8 @@ from core.guardrailed_backtest import (
 from core.orchestration.replay_backtest_inputs import load_authenticated_backtest_inputs
 
 
-SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "authenticated-replay-run-audit-v1"
+SCHEMA_VERSION = "1.1"
+POLICY_VERSION = "authenticated-replay-run-audit-v2"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 GIT_REVISION = re.compile(r"^[0-9a-f]{40}(?:[0-9a-f]{24})?$")
@@ -41,6 +41,13 @@ FIXED_FALSE = (
 METADATA_FIELDS = {
     "schema_version", "policy_version", "replay_run_id", "record_type", "status",
     "recorded_at", "recorded_by", "git_revision", "previous_hash", "record_hash",
+}
+STRATEGY_BINDING_FIELDS = {
+    "replay_plan_id", "replay_plan_record_hash", "dataset_commitment_sha256",
+    "replay_plan_git_revision", "replay_plan_evaluation_start",
+    "replay_plan_evaluation_end",
+    "strategy_specification_id", "strategy_specification_record_hash",
+    "strategy_entrypoint", "strategy_source_sha256",
 }
 
 
@@ -114,6 +121,12 @@ def _result_payload(result: BacktestResult) -> dict[str, Any]:
         raise ValueError("authenticated evidence role hashes must be canonical")
     payload = {
         "strategy_version": _required(result.strategy_version, "strategy_version"),
+        "strategy_entrypoint": _required(
+            result.strategy_entrypoint, "strategy_entrypoint", 300
+        ),
+        "strategy_source_sha256": _hash(
+            result.strategy_source_sha256, "strategy_source_sha256"
+        ),
         "parameter_hash": _hash(result.parameter_hash, "parameter_hash"),
         "source_id": _required(result.source_id, "source_id"),
         "source_content_sha256": _hash(
@@ -160,12 +173,14 @@ class ReplayRunAuditLedger:
         *,
         admission_ledger: Any,
         content_ledger: Any,
+        strategy_ledger: Any,
     ) -> None:
         self.path = Path(path)
         self.admission_ledger = admission_ledger
         self.content_ledger = content_ledger
+        self.strategy_ledger = strategy_ledger
 
-    def _verify_authenticated_parent(self, payload: Mapping[str, Any]) -> None:
+    def _verify_authenticated_parent(self, payload: Mapping[str, Any]) -> dict[str, str]:
         inputs = load_authenticated_backtest_inputs(
             admission_ledger=self.admission_ledger,
             content_ledger=self.content_ledger,
@@ -173,6 +188,27 @@ class ReplayRunAuditLedger:
         )
         attestation = inputs.data_attestation
         expected_roles = [list(item) for item in attestation.evidence_role_hashes]
+        specifications = [
+            item for item in self.strategy_ledger.verify()
+            if item.get("replay_plan_id") == inputs.replay_plan_id
+        ]
+        if len(specifications) != 1:
+            raise ValueError("replay plan requires exactly one verified strategy specification")
+        specification = specifications[0]
+        binding = {
+            "replay_plan_id": inputs.replay_plan_id,
+            "replay_plan_record_hash": inputs.replay_plan_record_hash,
+            "dataset_commitment_sha256": inputs.dataset_commitment_sha256,
+            "replay_plan_git_revision": specification["replay_plan_git_revision"],
+            "replay_plan_evaluation_start": specification[
+                "replay_plan_evaluation_start"
+            ],
+            "replay_plan_evaluation_end": specification["replay_plan_evaluation_end"],
+            "strategy_specification_id": specification["strategy_specification_id"],
+            "strategy_specification_record_hash": specification["record_hash"],
+            "strategy_entrypoint": specification["strategy_entrypoint"],
+            "strategy_source_sha256": specification["strategy_source_sha256"],
+        }
         if (
             inputs.admission_id != payload["source_id"]
             or attestation.source_content_sha256 != payload["source_content_sha256"]
@@ -182,8 +218,21 @@ class ReplayRunAuditLedger:
             or inputs.broker_connection_allowed is not False
             or inputs.orders_submitted is not False
             or inputs.live_trading_enabled is not False
+            or specification["replay_plan_record_hash"]
+            != inputs.replay_plan_record_hash
+            or specification["strategy_version"] != payload["strategy_version"]
+            or specification["parameter_hash"] != payload["parameter_hash"]
+            or specification["replay_plan_evaluation_start"]
+            != payload["evaluation_start"]
+            or specification["replay_plan_evaluation_end"]
+            != payload["evaluation_end"]
+            or any(
+                field in payload and payload[field] != expected
+                for field, expected in binding.items()
+            )
         ):
             raise ValueError("replay result no longer matches authenticated input evidence")
+        return binding
 
     def records(self) -> list[dict[str, Any]]:
         if not self.path.exists():
@@ -217,6 +266,7 @@ class ReplayRunAuditLedger:
             "source_id": payload["source_id"],
             "source_content_sha256": payload["source_content_sha256"],
             "validation_receipt_sha256": payload["validation_receipt_sha256"],
+            **{field: payload[field] for field in sorted(STRATEGY_BINDING_FIELDS)},
             "strategy_version": payload["strategy_version"],
             "parameter_hash": payload["parameter_hash"],
             "engine_policy_version": payload["engine_policy_version"],
@@ -238,8 +288,10 @@ class ReplayRunAuditLedger:
         allow_existing: bool = True,
     ) -> dict[str, Any]:
         payload = _result_payload(result)
-        self._verify_authenticated_parent(payload)
+        payload = {**payload, **self._verify_authenticated_parent(payload)}
         git = _git_revision(git_revision)
+        if git != payload["replay_plan_git_revision"]:
+            raise ValueError("run Git revision must match the preregistered replay plan")
         recorded = _time(recorded_at or datetime.now(timezone.utc))
         now = datetime.now(timezone.utc)
         if not now - MAX_CLOCK_SKEW <= recorded <= now + MAX_CLOCK_SKEW:
@@ -365,6 +417,7 @@ def _result_payload_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
         "total_return", "maximum_drawdown", "executions", "completed_trades",
         "equity_curve", "sizing_decisions", "portfolio_states",
         "no_lookahead_contract_enforced", "mechanical_simulation_only", *FIXED_FALSE,
+        *STRATEGY_BINDING_FIELDS,
     }
     if set(record) != required | METADATA_FIELDS:
         raise ValueError("replay-run audit has missing or unsupported fields")
@@ -383,9 +436,18 @@ def _result_payload_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
         raise ValueError("evaluation window changed")
     for name in (
         "parameter_hash", "source_content_sha256", "validation_receipt_sha256",
-        "engine_config_sha256",
+        "engine_config_sha256", "replay_plan_record_hash",
+        "dataset_commitment_sha256", "strategy_specification_record_hash",
+        "strategy_source_sha256",
     ):
         _hash(record[name], name)
+    _git_revision(record["replay_plan_git_revision"])
+    for name in (
+        "replay_plan_id", "strategy_specification_id", "strategy_entrypoint",
+    ):
+        _required(record[name], name, 300)
+    _time(record["replay_plan_evaluation_start"])
+    _time(record["replay_plan_evaluation_end"])
     role_hashes = record["evidence_role_hashes"]
     if (
         not isinstance(role_hashes, list)

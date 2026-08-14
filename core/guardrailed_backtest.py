@@ -13,9 +13,11 @@ from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR
 import copy
 import hashlib
+import inspect
 import itertools
 import json
 import math
+from pathlib import Path
 import random
 from statistics import median
 from typing import Any, Iterable, Mapping, Protocol, Sequence
@@ -74,7 +76,73 @@ def _canonical_json(value: Any) -> str:
             return item.astimezone(timezone.utc).isoformat()
         raise TypeError(f"unsupported canonical value: {type(item)!r}")
 
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), default=default)
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), default=default,
+        allow_nan=False,
+    )
+
+
+def canonical_strategy_parameters(parameters: Mapping[str, Any]) -> str:
+    """Return the exact bounded representation used to identify a strategy run."""
+    if not isinstance(parameters, Mapping):
+        raise ValueError("strategy parameters must be a mapping")
+
+    count = 0
+
+    def validate(value: Any, depth: int = 0) -> None:
+        nonlocal count
+        count += 1
+        if count > 1000 or depth > 10:
+            raise ValueError("strategy parameters exceed the bounded structure")
+        if isinstance(value, Mapping):
+            if len(value) > 100 or any(
+                not isinstance(key, str) or not key or len(key) > 200
+                for key in value
+            ):
+                raise ValueError("strategy parameter keys are invalid or excessive")
+            for child in value.values():
+                validate(child, depth + 1)
+        elif isinstance(value, (list, tuple)):
+            if len(value) > 100:
+                raise ValueError("strategy parameter sequence is excessive")
+            for child in value:
+                validate(child, depth + 1)
+        elif isinstance(value, Decimal):
+            if not value.is_finite():
+                raise ValueError("strategy Decimal parameters must be finite")
+        elif isinstance(value, datetime):
+            if value.tzinfo is None or value.utcoffset() is None:
+                raise ValueError("strategy datetime parameters must be timezone-aware")
+        elif isinstance(value, float):
+            if not math.isfinite(value):
+                raise ValueError("strategy float parameters must be finite")
+        elif isinstance(value, str):
+            if len(value) > 10000:
+                raise ValueError("strategy text parameter is excessive")
+        elif value is not None and not isinstance(value, (bool, int)):
+            raise ValueError(f"unsupported strategy parameter value: {type(value)!r}")
+
+    validate(parameters)
+    payload = _canonical_json(parameters)
+    if len(payload.encode("utf-8")) > 100_000:
+        raise ValueError("canonical strategy parameters exceed 100000 bytes")
+    return payload
+
+
+def strategy_parameter_hash(parameters: Mapping[str, Any]) -> str:
+    return hashlib.sha256(canonical_strategy_parameters(parameters).encode("utf-8")).hexdigest()
+
+
+def _strategy_implementation_identity(strategy: Any) -> tuple[str, str]:
+    strategy_type = strategy.__class__
+    entrypoint = f"{strategy_type.__module__}:{strategy_type.__qualname__}"
+    source_name = inspect.getsourcefile(strategy_type)
+    if not source_name:
+        raise ValueError("strategy implementation must have an inspectable source file")
+    source = Path(source_name).resolve()
+    if not source.is_file() or source.is_symlink():
+        raise ValueError("strategy implementation source must be a regular non-symlink file")
+    return entrypoint, hashlib.sha256(source.read_bytes()).hexdigest()
 
 
 @dataclass(frozen=True, init=False)
@@ -498,6 +566,8 @@ class BacktestResult:
     evidence_role_hashes: tuple[tuple[str, str], ...] = ()
     engine_policy_version: str = ENGINE_POLICY_VERSION
     engine_config_sha256: str = ""
+    strategy_entrypoint: str = ""
+    strategy_source_sha256: str = ""
     no_lookahead_contract_enforced: bool = True
     mechanical_simulation_only: bool = True
     performance_claim_allowed: bool = False
@@ -611,6 +681,9 @@ class GuardrailedBacktestEngine:
             strategy_instance = copy.deepcopy(strategy)
         except Exception as error:
             raise ValueError("strategy must be independently reproducible for every run") from error
+        strategy_entrypoint, strategy_source_sha256 = _strategy_implementation_identity(
+            strategy_instance
+        )
         if not prices_are_unadjusted:
             raise ValueError(
                 "back-adjusted prices embed future factors; supply raw point-in-time prices"
@@ -1326,7 +1399,7 @@ class GuardrailedBacktestEngine:
 
         ending = cash + sum(amount for _, amount in unsettled_cash)
         curve_values = [self.config.initial_cash, *[item[1] for item in equity_curve], ending]
-        parameter_hash = hashlib.sha256(_canonical_json(parameters).encode()).hexdigest()
+        parameter_hash = strategy_parameter_hash(parameters)
         engine_config_hash = hashlib.sha256(
             _canonical_json({
                 "engine_policy_version": ENGINE_POLICY_VERSION,
@@ -1359,6 +1432,8 @@ class GuardrailedBacktestEngine:
             evidence_role_hashes=self.data_attestation.evidence_role_hashes,
             engine_policy_version=ENGINE_POLICY_VERSION,
             engine_config_sha256=engine_config_hash,
+            strategy_entrypoint=strategy_entrypoint,
+            strategy_source_sha256=strategy_source_sha256,
         )
 
     def run_base_and_pessimistic(self, **inputs: Any) -> Mapping[str, BacktestResult]:

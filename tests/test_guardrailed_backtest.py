@@ -149,6 +149,8 @@ def test_signal_uses_closed_history_and_executes_at_next_open_with_costs():
     assert sell.total_adverse_execution_bps >= Decimal("15")
     assert buy.fee > 0 and sell.fee > 0
     assert strategy.calls == []  # each run receives an isolated strategy copy
+    assert result.strategy_entrypoint.endswith(":EnterThenExit")
+    assert len(result.strategy_source_sha256) == 64
     assert result.validation_receipt_sha256 == engine().data_attestation.validation_receipt_sha256
     assert result.broker_connection_allowed is False
     assert result.orders_submitted is False

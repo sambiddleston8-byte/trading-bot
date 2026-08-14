@@ -124,6 +124,9 @@ def test_derives_immutable_engine_inputs_and_receipt_from_authenticated_roles(mo
     assert result.universe_events[0].action == "ADD"
     assert len(result.data_attestation.evidence_role_hashes) == 6
     assert result.validation_receipt_sha256 == result.data_attestation.validation_receipt_sha256
+    assert result.replay_plan_id == "REPLAY-1"
+    assert result.replay_plan_record_hash == "b" * 64
+    assert result.dataset_commitment_sha256 == "c" * 64
     assert result.prices_are_unadjusted is True
     assert result.broker_connection_allowed is False
     assert result.orders_submitted is False
