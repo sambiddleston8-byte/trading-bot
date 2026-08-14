@@ -1063,3 +1063,11 @@ remaining quantity multiplied by its risk mark price equals the pinned
 notional. Exact pending BUY and SELL totals are recomputed. This allows a future
 SELL check to deduct shares already reserved by pending SELL orders, but it does
 not yet perform that check or permit any broker action.
+
+The next SELL-only shadow now performs that internal arithmetic: exact held
+quantity minus exact pending SELL quantity must leave enough shares for the
+proposal, and pending BUY orders never count as available shares. It also
+rechecks current evidence freshness and preserves both account- and stop-
+identity latches. This remains synthetic and explicitly does not prove the
+broker holds those shares; all enforcement and submission capabilities stay
+off until later authenticated broker reconciliation and execution-stress gates.

@@ -200,3 +200,22 @@ This closes the data-shape gap needed to deduct already-reserved SELL quantities
 before assessing a new simulated sale. It remains synthetic, unreconciled and
 unauthenticated, and cannot assess a risk policy, route an order or enable paper
 or live submission.
+
+## Quantity-bound SELL shadow
+
+A composite SELL-only shadow now pins the earlier limit comparison, proposal,
+position quantities and open-order quantities to the exact same risk snapshot.
+Available shares are calculated exactly as held long quantity minus pending SELL
+quantity for the ticker; pending BUY orders never increase availability. A
+proposed sale larger than the non-negative remainder fails closed.
+
+The composite rechecks snapshot freshness at its own real recording time and
+shares the permanent-stop lock. Stops matched by either account or replacement-
+policy stop identity remain latched, and the stored stop prefix is causally
+checked so a known stop cannot be rewritten out while genuinely later stops do
+not rewrite history.
+
+The result is explicitly internal arithmetic only. The quantities are not yet
+broker-reconciled or cryptographically authenticated, broker quantity
+sufficiency is not proven, and risk enforcement, stressed prices, fees, routing,
+submission, recommendation and live trading all remain disabled.
