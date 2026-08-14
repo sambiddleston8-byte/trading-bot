@@ -1021,3 +1021,13 @@ dedicated paper-only environment variables, accepts only Alpaca's official paper
 host, returns hashed account/payload references and has no order method. Because
 the account response alone does not prove settled versus unsettled cash, it
 requires separate exact settlement evidence before recording a cash snapshot.
+
+Phase 4 now also has an inactive provider-paper risk-policy foundation and a
+one-way account-scoped local stop. A human must supply every future limit; the
+record binds exact order, position, gross-exposure, daily-loss and snapshot-age
+limits to one hashed Alpaca paper account, portfolio, strategy and Git revision.
+Replacement policies cannot escape an existing account/stop-identity latch.
+The ledgers explicitly state that limits are not yet enforced, no order route
+exists and the local hashes are neither externally anchored nor cryptographically
+authenticated. No policy has been registered with real values and no broker
+capability is activated.

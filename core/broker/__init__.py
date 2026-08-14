@@ -19,6 +19,8 @@ from core.broker.alpaca_paper_account import (
     AlpacaPaperAccountReader,
 )
 from core.broker.live_readiness_gate import LiveReadinessEvidenceGateLedger
+from core.broker.provider_paper_risk_policy import ProviderPaperRiskControlPolicyLedger
+from core.broker.provider_paper_kill_switch import ProviderPaperKillSwitchLedger
 
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
@@ -32,4 +34,6 @@ __all__ = [
     "AlpacaPaperAccountError",
     "AlpacaPaperAccountReader",
     "LiveReadinessEvidenceGateLedger",
+    "ProviderPaperRiskControlPolicyLedger",
+    "ProviderPaperKillSwitchLedger",
 ]
