@@ -31,6 +31,12 @@ learning, AWS scheduling or real-money trading.
   reuses point-in-time slices instead of repeatedly querying Yahoo.
 - Market-data universe loads fail closed when symbols are missing unless a
   caller explicitly requests a partial diagnostic result.
+- The executable pickle market cache has been replaced by immutable,
+  content-hashed Parquet snapshots. Each exact provider/symbol/date request
+  retains separate versions and an integrity-checked sidecar. Existing pickle
+  files are left untouched and are never opened. The sidecar explicitly records
+  that Yahoo's adjusted data is back-adjusted, non-point-in-time,
+  non-survivorship-safe and inadmissible as replay evidence.
 
 ## Trust-critical backlog before paper submission or learning
 
@@ -59,8 +65,9 @@ learning, AWS scheduling or real-money trading.
    retry counts, cache hits and per-engine duration.
 2. Centralise provider clients with bounded concurrency, rate limiting,
    retry/backoff, freshness rules and circuit breaking.
-3. Replace the legacy pickle market cache with immutable, versioned Parquet
-   snapshots before it becomes part of the faithful replay harness.
+3. Keep the new immutable Parquet cache non-authoritative. It removes executable
+   pickle loading and detects changed bytes, but its adjusted Yahoo snapshots
+   must never enter the faithful replay harness.
 4. Consider Polars for large replay tables only after a representative
    benchmark. Prefer NumPy vectorisation before Numba for small metric loops.
 
