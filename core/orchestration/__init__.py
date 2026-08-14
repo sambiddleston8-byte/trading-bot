@@ -16,6 +16,9 @@ from core.orchestration.promotion_decision import PromotionDecisionLedger
 from core.orchestration.robustness_plan import RobustnessTestPlanLedger
 from core.orchestration.robustness_result import RobustnessTestResultLedger
 from core.orchestration.disposable_workspace import DisposableExperimentWorkspace
+from core.orchestration.active_pipeline_image_approval import (
+    ActivePipelineImageApprovalLedger,
+)
 from core.orchestration.container_experiment_runner import ContainerExperimentRunner
 from core.orchestration.active_pipeline_replay_plan import ActivePipelineReplayPlanLedger
 from core.orchestration.purged_embargoed_folds import PurgedEmbargoedForwardFolds
@@ -57,6 +60,7 @@ __all__ = [
     "RobustnessTestPlanLedger",
     "RobustnessTestResultLedger",
     "DisposableExperimentWorkspace",
+    "ActivePipelineImageApprovalLedger",
     "ContainerExperimentRunner",
     "ActivePipelineReplayPlanLedger",
     "PurgedEmbargoedForwardFolds",

@@ -1,6 +1,7 @@
 import hashlib
 import fcntl
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import sqlite3
 import stat
@@ -8,6 +9,9 @@ import subprocess
 
 import pytest
 
+from core.orchestration.active_pipeline_image_approval import (
+    ActivePipelineImageApprovalLedger,
+)
 from core.orchestration.container_experiment_runner import (
     INPUT_ROOT_MARKER,
     ContainerExperimentRunner,
@@ -22,6 +26,8 @@ class VerifiedLedger:
 
 RUNNER_HASH = "a" * 64
 IMAGE = "example/experiment-runner@sha256:" + RUNNER_HASH
+GIT_REVISION = "1" * 40
+DEPENDENCY_LOCK_HASH = "2" * 64
 RESULT = {
     "trials_completed": 2,
     "baseline_primary_metric": "0.1",
@@ -43,15 +49,35 @@ def setup(tmp_path):
         "run_manifest_id": "RUN-1", "record_hash": "record-run",
         "experiment_id": "EXP-1", "execution_environment": "CONTAINER_ISOLATED_NO_NETWORK",
         "runner_sha256": RUNNER_HASH,
+        "git_revision": GIT_REVISION,
+        "dependency_lock_sha256": DEPENDENCY_LOCK_HASH,
         "dataset_manifest_sha256": hashlib.sha256(b"sealed data").hexdigest(),
         "maximum_runtime_seconds": 60, "maximum_memory_mb": 512,
         "maximum_cpu_cores": 2, "planned_trial_count": 2,
         "planned_at": "2025-01-01T00:00:00+00:00",
     }
+    approved_at = datetime.now(timezone.utc)
+    approvals = ActivePipelineImageApprovalLedger(tmp_path / "image-approvals.jsonl")
+    approval = approvals.approve(
+        image_reference=IMAGE,
+        git_revision=GIT_REVISION,
+        dependency_lock_sha256=DEPENDENCY_LOCK_HASH,
+        runner_entrypoint_source_sha256="3" * 64,
+        dockerfile_sha256="4" * 64,
+        build_provenance_sha256="5" * 64,
+        security_review_evidence_sha256="6" * 64,
+        built_by="BUILD_SYSTEM",
+        built_at=approved_at - timedelta(minutes=2),
+        reviewed_by="SECURITY_REVIEWER",
+        reviewed_at=approved_at - timedelta(minutes=1),
+        approved_at=approved_at,
+    )
     runner = ContainerExperimentRunner(
         run_manifest_ledger=VerifiedLedger([manifest]),
         workspace_manager=DisposableExperimentWorkspace(sandbox),
-        approved_input_root=inputs, approved_image_digest=IMAGE,
+        approved_input_root=inputs,
+        image_approval_ledger=approvals,
+        image_approval_id=approval["image_approval_id"],
         attempt_ledger_path=sandbox / "attempts.jsonl",
     )
     return runner, sealed, sandbox, manifest
@@ -93,6 +119,8 @@ def test_executes_with_hard_container_isolation_and_captures_only_bounded_result
     snapshot = Path(mount.split(",src=", 1)[1].split(",dst=", 1)[0])
     assert stat.S_IMODE(snapshot.stat().st_mode) == 0o444
     assert result["status"] == "ISOLATED_RESULT_CAPTURED_NOT_PROMOTED"
+    assert result["image_approval_id"] == runner.image_approval_id
+    assert result["image_reference"] == IMAGE
     for field in (
         "network_allowed", "authoritative_data_write_allowed",
         "broker_connection_allowed", "promotion_approved", "deployment_performed",
@@ -129,13 +157,50 @@ def test_original_input_change_after_verification_cannot_change_mounted_snapshot
 
 def test_image_and_input_must_match_preregistered_hashes(tmp_path, monkeypatch):
     runner, sealed, _, manifest = setup(tmp_path)
-    runner.approved_image_digest = "example/runner@sha256:" + "b" * 64
+    runner.run_manifest_ledger.records = [{**manifest, "runner_sha256": "b" * 64}]
     with pytest.raises(ValueError, match="runner hash"):
         runner.run(run_manifest_id="RUN-1", sealed_input_path=sealed, retention_hours=24, executed_by="Codex")
-    runner.approved_image_digest = IMAGE
+    runner.run_manifest_ledger.records = [manifest]
     sealed.write_bytes(b"changed")
     with pytest.raises(ValueError, match="dataset commitment"):
         runner.run(run_manifest_id="RUN-1", sealed_input_path=sealed, retention_hours=24, executed_by="Codex")
+
+
+@pytest.mark.parametrize(
+    "changes,fragment",
+    [
+        ({"runner_sha256": "b" * 64}, "runner hash"),
+        ({"git_revision": "b" * 40}, "Git revision"),
+        ({"dependency_lock_sha256": "b" * 64}, "dependency lock"),
+    ],
+)
+def test_image_approval_must_match_every_preregistered_build_identity(
+    tmp_path, changes, fragment
+):
+    runner, sealed, sandbox, manifest = setup(tmp_path)
+    runner.run_manifest_ledger.records = [{**manifest, **changes}]
+    with pytest.raises(ValueError, match=fragment):
+        runner.run(
+            run_manifest_id="RUN-1",
+            sealed_input_path=sealed,
+            retention_hours=24,
+            executed_by="Codex",
+        )
+    assert not (sandbox / "attempts.jsonl").exists()
+
+
+def test_unknown_image_approval_fails_before_attempt_or_workspace(tmp_path):
+    runner, sealed, sandbox, _ = setup(tmp_path)
+    runner.image_approval_id = "IMGAPP-UNKNOWN"
+    with pytest.raises(ValueError, match="exactly one verified image approval"):
+        runner.run(
+            run_manifest_id="RUN-1",
+            sealed_input_path=sealed,
+            retention_hours=24,
+            executed_by="Codex",
+        )
+    assert not (sandbox / "attempts.jsonl").exists()
+    assert not any(item.name.startswith("EWS-") for item in sandbox.iterdir())
 
 
 def test_input_requires_exact_marked_root_and_direct_non_symlink_file(tmp_path):
@@ -293,7 +358,8 @@ def test_attempt_ledger_must_stay_in_marked_sandbox_root(tmp_path):
             run_manifest_ledger=runner.run_manifest_ledger,
             workspace_manager=runner.workspace_manager,
             approved_input_root=runner.approved_input_root,
-            approved_image_digest=IMAGE,
+            image_approval_ledger=runner.image_approval_ledger,
+            image_approval_id=runner.image_approval_id,
             attempt_ledger_path=tmp_path / "outside-attempts.jsonl",
         )
 
