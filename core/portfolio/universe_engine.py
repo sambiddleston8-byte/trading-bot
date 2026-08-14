@@ -5,7 +5,11 @@ from pathlib import Path
 import csv
 import io
 import json
-import requests
+
+from core.data_sources.public_read_access import (
+    GITHUB_UNIVERSE_ENDPOINT,
+    PublicTextClient,
+)
 
 
 class UniverseEngine:
@@ -27,14 +31,6 @@ class UniverseEngine:
 
     MIN_SP500 = 450
     MIN_NASDAQ100 = 90
-
-    USER_AGENT = (
-        "Mozilla/5.0 "
-        "(Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 "
-        "(KHTML, like Gecko) "
-        "Chrome/140.0 Safari/537.36"
-    )
 
     @staticmethod
     def now():
@@ -68,34 +64,20 @@ class UniverseEngine:
         cls,
         url,
         label,
+        public_client=None,
     ):
 
         print(
             f"Downloading {label}..."
         )
 
-        response = requests.get(
+        client = public_client or PublicTextClient(
+            GITHUB_UNIVERSE_ENDPOINT
+        )
+        text = client.get_text(
             url,
-            headers={
-                "User-Agent":
-                    cls.USER_AGENT,
-
-                "Accept":
-                    "text/csv,"
-                    "text/plain,"
-                    "*/*",
-            },
-            timeout=30,
+            accept="text/csv,text/plain",
         )
-
-        print(
-            "HTTP status:",
-            response.status_code,
-        )
-
-        response.raise_for_status()
-
-        text = response.text
 
         if not text.strip():
 
@@ -107,7 +89,8 @@ class UniverseEngine:
 
     @classmethod
     def load_sp500(
-        cls
+        cls,
+        public_client=None,
     ):
 
         retrieved_at = cls.now()
@@ -115,6 +98,7 @@ class UniverseEngine:
         text = cls.download_csv(
             cls.SP500_URL,
             "S&P 500",
+            public_client,
         )
 
         reader = csv.DictReader(
@@ -211,7 +195,8 @@ class UniverseEngine:
 
     @classmethod
     def load_nasdaq100(
-        cls
+        cls,
+        public_client=None,
     ):
 
         retrieved_at = cls.now()
@@ -219,6 +204,7 @@ class UniverseEngine:
         text = cls.download_csv(
             cls.NASDAQ100_URL,
             "NASDAQ-100",
+            public_client,
         )
 
         reader = csv.DictReader(
@@ -409,6 +395,7 @@ class UniverseEngine:
     def get_universe(
         cls,
         universe="both",
+        public_client=None,
     ):
 
         universe = (
@@ -432,6 +419,9 @@ class UniverseEngine:
             )
 
         rows = []
+        client = public_client or PublicTextClient(
+            GITHUB_UNIVERSE_ENDPOINT
+        )
 
         if universe in {
             "sp500",
@@ -439,7 +429,7 @@ class UniverseEngine:
         }:
 
             rows.extend(
-                cls.load_sp500()
+                cls.load_sp500(client)
             )
 
         if universe in {
@@ -448,7 +438,7 @@ class UniverseEngine:
         }:
 
             rows.extend(
-                cls.load_nasdaq100()
+                cls.load_nasdaq100(client)
             )
 
         companies = cls.merge(
@@ -489,6 +479,15 @@ class UniverseEngine:
 
             "source_policy":
                 "PUBLIC_INDEX_CONSTITUENT_DATA",
+
+            "point_in_time":
+                False,
+
+            "survivorship_safe":
+                False,
+
+            "replay_eligible":
+                False,
 
             "validation":
                 {

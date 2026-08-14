@@ -43,6 +43,12 @@ learning, AWS scheduling or real-money trading.
   and a consecutive-failure circuit breaker. Authentication, quota and other
   terminal responses are never retried. Safe attempt, wait and elapsed-time
   metadata is returned without URLs, parameters, headers or response bodies.
+- Unauthenticated current-universe CSV, public FRED graph and Google News RSS
+  reads now have fixed-endpoint strict-text controls and post-receipt parsing-
+  size limits. These
+  controls reduce request and parser risk only: they do not make current
+  membership survivorship-safe, establish historical FRED availability, or
+  qualify RSS as point-in-time catalyst evidence.
 - A verified recorded-decision adapter now provides an intermediate causal
   execution check: an immutable decision is bound to an exact later market
   close using a fixed recommendation-to-action mapping. The close must be the
