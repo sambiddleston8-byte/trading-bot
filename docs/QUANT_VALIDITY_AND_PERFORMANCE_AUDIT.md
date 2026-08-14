@@ -66,10 +66,12 @@ learning, AWS scheduling or real-money trading.
 
 1. The first immutable telemetry boundary records per-ticker research wall
    duration and COMPLETE/ERROR outcome separately from configured pacing.
-   Optional-provider clients now expose secret-safe retry, wait and elapsed
-   measurements, but the active research pipeline has not yet attached those
-   component observations to its telemetry ledger; cache hits and per-engine
-   duration also remain unknown.
+   The active research pipeline now attaches successful optional-provider
+   coordinated-access duration and retry counts to that ledger. These rows
+   include local pacing and retry backoff, overlap the aggregate supplemental
+   stage duration, and must not be summed with it or described as network
+   latency. Unconfigured and failed calls emit no fabricated row; failure-path
+   access measurements, cache hits and per-engine duration remain unknown.
 2. Continue the provider-client migration after measured need. The optional
    provider family now shares rate limiting, narrow retry/backoff and circuit
    breaking. Bounded concurrency is deferred because those callers are still
