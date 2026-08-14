@@ -867,6 +867,19 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   No real data has been admitted under the new roles. Point-in-time adapter
   boundaries are the next safe implementation step; they must not invent,
   download or imply the existence of provider evidence.
+- The first provider-neutral artifact boundary now resolves only the exact
+  authenticated whole-dataset bytes referenced by a chain-verified admission.
+  It requires an explicit as-of time, rejects an artifact that was not yet
+  public, refuses unknown, derived-only or incompletely covered engines, and
+  never scans for substitute content. The content store must always be the one
+  verified by the admission ledger. Without a sealed invocation the as-of time
+  is only a caller assertion for inert inspection; with one, the boundary also
+  binds the invocation clock and authenticated-content paths. The returned
+  objects are immutable and explicitly keep semantic validation, row-level
+  point-in-time validation, engine readiness, replay, performance, broker,
+  order and live-trading authority false. It is deliberately not wired into the
+  research pipeline: role-specific canonical schemas and observation-level
+  filtering are still required before any engine can consume these bytes.
 - A preregistered replay execution policy now derives the only permitted
   simulator configuration for each exact BASE or PESSIMISTIC scenario. The
   derived profile fixes risk limits, ATR sizing, commission, spread, at least
