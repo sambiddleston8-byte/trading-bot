@@ -844,6 +844,15 @@ S&P 500/Nasdaq membership changes and symbol changes return access-denied or
 payment-required responses for the current account. FMP therefore remains supplementary and is not yet qualified
 as the sealed replay provider; see `docs/FMP_PROVIDER_ASSESSMENT.md`.
 
+Vendor support answers have now closed the immediate purchase question. FMP's
+historical Nasdaq endpoint is not proven to be Nasdaq-100 membership, while
+EODHD confirms point-in-time S&P 500 only, current-only Nasdaq-100, ticker
+changes from 2022, no correction history and a one-month post-cancellation data
+deletion duty. The governing decision is GBP 0 incremental recurring-data spend
+until complete representative samples and terms support the combined mandate;
+see `docs/HISTORICAL_PROVIDER_DECISION_2026-08-14.md`. Existing keys remain
+supplementary and no purchase, provider approval or replay is authorized.
+
 Phase 5 now has a separate immutable paper-broker cash snapshot boundary. It
 distinguishes total, settled and unsettled USD cash, buying power and equity,
 stores only hashes of the account reference and source payload, and requires an

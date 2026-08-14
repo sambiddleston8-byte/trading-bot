@@ -1,6 +1,6 @@
 # Financial Modeling Prep provider assessment
 
-Assessed: 13 August 2026
+Assessed: 14 August 2026
 
 ## Outcome
 
@@ -32,6 +32,14 @@ stable identifiers, terminal cash/zero outcomes, or permitted use.
 Representative samples and terms must be authenticated and examined before
 provider qualification can pass.
 
+FMP support did not confirm that its historical Nasdaq endpoint provides
+point-in-time Nasdaq-100 membership; FMP's public legacy documentation describes
+historical companies listed on the Nasdaq exchange. Support also did not confirm
+the complete symbol-lineage, terminal-outcome, correction-history,
+corporate-action and total-return evidence required by this roadmap. This
+strengthens the no-upgrade decision; it does not authenticate a provider sample
+or qualify FMP.
+
 ## Safe use now
 
 - Continue using FMP for supplementary as-reported statements, analyst evidence,
@@ -39,8 +47,10 @@ provider qualification can pass.
 - Keep SEC filings authoritative for reported US-company financial facts.
 - Do not build the sealed replay universe from today's surviving symbols.
 - Do not infer missing constituent removals, symbol changes or terminal outcomes.
-- Do not upgrade automatically. First compare the exact FMP plan that unlocks
-  the missing feeds with an alternative provider or official-source combination.
+- Do not upgrade on the current evidence. A paid endpoint for Nasdaq-listed
+  companies is not a substitute for Nasdaq-100 point-in-time membership.
+- The current project-wide spending decision is recorded in
+  `docs/HISTORICAL_PROVIDER_DECISION_2026-08-14.md`.
 
 The read-only `scripts/assess_fmp_capabilities.py` probe prints only
 availability, record counts and field names. It does not print the key or
