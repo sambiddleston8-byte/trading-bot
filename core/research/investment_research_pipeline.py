@@ -52,6 +52,25 @@ class InvestmentResearchPipeline:
                 }
             )
 
+    @staticmethod
+    def _record_provider_access(
+        evidence: dict[str, Any],
+        observations: list[dict[str, Any]] | None,
+        service: Any,
+    ) -> None:
+        """Append provider access diagnostics only when telemetry is enabled."""
+        if observations is None:
+            return
+        extractor = getattr(service, "access_observations", None)
+        if not callable(extractor):
+            return
+        try:
+            extracted = extractor(evidence)
+        except Exception:
+            return
+        if isinstance(extracted, list):
+            observations.extend(extracted)
+
     @classmethod
     def analyse_with_telemetry(
         cls,
@@ -1265,11 +1284,17 @@ class InvestmentResearchPipeline:
         # 9. FINAL RESULT
         # ----------------------------------------------------
 
+        supplemental_evidence_service = cls.load_engines()["supplemental_evidence"]
         supplemental_evidence = cls._measure_component(
             "supplemental_evidence",
             _component_telemetry,
             _monotonic,
-            lambda: cls.load_engines()["supplemental_evidence"].collect(ticker),
+            lambda: supplemental_evidence_service.collect(ticker),
+        )
+        cls._record_provider_access(
+            supplemental_evidence,
+            _component_telemetry,
+            supplemental_evidence_service,
         )
 
         result = {

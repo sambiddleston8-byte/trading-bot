@@ -2,7 +2,9 @@ from __future__ import annotations
 
 """Collect optional independent evidence without letting it bypass audit gates."""
 
+from collections.abc import Mapping
 from datetime import date, timedelta
+import math
 from typing import Any
 
 from core.data_quality.source_registry import SourceRegistry
@@ -151,6 +153,54 @@ class SupplementalProviderEvidenceService:
             "stale_or_untimestamped_providers": sorted(stale_or_untimestamped),
             "freshness_policy": "Provider data is supplementary only and must be timestamped; stale saved research requires a full refresh.",
         }
+
+    @classmethod
+    def access_observations(
+        cls,
+        evidence: Mapping[str, Any],
+    ) -> list[dict[str, Any]]:
+        """Extract secret-free coordinated-access measurements.
+
+        These per-request durations overlap the aggregate supplemental-evidence
+        stage duration and must not be summed with it.  They include local
+        pacing and retry backoff, so they are access time rather than provider
+        network latency.  Missing, failed or malformed observations are skipped
+        because telemetry must never change a research outcome.
+        """
+        if not isinstance(evidence, Mapping):
+            return []
+
+        observations = []
+        for field, definition in cls.EVIDENCE_FIELDS.items():
+            result = evidence.get(field)
+            if not isinstance(result, Mapping) or result.get("status") != "COMPLETE":
+                continue
+            access = result.get("provider_access")
+            if not isinstance(access, Mapping):
+                continue
+
+            elapsed_seconds = access.get("elapsed_seconds")
+            retry_count = access.get("retry_count")
+            if isinstance(elapsed_seconds, bool) or isinstance(retry_count, bool):
+                continue
+            if not isinstance(retry_count, int) or retry_count < 0:
+                continue
+            try:
+                elapsed_seconds = float(elapsed_seconds)
+            except (TypeError, ValueError):
+                continue
+            if not math.isfinite(elapsed_seconds) or elapsed_seconds < 0:
+                continue
+
+            observations.append(
+                {
+                    "component": f"supplemental_provider_access.{field}",
+                    "provider": definition["provider"],
+                    "duration_ms": round(elapsed_seconds * 1000.0, 3),
+                    "retry_count": retry_count,
+                }
+            )
+        return observations
 
     @classmethod
     def collect(
