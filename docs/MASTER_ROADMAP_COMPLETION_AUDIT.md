@@ -68,6 +68,18 @@ preregistered pipeline scope is formally narrowed, a faithful replay of the
 whole research route is not achievable. The contract reads no dataset bytes,
 admits nothing and executes nothing.
 
+A separate provider-neutral access boundary can now open the exact
+content-addressed whole-dataset bytes for one fully covered artifact-backed
+engine, but only from a chain-verified admission, from the same authenticated
+content store that admission verified, and only when the artifact was public by
+an explicit as-of time. Without a sealed invocation that time is caller-asserted
+and suitable only for inert inspection; with one it must equal the pinned clock
+and use the pinned paths. This is authentication, not a
+point-in-time semantic claim: every returned artifact remains explicitly not
+row-validated and not engine-ready, and the boundary is not connected to the
+research pipeline. Provider-specific normalization, canonical role schemas and
+observation-level cutoff filtering remain prerequisites to engine adapters.
+
 ## Current provider-spending decision
 
 FMP and EODHD support answers now confirm that neither currently proves the
@@ -102,7 +114,7 @@ prevent continued use of current/free entitlements for supplementary research.
    point-in-time dataset covering membership removals, delistings, terminal
    outcomes, corporate actions, total return, corrections and market calendars.
 4. Use the recorded-decision adapter for bounded causal execution diagnostics,
-   implement provider-neutral point-in-time engine-adapter boundaries without
+   define canonical role schemas and observation-level cutoff filters without
    inventing provider evidence, then supply the ledger-issued active-pipeline
    invocation with qualified historical adapters and run it through the approved no-
    network/read-only container under its frozen preregistration. Record only
