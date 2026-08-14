@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 import json
+from pathlib import Path
 import re
 from typing import Any, Mapping, Sequence
 
@@ -91,6 +92,19 @@ def _time(value: Any, name: str) -> datetime:
         return datetime.fromisoformat(canonical_timestamp(value)).astimezone(timezone.utc)
     except (TypeError, ValueError) as error:
         raise ValueError(f"{name} must be a timezone-aware timestamp") from error
+
+
+def _same_content_store(left: Any, right: Any) -> bool:
+    """Require artifact bytes from the store the admission ledger verified."""
+
+    try:
+        return (
+            Path(left.path).resolve() == Path(right.path).resolve()
+            and Path(left.blob_directory).resolve()
+            == Path(right.blob_directory).resolve()
+        )
+    except (AttributeError, TypeError, OSError):
+        return False
 
 
 def _decimal(value: Any, name: str, *, positive: bool) -> str:
@@ -592,6 +606,11 @@ def _delisting_ambiguity(
 
 
 def _load_source(admission_ledger, content_ledger, admission_id, role):
+    admitted_content_ledger = getattr(admission_ledger, "content_ledger", None)
+    if not _same_content_store(content_ledger, admitted_content_ledger):
+        raise ValueError(
+            "content ledger does not match the store verified by the admission ledger"
+        )
     try:
         admission=next((item for item in admission_ledger.verify() if item.get("admission_id")==_text(admission_id,"admission_id")),None)
         if admission is None: raise ValueError("a verified replay dataset admission is required")
