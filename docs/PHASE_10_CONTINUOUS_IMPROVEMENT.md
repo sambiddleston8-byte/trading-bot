@@ -33,9 +33,12 @@ Issue #141 adds an executable local data-sandbox control. An experiment
 workspace can be created only inside a non-symlink directory bearing the exact
 sandbox-root safety marker. It receives a private manifest and isolated SQLite
 database. The container runner now consumes only a verified preregistered run
-manifest and a directly-contained sealed input under its own exact safety
-marker. The image digest, input hash, trial count, resources and timeout must
-match that manifest. Docker runs without networking, Linux capabilities or
+manifest, a directly-contained sealed input under its own exact safety marker
+and one verified active-pipeline image approval. The approval immutably pins the
+digest-qualified image reference, Git revision, dependency lock, entrypoint
+source, Dockerfile, build provenance and independent security-review evidence.
+The approved image, input hash, trial count, resources and timeout must match
+the run manifest. Docker runs without networking, Linux capabilities or
 privilege escalation, on a read-only filesystem as an unprivileged user, with
 bounded memory, CPU, processes and temporary storage. The experiment receives
 no production or workspace write mount; the host validates a one-MiB JSON
@@ -45,6 +48,11 @@ preventing optional reruns and result shopping. Capturing a result cannot
 promote, deploy, submit an order or enable trading.
 Each workspace retains a maximum 30-day lifetime and immutable denials for
 network access, authoritative writes, AWS, brokers, promotion and trading.
+
+Recording an image approval does not build, inspect, pull, push or execute an
+image. No real active-pipeline image has been built or approved and no sealed
+experiment has run. A controlled image build, independent evidence review and
+integration rehearsal remain required before the first admitted replay.
 
 Expiry removes only the two exact managed files and their direct child folder.
 Early deletion, path traversal, symlinks, tampered manifests and unexpected

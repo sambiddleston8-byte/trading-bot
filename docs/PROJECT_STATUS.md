@@ -720,6 +720,15 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   bounded mechanical JSON result is host-captured into SQLite. No real active-
   pipeline image or sealed dataset has been run, and capture grants no
   promotion, deployment, broker or trading authority.
+- The container runner no longer trusts a caller-supplied image digest alone.
+  A separate append-only image-approval ledger pins the digest-qualified image,
+  full Git revision, dependency lock, entrypoint source, Dockerfile, build
+  provenance and independent security-review evidence. The runner fails before
+  reserving its single attempt unless the verified approval matches the run
+  manifest's image, code and dependencies. Recording approval performs no
+  build, pull, push, inspection or execution. No real active-pipeline image is
+  built or approved, no sealed experiment has run and no deployment, broker or
+  trading authority is granted.
 - Claude's retrospective container-isolation review found that adversarial
   decimal exponents could exhaust host memory and that an approved input could
   change between hashing and its Docker mount. Policy v2 bounds decimal

@@ -17,12 +17,17 @@ import time
 from typing import Any, Mapping, Sequence
 
 from core.decision_ledger import canonical_timestamp
+from core.orchestration.active_pipeline_image_approval import (
+    REQUIRED_ENTRYPOINT,
+    REQUIRED_ENVIRONMENT,
+    ActivePipelineImageApprovalLedger,
+)
 from core.orchestration.disposable_workspace import DisposableExperimentWorkspace
 from core.orchestration.experiment_run_manifest import SandboxExperimentRunManifestLedger
 from core.performance.portfolio_valuation import _canonical_json
 
 
-POLICY_VERSION = "container-no-network-experiment-runner-v2"
+POLICY_VERSION = "container-no-network-experiment-runner-v3"
 INPUT_ROOT_MARKER = "SAM_PAT_SEALED_EXPERIMENT_INPUTS_V1\n"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 _IMAGE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*@sha256:[0-9a-f]{64}$")
@@ -74,7 +79,8 @@ def _contained_file(path: str | Path, root: str | Path, *, name: str) -> Path:
 
 
 class ContainerExperimentRunner:
-    """Executes one sealed command; it cannot promote, deploy, submit orders or trade."""
+    """Executes one sealed command from one ledger-approved simulation image;
+    it cannot promote, deploy, submit orders or trade."""
 
     def __init__(
         self,
@@ -82,16 +88,18 @@ class ContainerExperimentRunner:
         run_manifest_ledger: SandboxExperimentRunManifestLedger,
         workspace_manager: DisposableExperimentWorkspace,
         approved_input_root: str | Path,
-        approved_image_digest: str,
+        image_approval_ledger: ActivePipelineImageApprovalLedger,
+        image_approval_id: str,
         attempt_ledger_path: str | Path,
     ) -> None:
         self.run_manifest_ledger = run_manifest_ledger
         self.workspace_manager = workspace_manager
         self.approved_input_root = Path(approved_input_root)
-        self.approved_image_digest = str(approved_image_digest or "").strip()
+        if image_approval_ledger is None:
+            raise ValueError("a verified image-approval ledger is required")
+        self.image_approval_ledger = image_approval_ledger
+        self.image_approval_id = _required(image_approval_id, "image_approval_id", 100)
         self.attempt_ledger_path = Path(attempt_ledger_path)
-        if not _IMAGE.fullmatch(self.approved_image_digest):
-            raise ValueError("approved_image_digest must pin an image by SHA-256 digest")
         sandbox_root = self.workspace_manager._verified_root()
         if "," in str(sandbox_root) or any(
             ord(character) < 32 for character in str(sandbox_root)
@@ -121,10 +129,9 @@ class ContainerExperimentRunner:
         )
         if manifest is None:
             raise ValueError("A verified run manifest is required")
-        if manifest["execution_environment"] != "CONTAINER_ISOLATED_NO_NETWORK":
+        if manifest["execution_environment"] != REQUIRED_ENVIRONMENT:
             raise ValueError("run manifest must require the container no-network environment")
-        if self.approved_image_digest.rsplit(":", 1)[-1] != manifest["runner_sha256"]:
-            raise ValueError("container image digest must match the preregistered runner hash")
+        approval = self._approval(manifest)
         executed = _timestamp(executed_at or datetime.now(timezone.utc))
         now = datetime.now(timezone.utc)
         if not now - MAX_CLOCK_SKEW <= executed <= now + MAX_CLOCK_SKEW:
@@ -140,7 +147,7 @@ class ContainerExperimentRunner:
             raise ValueError("sealed input does not match the run-manifest dataset commitment")
         slot = self._acquire_run_slot()
         try:
-            self._reserve_attempt(manifest, executed)
+            self._reserve_attempt(manifest, approval, executed)
             workspace = self.workspace_manager.create(
                 experiment_id=manifest["experiment_id"],
                 dataset_manifest_sha256=input_hash,
@@ -169,7 +176,9 @@ class ContainerExperimentRunner:
             container_name = f"sam-pat-{workspace['workspace_id'].lower()}"
             if not _CONTAINER_NAME.fullmatch(container_name):
                 raise ValueError("generated Docker container name is invalid")
-            command = self._command(manifest, verified_input, cidfile, container_name)
+            command = self._command(
+                manifest, approval, verified_input, cidfile, container_name
+            )
             try:
                 try:
                     returncode, stdout, stderr = self._run_bounded(
@@ -201,6 +210,8 @@ class ContainerExperimentRunner:
             "status": "ISOLATED_RESULT_CAPTURED_NOT_PROMOTED",
             "run_manifest_id": manifest["run_manifest_id"],
             "run_manifest_record_hash": manifest["record_hash"],
+            "image_approval_id": approval["image_approval_id"],
+            "image_reference": approval["image_reference"],
             "workspace_id": workspace["workspace_id"],
             "workspace_manifest_sha256": workspace["manifest_sha256"],
             "runner_output_sha256": output_hash,
@@ -213,6 +224,32 @@ class ContainerExperimentRunner:
             "order_submitted": False,
             "live_trading_enabled": False,
         }
+
+    def _approval(self, manifest: Mapping[str, Any]) -> dict[str, Any]:
+        """Resolve the one verified approval that pins this manifest's image."""
+        approvals = [
+            item for item in self.image_approval_ledger.verify()
+            if item.get("image_approval_id") == self.image_approval_id
+        ]
+        if len(approvals) != 1:
+            raise ValueError("exactly one verified image approval is required")
+        approval = approvals[0]
+        reference = str(approval.get("image_reference") or "").strip()
+        if not _IMAGE.fullmatch(reference):
+            raise ValueError("approved image reference must pin an image by SHA-256 digest")
+        if approval.get("entrypoint") != REQUIRED_ENTRYPOINT:
+            raise ValueError("approved image must pin the exact experiment entrypoint")
+        if approval.get("execution_environment") != REQUIRED_ENVIRONMENT:
+            raise ValueError("image approval must require the container no-network environment")
+        if reference.rsplit(":", 1)[-1] != approval.get("image_digest_sha256"):
+            raise ValueError("approved image reference does not match its recorded digest")
+        if approval["image_digest_sha256"] != manifest["runner_sha256"]:
+            raise ValueError("approved image digest must match the preregistered runner hash")
+        if approval.get("git_revision") != manifest["git_revision"]:
+            raise ValueError("approved image must be built from the preregistered Git revision")
+        if approval.get("dependency_lock_sha256") != manifest["dependency_lock_sha256"]:
+            raise ValueError("approved image must pin the preregistered dependency lock")
+        return approval
 
     def _acquire_run_slot(self) -> int:
         """Permit one local container experiment at a time, without waiting."""
@@ -230,6 +267,7 @@ class ContainerExperimentRunner:
     def _command(
         self,
         manifest: Mapping[str, Any],
+        approval: Mapping[str, Any],
         sealed_input: Path,
         cidfile: Path,
         container_name: str,
@@ -244,8 +282,8 @@ class ContainerExperimentRunner:
             "--name", container_name, "--ulimit", "nofile=256:256",
             "--user", "65534:65534", "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m",
             "--mount", f"type=bind,src={sealed_input},dst=/input/dataset,readonly",
-            self.approved_image_digest,
-            "/runner/experiment", "--input", "/input/dataset", "--output", "-",
+            approval["image_reference"],
+            approval["entrypoint"], "--input", "/input/dataset", "--output", "-",
         ]
 
     @staticmethod
@@ -321,7 +359,12 @@ class ContainerExperimentRunner:
                 "Docker cleanup could not be verified; manual inspection required"
             ) from error
 
-    def _reserve_attempt(self, manifest: Mapping[str, Any], executed_at: datetime) -> None:
+    def _reserve_attempt(
+        self,
+        manifest: Mapping[str, Any],
+        approval: Mapping[str, Any],
+        executed_at: datetime,
+    ) -> None:
         self.attempt_ledger_path.parent.mkdir(parents=True, exist_ok=True)
         lock = self.attempt_ledger_path.with_suffix(
             self.attempt_ledger_path.suffix + ".lock"
@@ -360,6 +403,8 @@ class ContainerExperimentRunner:
                 "status": "ATTEMPT_RESERVED_BEFORE_EXECUTION",
                 "run_manifest_id": manifest["run_manifest_id"],
                 "run_manifest_record_hash": manifest["record_hash"],
+                "image_approval_id": approval["image_approval_id"],
+                "image_approval_record_hash": approval["record_hash"],
                 "executed_at": executed_at.isoformat(),
                 "network_allowed": False,
                 "promotion_approved": False,
