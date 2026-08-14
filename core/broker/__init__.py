@@ -25,6 +25,9 @@ from core.broker.provider_paper_risk_snapshot import ProviderPaperRiskSnapshotLe
 from core.broker.provider_paper_shadow_risk_assessment import (
     ProviderPaperShadowRiskAssessmentLedger,
 )
+from core.broker.provider_paper_position_quantity_evidence import (
+    ProviderPaperPositionQuantityEvidenceLedger,
+)
 
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
@@ -42,4 +45,5 @@ __all__ = [
     "ProviderPaperKillSwitchLedger",
     "ProviderPaperRiskSnapshotLedger",
     "ProviderPaperShadowRiskAssessmentLedger",
+    "ProviderPaperPositionQuantityEvidenceLedger",
 ]
