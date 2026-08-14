@@ -184,6 +184,31 @@ returned only by an explicit verified read. Credentials are neither stored nor
 returned, and the collector exposes no submit, cancel, replace, position-close
 or other order-mutation method. Paper submission and live trading remain off.
 
+## Verified bundle normalization staging
+
+A separate local staging ledger can now re-verify one retained collection and
+translate only exact, supported Alpaca fields into candidate account, long-
+position and open-order values. Decimal input is bounded and converted through
+exact fractions rather than binary floating point. Position quantity multiplied
+by current price must equal market value exactly. Quantity-based limit and
+stop-limit orders use only their remaining quantity and explicit limit price;
+market, bare-stop, complex, unsupported-asset and ambiguous orders fail closed.
+Notional orders remain quantity-incomplete, and SELL candidates cannot refer to
+an unheld symbol or exceed its verified position quantity/value boundary.
+
+Successful normalization is labelled
+`NORMALIZED_AWAITING_EXTERNAL_EVIDENCE`, not approved or reconciled. It always
+records that settled/unsettled cash, prior-close evidence and cryptographic
+binding of the position/order responses to the bracketed account are still
+unproven. It writes none of the account, risk or quantity ledgers. Semantically
+invalid bundles receive a `NORMALIZATION_BLOCKED` audit record containing reason
+codes but no monetary values. Verification re-reads and re-hashes the original
+private blobs, so later source or normalization changes fail closed.
+
+All tests use synthetic retained bytes. No real bundle has been normalized, no
+downstream evidence has been adopted and no network, recommendation, paper-order
+or live-trading authority is introduced.
+
 ## Inactive risk policy and account-scoped stop foundation
 
 Phase 4 now also has a human-preregistered paper-risk policy and a one-way local
