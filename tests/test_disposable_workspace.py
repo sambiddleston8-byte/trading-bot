@@ -25,6 +25,12 @@ def test_purges_optional_verified_input_snapshot_after_retention(tmp_path):
     snapshot=directory/"verified-input.snapshot";snapshot.write_bytes(b"verified bytes");snapshot.chmod(0o444)
     result=target.purge_expired(manifest["workspace_id"],now="2026-01-02T00:00:00+00:00")
     assert result["status"]=="PURGED_AFTER_RETENTION" and not directory.exists()
+
+def test_purges_optional_verified_control_snapshot_after_retention(tmp_path):
+    target=manager(tmp_path);manifest=create(target);directory=target.root/manifest["workspace_id"]
+    snapshot=directory/"experiment-control.snapshot";snapshot.write_bytes(b"verified control");snapshot.chmod(0o444)
+    result=target.purge_expired(manifest["workspace_id"],now="2026-01-02T00:00:00+00:00")
+    assert result["status"]=="PURGED_AFTER_RETENTION" and not directory.exists()
 def test_symlinked_verified_input_snapshot_blocks_purge(tmp_path):
     target=manager(tmp_path);manifest=create(target);directory=target.root/manifest["workspace_id"]
     outside=tmp_path/"outside-input";outside.write_bytes(b"preserve")

@@ -54,6 +54,18 @@ image. No real active-pipeline image has been built or approved and no sealed
 experiment has run. A controlled image build, independent evidence review and
 integration rehearsal remain required before the first admitted replay.
 
+The runner now also derives a canonical control manifest from the verified run
+manifest, its exactly pinned experiment and the verified image approval before
+reserving an attempt. It contains only whitelisted scalar execution identity:
+the baseline/candidate versions, point-in-time cutoff, fixed evaluation window,
+metric, seed, trial count and committed code/data/image hashes. Free-form
+descriptions, acceptance text, credentials, provider settings and URLs are not
+included. The host snapshots and rehashes this control separately from the
+sealed dataset, mounts both read-only, binds the control hash to the attempt and
+captured result, and passes no ledger or repository path into the container.
+This prepares an exact input contract; it still does not provide or execute the
+future active-pipeline image.
+
 Expiry removes only the two exact managed files and their direct child folder.
 Early deletion, path traversal, symlinks, tampered manifests and unexpected
 files all fail closed. This code is tested only in temporary directories; no

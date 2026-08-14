@@ -20,7 +20,10 @@ from core.orchestration.disposable_workspace import ROOT_MARKER, DisposableExper
 
 
 class VerifiedLedger:
-    def __init__(self, records): self.records = records
+    def __init__(self, records, experiments=None):
+        self.records = records
+        if experiments is not None:
+            self.experiment_ledger = VerifiedLedger(experiments)
     def verify(self): return self.records
 
 
@@ -28,6 +31,8 @@ RUNNER_HASH = "a" * 64
 IMAGE = "example/experiment-runner@sha256:" + RUNNER_HASH
 GIT_REVISION = "1" * 40
 DEPENDENCY_LOCK_HASH = "2" * 64
+RUN_RECORD_HASH = "7" * 64
+EXPERIMENT_RECORD_HASH = "8" * 64
 RESULT = {
     "trials_completed": 2,
     "baseline_primary_metric": "0.1",
@@ -45,9 +50,26 @@ def setup(tmp_path):
     inputs = tmp_path / "inputs"; inputs.mkdir()
     (inputs / ".sealed-experiment-input-root").write_text(INPUT_ROOT_MARKER)
     sealed = inputs / "dataset.json"; sealed.write_bytes(b"sealed data")
+    experiment = {
+        "experiment_id": "EXP-1",
+        "record_hash": EXPERIMENT_RECORD_HASH,
+        "baseline_strategy_version": "BASELINE-v1",
+        "candidate_strategy_version": "CANDIDATE-v2",
+        "candidate_change_description": "FREE TEXT MUST NOT ENTER CONTROL",
+        "acceptance_rule": "FREE TEXT MUST NOT ENTER CONTROL",
+        "rejection_rule": "FREE TEXT MUST NOT ENTER CONTROL",
+        "point_in_time_data_cutoff": "2024-12-01T00:00:00+00:00",
+        "out_of_sample_not_before": "2025-02-01T00:00:00+00:00",
+        "out_of_sample_not_after": "2025-04-01T00:00:00+00:00",
+        "primary_metric": "COMPLETE_BENCHMARK_RELATIVE_RETURN",
+        "random_seed": 12345,
+        "maximum_trials": 5,
+    }
     manifest = {
-        "run_manifest_id": "RUN-1", "record_hash": "record-run",
+        "run_manifest_id": "RUN-1", "record_hash": RUN_RECORD_HASH,
         "experiment_id": "EXP-1", "execution_environment": "CONTAINER_ISOLATED_NO_NETWORK",
+        "experiment_record_hash": EXPERIMENT_RECORD_HASH,
+        "simulation_only": True,
         "runner_sha256": RUNNER_HASH,
         "git_revision": GIT_REVISION,
         "dependency_lock_sha256": DEPENDENCY_LOCK_HASH,
@@ -73,7 +95,7 @@ def setup(tmp_path):
         approved_at=approved_at,
     )
     runner = ContainerExperimentRunner(
-        run_manifest_ledger=VerifiedLedger([manifest]),
+        run_manifest_ledger=VerifiedLedger([manifest], [experiment]),
         workspace_manager=DisposableExperimentWorkspace(sandbox),
         approved_input_root=inputs,
         image_approval_ledger=approvals,
@@ -113,11 +135,30 @@ def test_executes_with_hard_container_isolation_and_captures_only_bounded_result
     assert timeout_seconds == 60
     assert "--memory-swap" in command and "--cidfile" in command
     assert command[command.index("--cidfile") + 1] == str(cidfile)
-    mount = command[command.index("--mount") + 1]
+    mount_indexes = [index for index, item in enumerate(command) if item == "--mount"]
+    assert len(mount_indexes) == 2
+    mount = command[mount_indexes[0] + 1]
+    control_mount = command[mount_indexes[1] + 1]
     assert "verified-input.snapshot" in mount
-    assert str(sealed) not in mount
+    assert "dst=/input/dataset" in mount
+    assert "experiment-control.snapshot" in control_mount
+    assert "dst=/input/control" in control_mount
+    assert str(sealed) not in mount and str(sealed) not in control_mount
     snapshot = Path(mount.split(",src=", 1)[1].split(",dst=", 1)[0])
+    control_snapshot = Path(
+        control_mount.split(",src=", 1)[1].split(",dst=", 1)[0]
+    )
     assert stat.S_IMODE(snapshot.stat().st_mode) == 0o444
+    assert stat.S_IMODE(control_snapshot.stat().st_mode) == 0o444
+    control_bytes = control_snapshot.read_bytes()
+    control = json.loads(control_bytes)
+    assert "FREE TEXT MUST NOT ENTER CONTROL" not in control_snapshot.read_text()
+    assert control["run_manifest_id"] == manifest["run_manifest_id"]
+    assert control["planned_trial_count"] == manifest["planned_trial_count"]
+    assert result["experiment_control_sha256"] == hashlib.sha256(control_bytes).hexdigest()
+    assert command[-6:] == [
+        "--input", "/input/dataset", "--control", "/input/control", "--output", "-",
+    ]
     assert result["status"] == "ISOLATED_RESULT_CAPTURED_NOT_PROMOTED"
     assert result["image_approval_id"] == runner.image_approval_id
     assert result["image_reference"] == IMAGE
@@ -132,7 +173,13 @@ def test_executes_with_hard_container_isolation_and_captures_only_bounded_result
         row = connection.execute(
             "SELECT run_manifest_id, promotion_approved, order_submitted, live_trading_enabled FROM runner_results"
         ).fetchone()
+        stored_control_hash = connection.execute(
+            "SELECT experiment_control_sha256 FROM runner_results"
+        ).fetchone()[0]
     assert row == (manifest["run_manifest_id"], 0, 0, 0)
+    assert stored_control_hash == result["experiment_control_sha256"]
+    attempt = json.loads((sandbox / "attempts.jsonl").read_text())
+    assert attempt["experiment_control_sha256"] == result["experiment_control_sha256"]
 
 
 def test_original_input_change_after_verification_cannot_change_mounted_snapshot(
@@ -201,6 +248,53 @@ def test_unknown_image_approval_fails_before_attempt_or_workspace(tmp_path):
         )
     assert not (sandbox / "attempts.jsonl").exists()
     assert not any(item.name.startswith("EWS-") for item in sandbox.iterdir())
+
+
+@pytest.mark.parametrize(
+    "target,changes,fragment",
+    [
+        ("manifest", {"experiment_record_hash": "9" * 64}, "pin the verified"),
+        ("experiment", {"maximum_trials": 1}, "exceeds the preregistered"),
+        ("experiment", {"primary_metric": "MADE_UP"}, "not supported"),
+        (
+            "experiment",
+            {"out_of_sample_not_after": "2025-01-01T00:00:00+00:00"},
+            "not chronological",
+        ),
+    ],
+)
+def test_invalid_experiment_control_fails_before_attempt(
+    tmp_path, target, changes, fragment
+):
+    runner, sealed, sandbox, manifest = setup(tmp_path)
+    if target == "manifest":
+        runner.run_manifest_ledger.records = [{**manifest, **changes}]
+    else:
+        experiment = runner.run_manifest_ledger.experiment_ledger.records[0]
+        runner.run_manifest_ledger.experiment_ledger.records = [
+            {**experiment, **changes}
+        ]
+    with pytest.raises(ValueError, match=fragment):
+        runner.run(
+            run_manifest_id="RUN-1",
+            sealed_input_path=sealed,
+            retention_hours=24,
+            executed_by="Codex",
+        )
+    assert not (sandbox / "attempts.jsonl").exists()
+
+
+def test_missing_preregistered_experiment_fails_before_attempt(tmp_path):
+    runner, sealed, sandbox, _ = setup(tmp_path)
+    runner.run_manifest_ledger.experiment_ledger.records = []
+    with pytest.raises(ValueError, match="exactly one verified"):
+        runner.run(
+            run_manifest_id="RUN-1",
+            sealed_input_path=sealed,
+            retention_hours=24,
+            executed_by="Codex",
+        )
+    assert not (sandbox / "attempts.jsonl").exists()
 
 
 def test_input_requires_exact_marked_root_and_direct_non_symlink_file(tmp_path):

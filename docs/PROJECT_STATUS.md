@@ -729,6 +729,15 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   build, pull, push, inspection or execution. No real active-pipeline image is
   built or approved, no sealed experiment has run and no deployment, broker or
   trading authority is granted.
+- Phase 10 now derives a canonical sealed experiment-control manifest from the
+  verified run, its exactly pinned experiment and the approved image before an
+  attempt is reserved. Only the baseline/candidate versions, point-in-time
+  cutoff, fixed future window, metric, seed, trial count and committed hashes
+  enter it; free-form descriptions/rules, credentials, provider settings, URLs
+  and ledger paths are excluded. The private workspace snapshots and rehashes
+  the control separately from the dataset, mounts both read-only and binds the
+  control hash to the attempt and result. This is an input contract only: no
+  real image is built or approved and no experiment, deployment or trade runs.
 - Claude's retrospective container-isolation review found that adversarial
   decimal exponents could exhaust host memory and that an approved input could
   change between hashing and its Docker mount. Policy v2 bounds decimal
