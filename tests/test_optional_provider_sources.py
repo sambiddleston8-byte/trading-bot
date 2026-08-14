@@ -8,6 +8,7 @@ from core.data_sources.optional_provider_sources import (
     EODHDSource,
     FinancialModelingPrepSource,
     FREDSource,
+    OptionalProviderError,
     PolygonSource,
 )
 from core.data_sources.provider_access import (
@@ -486,6 +487,176 @@ def test_query_authenticated_provider_network_failure_has_no_secret_cause():
             os.environ.pop("EODHD_API_TOKEN", None)
         else:
             os.environ["EODHD_API_TOKEN"] = original
+
+
+class _AccessClock:
+    def __init__(self):
+        self.now = 0.0
+
+    def __call__(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.now += seconds
+
+
+def _access_coordinator(clock, *, provider_key="FAILURE_TELEMETRY_TEST", **changes):
+    return ProviderAccessCoordinator.for_provider(
+        provider_key,
+        "Alpha Vantage",
+        policy=ProviderAccessPolicy(
+            minimum_interval_seconds=0,
+            base_backoff_seconds=0,
+            **changes,
+        ),
+        clock=clock,
+        sleep=clock.sleep,
+    )
+
+
+def _response(**attributes):
+    return type("Response", (), attributes)()
+
+
+def _with_alpha_key(operation):
+    original = os.environ.get("ALPHAVANTAGE_API_KEY")
+    os.environ["ALPHAVANTAGE_API_KEY"] = "secret-test-key"
+    try:
+        return operation()
+    finally:
+        if original is None:
+            os.environ.pop("ALPHAVANTAGE_API_KEY", None)
+        else:
+            os.environ["ALPHAVANTAGE_API_KEY"] = original
+
+
+def _alpha_source(response_or_error, **changes):
+    class Session:
+        @staticmethod
+        def get(*args, **kwargs):
+            if isinstance(response_or_error, Exception):
+                raise response_or_error
+            return response_or_error
+
+    return AlphaVantageSource(
+        session=Session(), access=_access_coordinator(_AccessClock(), **changes)
+    )
+
+
+@pytest.mark.parametrize(
+    "response,fragment",
+    [
+        (
+            _response(ok=False, status_code=403, headers={}, text=""),
+            "capability is unavailable",
+        ),
+        (
+            _response(ok=False, status_code=429, headers={}, text=""),
+            "rejected the request",
+        ),
+        (
+            _response(
+                ok=True,
+                status_code=200,
+                headers={},
+                json=lambda self: {"Note": "quota exceeded"},
+                text="",
+            ),
+            "rejected the request or quota",
+        ),
+    ],
+)
+def test_json_rejections_carry_safe_access_measurements(response, fragment):
+    source = _alpha_source(response)
+
+    with pytest.raises(OptionalProviderError, match=fragment) as caught:
+        _with_alpha_key(lambda: source.income_statement("NVDA"))
+
+    access = caught.value.access
+    assert access["attempts"] == 1
+    assert access["retry_count"] == 0
+    assert access["elapsed_seconds"] >= 0
+    assert access["request_url_recorded"] is False
+    assert "secret-test-key" not in str(access)
+
+
+def test_unreadable_json_carries_access_measurements():
+    def explode(self):
+        raise ValueError("not json")
+
+    source = _alpha_source(
+        _response(ok=True, status_code=200, headers={}, json=explode, text="")
+    )
+
+    with pytest.raises(OptionalProviderError, match="unreadable response") as caught:
+        _with_alpha_key(lambda: source.income_statement("NVDA"))
+
+    assert caught.value.access["attempts"] == 1
+    assert caught.value.__cause__ is None
+    assert "secret-test-key" not in str(caught.value)
+
+
+@pytest.mark.parametrize(
+    "text,fragment",
+    [
+        ("Error Message,bad key\n", "rejected the listing-status request"),
+        ("symbol,name\nAAA,Example\n", "unexpected listing-status schema"),
+    ],
+)
+def test_csv_rejections_carry_safe_access_measurements(text, fragment):
+    source = _alpha_source(_response(ok=True, status_code=200, headers={}, text=text))
+
+    with pytest.raises(OptionalProviderError, match=fragment) as caught:
+        _with_alpha_key(
+            lambda: source.listing_status_summary(as_of="2020-01-02", state="active")
+        )
+
+    assert caught.value.access["attempts"] == 1
+    assert "secret-test-key" not in str(caught.value.access)
+
+
+def test_csv_http_rejection_carries_safe_access_measurements():
+    source = _alpha_source(_response(ok=False, status_code=403, headers={}, text=""))
+
+    with pytest.raises(OptionalProviderError, match="listing status is unavailable") as caught:
+        _with_alpha_key(
+            lambda: source.listing_status_summary(as_of="2020-01-02", state="active")
+        )
+
+    assert caught.value.access["attempts"] == 1
+
+
+def test_transport_and_circuit_failures_carry_access_without_secrets():
+    source = _alpha_source(
+        requests.ConnectionError("failed https://x.invalid?apikey=secret-test-key"),
+        provider_key="FAILURE_TELEMETRY_CIRCUIT",
+        failure_threshold=1,
+    )
+
+    with pytest.raises(OptionalProviderError, match="could not be reached") as transport:
+        _with_alpha_key(lambda: source.income_statement("NVDA"))
+
+    assert transport.value.__cause__ is None
+    assert transport.value.access["attempts"] == 2
+    assert transport.value.access["retry_count"] == 1
+    assert "secret-test-key" not in str(transport.value)
+
+    with pytest.raises(OptionalProviderError, match="temporarily paused") as circuit:
+        _with_alpha_key(lambda: source.income_statement("NVDA"))
+
+    assert circuit.value.access["attempts"] == 0
+    assert circuit.value.access["elapsed_seconds"] == 0.0
+    assert circuit.value.access["circuit_state"] == "OPEN"
+
+
+def test_optional_provider_error_rejects_unwhitelisted_access_payloads():
+    hostile = OptionalProviderError(
+        "Provider rejected the request.",
+        access={"request_url": "https://x.invalid?apikey=secret", "attempts": 1},
+    )
+
+    assert hostile.access is None
+    assert OptionalProviderError("Provider failed.").access is None
 
 
 if __name__ == "__main__":

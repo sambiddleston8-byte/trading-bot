@@ -8,16 +8,25 @@ import math
 from typing import Any
 
 from core.data_quality.source_registry import SourceRegistry
+from core.data_sources.provider_access import safe_access_dict
 from core.data_sources.optional_provider_sources import (
     AlphaVantageSource,
     FinancialModelingPrepSource,
     FREDSource,
+    OptionalProviderError,
     PolygonSource,
 )
 
 
 class SupplementalProviderEvidenceService:
     VERSION = "1.4-timestamped-provider-evidence"
+
+    # Separate namespaces keep succeeded and failed access time distinguishable
+    # in the telemetry ledger without changing its schema.
+    ACCESS_COMPONENT_PREFIXES = {
+        "COMPLETE": "supplemental_provider_access",
+        "ERROR": "supplemental_provider_access_error",
+    }
 
     SOURCE_REGISTRY_KEYS = {
         "alpha_vantage": "ALPHA_VANTAGE",
@@ -76,13 +85,24 @@ class SupplementalProviderEvidenceService:
         try:
             return callable_()
         except Exception as exc:
-            return {
+            result = {
                 "status": "ERROR",
                 "error_type": type(exc).__name__,
                 # Do not persist exception text: HTTP clients can include
                 # full request URLs, including query-string API keys.
                 "error": "Provider request failed or was rejected.",
             }
+            # Revalidate rather than trust the attribute: only whitelisted
+            # scalar measurements may enter a stored research result, and any
+            # other exception shape contributes nothing at all.
+            access = (
+                safe_access_dict(exc.access)
+                if isinstance(exc, OptionalProviderError)
+                else None
+            )
+            if access is not None:
+                result["provider_access"] = access
+            return result
 
     @classmethod
     def summary(cls, evidence: dict[str, Any]) -> dict[str, Any]:
@@ -161,6 +181,12 @@ class SupplementalProviderEvidenceService:
     ) -> list[dict[str, Any]]:
         """Extract secret-free coordinated-access measurements.
 
+        Both successful and failed calls are reported, under separate component
+        namespaces, so that timing is not biased toward the happy path.  Failed
+        rows cover only failures that reached this safe boundary; a call that
+        was never configured, or whose measurements are malformed, contributes
+        nothing rather than a fabricated zero.
+
         These per-request durations overlap the aggregate supplemental-evidence
         stage duration and must not be summed with it.  They include local
         pacing and retry backoff, so they are access time rather than provider
@@ -173,7 +199,10 @@ class SupplementalProviderEvidenceService:
         observations = []
         for field, definition in cls.EVIDENCE_FIELDS.items():
             result = evidence.get(field)
-            if not isinstance(result, Mapping) or result.get("status") != "COMPLETE":
+            if not isinstance(result, Mapping):
+                continue
+            prefix = cls.ACCESS_COMPONENT_PREFIXES.get(result.get("status"))
+            if prefix is None:
                 continue
             access = result.get("provider_access")
             if not isinstance(access, Mapping):
@@ -194,7 +223,7 @@ class SupplementalProviderEvidenceService:
 
             observations.append(
                 {
-                    "component": f"supplemental_provider_access.{field}",
+                    "component": f"{prefix}.{field}",
                     "provider": definition["provider"],
                     "duration_ms": round(elapsed_seconds * 1000.0, 3),
                     "retry_count": retry_count,

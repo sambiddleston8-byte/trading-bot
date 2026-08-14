@@ -7,6 +7,7 @@ from core.data_sources.provider_access import (
     ProviderAccessCoordinator,
     ProviderAccessError,
     ProviderAccessPolicy,
+    safe_access_dict,
 )
 
 
@@ -175,3 +176,96 @@ def test_success_resets_failure_count_and_cooldown_allows_one_probe():
 def test_policy_rejects_unbounded_or_ambiguous_values(change):
     with pytest.raises(ValueError):
         ProviderAccessPolicy(**change)
+
+
+def test_circuit_open_rejection_reports_truthful_zero_cost_metadata():
+    clock = Clock()
+    client = coordinator(clock, maximum_attempts=1, failure_threshold=1)
+    client.get(Session(Response(500)), "https://provider.invalid")
+
+    with pytest.raises(ProviderAccessError) as caught:
+        client.get(Session(Response(200)), "https://provider.invalid")
+
+    metadata = caught.value.metadata
+    assert caught.value.reason_code == "CIRCUIT_OPEN"
+    assert metadata.circuit_state == "OPEN"
+    assert metadata.attempts == 0
+    assert metadata.retry_count == 0
+    assert metadata.retried_status_codes == ()
+    assert metadata.total_wait_seconds == 0.0
+    assert metadata.elapsed_seconds == 0.0
+
+
+def test_exhausted_transport_failure_reports_actual_attempts_and_waits():
+    clock = Clock()
+    client = coordinator(clock, minimum_interval_seconds=5, base_backoff_seconds=2)
+    secret = "apikey=never-expose"
+    session = Session(
+        requests.ConnectionError(f"failed https://provider.invalid?{secret}"),
+        requests.ConnectionError(f"failed https://provider.invalid?{secret}"),
+    )
+
+    with pytest.raises(ProviderAccessError) as caught:
+        client.get(session, f"https://provider.invalid?{secret}")
+
+    metadata = caught.value.metadata
+    assert caught.value.reason_code == "TRANSPORT_FAILURE"
+    assert caught.value.__cause__ is None
+    assert metadata.attempts == 2
+    assert metadata.retry_count == 1
+    # Two seconds of backoff, then three more seconds waiting for the paced
+    # second slot at t=5.
+    assert metadata.total_wait_seconds == 5.0
+    assert metadata.elapsed_seconds == 5.0
+    assert secret not in str(caught.value)
+    assert secret not in repr(metadata)
+
+
+def test_safe_access_dict_rebuilds_only_whitelisted_scalar_fields():
+    clock = Clock()
+    result = coordinator(clock).get(Session(Response(200)), "https://provider.invalid")
+
+    safe = safe_access_dict(
+        {
+            **result.metadata.as_dict(),
+            "request_url": "https://provider.invalid?apikey=secret",
+            "response_body": "secret",
+            "request_url_recorded": True,
+        }
+    )
+
+    assert set(safe) == set(result.metadata.as_dict())
+    assert "secret" not in str(safe)
+    assert safe["request_url_recorded"] is False
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"provider": ""},
+        {"provider": 1},
+        {"attempts": -1},
+        {"attempts": True},
+        {"attempts": 0, "circuit_state": "CLOSED"},
+        {"retry_count": "1"},
+        {"attempts": 1, "retry_count": 1},
+        {"attempts": 2, "retry_count": 0, "retried_status_codes": [503]},
+        {"elapsed_seconds": float("inf")},
+        {"elapsed_seconds": None},
+        {"total_wait_seconds": -1},
+        {"circuit_state": "HALF_OPEN"},
+        {"retried_status_codes": "503"},
+        {"retried_status_codes": [7]},
+    ],
+)
+def test_safe_access_dict_rejects_malformed_measurements(change):
+    clock = Clock()
+    result = coordinator(clock).get(Session(Response(200)), "https://provider.invalid")
+
+    assert safe_access_dict({**result.metadata.as_dict(), **change}) is None
+
+
+def test_safe_access_dict_rejects_non_mapping_inputs():
+    assert safe_access_dict(None) is None
+    assert safe_access_dict("provider") is None
+    assert safe_access_dict(object()) is None

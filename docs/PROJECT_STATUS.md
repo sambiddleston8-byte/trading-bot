@@ -813,14 +813,16 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   does not activate a provider, run a worker, cache responses, prove freshness,
   purchase data, connect a broker or enable trading. Concurrency remains
   deferred until a real concurrent optional-provider caller exists.
-- Successful supplementary-provider calls now contribute secret-free access
-  duration and retry-count observations to the existing append-only research
-  telemetry ledger. The provider rows use stable safe slugs and copy no raw
-  payload or request detail. Their duration includes local pacing/backoff and
-  overlaps the aggregate supplementary stage, so it is not vendor latency and
-  must not be summed with the stage duration. Unconfigured, failed or malformed
-  calls add no fabricated row; this instrumentation makes no extra request and
-  has no research, provider-selection, execution or trading authority.
+- Successful supplementary-provider calls and failures that reach the safe
+  optional-provider boundary now contribute separately named, secret-free
+  access-duration and retry-count observations to the existing append-only
+  research telemetry ledger. The provider rows use stable safe slugs and copy
+  no raw payload, exception text or request detail. Their duration includes
+  local pacing/backoff and overlaps the aggregate supplementary stage, so it is
+  not vendor latency and must not be summed with the stage duration.
+  Unconfigured calls, malformed measurements and failures outside this boundary
+  add no fabricated row. This instrumentation makes no extra request and has no
+  freshness, research, provider-selection, execution or trading authority.
 
 ## Safety invariants
 

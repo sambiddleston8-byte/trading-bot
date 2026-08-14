@@ -66,12 +66,15 @@ learning, AWS scheduling or real-money trading.
 
 1. The first immutable telemetry boundary records per-ticker research wall
    duration and COMPLETE/ERROR outcome separately from configured pacing.
-   The active research pipeline now attaches successful optional-provider
-   coordinated-access duration and retry counts to that ledger. These rows
-   include local pacing and retry backoff, overlap the aggregate supplemental
-   stage duration, and must not be summed with it or described as network
-   latency. Unconfigured and failed calls emit no fabricated row; failure-path
-   access measurements, cache hits and per-engine duration remain unknown.
+   The active research pipeline now attaches optional-provider coordinated-
+   access duration and retry counts to that ledger, using separate component
+   namespaces for success and for failures that reached the secret-safe source
+   boundary. These rows include local pacing and retry backoff, overlap the
+   aggregate supplemental stage duration, and must not be summed with it or
+   described as vendor latency. Unconfigured calls, malformed measurements and
+   failures outside that boundary emit no fabricated row. Cache hits and per-
+   engine duration remain unknown, and these observations prove neither data
+   freshness nor provider authority.
 2. Continue the provider-client migration after measured need. The optional
    provider family now shares rate limiting, narrow retry/backoff and circuit
    breaking. Bounded concurrency is deferred because those callers are still

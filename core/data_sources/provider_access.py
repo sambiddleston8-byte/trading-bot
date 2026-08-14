@@ -12,6 +12,13 @@ import requests
 
 
 RETRYABLE_STATUS_CODES = frozenset({502, 503, 504})
+CIRCUIT_STATES = frozenset({"CLOSED", "OPEN"})
+RECORDED_FLAGS = (
+    "request_url_recorded",
+    "request_parameters_recorded",
+    "request_headers_recorded",
+    "response_body_recorded",
+)
 
 
 @dataclass(frozen=True)
@@ -71,10 +78,7 @@ class ProviderAttemptMetadata:
             "total_wait_seconds": self.total_wait_seconds,
             "elapsed_seconds": self.elapsed_seconds,
             "circuit_state": self.circuit_state,
-            "request_url_recorded": False,
-            "request_parameters_recorded": False,
-            "request_headers_recorded": False,
-            "response_body_recorded": False,
+            **{flag: False for flag in RECORDED_FLAGS},
         }
 
 
@@ -84,12 +88,97 @@ class ProviderHTTPResult:
     metadata: ProviderAttemptMetadata
 
 
+def safe_access_dict(value: Any) -> dict[str, Any] | None:
+    """Return a freshly built whitelisted access dict, or None when unusable.
+
+    Every field is revalidated and rebuilt from scalars, so no caller mapping,
+    exception attribute or provider payload is ever passed through.  Anything
+    unexpected degrades to ``None`` rather than leaking an unknown structure.
+    """
+    if isinstance(value, ProviderAttemptMetadata):
+        source: Mapping[str, Any] = value.as_dict()
+    elif isinstance(value, Mapping):
+        source = value
+    else:
+        return None
+
+    provider = source.get("provider")
+    if not isinstance(provider, str) or not provider.strip() or len(provider) > 100:
+        return None
+
+    counts: dict[str, int] = {}
+    for name in ("attempts", "retry_count"):
+        count = source.get(name)
+        if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+            return None
+        counts[name] = count
+
+    durations: dict[str, float] = {}
+    for name in ("total_wait_seconds", "elapsed_seconds"):
+        duration = source.get(name)
+        if isinstance(duration, bool):
+            return None
+        try:
+            resolved = float(duration)
+        except (TypeError, ValueError):
+            return None
+        if not math.isfinite(resolved) or resolved < 0:
+            return None
+        durations[name] = resolved
+
+    codes = source.get("retried_status_codes")
+    if isinstance(codes, (str, bytes)) or not isinstance(codes, (list, tuple)):
+        return None
+    resolved_codes: list[int] = []
+    for code in codes:
+        if isinstance(code, bool) or not isinstance(code, int) or not 100 <= code <= 599:
+            return None
+        resolved_codes.append(code)
+
+    circuit_state = source.get("circuit_state")
+    if circuit_state not in CIRCUIT_STATES:
+        return None
+
+    attempts = counts["attempts"]
+    retry_count = counts["retry_count"]
+    if attempts == 0:
+        if (
+            retry_count != 0
+            or resolved_codes
+            or durations["total_wait_seconds"] != 0.0
+            or durations["elapsed_seconds"] != 0.0
+            or circuit_state != "OPEN"
+        ):
+            return None
+    elif retry_count > attempts - 1 or len(resolved_codes) > retry_count:
+        return None
+
+    return {
+        "provider": provider.strip(),
+        "attempts": attempts,
+        "retry_count": retry_count,
+        "retried_status_codes": resolved_codes,
+        "total_wait_seconds": durations["total_wait_seconds"],
+        "elapsed_seconds": durations["elapsed_seconds"],
+        "circuit_state": circuit_state,
+        # Always asserted, never copied: these can only ever be False here.
+        **{flag: False for flag in RECORDED_FLAGS},
+    }
+
+
 class ProviderAccessError(RuntimeError):
     """A deliberately secret-free provider transport or circuit failure."""
 
-    def __init__(self, message: str, *, reason_code: str) -> None:
+    def __init__(
+        self,
+        message: str,
+        *,
+        reason_code: str,
+        metadata: ProviderAttemptMetadata,
+    ) -> None:
         super().__init__(message)
         self.reason_code = reason_code
+        self.metadata = metadata
 
 
 @dataclass
@@ -160,6 +249,22 @@ class ProviderAccessCoordinator:
         with cls._states_lock:
             cls._states.clear()
 
+    def _rejected_metadata(self) -> ProviderAttemptMetadata:
+        """Describe a request the open circuit refused before any attempt.
+
+        Every measurement is zero because nothing was sent, waited for or
+        retried; reporting anything else would invent provider cost.
+        """
+        return ProviderAttemptMetadata(
+            provider=self.provider_name,
+            attempts=0,
+            retry_count=0,
+            retried_status_codes=(),
+            total_wait_seconds=0.0,
+            elapsed_seconds=0.0,
+            circuit_state="OPEN",
+        )
+
     def _circuit_allows_request(self) -> None:
         now = self.clock()
         with self._state.lock:
@@ -170,6 +275,7 @@ class ProviderAccessCoordinator:
                 raise ProviderAccessError(
                     f"{self.provider_name} access is temporarily paused after repeated failures.",
                     reason_code="CIRCUIT_OPEN",
+                    metadata=self._rejected_metadata(),
                 )
             # One post-cooldown request is allowed. A subsequent failure opens
             # the circuit again immediately; success fully resets the state.
@@ -249,10 +355,19 @@ class ProviderAccessCoordinator:
                         self.sleep(delay)
                         total_wait += delay
                     continue
-                self._record_failure()
+                circuit = self._record_failure()
                 raise ProviderAccessError(
                     f"{self.provider_name} could not be reached.",
                     reason_code="TRANSPORT_FAILURE",
+                    metadata=ProviderAttemptMetadata(
+                        provider=self.provider_name,
+                        attempts=attempt,
+                        retry_count=attempt - 1,
+                        retried_status_codes=tuple(retried_status_codes),
+                        total_wait_seconds=round(total_wait, 9),
+                        elapsed_seconds=round(max(0.0, self.clock() - started), 9),
+                        circuit_state=circuit,
+                    ),
                 ) from None
 
             status = self._status_code(response)
