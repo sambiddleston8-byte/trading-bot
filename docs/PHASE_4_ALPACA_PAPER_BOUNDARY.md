@@ -158,6 +158,32 @@ unreconciled. No real capture or reconciliation has been recorded, and the
 component cannot access credentials, make a network request, recommend, route or
 submit any paper or live order.
 
+## Read-only paper-state collection bundle
+
+The next network-capable foundation can collect a single, tightly bounded local
+view of the Alpaca PAPER account using an explicitly injected session. It makes
+only four fixed HTTPS `GET` requests to Alpaca's official paper host: account,
+long positions, open orders and account again. The opening and closing account
+responses must identify the same ACTIVE USD paper account within one 30-second
+wall-clock and monotonic window. Redirects, pagination ambiguity, short
+positions, duplicate identities, unsupported open-order states, malformed JSON
+and non-paper endpoints fail closed.
+
+All four observed responses are retained as private, content-addressed bytes;
+identical opening and closing account responses share one blob. The immutable
+bundle binds their hashes, byte lengths, fixed request paths, local observation
+times and matching account reference. Admission is internal to the collector,
+and tests use injected fake sessions only. No real provider request or evidence
+admission was performed while implementing this boundary.
+
+The record is deliberately labelled local attestation only. HTTPS and API
+credentials allow a future request but do not supply a broker signature or
+non-repudiable transport receipt. The bundle does not yet semantically reconcile
+settled cash, positions, orders, prior-close values or fills. Raw bytes are
+returned only by an explicit verified read. Credentials are neither stored nor
+returned, and the collector exposes no submit, cancel, replace, position-close
+or other order-mutation method. Paper submission and live trading remain off.
+
 ## Inactive risk policy and account-scoped stop foundation
 
 Phase 4 now also has a human-preregistered paper-risk policy and a one-way local

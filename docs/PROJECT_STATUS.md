@@ -1029,9 +1029,10 @@ ledger. Strict JSON identity binding, file-link and permission checks, size
 limits and forward-only observations protect the local evidence. This is
 explicitly unauthenticated byte retention, not proof of broker origin,
 reconciliation, settlement or readiness. No real payload has been admitted;
-the second semantic reconciliation stage is not implemented, and the existing
-operator-supplied settled-cash input remains unauthenticated. Credentials,
-network access, recommendations and all order or trading authority remain off.
+positions, open orders, settlement and prior-close evidence remain unreconciled,
+and the existing operator-supplied settled-cash input remains unauthenticated.
+Credentials, network access, recommendations and all order or trading authority
+remain off.
 
 The matching account-field reconciliation foundation now re-reads one verified
 retained capture and pins one verified cash snapshot. It requires exact account,
@@ -1042,6 +1043,18 @@ unsafe links/modes, unbounded files and backward writes. The result remains
 explicitly unauthenticated and does not reconcile settlement, positions, orders
 or previous-close evidence. No real source record has been admitted and no
 network, broker or trading capability is enabled.
+
+A separate read-only collector foundation now constrains a future Alpaca PAPER
+state observation to four fixed `GET` requests on the official paper host:
+opening account, long positions, open orders and closing account. It retains all
+four exact responses privately, requires the account identity to bracket a
+maximum 30-second collection window and rejects redirects, incomplete order
+pagination, duplicate or short positions, invalid open-order states and unsafe
+files. The immutable bundle claims only local collector attestation: it is not
+a broker signature or proof of origin, settlement, reconciliation or readiness.
+Implementation tests use injected fake sessions; no real request or admission
+was made. The collector has no order mutation method, and paper submission and
+live trading remain disabled.
 
 Phase 4 now also has an inactive provider-paper risk-policy foundation and a
 one-way account-scoped local stop. A human must supply every future limit; the
