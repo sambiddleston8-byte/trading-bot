@@ -802,6 +802,17 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   as authenticated replay evidence. This improves local safety and repeat-use
   efficiency; it does not improve historical-data validity or create a track
   record.
+- Optional FMP, EODHD, Alpha Vantage, FRED and Massive requests now pass through
+  a shared process-local access coordinator. It gently spaces requests across
+  separate client instances, retries only connection failures and HTTP
+  502/503/504 once, caps provider-requested backoff, and temporarily pauses a
+  provider after repeated failures. Authentication, entitlement, quota, HTTP
+  429 and provider-declared errors are terminal and never retried, protecting
+  limited included allowances. Returned access metadata contains counts and
+  timings only—never URLs, query parameters, headers or response bodies. This
+  does not activate a provider, run a worker, cache responses, prove freshness,
+  purchase data, connect a broker or enable trading. Concurrency remains
+  deferred until a real concurrent optional-provider caller exists.
 
 ## Safety invariants
 

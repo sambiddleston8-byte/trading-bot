@@ -10,10 +10,22 @@ from core.data_sources.optional_provider_sources import (
     FREDSource,
     PolygonSource,
 )
+from core.data_sources.provider_access import (
+    ProviderAccessCoordinator,
+    ProviderAccessPolicy,
+)
 from core.data_sources.portfolio_data_provider_registry import (
     PortfolioDataProviderRegistry,
 )
 from core.data_sources.provider_configuration import ProviderConfiguration
+
+
+@pytest.fixture(autouse=True)
+def reset_provider_access_state():
+    """Keep process-local pacing and breaker state out of unrelated tests."""
+    ProviderAccessCoordinator.reset()
+    yield
+    ProviderAccessCoordinator.reset()
 
 
 def test_optional_sources_do_not_make_network_calls_without_credentials():
@@ -85,6 +97,10 @@ def test_successful_provider_response_has_a_retrieval_timestamp():
 
     assert result["status"] == "COMPLETE"
     assert result.get("retrieved_at")
+    assert result["provider_access"]["attempts"] == 1
+    assert result["provider_access"]["retry_count"] == 0
+    assert result["provider_access"]["request_url_recorded"] is False
+    assert "test-key" not in str(result["provider_access"])
 
 
 def test_alpha_vantage_listing_status_returns_metadata_not_rows_or_key():
@@ -198,6 +214,73 @@ def test_alpha_vantage_listing_status_sanitizes_network_failure():
             os.environ.pop("ALPHAVANTAGE_API_KEY", None)
         else:
             os.environ["ALPHAVANTAGE_API_KEY"] = original
+
+
+def test_alpha_vantage_csv_path_uses_shared_transient_retry_controls():
+    good = type(
+        "Response",
+        (),
+        {
+            "ok": True,
+            "status_code": 200,
+            "headers": {},
+            "text": (
+                "symbol,name,exchange,assetType,ipoDate,delistingDate,status\n"
+                "AAA,Example,NASDAQ,Stock,2010-01-01,null,Active\n"
+            ),
+        },
+    )()
+    unavailable = type(
+        "Response",
+        (),
+        {"ok": False, "status_code": 503, "headers": {"Retry-After": "0"}, "text": ""},
+    )()
+
+    class Session:
+        def __init__(self):
+            self.responses = [unavailable, good]
+            self.calls = 0
+
+        def get(self, *args, **kwargs):
+            self.calls += 1
+            return self.responses.pop(0)
+
+    class Clock:
+        now = 0.0
+
+        def __call__(self):
+            return self.now
+
+        def sleep(self, seconds):
+            self.now += seconds
+
+    clock = Clock()
+    access = ProviderAccessCoordinator.for_provider(
+        "ALPHA_CSV_TEST",
+        "Alpha Vantage",
+        policy=ProviderAccessPolicy(
+            minimum_interval_seconds=0,
+            base_backoff_seconds=0,
+        ),
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    session = Session()
+    original = os.environ.get("ALPHAVANTAGE_API_KEY")
+    os.environ["ALPHAVANTAGE_API_KEY"] = "test-key"
+    try:
+        result = AlphaVantageSource(session=session, access=access).listing_status_summary(
+            as_of="2020-01-02", state="active"
+        )
+    finally:
+        if original is None:
+            os.environ.pop("ALPHAVANTAGE_API_KEY", None)
+        else:
+            os.environ["ALPHAVANTAGE_API_KEY"] = original
+
+    assert session.calls == 2
+    assert result["provider_access"]["retry_count"] == 1
+    assert result["provider_access"]["retried_status_codes"] == [503]
 
 
 def test_fmp_uses_authentication_header_and_never_query_string_key():

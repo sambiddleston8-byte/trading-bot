@@ -37,6 +37,12 @@ learning, AWS scheduling or real-money trading.
   files are left untouched and are never opened. The sidecar explicitly records
   that Yahoo's adjusted data is back-adjusted, non-point-in-time,
   non-survivorship-safe and inadmissible as replay evidence.
+- Optional FMP, EODHD, Alpha Vantage, FRED and Massive reads now share one
+  secret-safe access coordinator. It applies process-wide provider pacing, at
+  most one retry for connection failures or HTTP 502/503/504, capped backoff,
+  and a consecutive-failure circuit breaker. Authentication, quota and other
+  terminal responses are never retried. Safe attempt, wait and elapsed-time
+  metadata is returned without URLs, parameters, headers or response bodies.
 
 ## Trust-critical backlog before paper submission or learning
 
@@ -58,13 +64,18 @@ learning, AWS scheduling or real-money trading.
 
 ## Performance backlog
 
-1. The first immutable telemetry boundary now records per-ticker research wall
-   duration and COMPLETE/ERROR outcome separately from configured pacing. It
-   deliberately leaves component observations unknown until the active
-   pipeline and provider clients explicitly expose measured provider latency,
-   retry counts, cache hits and per-engine duration.
-2. Centralise provider clients with bounded concurrency, rate limiting,
-   retry/backoff, freshness rules and circuit breaking.
+1. The first immutable telemetry boundary records per-ticker research wall
+   duration and COMPLETE/ERROR outcome separately from configured pacing.
+   Optional-provider clients now expose secret-safe retry, wait and elapsed
+   measurements, but the active research pipeline has not yet attached those
+   component observations to its telemetry ledger; cache hits and per-engine
+   duration also remain unknown.
+2. Continue the provider-client migration after measured need. The optional
+   provider family now shares rate limiting, narrow retry/backoff and circuit
+   breaking. Bounded concurrency is deferred because those callers are still
+   sequential. CDN `Age` is deliberately not treated as financial-data
+   freshness or point-in-time proof; any future freshness rule must use actual
+   source semantics and availability timestamps.
 3. Keep the new immutable Parquet cache non-authoritative. It removes executable
    pickle loading and detects changed bytes, but its adjusted Yahoo snapshots
    must never enter the faithful replay harness.

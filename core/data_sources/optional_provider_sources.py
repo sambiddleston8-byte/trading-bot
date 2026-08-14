@@ -17,6 +17,12 @@ from typing import Any
 
 import requests
 
+from core.data_sources.provider_access import (
+    ProviderAccessCoordinator,
+    ProviderAccessError,
+    ProviderAccessPolicy,
+    ProviderHTTPResult,
+)
 from core.data_sources.provider_configuration import ProviderConfiguration
 
 
@@ -27,9 +33,19 @@ class OptionalProviderError(RuntimeError):
 class OptionalHTTPSource:
     KEY_ENV = ""
     SOURCE_NAME = "Optional provider"
+    ACCESS_POLICY = ProviderAccessPolicy()
 
-    def __init__(self, session: requests.Session | None = None):
+    def __init__(
+        self,
+        session: requests.Session | None = None,
+        access: ProviderAccessCoordinator | None = None,
+    ):
         self.session = session or requests.Session()
+        self.access = access or ProviderAccessCoordinator.for_provider(
+            self.KEY_ENV,
+            self.SOURCE_NAME,
+            policy=self.ACCESS_POLICY,
+        )
 
     @property
     def configured(self) -> bool:
@@ -43,6 +59,28 @@ class OptionalHTTPSource:
             "required_environment_variable": self.KEY_ENV,
         }
 
+    def _request(
+        self,
+        url: str,
+        *,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> ProviderHTTPResult:
+        try:
+            return self.access.get(
+                self.session,
+                url,
+                params=params,
+                headers=headers,
+                timeout=20,
+            )
+        except ProviderAccessError as error:
+            if error.reason_code == "CIRCUIT_OPEN":
+                message = f"{self.SOURCE_NAME} access is temporarily paused."
+            else:
+                message = f"{self.SOURCE_NAME} could not be reached."
+            raise OptionalProviderError(message) from None
+
     def get_json(
         self,
         url: str,
@@ -52,17 +90,8 @@ class OptionalHTTPSource:
     ) -> dict[str, Any]:
         if not self.configured:
             return self.unavailable()
-        try:
-            response = self.session.get(
-                url,
-                params=params,
-                headers=headers,
-                timeout=20,
-            )
-        except requests.RequestException as exc:
-            raise OptionalProviderError(
-                f"{self.SOURCE_NAME} could not be reached."
-            ) from None
+        result = self._request(url, params=params, headers=headers)
+        response = result.response
 
         if not response.ok:
             if response.status_code in {401, 402, 403}:
@@ -97,6 +126,7 @@ class OptionalHTTPSource:
             "source": self.SOURCE_NAME,
             "payload": payload,
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
+            "provider_access": result.metadata.as_dict(),
         }
 
 
@@ -142,21 +172,16 @@ class AlphaVantageSource(OptionalHTTPSource):
             raise ValueError("state must be active or delisted")
         if not self.configured:
             return self.unavailable()
-        try:
-            response = self.session.get(
-                self.BASE_URL,
-                params={
-                    "function": "LISTING_STATUS",
-                    "date": resolved_date.isoformat(),
-                    "state": resolved_state,
-                    "apikey": os.getenv(self.KEY_ENV),
-                },
-                timeout=20,
-            )
-        except requests.RequestException as exc:
-            raise OptionalProviderError(
-                f"{self.SOURCE_NAME} could not be reached."
-            ) from None
+        result = self._request(
+            self.BASE_URL,
+            params={
+                "function": "LISTING_STATUS",
+                "date": resolved_date.isoformat(),
+                "state": resolved_state,
+                "apikey": os.getenv(self.KEY_ENV),
+            },
+        )
+        response = result.response
         if not response.ok:
             raise OptionalProviderError(
                 f"{self.SOURCE_NAME} listing status is unavailable for the configured "
@@ -194,6 +219,7 @@ class AlphaVantageSource(OptionalHTTPSource):
             "sample_record_count": record_count,
             "sample_field_names": fields,
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
+            "provider_access": result.metadata.as_dict(),
         }
 
 
