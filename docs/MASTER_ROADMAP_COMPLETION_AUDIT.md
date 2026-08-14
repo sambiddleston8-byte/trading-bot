@@ -34,17 +34,22 @@ This is useful execution evidence for decisions that already exist, but it does
 not historically regenerate the research process, qualify source data, prove
 investment value or create a track record.
 
-The faithful active-pipeline route now also has an inert sealed-context
-prerequisite. It binds the verified replay plan and approved no-network image to
-every research-engine dependency, factor-lineage policy, strictly ordered
-preregistered in-window as-of schedule, Git/dependency identities and immutable
-learning/source-evidence digests. It
-fixes all write, fallback, degraded-completion, broker, promotion and
-performance authority false. Its full canonical dependency manifest is recorded
-once per plan in an append-only ledger before evaluation-data access, and the
-verified context remains embargoed from a future runner until the real access
-date. It does not execute the pipeline; fail-closed stage handling and context-
-backed dependency injection remain the next software step.
+The faithful active-pipeline route now has a ledger-issued sealed invocation
+boundary. Its preregistered context binds the verified replay plan and approved
+no-network image to every research-engine dependency, all active-route
+components, a strictly ordered in-window as-of schedule, Git/dependency
+identities and immutable learning/source-evidence digests. After the real data-
+access embargo, the ledger—not a caller-supplied context—selects one exact
+schedule index and issues an inert invocation only after re-hashing the 22
+injected engine sources, six active-route component sources, authenticated
+source ledger/blob manifest and learning-state file. The pipeline revalidates
+those identities and bytes at consumption, uses the frozen timestamp and sealed
+paths, forbids saving and ambient engine fallback, and makes all five formerly
+degraded stage failures fatal in replay mode. Ordinary research behaviour is
+preserved. This boundary does not itself stop a leaf engine opening a socket or
+file; the approved no-network/read-only container must enforce that process
+boundary. No real image or dataset has been admitted, no production invocation
+has been issued, and no replay or performance claim exists.
 
 ## Current provider-spending decision
 
@@ -80,10 +85,11 @@ prevent continued use of current/free entitlements for supplementary research.
    point-in-time dataset covering membership removals, delistings, terminal
    outcomes, corporate actions, total return, corrections and market calendars.
 4. Use the recorded-decision adapter for bounded causal execution diagnostics,
-   then wire the active pipeline fail-closed to its sealed replay context and
-   run it through the no-network container under its frozen preregistration.
-   Record only mechanical out-of-sample and robustness results. Do not treat the
-   adapter or the inert context as a substitute for replaying research
+   then supply the ledger-issued active-pipeline invocation with qualified
+   point-in-time historical engine adapters and run it through the approved no-
+   network/read-only container under its frozen preregistration. Record only
+   mechanical out-of-sample and robustness results. Do not treat the adapter or
+   the sealed invocation boundary as a substitute for replaying research
    generation.
 5. Accumulate the fixed future shadow/paper evidence before any strategy
    promotion decision or performance claim.

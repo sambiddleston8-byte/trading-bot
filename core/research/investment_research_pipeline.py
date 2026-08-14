@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 from datetime import datetime, timezone
 import json
 from pathlib import Path
 import time
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Mapping
 from core.decision_ledger import current_git_revision
 from core.research.research_contract import ResearchContract
+
+if TYPE_CHECKING:
+    from core.orchestration.sealed_replay_invocation import SealedReplayInvocation
 
 
 class InvestmentResearchPipeline:
@@ -57,6 +62,8 @@ class InvestmentResearchPipeline:
         evidence: dict[str, Any],
         observations: list[dict[str, Any]] | None,
         service: Any,
+        *,
+        strict_errors: bool = False,
     ) -> None:
         """Append provider access diagnostics only when telemetry is enabled."""
         if observations is None:
@@ -67,6 +74,8 @@ class InvestmentResearchPipeline:
         try:
             extracted = extractor(evidence)
         except Exception:
+            if strict_errors:
+                raise
             return
         if isinstance(extracted, list):
             observations.extend(extracted)
@@ -78,6 +87,7 @@ class InvestmentResearchPipeline:
         save=True,
         *,
         monotonic: Callable[[], float] = time.monotonic,
+        replay: SealedReplayInvocation | None = None,
     ):
         """Return the normal result plus run-local, secret-free stage timings."""
         observations: list[dict[str, Any]] = []
@@ -86,6 +96,7 @@ class InvestmentResearchPipeline:
             save=save,
             _component_telemetry=observations,
             _monotonic=monotonic,
+            replay=replay,
         )
         return result, observations
 
@@ -251,6 +262,13 @@ class InvestmentResearchPipeline:
             "supplemental_evidence": SupplementalProviderEvidenceService,
         }
 
+    @classmethod
+    def _resolve_engine_registry(
+        cls,
+        engine_registry: Mapping[str, Any] | None,
+    ) -> Mapping[str, Any]:
+        return cls.load_engines() if engine_registry is None else engine_registry
+
     # ========================================================
     # SAFE METHOD CALL
     # ========================================================
@@ -289,9 +307,23 @@ class InvestmentResearchPipeline:
     def analyse_core(
         cls,
         ticker,
+        *,
+        engine_registry: Mapping[str, Any] | None = None,
+        authenticated_source_ledger_path: str | Path | None = None,
+        authenticated_source_blob_directory: str | Path | None = None,
     ):
 
-        engines = cls.load_engines()
+        engines = cls._resolve_engine_registry(engine_registry)
+        source_ledger_path = (
+            cls.AUTHENTICATED_SOURCE_LEDGER_PATH
+            if authenticated_source_ledger_path is None
+            else Path(authenticated_source_ledger_path)
+        )
+        source_blob_directory = (
+            cls.AUTHENTICATED_SOURCE_BLOB_DIRECTORY
+            if authenticated_source_blob_directory is None
+            else Path(authenticated_source_blob_directory)
+        )
 
         fundamental_engine = engines["fundamental"]()
 
@@ -320,8 +352,8 @@ class InvestmentResearchPipeline:
             valuation,
             decision,
             engines["authenticated_sources"](
-                cls.AUTHENTICATED_SOURCE_LEDGER_PATH,
-                cls.AUTHENTICATED_SOURCE_BLOB_DIRECTORY,
+                source_ledger_path,
+                source_blob_directory,
             ),
         )
 
@@ -366,9 +398,11 @@ class InvestmentResearchPipeline:
     def analyse_news(
         cls,
         ticker,
+        *,
+        engine_registry: Mapping[str, Any] | None = None,
     ):
 
-        engines = cls.load_engines()
+        engines = cls._resolve_engine_registry(engine_registry)
 
         news_engine = (
             engines["news"]()
@@ -406,13 +440,19 @@ class InvestmentResearchPipeline:
     def analyse_sentiment(
         cls,
         news,
+        *,
+        engine_registry: Mapping[str, Any] | None = None,
     ):
 
-        return cls.load_engines()["sentiment"].analyse(news)
+        return cls._resolve_engine_registry(engine_registry)["sentiment"].analyse(news)
 
     @classmethod
-    def analyse_market_context(cls):
-        engines = cls.load_engines()
+    def analyse_market_context(
+        cls,
+        *,
+        engine_registry: Mapping[str, Any] | None = None,
+    ):
+        engines = cls._resolve_engine_registry(engine_registry)
 
         return {
             "market_regime": engines["market_regime"]().analyse(),
@@ -427,9 +467,11 @@ class InvestmentResearchPipeline:
     def analyse_catalysts(
         cls,
         ticker,
+        *,
+        engine_registry: Mapping[str, Any] | None = None,
     ):
 
-        engines = cls.load_engines()
+        engines = cls._resolve_engine_registry(engine_registry)
 
         catalyst_engine = (
             engines["catalyst"]()
@@ -471,10 +513,12 @@ class InvestmentResearchPipeline:
         decision,
         catalysts,
         news,
+        *,
+        engine_registry: Mapping[str, Any] | None = None,
     ):
 
         engine = (
-            cls.load_engines()
+            cls._resolve_engine_registry(engine_registry)
             ["thesis"]
         )
 
@@ -602,17 +646,15 @@ class InvestmentResearchPipeline:
     def validate_catalysts(
         cls,
         catalysts,
+        *,
+        engine_registry: Mapping[str, Any] | None = None,
+        strict_errors: bool = False,
     ):
 
-        validator = (
-            cls.load_engines()
-            ["catalyst_validation"]
-        )
+        engines = cls._resolve_engine_registry(engine_registry)
+        validator = engines["catalyst_validation"]
 
-        probability_engine = (
-            cls.load_engines()
-            ["catalyst_probability"]
-        )
+        probability_engine = engines["catalyst_probability"]
 
         if not isinstance(
             catalysts,
@@ -654,6 +696,9 @@ class InvestmentResearchPipeline:
                 )
 
             except Exception as exc:
+
+                if strict_errors:
+                    raise
 
                 failed = dict(
                     catalyst
@@ -1043,10 +1088,12 @@ class InvestmentResearchPipeline:
     def audit(
         cls,
         synthesis_input,
+        *,
+        engine_registry: Mapping[str, Any] | None = None,
     ):
 
         auditor = (
-            cls.load_engines()
+            cls._resolve_engine_registry(engine_registry)
             ["audit"]
         )
 
@@ -1066,9 +1113,41 @@ class InvestmentResearchPipeline:
         *,
         _component_telemetry: list[dict[str, Any]] | None = None,
         _monotonic: Callable[[], float] = time.monotonic,
+        replay: SealedReplayInvocation | None = None,
     ):
 
-        started_at = cls.now()
+        replay_invocation = replay.require_valid() if replay is not None else None
+        if replay_invocation is not None and save:
+            raise PermissionError("sealed replay invocations cannot save pipeline output")
+        engine_registry = (
+            replay_invocation.engine_registry
+            if replay_invocation is not None
+            else cls.load_engines()
+        )
+        now = replay_invocation.now if replay_invocation is not None else cls.now
+        strict_errors = replay_invocation is not None
+        source_ledger_path = (
+            replay_invocation.authenticated_source_ledger_path
+            if replay_invocation is not None
+            else cls.AUTHENTICATED_SOURCE_LEDGER_PATH
+        )
+        source_blob_directory = (
+            replay_invocation.authenticated_source_blobs_directory
+            if replay_invocation is not None
+            else cls.AUTHENTICATED_SOURCE_BLOB_DIRECTORY
+        )
+        source_git_revision = (
+            replay_invocation.git_revision
+            if replay_invocation is not None
+            else current_git_revision(Path(__file__).resolve().parents[2])
+        )
+        learning_state_path = (
+            replay_invocation.learning_state_path
+            if replay_invocation is not None
+            else None
+        )
+
+        started_at = now()
 
         # ----------------------------------------------------
         # 1. CORE ANALYSIS
@@ -1078,7 +1157,12 @@ class InvestmentResearchPipeline:
             "core_analysis",
             _component_telemetry,
             _monotonic,
-            lambda: cls.analyse_core(ticker),
+            lambda: cls.analyse_core(
+                ticker,
+                engine_registry=engine_registry,
+                authenticated_source_ledger_path=source_ledger_path,
+                authenticated_source_blob_directory=source_blob_directory,
+            ),
         )
 
         fundamental = core[
@@ -1112,7 +1196,7 @@ class InvestmentResearchPipeline:
             "market_context",
             _component_telemetry,
             _monotonic,
-            cls.analyse_market_context,
+            lambda: cls.analyse_market_context(engine_registry=engine_registry),
         )
 
         # ----------------------------------------------------
@@ -1125,10 +1209,16 @@ class InvestmentResearchPipeline:
                 "news_research",
                 _component_telemetry,
                 _monotonic,
-                lambda: cls.analyse_news(ticker),
+                lambda: cls.analyse_news(
+                    ticker,
+                    engine_registry=engine_registry,
+                ),
             )
 
         except Exception as exc:
+
+            if strict_errors:
+                raise
 
             news = {
 
@@ -1144,7 +1234,10 @@ class InvestmentResearchPipeline:
             "sentiment_analysis",
             _component_telemetry,
             _monotonic,
-            lambda: cls.analyse_sentiment(news),
+            lambda: cls.analyse_sentiment(
+                news,
+                engine_registry=engine_registry,
+            ),
         )
 
         # ----------------------------------------------------
@@ -1157,10 +1250,16 @@ class InvestmentResearchPipeline:
                 "catalyst_research",
                 _component_telemetry,
                 _monotonic,
-                lambda: cls.analyse_catalysts(ticker),
+                lambda: cls.analyse_catalysts(
+                    ticker,
+                    engine_registry=engine_registry,
+                ),
             )
 
         except Exception as exc:
+
+            if strict_errors:
+                raise
 
             catalysts = {
 
@@ -1183,7 +1282,11 @@ class InvestmentResearchPipeline:
             "catalyst_validation",
             _component_telemetry,
             _monotonic,
-            lambda: cls.validate_catalysts(catalysts),
+            lambda: cls.validate_catalysts(
+                catalysts,
+                engine_registry=engine_registry,
+                strict_errors=strict_errors,
+            ),
         )
 
         # ----------------------------------------------------
@@ -1203,10 +1306,14 @@ class InvestmentResearchPipeline:
                     decision,
                     catalysts,
                     news,
+                    engine_registry=engine_registry,
                 ),
             )
 
         except Exception as exc:
+
+            if strict_errors:
+                raise
 
             thesis = {
 
@@ -1251,7 +1358,7 @@ class InvestmentResearchPipeline:
         # ----------------------------------------------------
 
         synthesizer = (
-            cls.load_engines()
+            engine_registry
             ["synthesis"]
         )
 
@@ -1277,14 +1384,17 @@ class InvestmentResearchPipeline:
             "evidence_audit",
             _component_telemetry,
             _monotonic,
-            lambda: cls.audit(synthesis_input),
+            lambda: cls.audit(
+                synthesis_input,
+                engine_registry=engine_registry,
+            ),
         )
 
         # ----------------------------------------------------
         # 9. FINAL RESULT
         # ----------------------------------------------------
 
-        supplemental_evidence_service = cls.load_engines()["supplemental_evidence"]
+        supplemental_evidence_service = engine_registry["supplemental_evidence"]
         supplemental_evidence = cls._measure_component(
             "supplemental_evidence",
             _component_telemetry,
@@ -1295,6 +1405,7 @@ class InvestmentResearchPipeline:
             supplemental_evidence,
             _component_telemetry,
             supplemental_evidence_service,
+            strict_errors=strict_errors,
         )
 
         result = {
@@ -1309,13 +1420,13 @@ class InvestmentResearchPipeline:
                 cls.VERSION,
 
             "source_git_revision":
-                current_git_revision(Path(__file__).resolve().parents[2]),
+                source_git_revision,
 
             "started_at":
                 started_at,
 
             "completed_at":
-                cls.now(),
+                now(),
 
             "core": {
 
@@ -1394,12 +1505,13 @@ class InvestmentResearchPipeline:
             "master_decision",
             _component_telemetry,
             _monotonic,
-            lambda: cls.load_engines()["master_decision"].evaluate(
+            lambda: engine_registry["master_decision"].evaluate(
                 result["canonical"],
                 catalysts=catalysts,
                 learning_adjustment=(
-                    cls.load_engines()["outcome_learning"].for_decision(
-                        result["canonical"].get("decision")
+                    engine_registry["outcome_learning"].for_decision(
+                        result["canonical"].get("decision"),
+                        path=learning_state_path,
                     )
                 ),
             ),
@@ -1409,7 +1521,7 @@ class InvestmentResearchPipeline:
             "research_diagnostics",
             _component_telemetry,
             _monotonic,
-            lambda: cls.load_engines()["diagnostics"].analyse(result),
+            lambda: engine_registry["diagnostics"].analyse(result),
         )
 
         # Rebuild once more so the canonical portfolio-facing record contains

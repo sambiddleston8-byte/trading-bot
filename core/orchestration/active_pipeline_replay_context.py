@@ -16,15 +16,23 @@ import json
 import os
 from pathlib import Path
 import re
-from typing import Any, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
-from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
+from core.decision_ledger import (
+    GENESIS_HASH,
+    LedgerIntegrityError,
+    canonical_timestamp,
+    current_git_revision,
+)
 from core.orchestration.active_pipeline_image_approval import (
     FIXED_FALSE as IMAGE_FIXED_FALSE,
     REQUIRED_ENTRYPOINT,
     REQUIRED_ENVIRONMENT,
 )
 from core.orchestration.active_pipeline_replay_plan import REQUIRED_COMPONENTS
+
+if TYPE_CHECKING:
+    from core.orchestration.sealed_replay_invocation import SealedReplayInvocation
 
 
 SCHEMA_VERSION = "1.0"
@@ -709,6 +717,10 @@ class ActivePipelineReplayContextLedger:
     def require_data_access_open(self, context_registration_id: str) -> ActivePipelineReplayContext:
         """Return the verified context only after the real embargo has lifted."""
 
+        if not isinstance(context_registration_id, str):
+            raise ValueError(
+                "context_registration_id must identify a verified replay-context record"
+            )
         identifier = _required(
             context_registration_id, "context_registration_id", 100
         )
@@ -729,6 +741,98 @@ class ActivePipelineReplayContextLedger:
             canonical_json=record["context_canonical_json"],
             context_sha256=record["context_sha256"],
             released_from_registration_id=record["context_registration_id"],
+        )
+
+    def open_invocation(
+        self,
+        context_registration_id: str,
+        *,
+        as_of_index: int,
+        engine_registry: Mapping[str, Any],
+        authenticated_source_ledger_path: str | Path,
+        authenticated_source_blobs_directory: str | Path,
+        learning_state_path: str | Path,
+    ) -> SealedReplayInvocation:
+        """Issue one exact replay invocation from the verified post-embargo ledger."""
+
+        from core.orchestration.sealed_replay_invocation import (
+            _issue_sealed_replay_invocation,
+            active_pipeline_component_registry,
+            authenticated_source_snapshot_digests,
+            describe_engine_registry,
+            learning_state_digest,
+        )
+
+        context = self.require_data_access_open(context_registration_id)
+        payload = context.as_dict()
+        if isinstance(as_of_index, bool) or not isinstance(as_of_index, int):
+            raise ValueError("as_of_index must be an integer")
+        schedule = payload["as_of_schedule"]
+        if as_of_index < 0 or as_of_index >= len(schedule):
+            raise ValueError("as_of_index is outside the preregistered schedule")
+
+        identities = describe_engine_registry(
+            engine_registry,
+            required_keys=REQUIRED_ENGINE_KEYS,
+        )
+        if identities != payload["engine_dependencies"]:
+            raise ValueError("engine_registry does not match the sealed identities")
+        component_identities = describe_engine_registry(
+            active_pipeline_component_registry(engine_registry),
+            required_keys=REQUIRED_COMPONENTS,
+        )
+        if component_identities != payload["pipeline_components"]:
+            raise ValueError("active pipeline does not match the sealed components")
+
+        project_root = Path(__file__).resolve().parents[2]
+        revision = current_git_revision(project_root)
+        if revision != payload["git_revision"]:
+            raise ValueError("checked-out Git revision does not match the sealed context")
+
+        try:
+            ledger_digest, blobs_manifest_digest = (
+                authenticated_source_snapshot_digests(
+                    authenticated_source_ledger_path,
+                    authenticated_source_blobs_directory,
+                )
+            )
+        except (OSError, LedgerIntegrityError, ValueError) as error:
+            raise ValueError(
+                "authenticated source ledger or blobs failed verification"
+            ) from error
+        if ledger_digest != payload["authenticated_source_ledger_sha256"]:
+            raise ValueError("authenticated source ledger does not match the sealed digest")
+        if (
+            blobs_manifest_digest
+            != payload["authenticated_source_blobs_manifest_sha256"]
+        ):
+            raise ValueError("authenticated source blobs do not match the sealed manifest")
+        try:
+            actual_learning_digest = learning_state_digest(learning_state_path)
+        except (OSError, ValueError) as error:
+            raise ValueError("learning state failed verification") from error
+        if actual_learning_digest != payload["learning_state_sha256"]:
+            raise ValueError("learning state does not match the sealed digest")
+
+        return _issue_sealed_replay_invocation(
+            registration_id=context.released_from_registration_id,
+            context_sha256=context.context_sha256,
+            as_of=schedule[as_of_index],
+            as_of_index=as_of_index,
+            git_revision=revision,
+            engine_registry=engine_registry,
+            engine_identities=identities,
+            pipeline_component_identities=component_identities,
+            authenticated_source_ledger_path=Path(
+                authenticated_source_ledger_path
+            ).resolve(),
+            authenticated_source_blobs_directory=Path(
+                authenticated_source_blobs_directory
+            ).resolve(),
+            learning_state_path=Path(learning_state_path).resolve(),
+            authenticated_source_ledger_sha256=ledger_digest,
+            authenticated_source_blobs_manifest_sha256=blobs_manifest_digest,
+            learning_state_sha256=actual_learning_digest,
         )
 
     def _append(self, result: dict[str, Any]) -> dict[str, Any]:
