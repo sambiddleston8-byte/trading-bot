@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -10,12 +11,17 @@ from core.orchestration.authenticated_replay_artifact import (
 
 
 class Admission:
-    def __init__(self, record): self.record=record
+    def __init__(self, record, content_ledger):
+        self.record=record
+        self.content_ledger=content_ledger
     def verify(self): return [self.record]
 
 
 class Contents:
-    def __init__(self, values): self.values=values
+    def __init__(self, values, *, path=None, blob_directory=None):
+        self.values=values
+        self.path=path or Path("/tmp/authenticated-replay-content.jsonl")
+        self.blob_directory=blob_directory or Path("/tmp/authenticated-replay-blobs")
     def read_verified(self, identifier): return self.values[identifier]
 
 
@@ -55,7 +61,8 @@ def environment(*,prices=None,cal=None,actions=None,outcomes=None,states=None,co
         if role=="DELISTING_OUTCOMES":root["initial_instrument_states"]=states if states is not None else [initial()]
         identifier=f"SRC-{index}";payload=json.dumps(root,separators=(",", ":")).encode();record={"content_evidence_id":identifier,"record_hash":str(index)*64,"source_input_sha256":str(index+1)*64};contents[identifier]=(record,payload);refs.append({"role":role,"content_evidence_id":identifier})
     admission={"admission_id":"RDA-1","record_hash":"a"*64,"replay_plan_id":"REPLAY-1","replay_plan_record_hash":"b"*64,"dataset_commitment_sha256":"c"*64,"artifacts":refs}
-    return Admission(admission),Contents(contents)
+    content_ledger=Contents(contents)
+    return Admission(admission,content_ledger),content_ledger
 
 
 def bundle(**changes):
@@ -354,6 +361,23 @@ def test_malformed_verified_dependencies_fail_as_controlled_value_error():
     admission,contents=environment();del admission.record["artifacts"]
     with pytest.raises(ValueError,match="malformed"):
         load_authenticated_replay_artifact(admission_ledger=admission,content_ledger=contents,admission_id="RDA-1",role="TOTAL_RETURN_PRICES")
+
+
+def test_artifact_bytes_must_come_from_the_store_verified_by_admission():
+    admission, contents = environment()
+    different_store = Contents(
+        contents.values,
+        path=Path("/tmp/different-replay-content.jsonl"),
+        blob_directory=contents.blob_directory,
+    )
+
+    with pytest.raises(ValueError, match="content ledger does not match"):
+        load_authenticated_replay_artifact(
+            admission_ledger=admission,
+            content_ledger=different_store,
+            admission_id="RDA-1",
+            role="TOTAL_RETURN_PRICES",
+        )
 
 
 def test_delisting_locators_are_unique_across_rows_and_initial_states():

@@ -880,6 +880,15 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   order and live-trading authority false. It is deliberately not wired into the
   research pipeline: role-specific canonical schemas and observation-level
   filtering are still required before any engine can consume these bytes.
+- The pre-existing strict bitemporal replay parser is now subject to the same
+  authenticated-content-store binding: parsed price, calendar, corporate-
+  action, delisting, membership and daily-bar bytes must come from the exact
+  store verified by the admission ledger, not another valid-looking ledger
+  containing a matching content ID. Its existing caller interfaces are
+  unchanged. Canonical row schemas for the six newer research roles remain
+  deliberately deferred until qualified representative provider samples exist;
+  guessing exact news, estimate, macro or specialist fields now would create a
+  brittle versioned commitment rather than improve replay validity.
 - A preregistered replay execution policy now derives the only permitted
   simulator configuration for each exact BASE or PESSIMISTIC scenario. The
   derived profile fixes risk limits, ATR sizing, commission, spread, at least
