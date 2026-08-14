@@ -22,12 +22,22 @@ from core.data_sources.provider_access import (
     ProviderAccessError,
     ProviderAccessPolicy,
     ProviderHTTPResult,
+    safe_access_dict,
 )
 from core.data_sources.provider_configuration import ProviderConfiguration
 
 
 class OptionalProviderError(RuntimeError):
-    """A provider failure that intentionally contains no request URL or key."""
+    """A provider failure that intentionally contains no request URL or key.
+
+    ``access`` holds only freshly whitelisted coordinated-access measurements
+    so that a failed call can still be counted.  Unusable input becomes
+    ``None`` rather than carrying an unknown structure into stored research.
+    """
+
+    def __init__(self, message: str, *, access: Any = None) -> None:
+        super().__init__(message)
+        self.access = safe_access_dict(access)
 
 
 class OptionalHTTPSource:
@@ -79,7 +89,7 @@ class OptionalHTTPSource:
                 message = f"{self.SOURCE_NAME} access is temporarily paused."
             else:
                 message = f"{self.SOURCE_NAME} could not be reached."
-            raise OptionalProviderError(message) from None
+            raise OptionalProviderError(message, access=error.metadata) from None
 
     def get_json(
         self,
@@ -97,18 +107,21 @@ class OptionalHTTPSource:
             if response.status_code in {401, 402, 403}:
                 raise OptionalProviderError(
                     f"{self.SOURCE_NAME} capability is unavailable for the configured account "
-                    f"(HTTP {response.status_code})."
+                    f"(HTTP {response.status_code}).",
+                    access=result.metadata,
                 )
             raise OptionalProviderError(
-                f"{self.SOURCE_NAME} rejected the request (HTTP {response.status_code})."
+                f"{self.SOURCE_NAME} rejected the request (HTTP {response.status_code}).",
+                access=result.metadata,
             )
 
         try:
             payload = response.json()
-        except ValueError as exc:
+        except ValueError:
             raise OptionalProviderError(
-                f"{self.SOURCE_NAME} returned an unreadable response."
-            ) from exc
+                f"{self.SOURCE_NAME} returned an unreadable response.",
+                access=result.metadata,
+            ) from None
 
         # Some market-data providers report an invalid key or a quota problem
         # in a successful HTTP response.  Do not mistake that response for
@@ -118,7 +131,8 @@ class OptionalHTTPSource:
             for key in ("Error Message", "Information", "Note")
         ):
             raise OptionalProviderError(
-                f"{self.SOURCE_NAME} rejected the request or quota."
+                f"{self.SOURCE_NAME} rejected the request or quota.",
+                access=result.metadata,
             )
 
         return {
@@ -185,7 +199,8 @@ class AlphaVantageSource(OptionalHTTPSource):
         if not response.ok:
             raise OptionalProviderError(
                 f"{self.SOURCE_NAME} listing status is unavailable for the configured "
-                f"account (HTTP {response.status_code})."
+                f"account (HTTP {response.status_code}).",
+                access=result.metadata,
             )
         prefix = response.text[:500]
         if any(
@@ -193,7 +208,8 @@ class AlphaVantageSource(OptionalHTTPSource):
             for marker in ("Error Message", "Information", "Thank you for using Alpha Vantage")
         ):
             raise OptionalProviderError(
-                f"{self.SOURCE_NAME} rejected the listing-status request or quota."
+                f"{self.SOURCE_NAME} rejected the listing-status request or quota.",
+                access=result.metadata,
             )
         reader = csv.DictReader(StringIO(response.text))
         fields = sorted(str(field) for field in (reader.fieldnames or []) if field)
@@ -208,7 +224,8 @@ class AlphaVantageSource(OptionalHTTPSource):
         }
         if not required_fields.issubset(fields):
             raise OptionalProviderError(
-                f"{self.SOURCE_NAME} returned an unexpected listing-status schema."
+                f"{self.SOURCE_NAME} returned an unexpected listing-status schema.",
+                access=result.metadata,
             )
         record_count = sum(1 for row in reader if any(str(value or "").strip() for value in row.values()))
         return {
