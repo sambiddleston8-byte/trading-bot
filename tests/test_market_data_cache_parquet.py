@@ -73,6 +73,18 @@ def test_manifest_marks_snapshot_non_authoritative_and_hashes_parquet(tmp_path, 
     assert manifest["admissible_as_replay_evidence"] is False
 
 
+@pytest.mark.parametrize("bad_close", [0.0, -1.0, float("nan"), float("inf")])
+def test_invalid_fresh_close_is_never_written(tmp_path, monkeypatch, bad_close):
+    cache = MarketDataCache(tmp_path)
+    monkeypatch.setattr(cache, "_fetch", lambda *args: frame(first_close=bad_close))
+
+    with pytest.raises(ValueError, match="invalid price evidence"):
+        cache.download("AAPL", start="2025-01-01", end=None)
+
+    assert not manifests(cache)
+    assert not list(cache.snapshot_root.rglob("*.parquet"))
+
+
 def test_tampered_parquet_fails_closed_without_refetch(tmp_path, monkeypatch):
     cache = MarketDataCache(tmp_path)
     calls = []

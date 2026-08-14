@@ -919,6 +919,19 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   as authenticated replay evidence. This improves local safety and repeat-use
   efficiency; it does not improve historical-data validity or create a track
   record.
+- The cache and six legacy historical-price loaders now enter yfinance through
+  one injected, fake-testable boundary. Separate client instances share
+  caller-entry pacing and a failure circuit; each boundary call invokes the
+  opaque SDK exactly once, redacts exception detail and validates a copied,
+  chronological, unique frame with finite positive closes before calculations
+  or cache reuse. The boundary observation carries explicit false point-in-
+  time, survivorship-safety and replay-admission flags; legacy callers retain
+  only the validated frame and gain no evidence authority. Unsupported symbols
+  fail before SDK access. This controls only calls into yfinance: the library
+  can perform multiple internal HTTP requests and its host, redirect, retry,
+  availability and source semantics remain outside this boundary. Other
+  yfinance-backed research and learning callers remain to be migrated. Tests
+  use injected fakes and no Yahoo request was made.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive requests now pass through
   a shared process-local access coordinator. It gently spaces requests across
   separate client instances, retries only connection failures and HTTP
