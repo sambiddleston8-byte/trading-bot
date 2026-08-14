@@ -22,12 +22,15 @@ from core.orchestration.active_pipeline_image_approval import (
     REQUIRED_ENVIRONMENT,
     ActivePipelineImageApprovalLedger,
 )
+from core.orchestration.container_experiment_control import (
+    resolve_container_experiment_control,
+)
 from core.orchestration.disposable_workspace import DisposableExperimentWorkspace
 from core.orchestration.experiment_run_manifest import SandboxExperimentRunManifestLedger
 from core.performance.portfolio_valuation import _canonical_json
 
 
-POLICY_VERSION = "container-no-network-experiment-runner-v3"
+POLICY_VERSION = "container-no-network-experiment-runner-v4"
 INPUT_ROOT_MARKER = "SAM_PAT_SEALED_EXPERIMENT_INPUTS_V1\n"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 _IMAGE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*@sha256:[0-9a-f]{64}$")
@@ -76,6 +79,25 @@ def _contained_file(path: str | Path, root: str | Path, *, name: str) -> Path:
     if "," in str(resolved) or any(ord(character) < 32 for character in str(resolved)):
         raise ValueError(f"{name} path contains characters unsafe for a Docker bind mount")
     return resolved
+
+
+def _snapshot(path: Path, payload: bytes, *, name: str) -> str:
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        offset = 0
+        while offset < len(payload):
+            written = os.write(descriptor, payload[offset:])
+            if written <= 0:
+                raise OSError(f"Unable to snapshot verified {name}")
+            offset += written
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    os.chmod(path, 0o444)
+    digest = hashlib.sha256(payload).hexdigest()
+    if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+        raise RuntimeError(f"verified {name} snapshot integrity check failed")
+    return digest
 
 
 class ContainerExperimentRunner:
@@ -145,9 +167,14 @@ class ContainerExperimentRunner:
         input_hash = hashlib.sha256(sealed_bytes).hexdigest()
         if input_hash != manifest["dataset_manifest_sha256"]:
             raise ValueError("sealed input does not match the run-manifest dataset commitment")
+        control = resolve_container_experiment_control(
+            run_manifest_ledger=self.run_manifest_ledger,
+            run_manifest=manifest,
+            image_approval=approval,
+        )
         slot = self._acquire_run_slot()
         try:
-            self._reserve_attempt(manifest, approval, executed)
+            self._reserve_attempt(manifest, approval, control.control_sha256, executed)
             workspace = self.workspace_manager.create(
                 experiment_id=manifest["experiment_id"],
                 dataset_manifest_sha256=input_hash,
@@ -156,28 +183,29 @@ class ContainerExperimentRunner:
             )
             workspace_directory = self.workspace_manager.root / workspace["workspace_id"]
             verified_input = workspace_directory / "verified-input.snapshot"
-            descriptor = os.open(
-                verified_input, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600
-            )
-            try:
-                offset = 0
-                while offset < len(sealed_bytes):
-                    written = os.write(descriptor, sealed_bytes[offset:])
-                    if written <= 0:
-                        raise OSError("Unable to snapshot verified experiment input")
-                    offset += written
-                os.fsync(descriptor)
-            finally:
-                os.close(descriptor)
-            os.chmod(verified_input, 0o444)
-            if hashlib.sha256(verified_input.read_bytes()).hexdigest() != input_hash:
-                raise RuntimeError("verified input snapshot integrity check failed")
+            if _snapshot(verified_input, sealed_bytes, name="experiment input") != input_hash:
+                raise RuntimeError("verified input snapshot does not match its commitment")
+            verified_control = workspace_directory / "experiment-control.snapshot"
+            if (
+                _snapshot(
+                    verified_control,
+                    control.canonical_bytes,
+                    name="experiment control",
+                )
+                != control.control_sha256
+            ):
+                raise RuntimeError("verified control snapshot does not match its commitment")
             cidfile = workspace_directory / "container.cid"
             container_name = f"sam-pat-{workspace['workspace_id'].lower()}"
             if not _CONTAINER_NAME.fullmatch(container_name):
                 raise ValueError("generated Docker container name is invalid")
             command = self._command(
-                manifest, approval, verified_input, cidfile, container_name
+                manifest,
+                approval,
+                verified_input,
+                verified_control,
+                cidfile,
+                container_name,
             )
             try:
                 try:
@@ -195,7 +223,14 @@ class ContainerExperimentRunner:
                 if result["trials_completed"] != int(manifest["planned_trial_count"]):
                     raise ValueError("container result must complete exactly the planned trial count")
                 output_hash = hashlib.sha256(stdout).hexdigest()
-                self._store_result(workspace_directory, manifest, result, output_hash, executed_by)
+                self._store_result(
+                    workspace_directory,
+                    manifest,
+                    result,
+                    output_hash,
+                    control.control_sha256,
+                    executed_by,
+                )
             except BaseException:
                 self._store_failure(workspace_directory, manifest, executed_by)
                 raise
@@ -212,6 +247,7 @@ class ContainerExperimentRunner:
             "run_manifest_record_hash": manifest["record_hash"],
             "image_approval_id": approval["image_approval_id"],
             "image_reference": approval["image_reference"],
+            "experiment_control_sha256": control.control_sha256,
             "workspace_id": workspace["workspace_id"],
             "workspace_manifest_sha256": workspace["manifest_sha256"],
             "runner_output_sha256": output_hash,
@@ -269,6 +305,7 @@ class ContainerExperimentRunner:
         manifest: Mapping[str, Any],
         approval: Mapping[str, Any],
         sealed_input: Path,
+        experiment_control: Path,
         cidfile: Path,
         container_name: str,
     ) -> list[str]:
@@ -282,8 +319,10 @@ class ContainerExperimentRunner:
             "--name", container_name, "--ulimit", "nofile=256:256",
             "--user", "65534:65534", "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m",
             "--mount", f"type=bind,src={sealed_input},dst=/input/dataset,readonly",
+            "--mount", f"type=bind,src={experiment_control},dst=/input/control,readonly",
             approval["image_reference"],
-            approval["entrypoint"], "--input", "/input/dataset", "--output", "-",
+            approval["entrypoint"], "--input", "/input/dataset",
+            "--control", "/input/control", "--output", "-",
         ]
 
     @staticmethod
@@ -363,6 +402,7 @@ class ContainerExperimentRunner:
         self,
         manifest: Mapping[str, Any],
         approval: Mapping[str, Any],
+        experiment_control_sha256: str,
         executed_at: datetime,
     ) -> None:
         self.attempt_ledger_path.parent.mkdir(parents=True, exist_ok=True)
@@ -405,6 +445,7 @@ class ContainerExperimentRunner:
                 "run_manifest_record_hash": manifest["record_hash"],
                 "image_approval_id": approval["image_approval_id"],
                 "image_approval_record_hash": approval["record_hash"],
+                "experiment_control_sha256": experiment_control_sha256,
                 "executed_at": executed_at.isoformat(),
                 "network_allowed": False,
                 "promotion_approved": False,
@@ -472,6 +513,7 @@ class ContainerExperimentRunner:
         manifest: Mapping[str, Any],
         result: Mapping[str, Any],
         output_hash: str,
+        experiment_control_sha256: str,
         executed_by: str,
     ) -> None:
         database = directory / "experiment.sqlite3"
@@ -479,16 +521,18 @@ class ContainerExperimentRunner:
             connection.execute(
                 "CREATE TABLE IF NOT EXISTS runner_results ("
                 "run_manifest_id TEXT PRIMARY KEY, run_manifest_record_hash TEXT NOT NULL, "
-                "runner_output_sha256 TEXT NOT NULL, result_json TEXT NOT NULL, "
+                "runner_output_sha256 TEXT NOT NULL, experiment_control_sha256 TEXT NOT NULL, "
+                "result_json TEXT NOT NULL, "
                 "executed_by TEXT NOT NULL, promotion_approved INTEGER NOT NULL CHECK(promotion_approved=0), "
                 "order_submitted INTEGER NOT NULL CHECK(order_submitted=0), "
                 "live_trading_enabled INTEGER NOT NULL CHECK(live_trading_enabled=0))"
             )
             connection.execute(
-                "INSERT INTO runner_results VALUES (?,?,?,?,?,0,0,0)",
+                "INSERT INTO runner_results VALUES (?,?,?,?,?,?,0,0,0)",
                 (
                     manifest["run_manifest_id"], manifest["record_hash"], output_hash,
-                    _canonical_json(result), _required(executed_by, "executed_by", 100),
+                    experiment_control_sha256, _canonical_json(result),
+                    _required(executed_by, "executed_by", 100),
                 ),
             )
 
