@@ -114,3 +114,24 @@ the Phase 5 broker-cash snapshot until separate exact settlement evidence is
 provided. Missing credentials return `NOT_CONFIGURED`; unsupported status,
 currency, schema or any non-paper endpoint fails closed. This adds no broker
 connection by itself and enables no trading.
+
+## Inactive risk policy and account-scoped stop foundation
+
+Phase 4 now also has a human-preregistered paper-risk policy and a one-way local
+stop ledger. A policy is bound to one hashed Alpaca paper-account reference, one
+portfolio and strategy version, explicit order/position/gross-exposure/daily-loss
+limits, account-snapshot freshness and a named stop identity. Monetary values
+have no defaults and must be exact positive decimal inputs. Registration remains
+`PREREGISTERED_INACTIVE` and cannot activate broker access or order submission.
+
+A stop is pinned to the verified policy and follows the account or stop identity
+across replacement policies. It has no clear or resume method. Unknown policies,
+inactive policies and latched policies all report that work is not allowed.
+
+These local hash chains are tamper-evident under the repository's append-only
+workflow, not externally anchored or cryptographically authenticated. The
+records therefore state explicitly that the limits are not enforced, no order
+route exists, and no external head anchor or authentication is present. Future
+paper submission still requires human-selected limits, independently verified
+account/position/loss evidence, an enforcement assessment and a separately
+reviewed paper-only adapter.
