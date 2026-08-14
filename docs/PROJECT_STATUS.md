@@ -1056,6 +1056,17 @@ Implementation tests use injected fake sessions; no real request or admission
 was made. The collector has no order mutation method, and paper submission and
 live trading remain disabled.
 
+The matching bundle-normalization staging ledger now re-verifies those retained
+bytes and restates only exact supported account, long-position and open-order
+values. Bounded decimal inputs use exact fractions; position quantity, price and
+market value must agree; and only price-bounded simple limit/stop-limit order
+semantics are accepted. Market, bare-stop, complex, unsupported or ambiguous
+orders fail closed. A successful normalization is still blocked from every
+downstream ledger because settlement, prior-close evidence and cryptographic
+account binding for positions/orders remain unproven. Invalid normalizations
+store reason codes but no monetary values. Tests use synthetic bytes only; no
+real bundle, downstream snapshot, order route or trading capability is active.
+
 Phase 4 now also has an inactive provider-paper risk-policy foundation and a
 one-way account-scoped local stop. A human must supply every future limit; the
 record binds exact order, position, gross-exposure, daily-loss and snapshot-age
