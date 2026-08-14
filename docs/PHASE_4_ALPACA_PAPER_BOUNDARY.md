@@ -153,3 +153,22 @@ position/order shapes, identities, sorting and source hashes are verified.
 This record still states that broker reconciliation, policy assessment, limit
 enforcement, order routing, external anchoring and cryptographic authentication
 are absent. It cannot approve or submit an order.
+
+## Shadow-only limit comparison
+
+A pinned shadow assessment can now compare one verified paper proposal with the
+inactive policy, normalized risk snapshot and an exact stop-ledger prefix. BUY
+orders add their reference-price notional to both ticker and gross exposure.
+SELL orders never reduce exposure before fill and remain incomplete because the
+risk snapshot does not yet prove share-quantity sufficiency.
+
+The calculation reports separate order, position, gross, daily-loss and real
+recording-time freshness comparisons. Any permanent account/stop-identity latch
+blocks the result regardless of its stated trigger time. Assessment creation and
+stop creation share the same lock, closing the read-before-stop/write-after-stop
+race while preserving the exact historical prefix for older assessments.
+
+Even a mathematically within-limits result is labelled inactive and
+unreconciled. It explicitly has no stressed execution price, fees, fill-price
+certainty, authentication, recommendation, human-review eligibility, broker
+access or submission authority.
