@@ -826,12 +826,21 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   completion, broker/order/deployment/promotion and performance-claim authority
   are all fixed false. The full canonical context is preregistered once per plan
   in an append-only ledger before the plan's evaluation-data-access embargo;
-  the verified context is not released to a future runner until the real clock
-  reaches that embargo. The context intentionally has no execution method: it
-  closes the false-sealing and post-access engine-selection gaps identified by
-  Claude before dependency injection is added. The pipeline has not yet been
-  wired to the context, no image or real dataset has been admitted, and no
-  replay or performance claim exists.
+  the verified context is not released until the real clock reaches that
+  embargo. The ledger can now issue one unforgeable inert invocation for one
+  exact preregistered schedule index only after re-hashing the 22 injected
+  engine sources, all six active-route component sources, the authenticated
+  source ledger/blob manifest and the immutable learning-state file, and after
+  matching the checked-out Git revision. Those identities and bytes are
+  revalidated again when the pipeline consumes the invocation, closing the
+  post-issue mutation gap. Replay mode cannot save output, never falls back to
+  ambient engine loading, uses the sealed source/learning paths and frozen
+  as-of timestamp, and re-raises all five previously degraded stage failures.
+  The existing ordinary research path retains its current graceful-degradation
+  behaviour. This Python boundary does not itself block a leaf engine's socket
+  or filesystem calls; that remains the approved no-network/read-only
+  container's job. No real image or dataset has been admitted, no real
+  invocation has been issued, and no replay or performance claim exists.
 - A preregistered replay execution policy now derives the only permitted
   simulator configuration for each exact BASE or PESSIMISTIC scenario. The
   derived profile fixes risk limits, ATR sizing, commission, spread, at least

@@ -55,6 +55,13 @@ from core.orchestration.active_pipeline_replay_context import (
     ActivePipelineReplayContext,
     ActivePipelineReplayContextLedger,
 )
+from core.orchestration.sealed_replay_invocation import (
+    SealedReplayInvocation,
+    active_pipeline_component_registry,
+    authenticated_source_snapshot_digests,
+    describe_engine_registry,
+    learning_state_digest,
+)
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -96,4 +103,9 @@ __all__ = [
     "resolve_authenticated_execution_profile",
     "ActivePipelineReplayContext",
     "ActivePipelineReplayContextLedger",
+    "SealedReplayInvocation",
+    "active_pipeline_component_registry",
+    "authenticated_source_snapshot_digests",
+    "describe_engine_registry",
+    "learning_state_digest",
 ]
