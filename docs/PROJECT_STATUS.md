@@ -766,6 +766,19 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   changed to whole-round-trip accounting, regression coverage was added, and
   Claude returned PASS on authentication, append integrity and the final
   financial reconciliation design.
+- A replay plan can now bind exactly one strategy and one canonical parameter
+  set before sealed evaluation-data access. The append-only strategy
+  specification also pins the plan record, untouched evaluation window, Git
+  revision, Python entry point and strategy source-file hash; strategy or
+  parameter search after access remains explicitly prohibited. The backtest
+  engine derives the entry point and hashes the actual strategy source file it
+  executes instead of accepting those values from the caller. Replay-run audit
+  policy v2 revalidates the authenticated admission and strategy parent and
+  rejects any different strategy version, parameters, code file, entry point,
+  Git commit or evaluation dates. This closes a post-access cherry-picking
+  route, but no real strategy has been preregistered and no sealed replay has
+  run. Claude passed the ledger and binding reviews after retracting a proposed
+  date-type defect that the canonical conversion and regression tests disproved.
 
 ## Safety invariants
 

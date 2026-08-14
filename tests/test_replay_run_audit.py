@@ -23,6 +23,35 @@ import core.orchestration.replay_run_audit as module
 UTC = timezone.utc
 START = datetime(2020, 1, 1, tzinfo=UTC)
 END = START + timedelta(days=2)
+PLAN_ID = "REPLAY-1"
+PLAN_HASH = "8" * 64
+DATASET_HASH = "9" * 64
+
+
+class VerifiedLedger:
+    def __init__(self, records):
+        self.records = records
+
+    def verify(self):
+        return self.records
+
+
+def strategy_specification(**changes):
+    value = {
+        "replay_plan_id": PLAN_ID,
+        "replay_plan_record_hash": PLAN_HASH,
+        "replay_plan_git_revision": "e" * 40,
+        "replay_plan_evaluation_start": START.isoformat(timespec="microseconds"),
+        "replay_plan_evaluation_end": END.isoformat(timespec="microseconds"),
+        "strategy_specification_id": "RSTRAT-1",
+        "record_hash": "7" * 64,
+        "strategy_entrypoint": "strategies.causal:Strategy",
+        "strategy_version": "strategy-v1",
+        "strategy_source_sha256": "6" * 64,
+        "parameter_hash": "a" * 64,
+    }
+    value.update(changes)
+    return value
 
 
 def result(**changes):
@@ -84,6 +113,8 @@ def result(**changes):
             for index, role in enumerate(sorted(AUTHENTICATED_REPLAY_ROLES))
         )),
         "engine_policy_version": "engine-v1", "engine_config_sha256": "d" * 64,
+        "strategy_entrypoint": "strategies.causal:Strategy",
+        "strategy_source_sha256": "6" * 64,
     }
     values.update(changes)
     return BacktestResult(**values)
@@ -95,6 +126,9 @@ def authenticated_parent(monkeypatch):
         value = result()
         return SimpleNamespace(
             admission_id=value.source_id,
+            replay_plan_id=PLAN_ID,
+            replay_plan_record_hash=PLAN_HASH,
+            dataset_commitment_sha256=DATASET_HASH,
             data_attestation=SimpleNamespace(
                 source_content_sha256=value.source_content_sha256,
                 validation_receipt_sha256=value.validation_receipt_sha256,
@@ -107,9 +141,12 @@ def authenticated_parent(monkeypatch):
     monkeypatch.setattr(module, "load_authenticated_backtest_inputs", load)
 
 
-def ledger(path):
+def ledger(path, specifications=None):
     return ReplayRunAuditLedger(
-        path, admission_ledger=object(), content_ledger=object()
+        path, admission_ledger=object(), content_ledger=object(),
+        strategy_ledger=VerifiedLedger(
+            [strategy_specification()] if specifications is None else specifications
+        ),
     )
 
 
@@ -134,6 +171,11 @@ def test_records_complete_simulation_audit_without_track_record_or_trading_autho
     record = append(target)
     assert record["previous_hash"] == GENESIS_HASH
     assert record["status"] == "MECHANICAL_SIMULATION_RECORDED_NOT_A_TRACK_RECORD"
+    assert record["replay_plan_id"] == PLAN_ID
+    assert record["replay_plan_record_hash"] == PLAN_HASH
+    assert record["dataset_commitment_sha256"] == DATASET_HASH
+    assert record["replay_plan_git_revision"] == "e" * 40
+    assert record["strategy_specification_id"] == "RSTRAT-1"
     assert len(record["sizing_decisions"]) == 2
     assert len(record["portfolio_states"]) == 2
     assert record["portfolio_states"][-1]["equity"] == record["ending_equity"]
@@ -264,6 +306,42 @@ def test_append_and_verify_revalidate_authenticated_parent(monkeypatch, tmp_path
         return parent
 
     monkeypatch.setattr(module, "load_authenticated_backtest_inputs", changed)
+    with pytest.raises(LedgerIntegrityError, match="invalid"):
+        target.verify()
+
+
+def test_append_requires_exact_preregistered_strategy_and_parameters(tmp_path):
+    with pytest.raises(ValueError, match="authenticated input evidence"):
+        append(
+            ledger(tmp_path / "strategy.jsonl"),
+            result(strategy_version="strategy-v2"),
+        )
+    with pytest.raises(ValueError, match="authenticated input evidence"):
+        append(
+            ledger(tmp_path / "parameters.jsonl"),
+            result(parameter_hash="f" * 64),
+        )
+    with pytest.raises(ValueError, match="authenticated input evidence"):
+        append(
+            ledger(tmp_path / "implementation.jsonl"),
+            result(strategy_source_sha256="4" * 64),
+        )
+    with pytest.raises(ValueError, match="exactly one"):
+        append(ledger(tmp_path / "missing.jsonl", specifications=[]))
+    with pytest.raises(ValueError, match="authenticated input evidence"):
+        append(
+            ledger(tmp_path / "window.jsonl"),
+            result(evaluation_start=START + timedelta(hours=1)),
+        )
+    with pytest.raises(ValueError, match="Git revision"):
+        append(ledger(tmp_path / "git.jsonl"), git_revision="f" * 40)
+
+
+def test_verify_rechecks_strategy_specification_parent(tmp_path):
+    specification = strategy_specification()
+    target = ledger(tmp_path / "runs.jsonl", [specification])
+    append(target)
+    specification["record_hash"] = "5" * 64
     with pytest.raises(LedgerIntegrityError, match="invalid"):
         target.verify()
 

@@ -84,6 +84,9 @@ class AuthenticatedBacktestInputs:
     schema_version: str
     policy_version: str
     admission_id: str
+    replay_plan_id: str
+    replay_plan_record_hash: str
+    dataset_commitment_sha256: str
     validation_receipt_sha256: str
     bars: tuple[MarketBar, ...]
     universe_events: tuple[UniverseEvent, ...]
@@ -309,6 +312,9 @@ def load_authenticated_backtest_inputs(
         schema_version=SCHEMA_VERSION,
         policy_version=POLICY_VERSION,
         admission_id=bundle["admission_id"],
+        replay_plan_id=bundle["replay_plan_id"],
+        replay_plan_record_hash=bundle["replay_plan_record_hash"],
+        dataset_commitment_sha256=bundle["dataset_commitment_sha256"],
         validation_receipt_sha256=receipt_hash,
         bars=bars,
         universe_events=tuple(membership_events),
