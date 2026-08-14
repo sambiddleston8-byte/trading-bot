@@ -792,8 +792,16 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   per-fill economics, and a separate completeness gate requires one matching
   BASE/PESSIMISTIC pair before the replay is considered complete. This creates
   no performance claim, paper-trading approval, broker request or live-trading
-  authority. No real replay has been run, and Claude review is still required
-  before this bounded implementation can be merged.
+  authority. No real replay has been run. Claude passed the bounded execution-
+  policy review before merge.
+- The legacy Yahoo market-data cache no longer deserializes executable pickle
+  files. It now stores each exact request as immutable, versioned Parquet bytes
+  with an integrity-checked sidecar, leaves all existing pickle files untouched
+  and never opens them. The sidecar keeps the truth visible: adjusted Yahoo
+  data is back-adjusted, non-point-in-time, non-survivorship-safe and forbidden
+  as authenticated replay evidence. This improves local safety and repeat-use
+  efficiency; it does not improve historical-data validity or create a track
+  record.
 
 ## Safety invariants
 
