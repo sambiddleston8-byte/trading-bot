@@ -1031,3 +1031,12 @@ The ledgers explicitly state that limits are not yet enforced, no order route
 exists and the local hashes are neither externally anchored nor cryptographically
 authenticated. No policy has been registered with real values and no broker
 capability is activated.
+
+The next Phase 4 read-only boundary now normalizes a pinned paper-account
+snapshot with long positions, all open orders and a separately sourced prior
+close. Pending BUY notional increases conservative exposure while pending SELL
+orders cannot reduce it before fill; daily loss uses the current pinned equity
+and a hashed prior-close observation from an earlier UTC date. Conflicting or
+out-of-order evidence is rejected before append. The snapshot remains synthetic
+and explicitly unreconciled, unauthenticated, unenforced and unable to route an
+order.

@@ -135,3 +135,21 @@ route exists, and no external head anchor or authentication is present. Future
 paper submission still requires human-selected limits, independently verified
 account/position/loss evidence, an enforcement assessment and a separately
 reviewed paper-only adapter.
+
+## Normalized paper-risk evidence
+
+A separate read-only evidence ledger now pins one verified paper-account cash
+snapshot to normalized long-position and open-order payload hashes. It records
+current long exposure, pending BUY exposure and their conservative sum; pending
+SELL orders do not reduce risk before a fill. Daily loss is calculated from the
+pinned current equity and a separately hashed previous-close equity observation
+from an earlier UTC date within seven days.
+
+The collection must occur within sixty seconds of the account observation,
+move strictly forward for that account and use exact decimal/fraction values.
+Conflicting evidence at the same time is rejected before writing. Nested
+position/order shapes, identities, sorting and source hashes are verified.
+
+This record still states that broker reconciliation, policy assessment, limit
+enforcement, order routing, external anchoring and cryptographic authentication
+are absent. It cannot approve or submit an order.
