@@ -31,6 +31,7 @@ from core.orchestration.replay_backtest_inputs import (
     AuthenticatedBacktestInputs,
     load_authenticated_backtest_inputs,
 )
+from core.orchestration.replay_run_audit import ReplayRunAuditLedger
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -60,4 +61,5 @@ __all__ = [
     "NextTradableMarketEvidenceLedger",
     "AuthenticatedBacktestInputs",
     "load_authenticated_backtest_inputs",
+    "ReplayRunAuditLedger",
 ]

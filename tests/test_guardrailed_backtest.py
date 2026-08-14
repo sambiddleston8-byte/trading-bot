@@ -171,6 +171,115 @@ def test_atr_position_sizing_never_exceeds_one_percent_modelled_risk():
     # make the conservative maximum quantity no greater than raw 1%-risk size.
     raw_quantity = Decimal("100000") * Decimal("0.01") / Decimal("6")
     assert buy.filled_quantity <= raw_quantity
+    sizing = next(row for row in result.sizing_decisions if row.action == "BUY")
+    assert sizing.portfolio_equity_before == Decimal("100000")
+    assert sizing.settled_cash_before == Decimal("100000")
+    assert sizing.unsettled_cash_before == 0
+    assert sizing.risk_per_share == Decimal("6")
+    assert sizing.risk_budget == Decimal("1000")
+    assert sizing.risk_quantity_limit == Decimal("166")
+    assert sizing.requested_quantity == buy.requested_quantity
+    assert sizing.filled_quantity == buy.filled_quantity
+    assert sizing.stop_price_after is not None
+    assert sizing.limiting_constraints
+
+
+def test_portfolio_states_reconcile_post_fill_cash_positions_and_session_closes():
+    market = bars(12)
+    result = run(engine(),
+        bars=market, universe_events=membership(), terminal_outcomes=[],
+        strategy=EnterThenExit(),
+        parameters={"enter_on_history_count": 4, "exit_on_history_count": 7},
+        evaluation_start=market[0].close_at, evaluation_end=market[9].open_at,
+    )
+    assert [row.sequence for row in result.portfolio_states] == list(
+        range(1, len(result.portfolio_states) + 1)
+    )
+    buy = next(row for row in result.executions if row.action == "BUY")
+    after_buy = next(
+        row for row in result.portfolio_states
+        if row.event_type == "POST_SIMULATED_BUY"
+    )
+    assert after_buy.position_quantity == buy.filled_quantity
+    assert after_buy.settled_cash == (
+        result.starting_equity - buy.filled_quantity * buy.execution_price - buy.fee
+    )
+    assert after_buy.stop_price is not None
+    after_sell = next(
+        row for row in result.portfolio_states
+        if row.event_type == "POST_SIMULATED_SELL"
+    )
+    sell = next(row for row in result.executions if row.action == "SELL")
+    assert after_sell.position_quantity == 0
+    assert after_sell.unsettled_cash == sell.filled_quantity * sell.execution_price - sell.fee
+    assert any(row.event_type == "SESSION_CLOSE" for row in result.portfolio_states)
+
+
+def test_zero_lagged_liquidity_entry_is_rejected_and_traced():
+    market = bars(12)
+    for index in (1, 2, 3):
+        row = market[index]
+        market[index] = MarketBar(
+            symbol=row.symbol, open_at=row.open_at, close_at=row.close_at,
+            available_at=row.available_at, open=row.open, high=row.high,
+            low=row.low, close=row.close, volume=Decimal("0"),
+        )
+    result = run(engine(), bars=market, universe_events=membership(), terminal_outcomes=[],
+        strategy=EnterThenExit(),
+        parameters={"enter_on_history_count": 4, "exit_on_history_count": 99},
+        evaluation_start=market[0].close_at, evaluation_end=market[9].open_at,
+    )
+    rejected = next(row for row in result.executions if row.action == "BUY")
+    trace = next(row for row in result.sizing_decisions if row.action == "BUY")
+    assert rejected.status == "REJECTED"
+    assert trace.liquidity_notional == 0
+    assert trace.liquidity_quantity_limit == 0
+    assert trace.filled_quantity == 0
+    assert trace.limiting_constraints == ("LIQUIDITY_CAP",)
+
+
+def test_unfilled_hard_stop_is_rejected_and_traced_before_later_liquidation():
+    market = bars(14, lows={7: 80})
+    for index in (4, 5, 6):
+        row = market[index]
+        market[index] = MarketBar(
+            symbol=row.symbol, open_at=row.open_at, close_at=row.close_at,
+            available_at=row.available_at, open=row.open, high=row.high,
+            low=row.low, close=row.close, volume=Decimal("0"),
+        )
+    result = run(engine(),
+        bars=market, universe_events=membership(), terminal_outcomes=[],
+        strategy=EnterThenExit(),
+        parameters={"enter_on_history_count": 4, "exit_on_history_count": 99},
+        evaluation_start=market[0].close_at, evaluation_end=market[11].open_at,
+    )
+    rejected = [
+        row for row in result.executions
+        if row.action == "SELL" and row.reason == "HARD_ATR_STOP"
+        and row.status == "REJECTED"
+    ]
+    assert rejected
+    traces = [
+        row for row in result.sizing_decisions
+        if row.action == "SELL" and row.reason == "HARD_ATR_STOP"
+        and row.filled_quantity == 0
+    ]
+    assert len(traces) == len(rejected)
+    assert all(row.limiting_constraints == ("LIQUIDITY_CAP",) for row in traces)
+    assert any(
+        row.action == "SELL" and row.reason == "HARD_ATR_STOP"
+        and row.status in {"FILLED", "PARTIALLY_FILLED"}
+        for row in result.executions
+    )
+    filled_exits = [
+        row for row in result.executions
+        if row.action == "SELL" and row.filled_quantity > 0
+    ]
+    assert len(result.completed_trades) == 1
+    assert result.completed_trades[0].exit_net_proceeds == sum(
+        (row.filled_quantity * row.execution_price - row.fee for row in filled_exits),
+        Decimal("0"),
+    )
 
 
 def test_hard_stop_uses_stop_or_worse_gap_price_and_adverse_slippage():
