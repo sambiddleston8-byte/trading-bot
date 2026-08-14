@@ -1049,3 +1049,10 @@ account stop blocks the calculation, and assessment/stop writes share the same
 lock. SELL proposals remain incomplete rather than assuming that an unfilled
 sale reduces risk. All operational, authentication, execution-stress, fee,
 recommendation and submission flags remain false.
+
+Phase 4 now also records exact long-position quantity and mark-price evidence
+pinned to the same positions payload as the normalized risk snapshot. Each
+ticker and the aggregate must reconcile exactly to the pinned market values;
+fractional shares are handled without binary floating-point arithmetic. This
+removes the data-shape gap for future SELL sufficiency calculations but remains
+synthetic, unreconciled, unauthenticated and unable to assess or route an order.

@@ -172,3 +172,17 @@ Even a mathematically within-limits result is labelled inactive and
 unreconciled. It explicitly has no stressed execution price, fees, fill-price
 certainty, authentication, recommendation, human-review eligibility, broker
 access or submission authority.
+
+## Exact position-quantity evidence
+
+A separate quantity ledger now pins the exact positions payload already used by
+the normalized risk snapshot. Every long ticker must be present exactly once,
+and exact fractional quantity multiplied by exact mark price must equal that
+ticker's pinned market value. The aggregate must also equal the pinned current
+gross position exposure. Empty portfolios remain valid, while partial coverage,
+duplicate tickers, floats and alternate factorizations at the same observation
+time fail closed.
+
+This proves internal quantity/price/value identity for future SELL sufficiency
+checks. It does not prove broker reconciliation, payload authenticity, execution
+price, risk-policy compliance or permission to route an order.
