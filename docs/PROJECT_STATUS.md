@@ -15,6 +15,14 @@ The complete policy is recorded in `docs/AI_COLLABORATION.md`.
 Its controlling objective is maximum software quality per unit of AI usage and
 cost, with explicit context limits, Claude handoffs, review stop conditions and
 future usage/cost observability.
+The streamlined delivery protocol now groups related work into medium-sized
+batches, uses focused development tests plus one release full-suite run, and
+requires one finished-diff Claude review for every meaningful code batch.
+Sonnet is the ordinary reviewer and Opus is required for high-risk financial,
+backtesting, security, authentication and broker work; Codex independently
+adjudicates the findings. Routine publication and merge may proceed only after
+those gates pass, while the explicit spending, credential, product-choice,
+deployment, external-account and trading stop categories remain human-only.
 
 ## Current phase
 
@@ -1066,6 +1074,22 @@ downstream ledger because settlement, prior-close evidence and cryptographic
 account binding for positions/orders remain unproven. Invalid normalizations
 store reason codes but no monetary values. Tests use synthetic bytes only; no
 real bundle, downstream snapshot, order route or trading capability is active.
+
+The next cohesive Phase 4 evidence-resolution boundary now re-verifies that
+normalization and its exact source bytes. Alpaca documents `last_equity` as the
+previous trading day's 16:00 ET equity, but the retained Account object does not
+identify that trading date. The ledger therefore records stable agreeing bracket
+values as `PROVIDER_VALUE_SUPPORTED_EFFECTIVE_TIME_UNRESOLVED`, ignores
+undocumented caller-added effective-date fields and stores no monetary value. It
+deliberately refuses to infer settled cash from
+`cash`, buying power, withdrawable cash or caller-added fields. It also records
+that credential presence and account-scoped endpoint documentation do not
+replace the missing account ID, transport receipt or broker signature in
+position/order responses. Thus settlement remains
+`UNRESOLVED_PROVIDER_SEMANTICS`, authenticated account binding remains
+unproven, and previous close remains unavailable for downstream adoption. All
+evidence is synthetic; no request,
+downstream adoption, order route or trading authority was added.
 
 Phase 4 now also has an inactive provider-paper risk-policy foundation and a
 one-way account-scoped local stop. A human must supply every future limit; the

@@ -209,6 +209,49 @@ All tests use synthetic retained bytes. No real bundle has been normalized, no
 downstream evidence has been adopted and no network, recommendation, paper-order
 or live-trading authority is introduced.
 
+## Provider-semantic external-evidence resolution
+
+A separate append-only resolution ledger now re-verifies a successful
+normalization and the exact retained account, position and order bytes. Alpaca
+documents `last_equity` as equity at 16:00 ET on the previous trading day, but
+the retained Account object does not supply that trading date. Agreeing exact
+bounded bracket values therefore establish only that the provider value is
+stable; they do not establish the exact effective timestamp required by the
+downstream risk snapshot. Caller-added `previous_close` and `balance_asof`
+fields are ignored. The ledger records
+`PROVIDER_VALUE_SUPPORTED_EFFECTIVE_TIME_UNRESOLVED` and stores no monetary
+value while the timestamp remains unproven.
+
+This interpretation is limited to Alpaca's documented Account object semantics:
+`last_equity` is prior-trading-day 16:00 ET equity. The Account documentation
+describes `cash` only as cash balance, not as a settled/unsettled decomposition.
+Accordingly the ledger never relabels `cash`, buying power, withdrawable cash or
+caller-added fields as settled cash. Settlement remains
+`UNRESOLVED_PROVIDER_SEMANTICS` pending exact authenticated evidence from an
+officially supported source.
+
+The position and order endpoints are documented as returning the authenticated
+trading account's state, and the upstream collector attests that credentials
+were present for its fixed GETs. Their response objects nevertheless carry no
+account ID, retained transport receipt or broker signature. The ledger therefore
+records only upstream local credential-presence attestation and leaves exact
+position/order-to-account binding unresolved; it does not claim cryptographic
+authentication, broker origin or non-repudiation.
+
+Official semantic references, retrieved 2026-08-14:
+
+- [Trading Account / Account object](https://docs.alpaca.markets/us/docs/account-plans)
+  documents `last_equity` as previous-trading-day 16:00 ET equity and `cash`
+  only as cash balance; it does not document `previous_close` or `balance_asof`.
+- [Get all open positions](https://docs.alpaca.markets/us/v1.1/reference/getallopenpositions)
+  documents the authenticated trading-account positions response.
+- [Get all orders](https://docs.alpaca.markets/us/v1.1/reference/getallorders-1)
+  documents the authenticated trading-account orders response.
+
+Previous-close, settlement and account binding therefore all continue to block
+account/risk-snapshot adoption. Tests use fixed synthetic bytes only; this
+boundary performs no request and exposes no broker or order mutation method.
+
 ## Inactive risk policy and account-scoped stop foundation
 
 Phase 4 now also has a human-preregistered paper-risk policy and a one-way local

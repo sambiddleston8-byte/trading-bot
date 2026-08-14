@@ -36,6 +36,31 @@ capacity remaining.
 Unused allowance is preferable to unnecessary work. Neither model is invoked
 merely to consume remaining capacity.
 
+## Streamlined delivery protocol
+
+- Group closely related roadmap work into cohesive medium-sized batches and
+  pull requests. Avoid both single-safeguard changes and batches too large for
+  one focused review.
+- Run focused tests while developing. Run the complete suite once when a batch
+  is release-ready, and repeat it only after a later change could affect wider
+  behaviour.
+- Claude reviews every meaningful finished code batch once against its focused
+  diff and relevant tests. Use Sonnet for ordinary implementation/review and
+  Opus for financial mathematics, backtesting validity, investment logic,
+  security, authentication, broker integration and similarly high-risk work.
+- Codex independently evaluates Claude's findings, applies only supported
+  corrections and verifies the final result deterministically.
+- The coordinator may publish and merge a routine batch after all required
+  tests, deterministic checks and Claude review pass. It must stop for the user
+  before spending money, purchasing a subscription, supplying credentials,
+  making a major product choice, deploying AWS, activating Buzz, connecting a
+  real external account or enabling any trading action. A task-specific request
+  to pause before publication or merge overrides this standing routine
+  authorization.
+- AWS remains deferred until the software foundations are complete. Real-money
+  trading always requires a separate future user decision. Development must not
+  make real broker requests or submit, replace or cancel paper or live orders.
+
 ## Roles
 
 ### Codex — coordinator, builder or reviewer
@@ -48,7 +73,8 @@ merely to consume remaining capacity.
 - records assumptions, versions and unresolved risks;
 - can review a Claude Code change independently when risk justifies a second
   frontier-model opinion;
-- never enables real-money execution or merges its own work autonomously.
+- never enables real-money execution and follows the delivery protocol's
+  publication, review and user-approval boundaries.
 
 ### Claude Code — builder or adversarial challenger
 
@@ -219,10 +245,13 @@ A draft pull request may be marked ready only when:
    data branch;
 7. no broker credential, order routing or real-money mode is introduced.
 8. affected sandbox layers, permissions, limits and promotion gates are stated;
-9. no agent can promote its own result, merge, deploy or increase its own
-   permissions.
+9. routine publication or merge uses the standing authorization only after the
+   independent Claude review; no agent may deploy, increase its own permissions
+   or cross a listed human-only stop boundary.
 
-Only the user may authorise marking a pull request ready or merging it.
+Routine pull requests may use the standing authorization in the streamlined
+delivery protocol. The listed stop categories and any task-specific pause still
+require the user before publication, readiness or merge.
 
 ## Repeatable operating sequence
 
@@ -239,7 +268,8 @@ Only the user may authorise marking a pull request ready or merging it.
 5. The builder fixes valid findings or records a reasoned disagreement.
    Critical and High findings cannot be accepted as debt.
 6. Run automated tests and update the PR checklist and risk register.
-7. The user alone authorises `Ready for review` and merge.
+7. Publish and merge only under the streamlined delivery protocol; otherwise
+   stop at the applicable user-approval boundary.
 
 The issue form is `.github/ISSUE_TEMPLATE/investment-platform-change.yml`; the
 promotion checklist is `.github/pull_request_template.md`.

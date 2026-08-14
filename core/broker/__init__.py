@@ -55,6 +55,9 @@ from core.broker.provider_paper_evidence_collection import (
 from core.broker.provider_paper_bundle_normalization import (
     ProviderPaperBundleNormalizationLedger,
 )
+from core.broker.provider_paper_external_evidence import (
+    ProviderPaperExternalEvidenceResolutionLedger,
+)
 
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
@@ -84,4 +87,5 @@ __all__ = [
     "PaperEvidenceCollectionError",
     "PaperReadOnlyCollectionBundleLedger",
     "ProviderPaperBundleNormalizationLedger",
+    "ProviderPaperExternalEvidenceResolutionLedger",
 ]
