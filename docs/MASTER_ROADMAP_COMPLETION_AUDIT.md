@@ -54,18 +54,19 @@ has been issued, and no replay or performance claim exists.
 An inert input-coverage contract now states, for each of the 22 sealed engine
 keys, which dependency kinds it combines — admitted dataset artifact roles,
 earlier stage output, the sealed learning state, sealed source evidence — and
-compares those needs with the roles the dataset admission ledger can admit. It
-records a larger gap than first assumed. Against the six required roles only
-market regime is covered. News, corporate-event catalyst, macro,
-specialist-research and supplemental-provider inputs have no admitted role at
-all; fundamental and valuation additionally need point-in-time analyst and
-earnings estimates; and market signals needs the optional raw daily session
-bars for its volume and support/resistance scores. Eight of the nine
-artifact-backed engines therefore cannot yet be replayed from authenticated
-point-in-time data. Until those roles are admitted or the preregistered pipeline
-scope is formally narrowed, a faithful replay of the whole research route is not
-achievable. The contract reads no dataset bytes, admits nothing and executes
-nothing.
+compares those needs with the authenticated roles actually present in one
+verified dataset admission. Historical v1 admissions retain their original
+role alphabet. New v2 admissions may additionally carry six point-in-time roles
+for analyst/earnings estimates, corporate events, news, macro series,
+specialist research and supplemental-provider evidence. This is a vocabulary
+change, not a data claim: an admission containing only the six required roles
+still covers only market regime and leaves eight of nine artifact-backed engines
+uncovered; market signals additionally needs optional raw daily session bars.
+The coverage record is version-aware and permission alone never counts as
+presence. Until genuine authenticated artifacts are admitted or the
+preregistered pipeline scope is formally narrowed, a faithful replay of the
+whole research route is not achievable. The contract reads no dataset bytes,
+admits nothing and executes nothing.
 
 ## Current provider-spending decision
 
@@ -101,8 +102,9 @@ prevent continued use of current/free entitlements for supplementary research.
    point-in-time dataset covering membership removals, delistings, terminal
    outcomes, corporate actions, total return, corrections and market calendars.
 4. Use the recorded-decision adapter for bounded causal execution diagnostics,
-   then supply the ledger-issued active-pipeline invocation with qualified
-   point-in-time historical engine adapters and run it through the approved no-
+   implement provider-neutral point-in-time engine-adapter boundaries without
+   inventing provider evidence, then supply the ledger-issued active-pipeline
+   invocation with qualified historical adapters and run it through the approved no-
    network/read-only container under its frozen preregistration. Record only
    mechanical out-of-sample and robustness results. Do not treat the adapter or
    the sealed invocation boundary as a substitute for replaying research
