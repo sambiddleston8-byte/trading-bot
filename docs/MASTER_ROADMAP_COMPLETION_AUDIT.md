@@ -23,6 +23,17 @@ method works out of sample.
 | 9 — Buzz | Fail-closed local manifest defines channels, identities and denied powers. | User-approved local installation, key handling, relay/storage configuration and a security-tested pilot. | Intentionally deferred; Buzz is not installed or connected. |
 | 10 — continuous improvement | Preregistered experiments, purged/embargoed folds, robustness enforcement, disposable container runner, a fail-closed active-pipeline image-approval ledger, a canonical sealed experiment-control contract, effectiveness cohorts and human promotion decisions exist. The runner requires one verified approval matching the preregistered image digest, Git revision and dependency lock, then separately snapshots and mounts the exact whitelisted experiment instructions. | Qualified sealed real historical data, an actual digest-pinned image built from the active pipeline, independent review evidence, controlled integration rehearsal, actual out-of-sample/robustness/shadow evidence, and later human decisions. | The image and control boundaries are tested, but no real image is built or approved and no experiment has run. Improvement cannot be measured until Phase 5 evidence and provider gates clear. |
 
+Phase 4 now refines the row above with a provider-semantic resolution ledger.
+Agreeing bracketed `last_equity` proves a stable provider value but not its exact
+previous-trading-day date; undocumented caller-added date fields are ignored and
+the monetary value is not stored. Alpaca's documented account `cash` does not
+prove a settled/unsettled split, and credential presence plus
+account-scoped endpoint semantics do not prove exact position/order account
+binding without response identity or a signed transport receipt. Settlement
+therefore remains `UNRESOLVED_PROVIDER_SEMANTICS`, previous close remains
+`PROVIDER_VALUE_SUPPORTED_EFFECTIVE_TIME_UNRESOLVED`, account binding remains
+unproven and the row's operational evidence requirements remain in force.
+
 Phase 5 also has a fixed-mapping causal adapter for verified immutable
 decisions. It derives the earliest eligible close from a canonical schedule,
 pins the replay-source attestation, rechecks both against the exact
