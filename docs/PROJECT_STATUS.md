@@ -1040,3 +1040,12 @@ and a hashed prior-close observation from an earlier UTC date. Conflicting or
 out-of-order evidence is rejected before append. The snapshot remains synthetic
 and explicitly unreconciled, unauthenticated, unenforced and unable to route an
 order.
+
+Phase 4 now also calculates an append-only shadow comparison for one pinned
+proposal, inactive policy, normalized risk snapshot and exact stop-ledger prefix.
+It checks reference-price order notional, projected ticker/gross exposure, daily
+loss and evidence freshness at the real recording time. Any existing permanent
+account stop blocks the calculation, and assessment/stop writes share the same
+lock. SELL proposals remain incomplete rather than assuming that an unfilled
+sale reduces risk. All operational, authentication, execution-stress, fee,
+recommendation and submission flags remain false.

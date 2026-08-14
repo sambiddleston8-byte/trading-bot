@@ -22,6 +22,9 @@ from core.broker.live_readiness_gate import LiveReadinessEvidenceGateLedger
 from core.broker.provider_paper_risk_policy import ProviderPaperRiskControlPolicyLedger
 from core.broker.provider_paper_kill_switch import ProviderPaperKillSwitchLedger
 from core.broker.provider_paper_risk_snapshot import ProviderPaperRiskSnapshotLedger
+from core.broker.provider_paper_shadow_risk_assessment import (
+    ProviderPaperShadowRiskAssessmentLedger,
+)
 
 __all__ = [
     "ALPACA_PAPER_ENDPOINT",
@@ -38,4 +41,5 @@ __all__ = [
     "ProviderPaperRiskControlPolicyLedger",
     "ProviderPaperKillSwitchLedger",
     "ProviderPaperRiskSnapshotLedger",
+    "ProviderPaperShadowRiskAssessmentLedger",
 ]
