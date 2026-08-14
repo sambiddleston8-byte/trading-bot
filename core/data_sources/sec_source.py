@@ -1,4 +1,4 @@
-import requests
+from core.data_sources.sec_access import SECJSONClient
 
 
 class SECSource:
@@ -12,11 +12,9 @@ class SECSource:
     def __init__(
         self,
         user_agent="SamPatInvestmentResearch/1.0 contact@example.com",
+        sec_client=None,
     ):
-        self.headers = {
-            "User-Agent": user_agent,
-            "Accept-Encoding": "gzip, deflate",
-        }
+        self.sec_client = sec_client or SECJSONClient(user_agent=user_agent)
 
     def fetch_company_facts(self, cik):
 
@@ -26,15 +24,7 @@ class SECSource:
             cik=cik
         )
 
-        response = requests.get(
-            url,
-            headers=self.headers,
-            timeout=30,
-        )
-
-        response.raise_for_status()
-
-        return response.json()
+        return self.sec_client.get_json(url)
 
     def get_fact(self, facts, tag):
 
@@ -492,15 +482,7 @@ class SECSource:
 
         url = "https://www.sec.gov/files/company_tickers.json"
 
-        response = requests.get(
-            url,
-            headers=self.headers,
-            timeout=30,
-        )
-
-        response.raise_for_status()
-
-        companies = response.json()
+        companies = self.sec_client.get_json(url)
 
         for item in companies.values():
 

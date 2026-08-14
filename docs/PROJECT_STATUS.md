@@ -930,6 +930,22 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   does not activate a provider, run a worker, cache responses, prove freshness,
   purchase data, connect a broker or enable trading. Concurrency remains
   deferred until a real concurrent optional-provider caller exists.
+- All five identified direct SEC EDGAR JSON readers now use one official-host-
+  only access boundary. This includes the legacy filing and catalyst readers;
+  their separate sessions and manual pacing have been removed. The boundary
+  requires HTTPS, rejects redirect responses, shares process-
+  local pacing below the SEC's published 10-request-per-second ceiling, retries
+  only connection failures and HTTP 502/503/504 once, and accepts only locally
+  size-bounded strict UTF-8 JSON objects from the four fixed endpoint families.
+  Failures expose no URL, header, body or raw
+  exception detail. SEC guidance confirms that `data.sec.gov` public JSON APIs
+  require no authentication and that automated callers must declare a user
+  agent (retrieved 14 August 2026:
+  https://www.sec.gov/search-filings/edgar-application-programming-interfaces and
+  https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data).
+  Tests use injected fakes and no SEC request was made. This migration
+  does not authenticate filing semantics, prove point-in-time completeness,
+  activate collection or authorize any broker or trading action.
 - Successful supplementary-provider calls and failures that reach the safe
   optional-provider boundary now contribute separately named, secret-free
   access-duration and retry-count observations to the existing append-only

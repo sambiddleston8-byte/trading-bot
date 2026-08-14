@@ -1,5 +1,6 @@
-import requests
 from datetime import datetime
+
+from core.data_sources.sec_access import SECJSONClient
 
 
 class SECFilingEngine:
@@ -10,19 +11,11 @@ class SECFilingEngine:
         "https://www.sec.gov/files/company_tickers.json"
     )
 
-    def __init__(self):
+    def __init__(self, sec_client=None):
 
-        self.session = requests.Session()
-
-        self.session.headers.update({
-
-            "User-Agent":
-                "SamPatInvestmentResearch/1.0 research@example.com",
-
-            "Accept-Encoding":
-                "gzip, deflate",
-
-        })
+        self.sec_client = sec_client or SECJSONClient(
+            user_agent="SamPatInvestmentResearch/1.0 research@example.com",
+        )
 
         self.ticker_map = None
 
@@ -36,14 +29,9 @@ class SECFilingEngine:
 
             return self.ticker_map
 
-        response = self.session.get(
-            self.COMPANY_TICKERS_URL,
-            timeout=15,
+        data = self.sec_client.get_json(
+            self.COMPANY_TICKERS_URL
         )
-
-        response.raise_for_status()
-
-        data = response.json()
 
         ticker_map = {}
 
@@ -105,14 +93,7 @@ class SECFilingEngine:
             cik=cik
         )
 
-        response = self.session.get(
-            url,
-            timeout=15,
-        )
-
-        response.raise_for_status()
-
-        data = response.json()
+        data = self.sec_client.get_json(url)
 
         recent = data.get(
             "filings",

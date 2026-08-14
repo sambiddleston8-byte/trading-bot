@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import time
 import xml.etree.ElementTree as ET
 
 from datetime import datetime, timedelta, timezone
@@ -9,6 +8,8 @@ from email.utils import parsedate_to_datetime
 from urllib.parse import quote
 
 import requests
+
+from core.data_sources.sec_access import SECJSONClient, SECProviderError
 
 
 class CatalystEngine:
@@ -19,6 +20,8 @@ class CatalystEngine:
         output_path="data/catalyst_results.json",
         lookahead_days=90,
         recent_days=30,
+        sec_client=None,
+        session=None,
     ):
 
         self.cache_path = cache_path
@@ -52,41 +55,10 @@ class CatalystEngine:
         # No personal email address is stored here.
         # --------------------------------------------------------
 
-        self.headers = {
-
-            "User-Agent":
-                "SamAndPatTradingBot/1.0",
-
-            "Accept-Encoding":
-                "gzip, deflate",
-
-            "Accept":
-                "application/json, "
-                "application/xml, "
-                "text/xml, "
-                "*/*",
-
-        }
-
-        self.session = (
-            requests.Session()
+        self.sec_client = sec_client or SECJSONClient(
+            user_agent="SamAndPatTradingBot/1.0"
         )
-
-        self.session.headers.update(
-            self.headers
-        )
-
-        # --------------------------------------------------------
-        # Small delay between SEC requests.
-        # We deliberately stay comfortably below the SEC's
-        # published 10 requests/second maximum.
-        # --------------------------------------------------------
-
-        self.sec_request_delay = (
-            0.15
-        )
-
-        self._last_sec_request = 0
+        self.session = session or requests.Session()
 
     # ============================================================
     # TIME
@@ -196,25 +168,8 @@ class CatalystEngine:
     def request(
         self,
         url,
-        sec=False,
         timeout=15,
     ):
-
-        if sec:
-
-            elapsed = (
-                time.monotonic()
-                - self._last_sec_request
-            )
-
-            if elapsed < (
-                self.sec_request_delay
-            ):
-
-                time.sleep(
-                    self.sec_request_delay
-                    - elapsed
-                )
 
         try:
 
@@ -225,23 +180,11 @@ class CatalystEngine:
                 )
             )
 
-            if sec:
-
-                self._last_sec_request = (
-                    time.monotonic()
-                )
-
             response.raise_for_status()
 
             return response
 
         except Exception as error:
-
-            if sec:
-
-                self._last_sec_request = (
-                    time.monotonic()
-                )
 
             print(
                 f"Request failed: "
@@ -275,20 +218,9 @@ class CatalystEngine:
             "company_tickers.json"
         )
 
-        response = self.request(
-            url,
-            sec=True,
-        )
-
-        if response is None:
-
-            return {}
-
         try:
-
-            data = response.json()
-
-        except Exception:
+            data = self.sec_client.get_json(url)
+        except (SECProviderError, TypeError, ValueError):
 
             return {}
 
@@ -395,20 +327,9 @@ class CatalystEngine:
             f"CIK{cik}.json"
         )
 
-        response = self.request(
-            url,
-            sec=True,
-        )
-
-        if response is None:
-
-            return []
-
         try:
-
-            data = response.json()
-
-        except Exception:
+            data = self.sec_client.get_json(url)
+        except (SECProviderError, TypeError, ValueError):
 
             return []
 
@@ -1159,7 +1080,6 @@ class CatalystEngine:
 
         response = self.request(
             url,
-            sec=False,
             timeout=15,
         )
 
