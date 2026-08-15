@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 import yfinance as yf
 
 from core.company_context import CompanyContext
+from core.data_sources.yahoo_info_access import YahooInfoClient
 from core.data_sources.yahoo_source import YahooSource
 from core.data_sources.sec_source import SECSource
 from core.validation.validated_financial_data import ValidatedFinancialData
@@ -9,7 +10,18 @@ from core.validation.validated_financial_data import ValidatedFinancialData
 
 class FinancialDataEngine:
 
-    def __init__(self):
+    def __init__(
+        self,
+        info_client=None,
+    ):
+
+        # Profile reads go through the injected boundary. yfinance is retained
+        # only for the untouched statement and price-history APIs below.
+        self.info_client = (
+            info_client
+            if info_client is not None
+            else YahooInfoClient()
+        )
 
         self._ticker_cache = {}
         self._info_cache = {}
@@ -47,18 +59,48 @@ class FinancialDataEngine:
         self,
         symbol,
     ):
+        """Return allowlisted profile scalars, or ``{}`` when unusable.
 
-        if symbol not in self._info_cache:
+        The boundary validates the symbol before any SDK object is built,
+        performs one opaque property read and keeps only validated scalars, so
+        no raw or nested provider value reaches ``CompanyContext``. Only
+        validated plain dictionaries are cached, and every call returns a fresh
+        copy, so one analyser cannot mutate another's inputs or the cache.
 
-            self._info_cache[
-                symbol
-            ] = self.get_company(
-                symbol
-            ).info
+        A failed read keeps the established empty mapping and logs one fixed
+        message that echoes no provider, symbol, request or exception text.
+        Failures are not cached, so a later read can still succeed.
+        """
 
-        return self._info_cache[
-            symbol
-        ]
+        try:
+
+            if symbol not in self._info_cache:
+
+                observation = (
+                    self.info_client.info(
+                        symbol
+                    )
+                )
+
+                self._info_cache[
+                    symbol
+                ] = dict(
+                    observation.fields
+                )
+
+            return dict(
+                self._info_cache[
+                    symbol
+                ]
+            )
+
+        except Exception:
+
+            print(
+                "Yahoo info failed."
+            )
+
+            return {}
 
     # ============================================================
     # FINANCIAL STATEMENTS

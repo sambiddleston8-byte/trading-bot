@@ -16,6 +16,7 @@ from core.data_sources.yahoo_history_access import YahooHistoryAccessError, Yaho
 from core.data_sources.yahoo_info_access import (
     INFO_FIELD_ALLOWLIST,
     NUMERIC_FIELDS,
+    SUMMARY_FIELDS,
     TEXT_FIELDS,
     YahooInfoAccessError,
     YahooInfoClient,
@@ -29,41 +30,96 @@ from core.research_engine import ResearchEngine
 ROOT = Path(__file__).resolve().parents[1]
 
 # Modules that have no remaining need for yfinance at all. Competitor peer
-# profile reads use the boundary; its subject mapping still comes from the
-# explicitly deferred ``CompanyContext`` aggregator.
+# profile reads use the boundary directly; its subject mapping now arrives
+# through the boundary too, via the migrated ``CompanyContext`` aggregator.
 MIGRATED_MODULES = (
     "bots/competitors/analyser.py",
     "core/multi_factor_engine.py",
     "core/research_engine.py",
 )
 
-# Every module that reads a profile field through the boundary, including those
-# still importing yfinance for the untouched statement and estimate
-# APIs. ``core/financial_data.py`` is absent on purpose: its cached
-# ``get_company_info`` still reads ``Ticker.info`` directly and feeds the broad
-# ``CompanyContext``, so it is deferred to a separately inventoried batch and
-# must not pull its analysers' fields into this allowlist.
-INFO_READING_MODULES = MIGRATED_MODULES + (
-    "core/data_sources/yahoo_source.py",
-    "core/portfolio_pipeline.py",
-    "core/valuation_engine.py",
+# The ``CompanyContext`` analysers. ``FinancialDataEngine.get_company_info``
+# now fills ``CompanyContext.info`` from the boundary, so every field these
+# modules read is part of the boundary's exact coverage obligation.
+CONTEXT_INFO_CONSUMERS = (
+    "bots/business_quality/analyser.py",
+    "bots/earnings/analyser.py",
+    "bots/financial_intelligence/analyser.py",
+    "bots/industry/analyser.py",
+    "bots/management/analyser.py",
+    "bots/metrics/analyser.py",
+    "bots/moat/analyser.py",
+    "bots/profile/analyser.py",
+    "bots/risk/analyser.py",
+    "bots/valuation/analyser.py",
 )
 
+# Direct consumers of ``FinancialDataEngine.get_company_info`` outside the
+# ``CompanyContext`` route. These mappings cross the same boundary and must be
+# included in the exact field inventory too.
+DIRECT_ENGINE_INFO_CONSUMERS = (
+    "bots/fundamental/company.py",
+    "bots/fundamental/profitability.py",
+)
+
+# Every module that reads a profile field through the boundary, including those
+# still importing yfinance for the untouched statement, estimate and
+# price-history APIs.
+INFO_READING_MODULES = (
+    MIGRATED_MODULES
+    + CONTEXT_INFO_CONSUMERS
+    + DIRECT_ENGINE_INFO_CONSUMERS
+    + (
+    "core/data_sources/yahoo_source.py",
+    "core/financial_data.py",
+    "core/portfolio_pipeline.py",
+    "core/valuation_engine.py",
+    )
+)
+
+# The exact receiver expressions that hold a boundary-produced mapping in each
+# module. Anything else a module calls ``.get("literal")`` on - a provider
+# calendar frame, a dataframe row, a configuration mapping - is deliberately
+# excluded, so an unrelated mapping can never inflate the allowlist.
 BOUNDARY_INFO_RECEIVERS = {
-    "bots/competitors/analyser.py": {"peer_info"},
+    "bots/business_quality/analyser.py": {"info"},
+    # ``calendar_data`` and ``row`` are separate non-profile mappings.
+    "bots/earnings/analyser.py": {"context.info"},
+    "bots/competitors/analyser.py": {"info", "peer_info"},
+    "bots/financial_intelligence/analyser.py": {"info"},
+    "bots/industry/analyser.py": {"info"},
+    "bots/management/analyser.py": {"info"},
+    "bots/metrics/analyser.py": {"info"},
+    "bots/moat/analyser.py": {"info"},
+    "bots/profile/analyser.py": {"info"},
+    "bots/risk/analyser.py": {"info"},
+    "bots/valuation/analyser.py": {"info"},
+    "bots/fundamental/company.py": {"info"},
+    "bots/fundamental/profitability.py": {
+        "self.engine.get_company_info(symbol)"
+    },
     "core/data_sources/yahoo_source.py": {"info"},
+    "core/financial_data.py": {"self.get_company_info(symbol)"},
     "core/multi_factor_engine.py": {"info"},
     "core/portfolio_pipeline.py": {"info"},
     "core/research_engine.py": {"info"},
     "core/valuation_engine.py": {"info"},
 }
 
+# Consumed by a boundary receiver but deliberately NOT admitted. ``yfinance``
+# returns ``companyOfficers`` as a nested list of officer objects, and its only
+# consumer assigns it whole to a ``"CEO"`` key without selecting an officer, a
+# name or a title. No smaller deterministic sanitized contract follows from
+# that read, so the field is omitted rather than passed through raw or reduced
+# by a guessed rule.
+DELIBERATELY_OMITTED_FIELDS = frozenset({"companyOfficers"})
+
 
 def collect_info_field_reads(relative):
     """Return every profile field name a module reads from a boundary mapping.
 
-    Receiver names are explicit so a raw mapping from the deferred
-    ``CompanyContext`` aggregator cannot inflate the boundary allowlist.
+    Receivers are matched as exact unparsed expressions so a non-profile
+    mapping in the same module cannot inflate the boundary allowlist.
     """
     tree = ast.parse((ROOT / relative).read_text(encoding="utf-8"), filename=relative)
     fields = set()
@@ -72,10 +128,10 @@ def collect_info_field_reads(relative):
             isinstance(node, ast.Call)
             and isinstance(node.func, ast.Attribute)
             and node.func.attr == "get"
-            and isinstance(node.func.value, ast.Name)
-            and node.func.value.id in BOUNDARY_INFO_RECEIVERS[relative]
+            and ast.unparse(node.func.value) in BOUNDARY_INFO_RECEIVERS[relative]
             and node.args
             and isinstance(node.args[0], ast.Constant)
+            and isinstance(node.args[0].value, str)
         ):
             continue
         fields.add(node.args[0].value)
@@ -192,8 +248,77 @@ def test_allowlist_covers_exactly_the_fields_the_migrated_consumers_read():
     for relative in INFO_READING_MODULES:
         read_fields |= collect_info_field_reads(relative)
 
-    assert read_fields == INFO_FIELD_ALLOWLIST
+    # Every consumed field is either admitted or explicitly, deliberately
+    # omitted; and nothing is admitted that no consumer reads.
+    assert read_fields == INFO_FIELD_ALLOWLIST | DELIBERATELY_OMITTED_FIELDS
+    assert not INFO_FIELD_ALLOWLIST & DELIBERATELY_OMITTED_FIELDS
     assert not set(TEXT_FIELDS) & set(NUMERIC_FIELDS)
+    assert not set(SUMMARY_FIELDS) & (set(TEXT_FIELDS) | set(NUMERIC_FIELDS))
+
+
+def test_the_aggregator_context_consumers_are_fully_covered():
+    """Every ``CompanyContext`` profile field the analysers read is accounted for."""
+    consumed = set()
+    for relative in CONTEXT_INFO_CONSUMERS + (
+        "bots/competitors/analyser.py",
+        "core/financial_data.py",
+    ):
+        consumed |= collect_info_field_reads(relative)
+
+    assert consumed - DELIBERATELY_OMITTED_FIELDS <= INFO_FIELD_ALLOWLIST
+    assert consumed & DELIBERATELY_OMITTED_FIELDS == {"companyOfficers"}
+
+
+def test_the_company_context_consumer_inventory_is_complete():
+    """Pin every bot that reads ``context.info`` into the field inventory."""
+    discovered = set()
+    for path in (ROOT / "bots").glob("**/*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        if any(
+            isinstance(node, ast.Attribute)
+            and node.attr == "info"
+            and isinstance(node.value, ast.Name)
+            and node.value.id == "context"
+            for node in ast.walk(tree)
+        ):
+            discovered.add(path.relative_to(ROOT).as_posix())
+
+    assert discovered == set(CONTEXT_INFO_CONSUMERS) | {
+        "bots/competitors/analyser.py"
+    }
+
+
+def test_the_direct_engine_info_consumer_inventory_is_complete():
+    """Pin every bot that calls ``FinancialDataEngine.get_company_info``."""
+    discovered = set()
+    for path in (ROOT / "bots").glob("**/*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        if any(
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "get_company_info"
+            for node in ast.walk(tree)
+        ):
+            discovered.add(path.relative_to(ROOT).as_posix())
+
+    assert discovered == set(DIRECT_ENGINE_INFO_CONSUMERS)
+
+
+def test_the_nested_officers_field_can_never_reach_a_caller():
+    """A nested provider object is dropped whole, not flattened or guessed."""
+    client, _, _, _ = client_for(
+        {
+            "companyOfficers": [
+                {"name": "A Person", "title": "Chief Executive Officer"}
+            ],
+            "longName": "Apple Inc.",
+        }
+    )
+
+    observation = client.info("AAPL")
+
+    assert "companyOfficers" not in observation.fields
+    assert dict(observation.fields) == {"longName": "Apple Inc."}
 
 
 # ------------------------------------------------------------------
@@ -237,6 +362,52 @@ def test_malformed_text_fields_are_omitted_without_replacement(value):
 
     assert "longName" not in observation.fields
     assert dict(observation.fields) == {"beta": 1.2}
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        None,
+        1.0,
+        True,
+        "",
+        "   ",
+        "Designs\x00phones.",
+        "Designs\nphones.",
+        "A" * 4_001,
+        ["Designs phones."],
+    ],
+)
+def test_malformed_business_summaries_are_omitted_without_replacement(value):
+    client, _, _, _ = client_for({"longBusinessSummary": value, "beta": 1.2})
+
+    observation = client.info("AAPL")
+
+    assert "longBusinessSummary" not in observation.fields
+    assert dict(observation.fields) == {"beta": 1.2}
+
+
+def test_a_business_summary_uses_its_own_bound_not_the_short_text_bound():
+    """A real paragraph survives, and nothing is truncated into a new value."""
+    paragraph = "A" * 1_500
+    client, _, _, _ = client_for(
+        {"longBusinessSummary": f"  {paragraph}  ", "longName": "A" * 201}
+    )
+
+    observation = client.info("AAPL")
+
+    assert observation.fields["longBusinessSummary"] == paragraph
+    # The shared 200-character bound still applies to ordinary text fields.
+    assert "longName" not in observation.fields
+
+
+def test_a_website_is_retained_as_descriptive_text_only():
+    client, _, _, _ = client_for({"website": " https://www.apple.com ", "beta": 1.2})
+
+    observation = client.info("AAPL")
+
+    assert observation.fields["website"] == "https://www.apple.com"
+    assert isinstance(observation.fields["website"], str)
 
 
 def test_valid_scalars_preserve_exact_integers_and_strip_text():
@@ -353,6 +524,26 @@ def test_observation_claims_no_authority_or_replay_validity():
     assert observation.access.attempts == 1
     assert observation.access.retry_count == 0
     assert observation.access.circuit_state == "CLOSED"
+
+
+def test_previous_close_is_an_unqualified_scalar_with_no_added_authority():
+    """``previousClose`` is a late Yahoo profile number, not prior-close evidence."""
+    client, _, _, _ = client_for({"previousClose": 203.75, "fullTimeEmployees": 164_000})
+
+    observation = client.info("AAPL")
+
+    assert observation.fields["previousClose"] == 203.75
+    # Exact integer handling is unchanged for whole-number profile counts.
+    assert observation.fields["fullTimeEmployees"] == 164_000
+    assert type(observation.fields["fullTimeEmployees"]) is int
+    # Admitting the field elevates nothing: no settlement, account binding,
+    # point-in-time status or replay admissibility is claimed.
+    assert observation.official_settlement is False
+    assert observation.account_bound is False
+    assert observation.point_in_time is False
+    assert observation.tradeable_quote is False
+    assert observation.temporally_complete is False
+    assert observation.admissible_as_replay_evidence is False
 
 
 # ------------------------------------------------------------------

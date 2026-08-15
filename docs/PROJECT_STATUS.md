@@ -1009,15 +1009,54 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   official settlement values or account-bound observations, and no fallback
   field or fabricated value was added. Tests use injected fakes and no Yahoo
   request was made.
-- `FinancialDataEngine.get_company_info` is deliberately still a direct
-  `Ticker.info` read and is explicitly deferred. It populates the broad
-  `CompanyContext`, whose profile, metrics, moat, management, industry and
-  fundamental analysers consume fields well outside the allowlist above —
-  including nested values the boundary rejects by design. Migrating it requires
-  its own separately inventoried batch that first enumerates those consumers;
-  no field was admitted to the boundary on their behalf, and no unrelated
-  analyser's successful semantics were changed. A deterministic test pins that
-  deferral so a silent partial migration cannot blank those inputs.
+- The previously deferred `FinancialDataEngine.get_company_info` aggregator now
+  reads through that same boundary with an injected client; yfinance is retained
+  only for the untouched statement and price-history APIs. A deterministic AST
+  inventory first enumerated every constant profile field the broad
+  `CompanyContext` consumers actually read — the ten profile, metrics, moat,
+  management, industry, risk, earnings, valuation, business-quality and
+  financial-intelligence analysers, the competitor subject mapping and the
+  engine's own derived helpers — and the allowlist was extended only by those
+  22 justified fields: `city`, `country`, `currency`, `ebitda`,
+  `enterpriseValue`, `exchange`, `fiftyTwoWeekHigh`, `fiftyTwoWeekLow`,
+  `floatShares`, `fullTimeEmployees`, `grossMargins`, `heldPercentInsiders`,
+  `heldPercentInstitutions`, `longBusinessSummary`, `netIncomeToCommon`,
+  `previousClose`, `priceToSalesTrailing12Months`, `quoteType`,
+  `recommendationKey`, `shortName`, `totalRevenue` and `website`. The inventory
+  includes the direct fundamental-company and profitability consumers as well
+  as the `CompanyContext` route, so the existing Yahoo recommendation label is
+  not silently blanked. `longBusinessSummary` uses a field-specific
+  bounded text rule — a wider 4,000-character limit with the same strict
+  rejection of non-strings, empty values and ASCII control characters, and no
+  truncation into a value the provider never sent. `website` is descriptive text
+  only and is never dereferenced or requested. Exact finite numeric and integer
+  handling is unchanged, so whole-number counts and large financial values keep
+  their precision. Symbols are validated before any SDK object is constructed,
+  only validated plain dictionaries are cached, and every call returns a fresh
+  caller-owned copy, so one analyser cannot mutate another's inputs or the
+  cache. A failed read is not cached and keeps the established empty mapping,
+  logging one fixed message that echoes no provider, symbol, request or
+  exception text.
+- One consumed field is deliberately unsupported. `companyOfficers` is a nested
+  provider list of officer objects, and its only consumer assigns it whole to a
+  `"CEO"` key without selecting an officer, a name or a title, so no smaller
+  deterministic sanitized contract follows from that read. It is omitted rather
+  than passed through raw or reduced by a guessed rule. This is an intentional
+  behaviour change: the profile analyser's `"CEO"` key remains present in the
+  result shape and is now empty instead of carrying a raw nested provider list.
+  No CEO name is inferred or fabricated. Deterministic tests separate boundary
+  receivers from unrelated mappings — the earnings analyser's calendar frame and
+  row mappings are excluded — and prove that every consumed field is either
+  admitted or explicitly recorded as omitted.
+- `previousClose` is admitted as an unqualified late Yahoo profile scalar, on
+  exactly the same footing as `currentPrice` and `regularMarketPrice`. It is
+  not official prior-close evidence, not settlement evidence, not account-bound
+  and not admissible as replay evidence; all authority flags on the observation
+  remain false and the Phase 4 previous-close resolution is unaffected by its
+  presence. These profile values remain unauthenticated, non-point-in-time and
+  non-survivorship-safe, and their presence proves no temporal completeness.
+  Tests use injected fakes only; no Yahoo request, credential or provider SDK
+  call was involved.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive requests now pass through
   a shared process-local access coordinator. It gently spaces requests across
   separate client instances, retries only connection failures and HTTP

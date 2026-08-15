@@ -19,23 +19,45 @@ from core.data_sources.yahoo_history_access import validate_yahoo_symbol
 
 _MAXIMUM_TEXT_LENGTH = 200
 
+# ``longBusinessSummary`` is legitimately a paragraph rather than a label, so a
+# 200-character cap would drop every real value. It gets its own bound instead
+# of relaxing the shared one; it is still bounded, still strictly rejected when
+# it contains an ASCII control character, and still never unlimited.
+_MAXIMUM_SUMMARY_LENGTH = 4_000
+
 # Only the fields the migrated readers actually consume are accepted: the
 # research, multi-factor and competitor analysers, the portfolio pipeline
-# reading through ``MultiFactorEngine.get_info``, the Yahoo source fetch and
-# the valuation engine. Everything else in the provider mapping - including
-# fields yfinance may add later - is discarded at this boundary and can never
-# reach a caller.
+# reading through ``MultiFactorEngine.get_info``, the Yahoo source fetch, the
+# valuation engine and the ``FinancialDataEngine.get_company_info`` aggregator
+# that feeds ``CompanyContext``. Everything else in the provider mapping -
+# including fields yfinance may add later - is discarded at this boundary and
+# can never reach a caller.
 #
-# ``FinancialDataEngine.get_company_info`` is deliberately not migrated yet and
-# still reads ``Ticker.info`` directly. It feeds the broad ``CompanyContext``,
-# whose analysers read profile fields well outside this allowlist, so it needs
-# its own separately inventoried batch. No field is admitted here for those
-# deferred consumers.
+# One field the aggregator's consumers read is deliberately NOT admitted:
+# ``companyOfficers``. It is a nested provider list of officer objects, and the
+# only consumer (``bots/profile/analyser.py``) assigns it whole to a ``"CEO"``
+# key without selecting an officer, a name or a title. No smaller deterministic
+# sanitized scalar contract can be derived from that read, so the field is
+# omitted rather than passed through raw or reduced by a guessed rule. The
+# consumer's ``"CEO"`` key therefore remains present with no value; inventing a
+# name here would be fabricated data.
 TEXT_FIELDS: tuple[str, ...] = (
-    "longName",
-    "sector",
+    "city",
+    "country",
+    "currency",
+    "exchange",
     "industry",
+    "longName",
+    "quoteType",
+    "recommendationKey",
+    "sector",
+    "shortName",
+    # Descriptive profile text only. This boundary never dereferences, resolves
+    # or requests it, and admitting it grants no such permission downstream.
+    "website",
 )
+
+SUMMARY_FIELDS: tuple[str, ...] = ("longBusinessSummary",)
 
 NUMERIC_FIELDS: tuple[str, ...] = (
     "beta",
@@ -45,13 +67,30 @@ NUMERIC_FIELDS: tuple[str, ...] = (
     "dividendYield",
     "earningsGrowth",
     "earningsQuarterlyGrowth",
+    "ebitda",
+    "enterpriseValue",
+    "fiftyTwoWeekHigh",
+    "fiftyTwoWeekLow",
+    "floatShares",
     "forwardPE",
     "freeCashflow",
+    "fullTimeEmployees",
+    "grossMargins",
+    "heldPercentInsiders",
+    "heldPercentInstitutions",
     "marketCap",
+    "netIncomeToCommon",
     "operatingCashflow",
     "operatingMargins",
     "pegRatio",
+    # An unqualified late Yahoo profile scalar, exactly like ``currentPrice``
+    # and ``regularMarketPrice``. It is NOT an official prior close, NOT
+    # settlement evidence, NOT account-bound and NOT admissible as replay
+    # evidence. Admitting it here grants it no authority whatsoever, and the
+    # Phase 4 previous-close resolution remains unaffected by its presence.
+    "previousClose",
     "priceToBook",
+    "priceToSalesTrailing12Months",
     "profitMargins",
     "quickRatio",
     # An unqualified late provider number, exactly like ``currentPrice``: it is
@@ -65,10 +104,13 @@ NUMERIC_FIELDS: tuple[str, ...] = (
     "sharesOutstanding",
     "totalCash",
     "totalDebt",
+    "totalRevenue",
     "trailingPE",
 )
 
-INFO_FIELD_ALLOWLIST: frozenset[str] = frozenset(TEXT_FIELDS + NUMERIC_FIELDS)
+INFO_FIELD_ALLOWLIST: frozenset[str] = frozenset(
+    TEXT_FIELDS + SUMMARY_FIELDS + NUMERIC_FIELDS
+)
 
 
 class YahooInfoAccessError(RuntimeError):
@@ -90,8 +132,12 @@ class YahooInfoObservation:
     unqualified late provider numbers.  They are not official settlement
     prices, prior closes, tradeable quotes, account-bound values or replay
     evidence, and their presence proves no temporal completeness.  That applies
-    without exception to the profile price fields ``currentPrice`` and
-    ``regularMarketPrice``, which remain descriptive profile scalars.
+    without exception to the profile price fields ``currentPrice``,
+    ``regularMarketPrice`` and ``previousClose``, which all remain descriptive
+    profile scalars.  In particular ``previousClose`` is an unqualified late
+    Yahoo scalar and is not the official prior close, not settlement evidence
+    and not account-bound.  Text fields, including ``website``, are descriptive
+    values only: nothing here is ever dereferenced or requested.
     """
 
     fields: Mapping[str, Any]
@@ -113,16 +159,32 @@ class YahooInfoObservation:
         object.__setattr__(self, "fields", selected)
 
 
-def validate_info_text(value: Any) -> str:
-    """Return a bounded control-character-free string, or fail closed."""
+def _bounded_text(value: Any, limit: int) -> str:
     if not isinstance(value, str):
         raise ValueError("Yahoo info text field is invalid")
     resolved = value.strip()
-    if not resolved or len(resolved) > _MAXIMUM_TEXT_LENGTH:
+    if not resolved or len(resolved) > limit:
         raise ValueError("Yahoo info text field is invalid")
     if any(ord(character) < 32 or ord(character) == 127 for character in resolved):
         raise ValueError("Yahoo info text field is invalid")
     return resolved
+
+
+def validate_info_text(value: Any) -> str:
+    """Return bounded text without ASCII control characters, or fail closed."""
+    return _bounded_text(value, _MAXIMUM_TEXT_LENGTH)
+
+
+def validate_info_summary(value: Any) -> str:
+    """Return a bounded business summary without ASCII control characters.
+
+    Same strictness as any other text field - a non-string, an empty string or
+    any ASCII control character is rejected outright - with only the length bound
+    widened, because a business summary is a paragraph rather than a label.
+    An over-long value is dropped, never truncated into a shortened paragraph
+    that the provider never sent.
+    """
+    return _bounded_text(value, _MAXIMUM_SUMMARY_LENGTH)
 
 
 def validate_info_number(value: Any) -> int | float:
@@ -147,6 +209,7 @@ def validate_info_number(value: Any) -> int | float:
 
 _FIELD_VALIDATORS: tuple[tuple[str, Callable[[Any], Any]], ...] = tuple(
     [(name, validate_info_text) for name in TEXT_FIELDS]
+    + [(name, validate_info_summary) for name in SUMMARY_FIELDS]
     + [(name, validate_info_number) for name in NUMERIC_FIELDS]
 )
 
