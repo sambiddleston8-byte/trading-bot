@@ -17,16 +17,28 @@ from typing import Any, Mapping
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 from core.guardrailed_backtest import (
     AUTHENTICATED_REPLAY_ROLES,
+    ENGINE_POLICY_VERSION,
     BacktestResult,
     CompletedTrade,
     ExecutionRecord,
     PortfolioStateTrace,
     SizingDecisionTrace,
 )
-from core.orchestration.replay_backtest_inputs import load_authenticated_backtest_inputs
 from core.orchestration.authenticated_execution_profile import (
     resolve_authenticated_execution_profile,
 )
+from core.orchestration.replay_backtest_inputs import load_authenticated_backtest_inputs
+
+
+_LEGACY_ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v2"
+_POSITION_CAP_ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v3"
+_SUPPORTED_ENGINE_POLICY_VERSIONS = frozenset(
+    {_LEGACY_ENGINE_POLICY_VERSION, _POSITION_CAP_ENGINE_POLICY_VERSION}
+)
+if ENGINE_POLICY_VERSION != _POSITION_CAP_ENGINE_POLICY_VERSION:
+    raise RuntimeError(
+        "replay audit must be updated explicitly for the current engine policy"
+    )
 
 
 SCHEMA_VERSION = "1.2"
@@ -584,8 +596,8 @@ def _result_payload_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
     for item in executions:
         _validate_execution(item)
     for item in sizing:
-        _validate_sizing(item)
-    _match_executions_and_sizing(executions, sizing)
+        _validate_sizing(item, engine_config_value)
+    _match_executions_and_sizing(executions, sizing, engine_config_value)
     for item in completed:
         _validate_completed_trade(item)
     _match_completed_trades_and_exits(completed, executions)
@@ -657,6 +669,8 @@ def _validate_engine_execution_economics(
         != _finite_decimal(record["starting_equity"], "starting_equity", positive=True)
     ):
         raise ValueError("result identity does not match its engine configuration")
+    if engine["engine_policy_version"] not in _SUPPORTED_ENGINE_POLICY_VERSIONS:
+        raise ValueError("engine policy version is unsupported by replay audit")
     tiers = fee_schedule.get("tiers")
     if not isinstance(tiers, list) or len(tiers) != 1 or not isinstance(tiers[0], Mapping):
         raise ValueError("authenticated replay requires one exact commission tier")
@@ -687,6 +701,14 @@ def _validate_engine_execution_economics(
         config.get("maximum_lagged_volume_participation"),
         "maximum_lagged_volume_participation", positive=True,
     )
+    if engine["engine_policy_version"] == _POSITION_CAP_ENGINE_POLICY_VERSION:
+        maximum_position_fraction = _finite_decimal(
+            config.get("maximum_position_fraction"),
+            "maximum_position_fraction",
+            positive=True,
+        )
+        if maximum_position_fraction > Decimal("1"):
+            raise ValueError("maximum position fraction exceeds 100%")
     for item in record["executions"]:
         filled = _finite_decimal(item["filled_quantity"], "filled_quantity")
         price = _finite_decimal(item["execution_price"], "execution_price", positive=True)
@@ -790,7 +812,7 @@ def _validate_execution(value: Any) -> None:
         raise ValueError("terminal settlement economics changed")
 
 
-def _validate_sizing(value: Any) -> None:
+def _validate_sizing(value: Any, engine: Mapping[str, Any]) -> None:
     item = _exact_fields(value, set(SizingDecisionTrace.__dataclass_fields__), "sizing trace")
     if item["action"] not in {"BUY", "SELL", "TERMINAL_SETTLEMENT"}:
         raise ValueError("sizing action changed")
@@ -815,6 +837,7 @@ def _validate_sizing(value: Any) -> None:
     constraints = item["limiting_constraints"]
     allowed = {
         "RISK_BUDGET", "LIQUIDITY_CAP", "CASH_AND_FEES", "POSITION_QUANTITY",
+        "POSITION_FRACTION_CAP",
         "UNIVERSE_INELIGIBLE_AT_EXECUTION", "NO_POSITIVE_ATR_RISK_DISTANCE",
         "MANDATORY_TERMINAL_OUTCOME",
     }
@@ -829,15 +852,59 @@ def _validate_sizing(value: Any) -> None:
     liquidity_limit = _finite_decimal(
         item["liquidity_quantity_limit"], "liquidity_quantity_limit"
     )
-    if action == "BUY" and requested > 0:
+    zero_atr_rejection = (
+        action == "BUY"
+        and constraints == ["NO_POSITIVE_ATR_RISK_DISTANCE"]
+    )
+    universe_rejection = (
+        action == "BUY"
+        and constraints == ["UNIVERSE_INELIGIBLE_AT_EXECUTION"]
+    )
+    if zero_atr_rejection:
+        if (
+            item["risk_per_share"] != "0"
+            or item["risk_budget"] != "0"
+            or item["risk_quantity_limit"] != "0"
+            or item["cash_quantity_limit"] != "0"
+            or requested != 0
+            or filled != 0
+            or liquidity_limit != 0
+            or item["stop_price_after"] is not None
+        ):
+            raise ValueError("zero-ATR rejected buy sizing changed")
+    elif universe_rejection:
+        if (
+            item["risk_budget"] is not None
+            or item["risk_quantity_limit"] != "0"
+            or item["cash_quantity_limit"] != "0"
+            or requested != 0
+            or filled != 0
+            or liquidity_limit != 0
+            or item["stop_price_after"] is not None
+        ):
+            raise ValueError("universe-ineligible rejected buy sizing changed")
+    elif action == "BUY" and item["risk_budget"] is not None:
         risk_per_share = _finite_decimal(item["risk_per_share"], "risk_per_share", positive=True)
         risk_budget = _finite_decimal(item["risk_budget"], "risk_budget", non_negative=True)
         risk_limit = _finite_decimal(item["risk_quantity_limit"], "risk_quantity_limit")
         cash_limit = _finite_decimal(item["cash_quantity_limit"], "cash_quantity_limit")
         if risk_limit != (risk_budget / risk_per_share).to_integral_value(rounding=ROUND_FLOOR):
             raise ValueError("risk quantity no longer reconciles to budget and ATR distance")
-        if requested != risk_limit or filled != min(requested, liquidity_limit, cash_limit):
+        position_cap_active = (
+            engine.get("engine_policy_version")
+            == _POSITION_CAP_ENGINE_POLICY_VERSION
+        )
+        if position_cap_active:
+            if requested > risk_limit:
+                raise ValueError("buy request exceeds its risk quantity limit")
+            if requested < risk_limit and "POSITION_FRACTION_CAP" not in constraints:
+                raise ValueError("reduced buy request lacks its position-fraction constraint")
+        elif requested != risk_limit:
+            raise ValueError("legacy buy request no longer matches its risk limit")
+        if filled != min(requested, liquidity_limit, cash_limit):
             raise ValueError("buy sizing limits no longer reconcile")
+    elif action == "BUY" and requested > 0:
+        raise ValueError("positive buy request lacks its complete risk sizing inputs")
     elif action == "SELL":
         position_quantity = _finite_decimal(
             item["position_quantity_before"], "position_quantity_before"
@@ -851,6 +918,7 @@ def _validate_sizing(value: Any) -> None:
 
 def _match_executions_and_sizing(
     executions: list[Mapping[str, Any]], sizing: list[Mapping[str, Any]],
+    engine: Mapping[str, Any],
 ) -> None:
     def key(item: Mapping[str, Any], sizing_item: bool) -> tuple[Any, ...]:
         return (
@@ -865,6 +933,59 @@ def _match_executions_and_sizing(
     execution_by_key = {key(item, False): item for item in executions}
     for trace in sizing:
         execution = execution_by_key[key(trace, True)]
+        if (
+            trace["action"] == "BUY"
+            and engine.get("engine_policy_version")
+            == _POSITION_CAP_ENGINE_POLICY_VERSION
+        ):
+            config = engine["config"]
+            fraction = _finite_decimal(
+                config.get("maximum_position_fraction"),
+                "maximum_position_fraction",
+                positive=True,
+            )
+            equity = _finite_decimal(
+                trace["portfolio_equity_before"],
+                "portfolio_equity_before",
+                positive=True,
+            )
+            reference = _finite_decimal(
+                execution["reference_price"], "reference_price", positive=True
+            )
+            maximum_cost_bps = sum(
+                (
+                    _finite_decimal(config.get(name), name, non_negative=True)
+                    for name in (
+                        "bid_ask_half_spread_bps",
+                        "baseline_slippage_bps",
+                        "latency_adverse_bps",
+                        "liquidity_impact_bps_at_max_participation",
+                    )
+                ),
+                Decimal("0"),
+            )
+            maximum_price = reference * (
+                Decimal("1") + maximum_cost_bps / Decimal("10000")
+            )
+            expected_position_limit = (
+                equity * fraction / maximum_price
+            ).to_integral_value(rounding=ROUND_FLOOR)
+            risk_limit = _finite_decimal(
+                trace["risk_quantity_limit"], "risk_quantity_limit", non_negative=True
+            )
+            requested = _finite_decimal(
+                trace["requested_quantity"], "requested_quantity", non_negative=True
+            )
+            if requested != min(risk_limit, expected_position_limit):
+                raise ValueError("buy request no longer reconciles to its position-fraction cap")
+            filled = _finite_decimal(
+                trace["filled_quantity"], "filled_quantity", non_negative=True
+            )
+            execution_price = _finite_decimal(
+                execution["execution_price"], "execution_price", positive=True
+            )
+            if filled * execution_price > equity * fraction:
+                raise ValueError("filled buy notional exceeds the maximum position fraction")
         if trace["filled_quantity"] != "0" and trace["action"] == "BUY":
             risk_per_share = _finite_decimal(
                 trace["risk_per_share"], "risk_per_share", positive=True

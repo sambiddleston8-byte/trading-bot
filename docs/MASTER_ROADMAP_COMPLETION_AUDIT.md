@@ -143,8 +143,19 @@ or below 60 to exit, holds on neutral or insufficient history and rejects
 non-causal or mixed-symbol history. It does not replace the legacy strategy or
 the authenticated engine and has no data, VectorBT, broker or network path.
 AAPL and MSFT remain separate candidate instruments and SPY is benchmark-only.
-Campaign dates/splits, execution-policy values and success thresholds remain
-unselected, so neither preregistration nor provider access is yet permitted.
+The user subsequently approved the fixed 1 August 2025 through 31 July 2026
+window and its exact contiguous splits, one-test protocol, BASE/PESSIMISTIC
+costs, USD 100,000 simulated starting cash, 25% position-notional cap, 1%
+per-trade/aggregate risk, 14-bar ATR/2x stop and per-candidate success gates.
+The hashable inert campaign contract now represents those choices and builds an
+engine-policy-v3 profile that enforces the position cap using the maximum
+configured adverse entry price; replay audit revalidates that cap against actual
+fills while retaining legacy v2 audit interpretation. That campaign profile is
+not yet wired into the older authenticated replay-profile resolver. A versioned
+binding that preserves old audit records remains mandatory before any admitted
+campaign replay. The assumptions are uncalibrated and authorize no performance
+claim. The single Massive preregistration is still unapplied and no provider
+byte has been accessed.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be

@@ -38,7 +38,7 @@ AUTHENTICATED_REPLAY_ROLES = {
     "TOTAL_RETURN_PRICES",
     "UNIVERSE_MEMBERSHIP",
 }
-ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v2"
+ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v3"
 _ATTESTATION_FACTORY_TOKEN = object()
 
 
@@ -392,6 +392,7 @@ class BacktestConfig:
     initial_cash: Decimal
     max_equity_risk_per_trade: Decimal = Decimal("0.01")
     maximum_aggregate_open_risk: Decimal = Decimal("0.06")
+    maximum_position_fraction: Decimal = Decimal("1")
     atr_window: int = 14
     atr_stop_multiple: Decimal = Decimal("2")
     baseline_slippage_bps: Decimal = Decimal("10")
@@ -411,6 +412,7 @@ class BacktestConfig:
             ("initial_cash", True),
             ("max_equity_risk_per_trade", True),
             ("maximum_aggregate_open_risk", True),
+            ("maximum_position_fraction", True),
             ("atr_stop_multiple", True),
             ("baseline_slippage_bps", True),
             ("bid_ask_half_spread_bps", True),
@@ -425,6 +427,8 @@ class BacktestConfig:
             raise ValueError("max equity risk per trade cannot exceed 1%")
         if not self.max_equity_risk_per_trade <= self.maximum_aggregate_open_risk <= Decimal("0.10"):
             raise ValueError("aggregate open risk must be between per-trade risk and 10%")
+        if self.maximum_position_fraction > ONE:
+            raise ValueError("maximum position fraction cannot exceed 100% of equity")
         if self.baseline_slippage_bps < Decimal("10"):
             raise ValueError("baseline slippage cannot be below 0.10%")
         if not 2 <= self.atr_window or not 2 <= self.lagged_liquidity_lookback:
@@ -1223,7 +1227,9 @@ class GuardrailedBacktestEngine:
                                 - open_risk,
                             ),
                         )
-                        requested = (risk_budget / risk_per_share).to_integral_value(rounding=ROUND_FLOOR)
+                        risk_quantity_limit = (
+                            risk_budget / risk_per_share
+                        ).to_integral_value(rounding=ROUND_FLOOR)
                         maximum_cost_bps = (
                             self.config.bid_ask_half_spread_bps
                             + self.config.baseline_slippage_bps
@@ -1231,6 +1237,13 @@ class GuardrailedBacktestEngine:
                             + self.config.liquidity_impact_bps_at_max_participation
                         )
                         maximum_price = _adverse_price(bar.open, "BUY", maximum_cost_bps)
+                        maximum_position_notional = (
+                            portfolio_equity * self.config.maximum_position_fraction
+                        )
+                        position_quantity_limit = (
+                            maximum_position_notional / maximum_price
+                        ).to_integral_value(rounding=ROUND_FLOOR)
+                        requested = min(risk_quantity_limit, position_quantity_limit)
                         capacity = (capacity_notional / maximum_price).to_integral_value(rounding=ROUND_FLOOR)
                         cash_capacity = affordable_quantity(maximum_price, requested, bar.open_at)
                         filled = min(requested, capacity, cash_capacity)
@@ -1256,6 +1269,8 @@ class GuardrailedBacktestEngine:
                                 bar.open_at,
                             )
                         constraints = []
+                        if position_quantity_limit < risk_quantity_limit:
+                            constraints.append("POSITION_FRACTION_CAP")
                         if capacity < requested:
                             constraints.append("LIQUIDITY_CAP")
                         if cash_capacity < requested:
@@ -1276,7 +1291,7 @@ class GuardrailedBacktestEngine:
                                 open_risk_before=open_risk,
                                 risk_per_share=risk_per_share,
                                 risk_budget=risk_budget,
-                                risk_quantity_limit=requested,
+                                risk_quantity_limit=risk_quantity_limit,
                                 liquidity_notional=liquidity,
                                 liquidity_quantity_limit=capacity,
                                 cash_quantity_limit=cash_capacity,

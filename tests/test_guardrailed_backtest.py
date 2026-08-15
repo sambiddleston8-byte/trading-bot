@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from decimal import Decimal
+from decimal import Decimal, ROUND_FLOOR
 
 import pytest
 
@@ -185,6 +185,48 @@ def test_atr_position_sizing_never_exceeds_one_percent_modelled_risk():
     assert sizing.filled_quantity == buy.filled_quantity
     assert sizing.stop_price_after is not None
     assert sizing.limiting_constraints
+
+
+def test_position_notional_never_exceeds_the_configured_equity_fraction():
+    market = bars(12)
+    configured = engine(
+        maximum_position_fraction=Decimal("0.25"),
+        atr_stop_multiple=Decimal("0.01"),
+    )
+    result = run(
+        configured,
+        bars=market,
+        universe_events=membership(),
+        terminal_outcomes=[],
+        strategy=EnterThenExit(),
+        parameters={"enter_on_history_count": 4, "exit_on_history_count": 7},
+        evaluation_start=market[0].close_at,
+        evaluation_end=market[9].open_at,
+    )
+    buy = next(row for row in result.executions if row.action == "BUY")
+    sizing = next(row for row in result.sizing_decisions if row.action == "BUY")
+    maximum_cost_bps = (
+        configured.config.bid_ask_half_spread_bps
+        + configured.config.baseline_slippage_bps
+        + configured.config.latency_adverse_bps
+        + configured.config.liquidity_impact_bps_at_max_participation
+    )
+    maximum_price = buy.reference_price * (
+        Decimal("1") + maximum_cost_bps / Decimal("10000")
+    )
+    expected_limit = (
+        sizing.portfolio_equity_before
+        * configured.config.maximum_position_fraction
+        / maximum_price
+    ).to_integral_value(rounding=ROUND_FLOOR)
+
+    assert sizing.risk_quantity_limit > expected_limit
+    assert sizing.requested_quantity == expected_limit
+    assert "POSITION_FRACTION_CAP" in sizing.limiting_constraints
+    assert (
+        buy.filled_quantity * buy.execution_price
+        <= sizing.portfolio_equity_before * Decimal("0.25")
+    )
 
 
 def test_portfolio_states_reconcile_post_fill_cash_positions_and_session_closes():
@@ -410,6 +452,10 @@ def test_slippage_floor_and_risk_limit_cannot_be_weakened():
         BacktestConfig(initial_cash=Decimal("100000"), baseline_slippage_bps=Decimal("9"))
     with pytest.raises(ValueError, match="1%"):
         BacktestConfig(initial_cash=Decimal("100000"), max_equity_risk_per_trade=Decimal("0.011"))
+    with pytest.raises(ValueError, match="positive"):
+        BacktestConfig(initial_cash=Decimal("100000"), maximum_position_fraction=Decimal("0"))
+    with pytest.raises(ValueError, match="100%"):
+        BacktestConfig(initial_cash=Decimal("100000"), maximum_position_fraction=Decimal("1.01"))
 
 
 def test_pessimistic_scenario_requires_doubled_costs_and_full_stop_pierce():

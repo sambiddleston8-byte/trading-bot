@@ -988,11 +988,29 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   Mixed-symbol, substituted-parameter and non-causal history inputs fail closed.
   The adapter receives only closed history; the guardrailed engine retains sole
   control of next-open execution, risk sizing, stops, costs and settlement. AAPL
-  and MSFT are separate candidate instruments and SPY is benchmark-only. The
-  exact acquisition/split window, execution profile and success thresholds
-  still require explicit approval before the one immutable Massive
-  preregistration. No plan was registered, no data was fetched, no result was
-  calculated and no broker or trading authority was added.
+  and MSFT are separate candidate instruments and SPY is benchmark-only. No plan
+  was registered, no data was fetched, no result was calculated and no broker or
+  trading authority was added.
+- The user has now approved those remaining campaign choices. A separate inert
+  campaign contract fixes the 1 August 2025 through 31 July 2026 acquisition
+  window, contiguous train/validation/untouched-test splits, 50-observation
+  warm-up, one-observation purge/embargo and one-test cap. It fixes AAPL/MSFT as
+  separate candidates with SPY benchmark-only; both candidates must pass
+  non-negative absolute and SPY-relative returns, no more than 20% drawdown,
+  at least two completed trades and the PESSIMISTIC scenario without symbol
+  selection. The BASE/PESSIMISTIC profiles pin USD 100,000 simulated starting
+  cash per candidate, 25% maximum position notional, 1% per-trade and aggregate
+  open risk, 14-bar ATR/2x stop, whole shares, one-session settlement, exact
+  declared costs, volume participation and order ages. The inert campaign
+  profile builds an engine-policy-v3 configuration that enforces the cap before
+  entry, and replay audit can re-derive it from the reference price, maximum
+  configured adverse costs and actual fill. It is deliberately not wired into
+  the older authenticated replay-profile resolver: before any admitted replay,
+  a later versioned batch must bind these campaign controls through that
+  authenticated route without invalidating legacy audit records. These values
+  are assumptions, not calibrations or performance evidence. The immutable
+  preregistration has not yet been appended; no provider byte was requested and
+  all broker/trading authorities remain false.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
