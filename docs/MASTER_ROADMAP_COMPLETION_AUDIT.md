@@ -166,20 +166,43 @@ The retained official public terms-page bytes are hashed, but entitlement and
 historical replay permission remain unresolved. The authorized collection
 captured all 36/36 fixed slices with zero missing; the final capture-chain record
 hash is `3ccee45a3cb33a42e1d13adbf8f86b5e187c004b0950a8b62bb0fee7a1a20b98`.
-Twenty-seven TRAIN/VALIDATION
-captures normalize to 145 TRAIN and 43 VALIDATION sessions per symbol with no
-duplicate IDs or out-of-slice observations; nine UNTOUCHED_TEST captures remain
-sealed from evaluation, although store verification re-hashes their exact bytes.
+Twenty-seven TRAIN/VALIDATION captures normalize to 145 TRAIN and 43 VALIDATION
+sessions per symbol with no duplicate IDs or out-of-slice observations.
 All staged availability/effectiveness bases are local-retrieval-only and
 unqualified as of 15 August 2026, too late for the registered 2025–2026 decision
 window. A new store-issued wrapper closes the local normalizer-substitution gap:
 it re-verifies the capture and blob, derives retrieval time, symbol, split and
 request window only from the immutable record, checks every normalized bar
 against them and records a binding hash. Direct adapter output remains explicitly
-unbound, and untouched-test bytes still cannot be opened. This proves no provider
-origin, semantics or historical availability. Zero bytes were admitted,
-authenticated or made engine-ready; the untouched evaluation was refused, and
-every replay/broker/trading authority remains false.
+unbound. This proves no provider origin, semantics or historical availability.
+The user then authorized a baseline-only Research Index & Availability
+Exemption. Its separate owner-only hash chain identifies the exact
+preregistration/capture parents and labels index membership, 16:00 New York bar
+availability and 09:30/16:00 session times as human assumptions, never provider
+evidence. Exemption record hash
+`8eaf1d499213f0abc324b3265b1c6a184b4a083621a01ed0b2808ef89b624513`
+and consumption record hash
+`dbc49943fe6b1ac922a59191e21145ef2949cb2887825917d81e81700de23534`
+make those local chain points explicit. It copied only TRAIN/VALIDATION into a disjoint local research store;
+canonical dataset admission, authentication and every performance/broker/order/
+trading authority stayed false. VectorBT evaluated only the one preregistered
+20/50/20 configuration, not a newly invented search space. The single untouched
+package was consumed at Git `5ca19d64e45340ea577400b5ca8658d37d41cc38` and
+cannot be rerun. The GuardrailedBacktestEngine result hash is
+`05adfe5236ea7bd50c57b2e04326ec421253365c4b51e9cb83ceb86b86fe4ac1`:
+AAPL returned 0.5341% BASE/0.3971% PESSIMISTIC with two trades; MSFT returned
+-1.0886%/-1.2162% with one; SPY's matching price-return diagnostic was 1.2225%.
+MSFT's negative result and single trade independently fail absolute and trade-
+count gates. Final review found the runner omitted the preregistered one-
+observation purge and embargo, and the SPY price diagnostic was timing-
+misaligned rather than the registered complete relative-return measure. The
+consumed result is permanently protocol-nonconformant: it cannot establish a
+valid preregistered or relative test and cannot be rerun. Future execution now
+derives warm-up, purge, embargo and one-shot enforcement from the campaign
+contract. Missing corporate-action/total-return evidence, entitlement, replay
+permission, provider semantics and external anchoring remain unresolved, so
+this failed diagnostic is not a track record or promotion evidence. The final
+focused Claude Opus correction review returned PASS with no release blockers.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -211,16 +234,17 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. **Collection complete, qualification blocked:** the exact baseline strategy,
+2. **Baseline test consumed but protocol-nonconformant; qualification still blocked:** the exact baseline strategy,
    acquisition window and chronological split are preregistered, and all 36/36
    fixed AAPL/MSFT/SPY slices are retained in isolated raw quarantine. The 27
-   TRAIN/VALIDATION captures passed structural normalization; nine untouched
-   captures remain sealed. Quarantine completion is not admission or
+   TRAIN/VALIDATION captures passed structural normalization. The explicit
+   research exemption and consumed untouched run are not admission or
    qualification: historical availability, stable identity, account
    entitlement, replay permission and required roles remain unresolved. The
    local normalizer-to-capture binding is enforced but cannot supply those
-   external facts. The sample cannot satisfy the combined provider
-   mandate or support the preregistered historical decision window.
+   external facts. The sample cannot satisfy the combined provider mandate or
+   support promotion. The diagnostic cannot be treated as a valid untouched
+   test, optimized or rerun.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-

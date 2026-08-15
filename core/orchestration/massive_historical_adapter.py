@@ -229,6 +229,14 @@ def _json_bars(payload: bytes) -> list[dict[str, Any]]:
     return [_parse_bar(item, ticker=ticker, adjusted=adjusted) for item in results]
 
 
+def parse_massive_unadjusted_daily_bars(
+    payload: bytes,
+) -> tuple[Mapping[str, Any], ...]:
+    """Parse exact Massive JSON bytes without granting admission authority."""
+
+    return tuple(MappingProxyType(dict(item)) for item in _json_bars(payload))
+
+
 def _csv_value(value: str, name: str) -> Any:
     if name in {"o", "h", "l", "c", "v", "vw"}:
         if value == "" and name == "vw":

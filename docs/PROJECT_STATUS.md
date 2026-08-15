@@ -1041,11 +1041,9 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   retained all 36/36 preregistered slices with zero missing captures; the final
   capture-chain record hash is
   `3ccee45a3cb33a42e1d13adbf8f86b5e187c004b0950a8b62bb0fee7a1a20b98`.
-  The 27
-  TRAIN/VALIDATION slices normalize to 145 TRAIN and 43 VALIDATION sessions for
-  each symbol, with no duplicate observation IDs or out-of-slice bars; the nine
-  UNTOUCHED_TEST captures were integrity-rehashed by the store but never returned
-  to the normalizer or opened for evaluation.
+  The 27 TRAIN/VALIDATION slices normalize to 145 TRAIN and 43 VALIDATION
+  sessions for each symbol, with no duplicate observation IDs or out-of-slice
+  bars.
   Every staged timestamp basis is `LOCAL_RETRIEVAL_ONLY_UNQUALIFIED`, with
   `effective_at` and `available_at` equal to local retrieval on 15 August 2026.
   Those retrieval-late values cannot lawfully support decisions inside the
@@ -1054,12 +1052,53 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   ledger and raw blob, derives retrieval time, symbol, split and request window
   solely from that capture, enforces every normalized bar against those values,
   and issues a separate non-admitted binding hash. TRAIN and VALIDATION may be
-  structurally staged; UNTOUCHED_TEST bytes remain inaccessible. This closes the
+  structurally staged; UNTOUCHED_TEST bytes remain inaccessible through that
+  normalizer-wrapper path. This closes the
   local metadata-substitution gap but does not authenticate provider origin,
-  qualify semantics or backdate availability. Zero bytes were admitted,
-  authenticated or made engine-
-  ready; the single untouched evaluation was refused rather than consumed, and
-  all broker/trading authorities remain false.
+  qualify semantics or backdate availability.
+- The user subsequently authorized one narrowly scoped Research Index &
+  Availability Exemption for this baseline only. Owner-only exemption record
+  `RIXA-E657C58EC99C067EAB6879FB035C0A0D` (record hash
+  `8eaf1d499213f0abc324b3265b1c6a184b4a083621a01ed0b2808ef89b624513`)
+  states, as human assumptions rather
+  than provider evidence, that AAPL, MSFT and SPY satisfied the campaign's
+  historical membership requirements and that each daily bar was available at
+  an assumed 16:00 New York session close. It also records the assumed
+  09:30/16:00 session clock, exact preregistration and capture-chain parents and
+  fixed-false provider-evidence, authenticated-replay, canonical-admission,
+  performance, broker, order and live-trading authorities. TRAIN/VALIDATION
+  copies are held only in a separate content-addressed, ignored local research
+  store; the canonical admitted replay store remains unchanged. This exception
+  does not resolve provider semantics, entitlement, replay permission,
+  corporate actions, total return, corrections or external anchoring.
+- VectorBT evaluated exactly the sole preregistered 20/50/20 configuration; no
+  post-access parameter grid or optimization was introduced. Each split's final
+  session was reserved for next-open liquidation. Its floating-point screen is
+  diagnostic, uses static 1 bp fees plus 17 bps adverse slippage, and does not
+  model settlement or the engine's ATR/liquidity rules. The one authorized
+  UNTOUCHED_TEST package was then irreversibly consumed once (consumption record
+  hash `dbc49943fe6b1ac922a59191e21145ef2949cb2887825917d81e81700de23534`)
+  at Git commit
+  `5ca19d64e45340ea577400b5ca8658d37d41cc38`. GuardrailedBacktestEngine ran AAPL
+  and MSFT separately under BASE and PESSIMISTIC profiles, reserving the
+  penultimate session open for liquidation and the final session for cash
+  settlement. Result hash
+  `05adfe5236ea7bd50c57b2e04326ec421253365c4b51e9cb83ceb86b86fe4ac1`
+  records AAPL returns of 0.5341% BASE and 0.3971% PESSIMISTIC with two completed
+  trades, and MSFT returns of -1.0886% BASE and -1.2162% PESSIMISTIC with one
+  completed trade; the matching SPY price-return diagnostic was 1.2225%.
+  MSFT's negative return and single trade are independently below the absolute
+  and trade-count gates. Final review also found that the runner used the last
+  50 admitted observations and first test observation without applying the
+  preregistered one-observation purge and embargo. The SPY comparison was a
+  timing-misaligned price diagnostic, not the registered complete relative-
+  return measure. The consumed result is therefore permanently
+  **protocol-nonconformant**, cannot establish a valid preregistered test or
+  relative gate, and cannot be rerun. Future code now derives warm-up, purge,
+  embargo and one-test enforcement directly from the campaign contract. This
+  failed diagnostic is not a track record and must never support promotion.
+  After those corrections and expanded boundary tests, the final focused Claude
+  Opus correction review returned PASS with no release blockers.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
