@@ -136,6 +136,15 @@ pilot's exact-type boundary. Deterministic
 fake responses prove the boundary; no plan has been registered and no real
 multi-ticker bytes have been requested or admitted. These local chains are not
 externally anchored and do not claim to detect deletion of every local artifact.
+The user has selected a fixed conservative 20/50/20 trend/momentum baseline for
+the next campaign. Its new self-contained Decimal adapter binds the complete
+parameters, disables search, maps only scores 80/90 to long entry and scores at
+or below 60 to exit, holds on neutral or insufficient history and rejects
+non-causal or mixed-symbol history. It does not replace the legacy strategy or
+the authenticated engine and has no data, VectorBT, broker or network path.
+AAPL and MSFT remain separate candidate instruments and SPY is benchmark-only.
+Campaign dates/splits, execution-policy values and success thresholds remain
+unselected, so neither preregistration nor provider access is yet permitted.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
