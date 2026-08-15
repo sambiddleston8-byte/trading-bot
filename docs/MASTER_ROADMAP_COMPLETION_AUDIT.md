@@ -45,6 +45,18 @@ This is useful execution evidence for decisions that already exist, but it does
 not historically regenerate the research process, qualify source data, prove
 investment value or create a track record.
 
+A separate VectorBT 1.1.0 pilot now evaluates only caller-declared synthetic,
+exactly daily, single-instrument long-only scenarios. It preserves prior-close
+signal causality and next-open strategy execution, pins fees, at least 0.10%
+adverse slippage, position limits and stop-market risk behavior, and writes only
+to a non-admissible pilot ledger. Its stop is inactive on the entry bar, cash
+settlement is unmodelled, floating-point results are not Decimal replay parity,
+and all benchmark and Sharpe outputs are diagnostic. It replaces no authenticated
+replay, evidence, audit, risk or broker boundary, and no existing simulator was
+removed. Adding the pinned pilot dependency changes the dependency lock input;
+because no Phase 10 image exists or is approved, any future image approval must
+use the then-current lock rather than an earlier digest.
+
 The faithful active-pipeline route now has a ledger-issued sealed invocation
 boundary. Its preregistered context binds the verified replay plan and approved
 no-network image to every research-engine dependency, all active-route

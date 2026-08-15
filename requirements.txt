@@ -55,5 +55,10 @@ typing-inspection==0.4.2
 typing_extensions==4.16.0
 urllib3==2.7.0
 uvicorn==0.52.1
+# Research pilot only (core/research/vectorbt_pilot.py). Licence: Apache 2.0
+# with Commons Clause -- NOT plain Apache 2.0. The Commons Clause withholds the
+# right to Sell the Software; acceptability beyond this evaluation pilot is
+# unassessed. Imported lazily; it is not on any active or authenticated path.
+vectorbt==1.1.0
 websockets==16.1.1
 yfinance==1.5.2

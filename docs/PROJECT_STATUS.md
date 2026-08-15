@@ -1108,6 +1108,61 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   add no fabricated row. This instrumentation makes no extra request and has no
   freshness, research, provider-selection, execution or trading authority.
 
+## VectorBT synthetic research pilot (non-admissible)
+
+An isolated evaluation pilot lives in `core/research/vectorbt_pilot.py` with
+its own `VectorBTPilotAuditLedger`. It is single-instrument, long-only and
+accepts only caller-declared synthetic bars under a `SyntheticPilotAttestation`
+whose `content_sha256` must equal the canonical digest of the exact bars
+supplied. That type is structurally distinct from `ReplayDataAttestation` and is
+refused if substituted, and pilot bars are a separate type from `MarketBar`, so
+pilot data cannot reach `GuardrailedBacktestEngine`.
+
+Signals bind to an exact bar close, must be available at or after both that
+close and the bar's own `available_at`, must be strictly before the next bar
+open, must arrive in strict chronological order, and execute at exactly the next
+bar open. Same-bar strategy-signal execution is unreachable. Synthetic session
+opens must be spaced exactly one day apart before a 1D/252-day metric may be
+recorded. VectorBT is imported lazily and only `Portfolio.from_signals` is
+called; signal execution price, prior-close valuation, long-only direction, no
+accumulation, single column, deterministic call order, one fee, one adverse
+slippage (≥10 bps), initial cash, daily frequency and maximum position fraction
+are all pinned explicitly. The separate hard stop uses stop-market semantics:
+an intrabar breach fills from the actual entry fill's stop level with adverse
+slippage, while a gap through the stop fills at that bar's open with adverse
+slippage. Partial fills are disabled and a rejected order fails the run instead
+of disappearing from the record. VectorBT cannot process
+the stop on the same bar as entry, so the stop is active only from the following
+bar; this limitation is recorded in the assumptions and is not treated as
+authenticated execution evidence.
+
+Total return, maximum drawdown, closed-trade win rate, turnover and closed/open
+trade counts use declared pilot-local definitions; undefined win rate or Sharpe
+is recorded as `null`, never invented as zero. The benchmark and Sharpe outputs are labelled
+`DIAGNOSTIC_ONLY`: the benchmark is a same-window cost-free buy-and-hold of the
+same synthetic instrument, and Sharpe pins a zero risk-free rate with 252-day
+annualization and `ddof=1` rather than VectorBT's 365-day default. Neither
+satisfies `SharpeMetricReadinessGate` or the benchmark distribution-evidence
+rules, and neither may enter any existing performance ledger.
+
+Total return includes final mark-to-market value for open positions. The
+synthetic benchmark starts at the first close, carries no costs and is therefore
+not a like-for-like execution benchmark. Bar volume is validated and hashed but
+does not drive liquidity or partial-fill modelling; settlement, corporate
+actions, dividends, FX, borrow, halts and terminal outcomes remain outside the
+pilot. VectorBT arithmetic is floating point before stable nine-decimal output
+quantization, so it is not Decimal parity with the authenticated engine.
+
+Every record fixes the broker, paper, live, performance, promotion, track-record
+and learning flags false, records `cash_settlement_modelled: False` because the
+pilot is more permissive than the engine on settlement, and sets
+`parity_with_guardrailed_engine_proven: False`. No result here is admissible
+evidence and nothing about the authenticated replay route changed.
+
+`vectorbt==1.1.0` is licensed **Apache 2.0 with Commons Clause**, not plain
+Apache 2.0; the Commons Clause withholds the right to Sell the Software.
+Acceptability beyond this evaluation pilot is unassessed.
+
 ## Safety invariants
 
 - Execution remains `RECORD_ONLY` or paper-only.
