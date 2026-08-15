@@ -41,7 +41,8 @@ class YahooHistoryObservation:
     admissible_as_replay_evidence: bool = False
 
 
-def _symbol(value: Any) -> str:
+def validate_yahoo_symbol(value: Any) -> str:
+    """Return a bounded Yahoo symbol, or fail before any SDK construction."""
     resolved = str(value).strip()
     if not _SYMBOL.fullmatch(resolved):
         raise ValueError("Yahoo symbol has an unsupported format")
@@ -117,7 +118,7 @@ class YahooHistoryClient:
         end: Any = None,
         auto_adjust: bool | None = None,
     ) -> YahooHistoryObservation:
-        resolved_symbol = _symbol(symbol)
+        resolved_symbol = validate_yahoo_symbol(symbol)
         if period is not None:
             if start is not None or end is not None:
                 raise ValueError("Yahoo history accepts either period or date bounds")

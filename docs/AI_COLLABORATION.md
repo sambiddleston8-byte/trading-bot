@@ -49,14 +49,17 @@ user-approval boundary in this document.
 
 - Group closely related roadmap work into cohesive medium-sized batches and
   pull requests. Avoid both single-safeguard changes and batches too large for
-  one focused review.
+  one focused review. When practical, one provider boundary and its directly
+  affected consumers form one batch.
 - Run focused tests while developing. Run the complete suite once when a batch
   is release-ready, and repeat it only after a later change could affect wider
   behaviour.
 - Claude reviews every meaningful finished code batch once against its focused
   diff and relevant tests. Use Sonnet for ordinary implementation/review and
   Opus for financial mathematics, backtesting validity, investment logic,
-  security, authentication, broker integration and similarly high-risk work.
+  security, authentication, broker integration, process-global shared state,
+  tradable-universe selection and similarly high-risk work. The handoff gives
+  the reviewer the exact focused-test command and a usable test environment.
 - Codex independently evaluates Claude's findings, applies only supported
   corrections and verifies the final result deterministically.
 - The coordinator may publish and merge a routine batch after all required

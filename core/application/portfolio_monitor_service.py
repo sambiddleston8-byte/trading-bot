@@ -18,6 +18,7 @@ from core.application.portfolio_construction_service import PortfolioConstructio
 from core.application.portfolio_market_exposure_service import (
     PortfolioMarketExposureService,
 )
+from core.data_sources.yahoo_fast_info_access import YahooFastInfoClient
 from core.portfolio.portfolio_engine import PortfolioEngine
 from core.research.research_contract import ResearchContract
 
@@ -40,16 +41,16 @@ class PortfolioMonitorService:
             return None
 
     @classmethod
-    def current_price(cls, ticker: str) -> float | None:
+    def current_price(cls, ticker: str, *, price_client: Any = None) -> float | None:
         """Fetch only the latest paper-monitoring price, not a tradeable quote."""
         try:
-            import yfinance as yf
-
-            info = yf.Ticker(str(ticker).upper()).fast_info
-            price = cls.number(getattr(info, "last_price", None))
-            if price is None and isinstance(info, dict):
-                price = cls.number(info.get("last_price"))
-            return price if price is not None and price > 0 else None
+            symbol = str(ticker).upper()
+            client = (
+                price_client
+                if price_client is not None
+                else YahooFastInfoClient()
+            )
+            return client.last_price(symbol).last_price
         except Exception:
             return None
 

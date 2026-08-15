@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime
 
-import yfinance as yf
+from core.data_sources.yahoo_fast_info_access import YahooFastInfoClient
 
 
 class StockUniverse:
@@ -10,9 +10,16 @@ class StockUniverse:
     def __init__(
         self,
         path="data/stock_universe.json",
+        price_client=None,
     ):
 
         self.path = path
+
+        self.price_client = (
+            price_client
+            if price_client is not None
+            else YahooFastInfoClient()
+        )
 
         directory = os.path.dirname(
             self.path
@@ -233,18 +240,9 @@ class StockUniverse:
 
         try:
 
-            ticker = yf.Ticker(
+            self.price_client.last_price(
                 symbol
             )
-
-            info = ticker.fast_info
-
-            price = info.get(
-                "last_price"
-            )
-
-            if price is None:
-                return False
 
             return True
 
