@@ -1108,10 +1108,9 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   AAPL/MSFT/SPY scope; it grants no extension, provider evidence, admission,
   performance, broker, order or trading authority. Code now fails closed if v1
   admission, VectorBT screening or untouched execution is attempted again.
-- Campaign v2 proposal
+- The original Campaign v2 proposal
   `ff4ca9a0919e43044337e609140197bb5869681e47e226720b12df64075cc82b`
-  was explicitly approved and registered before its 1 September 2026 untouched
-  window. Approval record
+  was explicitly approved and registered. Approval record
   `09a2acfc37629e9c7287c8a875de0b52209f65459efc4478ca3d0ed93ffc06df`
   is bound to the exact approval text and clean Git revision `d5476c6`. Linked
   exemption-extension record
@@ -1123,26 +1122,28 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   transitively binds the exact v1 closure, v1 preregistration, entitlement body
   and digest, approval, exemption extension, proposal and strategy source.
   Its distinct owner-only raw root exists and is empty. Provider calls,
-  capture activation, data opening, evaluation and untouched access remain
-  fixed false; entitlement revalidation and separate capture authorization are
-  required before any provider request. Unknown policy versions fail closed.
-  The registered contract fixes AAPL/MSFT candidates with SPY as benchmark, the unchanged 20/50/20
-  strategy and conservative execution policy, and a fresh 1 March 2026 through
-  28 February 2027 acquisition window. TRAIN is March-June 2026, VALIDATION is
-  July-August 2026 and the never-opened UNTOUCHED_TEST is September 2026-
-  February 2027. The protocol mandates 50 observations of warm-up, one
-  observation of purge, one observation of embargo, one untouched evaluation,
-  separately passing AAPL and MSFT under BASE and PESSIMISTIC profiles, at
-  least two completed trades, non-negative mechanical price return and matched-
-  timing SPY-relative return, and maximum drawdown no worse than 20%. Fewer than
-  two trades is inconclusive, never a pass or permission to rerun. The known v1
-  window and result are disclosed; its opened test overlaps only v2 TRAIN/
-  VALIDATION and never v2 UNTOUCHED_TEST. The v1 schema remains unchanged and
-  structurally rejects v2. The new v2-only schema enforces the distinct ledger
-  and quarantine roots, capture-chain binding, mandatory purge/embargo, exact
-  one-shot test cap and preregistration-before-untouched wall-clock boundary.
-  After correcting all Opus findings, the final focused Opus review returned
-  PASS with no release blockers. No provider call or evaluation was performed.
+  capture activation, data opening and evaluation stayed fixed false. On 15
+  August 2026 the requested activation exposed a calendar conflict: VALIDATION
+  was incomplete and UNTOUCHED_TEST lay in the future. The old controls are
+  retired by code and closed by terminal supersession record
+  `3f8f1c3e9ddc85f3e34ed484d7162b565525d6eb73488bb1c99c73ab01f845e5`
+  at clean Git `8cd3cff`; they cannot authorize capture or evaluation.
+- Campaign v2 revision-1 proposal
+  `7c43094e64f324d6987b67a25d03626eb4defe4096ae1b135e1c0319b60fc0d5`
+  is registered by that terminal record with `PENDING_EXPLICIT_HUMAN_APPROVAL`
+  and grants no access.
+  It uses only completed dates outside the opened v1 window: 1 August 2024-
+  31 July 2025, with TRAIN through 28 February, VALIDATION March-April and the
+  UNTOUCHED_TEST-role May-July. The last split is explicitly classified as a
+  `SEALED_RETROSPECTIVE_TEST`: it was historical at proposal time, market
+  outcomes may have been publicly knowable, and researcher non-knowledge is not
+  proven. It cannot support a promotion or track-record claim. The unchanged
+  20/50/20 strategy, SPY diagnostic, 25% position cap, BASE/PESSIMISTIC costs,
+  50-observation warm-up, one-observation purge, one-observation embargo,
+  one-shot cap and success thresholds remain fixed. Exact approval, a distinct
+  revision preregistration, entitlement revalidation and separate capture
+  authorization are required before requesting an API key or provider data.
+  No provider call or evaluation was performed.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
