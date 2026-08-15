@@ -235,10 +235,11 @@ at clean Git `8cd3cff`; it was never activated and is not reusable.
 
 Revision-1 proposal
 `7c43094e64f324d6987b67a25d03626eb4defe4096ae1b135e1c0319b60fc0d5`
-received exact human approval on 16 August 2026. The distinct revision-only
-approval/preregistration record will be appended at the clean implementation
-commit before any provider-byte access. Its completed, v1-disjoint window is
-1 August
+received exact human approval on 16 August 2026. Distinct revision-only
+preregistration `HQP2R1-BBF7B46BB66E1CC5BB5344DE35A9D9E2`, record
+`a44f35f269fd49bbd61b8f49899cd22de6d494edba30078f522438ed9ba0499b`,
+binds that approval to clean Git `9770689` before any provider-byte access. Its
+completed, v1-disjoint window is 1 August
 2024-31 July 2025: TRAIN through 28 February, VALIDATION March-April and
 UNTOUCHED_TEST-role May-July. Because every date was already historical at
 proposal time, the final split is explicitly a `SEALED_RETROSPECTIVE_TEST`, not
@@ -247,10 +248,14 @@ outcomes were unknown to researchers and grants no promotion or track-record
 authority. It preserves the unchanged AAPL/MSFT 20/50/20 strategy, SPY
 diagnostic, 25% position cap, conservative costs, 50-observation warm-up,
 one-observation purge, one-observation embargo, one test execution and existing
-success thresholds. Approval, a distinct revision preregistration, entitlement
-revalidation and separate capture authorization remain mandatory before any
-provider request. No API key is requested and no provider call or evaluation
-is allowed by this proposal registration.
+success thresholds. The record independently proves that TRAIN, VALIDATION and
+the UNTOUCHED_TEST-role all end on or before the 16 August 2026 real-world
+registration date, and says truthfully that preregistration preceded provider-
+byte access rather than the historical market dates. Its private revision
+quarantine is empty and disjoint. Entitlement revalidation, capture activation,
+exemption application, provider access, data opening, evaluation, broker
+access, orders and trading remain false and require later bounded authority.
+No API key is requested and no provider call or evaluation is allowed.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -282,16 +287,16 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. **Campaign v2 revision approval received; provider access remains blocked:**
+2. **Campaign v2 revision preregistered; provider access remains blocked:**
    the original v2 controls are retired by code and terminally superseded for
-   their incomplete and future dates. Exact approval of revision-1 hash
-   `7c43094e...` is recorded in the task; append its distinct inert
-   preregistration at a clean commit. Then revalidate entitlement and require a
-   separate bounded capture authorization before requesting a key or provider
-   data. Treat the last split as a one-shot sealed retrospective test, never as
-   genuinely future evidence or promotion authority. Historical availability,
-   stable identity, replay permission and required provider roles remain
-   unresolved.
+   their incomplete and future dates. Exact approval and the distinct inert
+   revision preregistration are registered. Next, revalidate entitlement and
+   require a separate bounded capture authorization before requesting a key or
+   provider data. Recompute Git and source identities at activation rather than
+   trusting stored attestations. Treat the last split as a one-shot sealed
+   retrospective test, never as genuinely future evidence or promotion
+   authority. Historical availability, stable identity, replay permission and
+   required provider roles remain unresolved.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-

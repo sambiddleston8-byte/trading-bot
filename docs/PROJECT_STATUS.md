@@ -1130,9 +1130,11 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   at clean Git `8cd3cff`; they cannot authorize capture or evaluation.
 - Campaign v2 revision-1 proposal
   `7c43094e64f324d6987b67a25d03626eb4defe4096ae1b135e1c0319b60fc0d5`
-  received exact human approval on 16 August 2026. Its distinct revision-only
-  approval/preregistration record will be appended at the clean implementation
-  commit before any provider-byte access and grants no access itself.
+  received exact human approval on 16 August 2026. Distinct revision-only
+  preregistration `HQP2R1-BBF7B46BB66E1CC5BB5344DE35A9D9E2`, record
+  `a44f35f269fd49bbd61b8f49899cd22de6d494edba30078f522438ed9ba0499b`,
+  binds that approval to clean Git `9770689` before any provider-byte access
+  and grants no access itself.
   It uses only completed dates outside the opened v1 window: 1 August 2024-
   31 July 2025, with TRAIN through 28 February, VALIDATION March-April and the
   UNTOUCHED_TEST-role May-July. The last split is explicitly classified as a
@@ -1144,7 +1146,13 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   one-shot cap and success thresholds remain fixed. Exact approval, a distinct
   revision preregistration, entitlement revalidation and separate capture
   authorization are required before requesting an API key or provider data.
-  No provider call or evaluation was performed.
+  Its private revision quarantine exists, is disjoint and contains zero files.
+  The record verifies every partition end is on or before the 16 August 2026
+  real-world registration date and says truthfully that preregistration
+  preceded provider-byte access, not the historical market dates. Entitlement
+  revalidation, capture activation, exemption application, provider access,
+  data opening and evaluation all remain false. No API key was requested and
+  no provider call or evaluation was performed.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
