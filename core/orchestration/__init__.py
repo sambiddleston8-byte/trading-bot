@@ -67,6 +67,13 @@ from core.orchestration.replay_input_coverage import (
     unadmittable_roles,
     verify_replay_input_coverage,
 )
+from core.orchestration.historical_role_cutoff import (
+    HistoricalRoleCutoffBatch,
+    HistoricalRoleSchema,
+    enforce_historical_role_cutoffs,
+    normalized_payload_sha256,
+    verify_role_schema_registry,
+)
 
 __all__ = [
     "HermesPermissionPolicyLedger",
@@ -116,4 +123,9 @@ __all__ = [
     "ReplayInputCoverage",
     "unadmittable_roles",
     "verify_replay_input_coverage",
+    "HistoricalRoleCutoffBatch",
+    "HistoricalRoleSchema",
+    "enforce_historical_role_cutoffs",
+    "normalized_payload_sha256",
+    "verify_role_schema_registry",
 ]

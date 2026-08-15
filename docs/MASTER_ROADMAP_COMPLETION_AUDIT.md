@@ -100,8 +100,18 @@ and suitable only for inert inspection; with one it must equal the pinned clock
 and use the pinned paths. This is authentication, not a
 point-in-time semantic claim: every returned artifact remains explicitly not
 row-validated and not engine-ready, and the boundary is not connected to the
-research pipeline. Provider-specific normalization, canonical role schemas and
-observation-level cutoff filtering remain prerequisites to engine adapters.
+research pipeline. A provider-neutral canonical envelope now covers every
+active-pipeline dataset role with explicit effective, availability, retrieval,
+provider-identity, raw/normalized hash and per-observation cutoff fields. Its
+engine-scoped gate rejects an entire batch if any observation was unavailable
+at the exact decision timestamp and can bind that timestamp to a sealed
+invocation. It deliberately keeps provider-payload semantics, source
+authentication, vintage selection, role completeness, dataset-commitment
+binding and engine readiness false. Realized-data roles reject future-effective
+observations; explicitly scheduled event/state/calendar roles may be known
+before their future effective instant. Provider-specific normalization and
+qualified role payload schemas therefore remain prerequisites to engine adapters
+rather than being guessed from synthetic fixtures.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
