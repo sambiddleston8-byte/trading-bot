@@ -60,7 +60,7 @@ def validate_fast_info_last_price(value: Any) -> float:
     return resolved
 
 
-def _last_price_of(payload: Any) -> float:
+def _last_price_of(payload: Any) -> Any:
     """Read ``last_price`` from either fast_info access shape, then validate.
 
     ``yfinance`` exposes ``fast_info`` as an object with a ``last_price``
