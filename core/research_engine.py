@@ -1,10 +1,10 @@
 import feedparser
-import yfinance as yf
 import re
 
 from datetime import datetime
 from urllib.parse import quote
 
+from core.data_sources.yahoo_info_access import YahooInfoClient
 from core.filings.sec_engine import SECFilingEngine
 
 
@@ -43,9 +43,18 @@ class ResearchEngine:
             for alias in aliases
         )
 
-    def __init__(self):
+    def __init__(
+        self,
+        info_client=None,
+    ):
 
         self.sec = SECFilingEngine()
+
+        self.info_client = (
+            info_client
+            if info_client is not None
+            else YahooInfoClient()
+        )
 
         self.sources = {
 
@@ -162,11 +171,9 @@ class ResearchEngine:
 
         try:
 
-            ticker = yf.Ticker(
+            info = self.info_client.info(
                 symbol
-            )
-
-            info = ticker.info
+            ).fields
 
             research[
                 "Financial Data"
@@ -248,10 +255,10 @@ class ResearchEngine:
                     "Yahoo Finance"
                 )
 
-        except Exception as error:
+        except Exception:
 
             print(
-                f"Financial research failed: {error}"
+                "Financial research failed."
             )
 
         # --------------------------------

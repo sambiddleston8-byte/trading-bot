@@ -2,18 +2,30 @@ import json
 import math
 import os
 
-import yfinance as yf
-
 from core.data_engine import MarketDataEngine
+from core.data_sources.yahoo_info_access import YahooInfoClient
 from core.adaptive_weights_engine import AdaptiveWeightsEngine
 from core.expected_return_engine import ExpectedReturnEngine
 
 
 class MultiFactorEngine:
 
-    def __init__(self):
+    def __init__(
+        self,
+        info_client=None,
+    ):
 
         self.data_cache = MarketDataEngine()
+
+        # --------------------------------
+        # Yahoo Profile Boundary
+        # --------------------------------
+
+        self.info_client = (
+            info_client
+            if info_client is not None
+            else YahooInfoClient()
+        )
 
         # --------------------------------
         # Base Weights
@@ -983,20 +995,29 @@ class MultiFactorEngine:
         self,
         symbol,
     ):
+        """Return allowlisted Yahoo profile scalars, or ``{}`` when unusable.
+
+        The boundary hands back only validated scalars, so a fresh plain dict
+        is rebuilt here and the unavailable-data contract is unchanged: callers
+        still receive an empty mapping rather than a partial or invented one.
+        """
 
         try:
 
-            ticker = yf.Ticker(
-                symbol
+            observation = (
+                self.info_client.info(
+                    symbol
+                )
             )
 
-            return ticker.info
+            return dict(
+                observation.fields
+            )
 
-        except Exception as error:
+        except Exception:
 
             print(
-                f"{symbol} info failed: "
-                f"{error}"
+                "Yahoo info failed."
             )
 
             return {}

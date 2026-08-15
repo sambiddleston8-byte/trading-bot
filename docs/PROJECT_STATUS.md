@@ -968,6 +968,22 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   unqualified Yahoo number for paper monitoring and symbol screening only, not
   an official quote, an execution price, a prior close or an account-bound
   value. Tests use injected fakes and no Yahoo request was made.
+- The legacy research and multi-factor `.info` readers now enter yfinance
+  through a third injected boundary on the same shared provider key. It reads
+  the opaque SDK property once, rebuilds only the explicitly allowlisted text
+  and numeric scalars used by those consumers, preserves exact integer values
+  and drops missing, malformed, nested and unknown fields from valid mappings
+  without inventing replacements or spending shared circuit-failure credit.
+  A non-mapping payload is a provider-protocol failure that does spend shared
+  circuit credit and cannot clear another Yahoo reader's failures. The raw provider
+  mapping is never retained, constructed observations copy and freeze their
+  fields, and failures expose only fixed messages and stable reason codes. The
+  two migrated modules no longer import yfinance and keep their established
+  empty-data result shapes. These profile values remain unauthenticated,
+  non-point-in-time, non-survivorship-safe and inadmissible as replay evidence;
+  `currentPrice` remains an unqualified legacy input, not a tradeable quote,
+  prior close, official settlement value or account-bound observation. Tests
+  use injected fakes and no Yahoo or broker request was made.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive requests now pass through
   a shared process-local access coordinator. It gently spaces requests across
   separate client instances, retries only connection failures and HTTP

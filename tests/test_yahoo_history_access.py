@@ -35,16 +35,15 @@ DIRECT_YFINANCE_IMPORT_ALLOWLIST = {
     "core/data_sources/earnings_source.py",
     "core/data_sources/yahoo_fast_info_access.py",
     "core/data_sources/yahoo_history_access.py",
+    "core/data_sources/yahoo_info_access.py",
     "core/data_sources/yahoo_source.py",
     "core/financial_data.py",
-    "core/multi_factor_engine.py",
     "core/research/catalyst_engine.py",
-    "core/research_engine.py",
     "core/valuation_engine.py",
 }
-# Remaining entries are research, statement, calendar and broad `.info`
-# callers; the history and `fast_info` current-price boundaries are the only
-# reviewed price entry points.
+# Remaining entries are statement, calendar and broad, still-unmigrated `.info`
+# callers; the history, `fast_info` current-price and allowlisted `.info`
+# profile boundaries are the only reviewed Yahoo entry points.
 
 
 class Clock:
