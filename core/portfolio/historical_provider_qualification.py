@@ -72,9 +72,15 @@ def _date(value: Any) -> date:
         raise ValueError("coverage dates must use YYYY-MM-DD") from error
 
 
-def _values(values: Sequence[Any], name: str, allowed: set[str]) -> list[str]:
+def _values(
+    values: Sequence[Any],
+    name: str,
+    allowed: set[str],
+    *,
+    allow_empty: bool = False,
+) -> list[str]:
     result = sorted({_required(value, name, 100).upper() for value in values})
-    if not result or any(value not in allowed for value in result):
+    if (not result and not allow_empty) or any(value not in allowed for value in result):
         raise ValueError(f"{name} contains unsupported or empty values")
     return result
 
@@ -239,17 +245,33 @@ class HistoricalProviderQualificationLedger:
         hosts = _hosts(provider_hosts)
         references = _evidence(evidence_references)
         evidence = self._resolve_evidence(references, hosts, assessed)
-        universes = _values(evaluated_universes, "evaluated_universes", REQUIRED_UNIVERSES)
-        uses = _values(permitted_uses, "permitted_uses", REQUIRED_USES)
+        universes = _values(
+            evaluated_universes,
+            "evaluated_universes",
+            REQUIRED_UNIVERSES,
+            allow_empty=True,
+        )
+        uses = _values(
+            permitted_uses,
+            "permitted_uses",
+            REQUIRED_USES,
+            allow_empty=True,
+        )
         resolved_capability_evidence = _capability_evidence(capability_evidence, references)
         resolved_capabilities = [
             item["capability"] for item in resolved_capability_evidence
         ]
         actions = _values(
-            corporate_action_types, "corporate_action_types", REQUIRED_CORPORATE_ACTIONS
+            corporate_action_types,
+            "corporate_action_types",
+            REQUIRED_CORPORATE_ACTIONS,
+            allow_empty=True,
         )
         time_fields = _values(
-            point_in_time_fields, "point_in_time_fields", REQUIRED_TIME_FIELDS
+            point_in_time_fields,
+            "point_in_time_fields",
+            REQUIRED_TIME_FIELDS,
+            allow_empty=True,
         )
         limitations = _limitations(known_limitations)
         checks = {
@@ -367,8 +389,14 @@ class HistoricalProviderQualificationLedger:
                 universes = _values(
                     record.get("evaluated_universes") or [],
                     "evaluated_universes", REQUIRED_UNIVERSES,
+                    allow_empty=True,
                 )
-                uses = _values(record.get("permitted_uses") or [], "permitted_uses", REQUIRED_USES)
+                uses = _values(
+                    record.get("permitted_uses") or [],
+                    "permitted_uses",
+                    REQUIRED_USES,
+                    allow_empty=True,
+                )
                 capability_evidence = _capability_evidence(
                     record.get("capability_evidence") or [], references
                 )
@@ -376,10 +404,12 @@ class HistoricalProviderQualificationLedger:
                 actions = _values(
                     record.get("corporate_action_types") or [],
                     "corporate_action_types", REQUIRED_CORPORATE_ACTIONS,
+                    allow_empty=True,
                 )
                 time_fields = _values(
                     record.get("point_in_time_fields") or [],
                     "point_in_time_fields", REQUIRED_TIME_FIELDS,
+                    allow_empty=True,
                 )
                 start = _date(record.get("coverage_not_before"))
                 end = _date(record.get("coverage_not_after"))
