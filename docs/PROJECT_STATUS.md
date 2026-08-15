@@ -1130,8 +1130,9 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   at clean Git `8cd3cff`; they cannot authorize capture or evaluation.
 - Campaign v2 revision-1 proposal
   `7c43094e64f324d6987b67a25d03626eb4defe4096ae1b135e1c0319b60fc0d5`
-  is registered by that terminal record with `PENDING_EXPLICIT_HUMAN_APPROVAL`
-  and grants no access.
+  received exact human approval on 16 August 2026. Its distinct revision-only
+  approval/preregistration record will be appended at the clean implementation
+  commit before any provider-byte access and grants no access itself.
   It uses only completed dates outside the opened v1 window: 1 August 2024-
   31 July 2025, with TRAIN through 28 February, VALIDATION March-April and the
   UNTOUCHED_TEST-role May-July. The last split is explicitly classified as a

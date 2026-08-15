@@ -235,8 +235,10 @@ at clean Git `8cd3cff`; it was never activated and is not reusable.
 
 Revision-1 proposal
 `7c43094e64f324d6987b67a25d03626eb4defe4096ae1b135e1c0319b60fc0d5`
-is registered by that terminal record for approval only. Its completed,
-v1-disjoint window is 1 August
+received exact human approval on 16 August 2026. The distinct revision-only
+approval/preregistration record will be appended at the clean implementation
+commit before any provider-byte access. Its completed, v1-disjoint window is
+1 August
 2024-31 July 2025: TRAIN through 28 February, VALIDATION March-April and
 UNTOUCHED_TEST-role May-July. Because every date was already historical at
 proposal time, the final split is explicitly a `SEALED_RETROSPECTIVE_TEST`, not
@@ -280,15 +282,16 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. **Campaign v2 revision awaits approval; provider access remains blocked:**
+2. **Campaign v2 revision approval received; provider access remains blocked:**
    the original v2 controls are retired by code and terminally superseded for
-   their incomplete and future dates. Review and explicitly approve revision-1
-   hash `7c43094e...`
-   before a distinct revision preregistration is appended. Only then revalidate
-   entitlement and separately authorize bounded quarantine capture. Treat its
-   last split as a one-shot sealed retrospective test, never as genuinely future
-   evidence or promotion authority. Historical availability, stable identity,
-   replay permission and required provider roles remain unresolved.
+   their incomplete and future dates. Exact approval of revision-1 hash
+   `7c43094e...` is recorded in the task; append its distinct inert
+   preregistration at a clean commit. Then revalidate entitlement and require a
+   separate bounded capture authorization before requesting a key or provider
+   data. Treat the last split as a one-shot sealed retrospective test, never as
+   genuinely future evidence or promotion authority. Historical availability,
+   stable identity, replay permission and required provider roles remain
+   unresolved.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-
