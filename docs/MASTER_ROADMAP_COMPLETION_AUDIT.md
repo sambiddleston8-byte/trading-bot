@@ -143,10 +143,12 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. Obtain exact entitlement/sample confirmation for a Mac/Linux-compatible
-   provider covering both index histories, symbol lineage, delisted prices and
-   terminal outcomes; compare it with Norgate plus a Windows extraction layer.
-   Do not buy an incomplete S&P-only product for the combined mandate. See
+2. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
+   compatible HTTPS REST or versioned flat-file provider covering both index
+   histories, symbol lineage, delisted prices and terminal outcomes. Windows-
+   only local updater paths, including Norgate plus a Windows extraction layer,
+   are excluded from the selected architecture. Do not buy an incomplete S&P-
+   only product for the combined mandate. See
    `docs/HISTORICAL_PROVIDER_OPTIONS.md`. Credentials must not enter chat, Git,
    tests or model prompts.
 3. Qualify and, only after separate human approval, admit a genuinely sealed

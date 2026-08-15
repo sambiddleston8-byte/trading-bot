@@ -911,6 +911,21 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   cover the boundary without provider access. Provider-specific payload
   normalization and role semantics remain deferred until qualified samples
   exist; the envelope does not invent them or make an engine adapter ready.
+- The historical provider delivery architecture is now fixed to cloud-native
+  HTTPS REST or versioned flat files that run directly on macOS/Linux. Windows-
+  only updater/database paths and a Norgate-plus-VM extraction layer are
+  excluded; reconsideration would require a separate architecture decision.
+  Intrinio, Polygon.io, Databento and direct Nasdaq are enquiry candidates only,
+  not qualified providers, and the GBP 0 purchase gate remains in force. An
+  isolated mock normalizer now accepts only bounded in-memory synthetic bytes
+  under one exact JSON schema or one exact CSV header, rejects duplicate JSON
+  fields, non-finite values, malformed timestamps, duplicate provider records,
+  unsupported fields and retrieval-before-availability chronology, hashes the
+  source bytes and each normalized payload, and immediately applies the exact
+  active-engine role and decision-cutoff gate. Mock provider identities must be
+  explicitly synthetic. The module contains no HTTP/provider SDK, file read,
+  broker or execution path and cannot qualify payload semantics, authenticate
+  source evidence, prove completeness, admit a dataset or make an engine ready.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact

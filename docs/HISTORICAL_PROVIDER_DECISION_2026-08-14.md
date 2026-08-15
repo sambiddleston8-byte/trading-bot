@@ -11,6 +11,21 @@ This is a cost and evidence decision, not a permanent rejection of paid data.
 The platform must not spend money merely to unlock a subset of the data and
 then mistake an incomplete backtest for realistic validation.
 
+## Delivery architecture update — 15 August 2026
+
+The selected operating model is now a cloud-native HTTPS REST API or versioned
+flat-file delivery path that runs directly on macOS/Linux and can later run on
+Linux infrastructure. Windows-only local updater/database products are outside
+the active architecture. Norgate Data is therefore no longer a purchase or
+implementation candidate for this path because using it would require a
+separate Windows virtual machine and extraction operation.
+
+Intrinio, Polygon.io, Databento and direct Nasdaq delivery may be investigated
+as cloud-compatible candidates, but the architecture match proves no data
+capability. Each still needs representative files and exact terms proving the
+complete combined-universe mandate before qualification or any purchase
+recommendation. The GBP 0 spending gate remains unchanged.
+
 ## Evidence status
 
 The user obtained written support answers from FMP and EODHD and transcribed
@@ -72,7 +87,8 @@ period, not merely advertise one endpoint:
 4. splits, dividends, mergers and spin-offs with total-return treatment;
 5. exchange calendars, halts and data corrections/revisions;
 6. reproducible versioned exports and terms permitting the intended private
-   research, storage and future Mac/Linux/AWS processing;
+   research, storage and future Mac/Linux processing through HTTPS REST or
+   versioned flat-file delivery, without a Windows-only runtime;
 7. representative sample files that pass the existing provider-neutral
    qualification controls before payment.
 
