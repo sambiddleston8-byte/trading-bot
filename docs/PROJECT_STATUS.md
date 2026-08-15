@@ -939,6 +939,20 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   `PASSED_AWAITING_HUMAN_APPROVAL`. The pack remains the qualification contract,
   but no message was sent; manual outreach is superseded by the bounded
   self-service pilot below.
+- Unauthenticated public Databento US security-master and corporate-action CSV
+  sample bytes were downloaded over provider-hosted HTTPS without an account,
+  key, purchase or provider API request, then inspected locally. They
+  demonstrate partial schema content—stable identifiers,
+  effective/record timestamps, delisting fields and corporate-action rows—but
+  contain no S&P 500 or Nasdaq-100 membership history and do not establish a
+  historical `available_at` clock. They therefore cannot satisfy the combined
+  universe, bitemporal, terminal-outcome or complete replay-source mandate.
+  The qualification ledger now accepts genuinely empty evidence lists for
+  uses, universes, corporate-action scope and point-in-time fields so a failed
+  assessment can preserve “nothing proven” without inventing a positive
+  assertion; verification re-applies the same rule. Empty lists necessarily
+  fail their completeness checks and grant no provider, data, replay, broker or
+  trading authority.
 - Manual vendor outreach is now skipped in favour of the lowest-friction free
   self-service integration pilot. Current official access terms make Massive
   (formerly Polygon.io) the pilot choice: Stocks Basic is advertised at zero

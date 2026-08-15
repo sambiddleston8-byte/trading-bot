@@ -108,9 +108,13 @@ def test_passes_only_as_candidate_for_separate_human_approval(tmp_path):
 
 
 @pytest.mark.parametrize("field,value", [
+    ("permitted_uses", []),
     ("permitted_uses", ["LOCAL_RESEARCH"]),
+    ("evaluated_universes", []),
     ("evaluated_universes", ["SP500"]),
+    ("corporate_action_types", []),
     ("corporate_action_types", ["SPLITS"]),
+    ("point_in_time_fields", []),
     ("point_in_time_fields", ["EFFECTIVE_AT"]),
     ("corrections_and_revisions_preserved", False),
     ("delisted_history_retained", False),
@@ -126,6 +130,48 @@ def test_incomplete_provider_fails_without_approval_or_authority(tmp_path, field
     assert record["qualification_passed"] is False
     assert record["eligible_for_separate_human_approval"] is False
     assert record["provider_approved"] is False
+    assert ledger.verify() == [record]
+
+
+def test_unproven_lists_can_be_empty_without_inventing_positive_evidence(tmp_path):
+    ledger, references, _ = target(tmp_path)
+
+    record = qualify(
+        ledger,
+        references,
+        [],
+        permitted_uses=[],
+        evaluated_universes=[],
+        corporate_action_types=[],
+        point_in_time_fields=[],
+        corrections_and_revisions_preserved=False,
+        delisted_history_retained=False,
+        terminal_zero_recovery_representable=False,
+        prices_adjustment_method_documented=False,
+        observed_sample_matches_documentation=False,
+        reproducible_export_available=False,
+        known_limitations=[{
+            "description": "Public evidence does not prove the mandatory dataset",
+            "mitigation": "Keep every unsupported capability unresolved",
+            "blocks_required_capability": True,
+        }],
+    )
+
+    assert record["status"] == "FAILED"
+    assert record["qualification_passed"] is False
+    assert record["eligible_for_separate_human_approval"] is False
+    assert record["permitted_uses"] == []
+    assert record["evaluated_universes"] == []
+    assert record["capabilities"] == []
+    assert record["corporate_action_types"] == []
+    assert record["point_in_time_fields"] == []
+    assert not any(record["qualification_checks"].values())
+    assert record["provider_approved"] is False
+    assert record["subscription_purchased"] is False
+    assert record["data_fetched_by_qualification"] is False
+    assert record["replay_executed"] is False
+    assert record["live_trading_enabled"] is False
+    assert ledger.verify() == [record]
 
 
 def test_blocking_known_limitation_forces_failure(tmp_path):
@@ -185,6 +231,35 @@ def test_rehashed_tampering_cannot_approve_purchase_or_enable_trading(tmp_path, 
     record = qualify(ledger, references, matrix)
     record.update(change)
     from core.portfolio import historical_provider_qualification as module
+    material = {key: value for key, value in record.items() if key != "record_hash"}
+    record["record_hash"] = module._record_hash(material)
+    ledger.path.write_text(json.dumps(record) + "\n")
+    with pytest.raises(LedgerIntegrityError, match="boundary"):
+        ledger.verify()
+
+
+def test_rehashed_empty_list_cannot_launder_a_passing_record(tmp_path):
+    ledger, references, matrix = target(tmp_path)
+    record = qualify(ledger, references, matrix)
+    record["permitted_uses"] = []
+    from core.portfolio import historical_provider_qualification as module
+    identity = {
+        key: record[key] for key in (
+            "provider_name", "product_or_plan", "provider_hosts",
+            "permitted_uses", "evaluated_universes", "coverage_not_before",
+            "coverage_not_after", "capabilities", "corporate_action_types",
+            "capability_evidence", "point_in_time_fields",
+            "corrections_and_revisions_preserved", "delisted_history_retained",
+            "terminal_zero_recovery_representable",
+            "prices_adjustment_method_documented",
+            "observed_sample_matches_documentation",
+            "reproducible_export_available", "redistribution_allowed",
+            "known_limitations", "qualification_checks", "evidence_references",
+        )
+    }
+    record["qualification_id"] = "HPQ-" + module.hashlib.sha256(
+        module._canonical_json(identity).encode("utf-8")
+    ).hexdigest()[:32].upper()
     material = {key: value for key, value in record.items() if key != "record_hash"}
     record["record_hash"] = module._record_hash(material)
     ledger.path.write_text(json.dumps(record) + "\n")

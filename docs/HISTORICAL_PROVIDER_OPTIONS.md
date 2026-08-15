@@ -1,6 +1,6 @@
 # Historical replay provider options
 
-Reviewed: 14 August 2026
+Reviewed: 15 August 2026
 
 The current human decision is recorded in
 `docs/HISTORICAL_PROVIDER_DECISION_2026-08-14.md`. It sets the incremental
@@ -49,9 +49,18 @@ would be a separate future architecture decision, not a provider-adapter task.
 | Norgate US Stocks Platinum | Official coverage reviewed earlier included S&P 500 and Nasdaq-100 historical constituents, delisted/formerly listed securities and daily US data back to 1990; its content table documented dividend and capital-event indicators. The reviewed six-month price was USD 346.50. | Its updater and Python path are Windows-only, requiring a separate VM and extraction operation; exact terminal-outcome, correction and automation terms also remain unproven. | Excluded from the active Mac/Linux cloud-native architecture. Do not purchase or build a Windows extraction path. |
 | Intrinio | API-first access is compatible with macOS and Linux; its product catalogue includes index constituents, EOD history, adjustment factors and delisted securities. | Public material inspected does not establish historical Nasdaq-100 membership. Corporate-action scope, terminal outcomes, corrections/revisions, internal-use terms and combined price require sales confirmation; index constituents are enterprise/contact-sales. | Do not assume it solves the universe. Request a scoped written quote/sample only after exact historical membership is confirmed. |
 | Polygon.io | User-selected cloud-native REST/flat-file enquiry candidate. | No representative sample has been qualified for historical S&P 500 and Nasdaq-100 membership, removals, identity lineage, delisted outcomes, corrections or the required bitemporal fields. | Request exact capability answers and samples; do not infer suitability from delivery technology. |
-| Databento | User-selected cloud-native REST/flat-file enquiry candidate. | No representative sample has been qualified for the combined historical index-membership and terminal-outcome mandate or the required bitemporal fields. | Request exact capability answers and samples; do not infer suitability from delivery technology. |
+| Databento | Provider-hosted CSV samples inspected on 15 August expose stable listing/security/issuer identifiers, effective/record timestamps, listing and delisting fields, and corporate-action rows. The 28-row US security-master sample contains two records marked delisted; the 864-row one-day corporate-action sample includes insert/update-style events, dividends and split examples. | The samples contain no S&P 500 or Nasdaq-100 membership history and do not establish a historical publication/`available_at` clock. They also do not prove the complete terminal-outcome, correction, total-return-price, fundamental, calendar/halt, required-use or reproducible-export contract. Public documentation pages and sample bytes are partial evidence, not a qualified representative product sample. | Record all unsupported fields as unresolved. Do not qualify, purchase, admit or replay this data. |
 | Official Nasdaq Global Index Watch | Nasdaq's methodology describes an API dissemination channel for current and historical index constituents. | Product entitlement, usable history depth, S&P coverage, delisted prices, corporate actions, terminal outcomes, corrections, permitted use and price are not established. | Treat as a separate direct-Nasdaq enquiry, not as an Intrinio feature. |
 | Nasdaq Data Link Sharadar | API-first point-in-time US prices, identifiers and fundamentals may strengthen replay inputs. | Public documentation inspected does not prove historical S&P 500 and Nasdaq-100 membership, complete terminal outcomes or the needed corrections/corporate-action coverage. | Do not treat it as the universe provider without explicit product confirmation. |
+
+The Databento counts above are unauthenticated observations and are unusable as
+qualification evidence. Both public HTTPS files were retrieved at
+`2026-08-15T20:09:48Z`. The 11,712-byte security-master sample has SHA-256
+`5a31c3420d270d7956d2c928b2231fd5b1249b14680f1ae45092a40206d16450`; the
+631,385-byte corporate-actions sample has SHA-256
+`2b666d8b89739fc3edb50db92adf80961b4074f25189faaf4d5949bec9a03e82`.
+These hashes support repeatable comparison only; they do not authenticate
+terms, semantics, completeness, publication time or entitlement.
 
 ## Current recommendation
 
@@ -64,9 +73,11 @@ The least-waste sequence is:
 2. Ask any remaining candidate for representative samples and exact terms, not
    another general marketing confirmation. Use the standardized request and
    fail-closed checklist in `docs/HISTORICAL_PROVIDER_SAMPLE_REQUEST.md`.
-3. Compare scoped Intrinio, Polygon.io, Databento and direct-Nasdaq samples and
-   quotes only within the cloud-native delivery requirement. Norgate and a
-   Windows virtual machine are no longer part of the active comparison.
+3. Compare scoped Intrinio, Polygon.io, Databento and direct-Nasdaq evidence
+   only within the cloud-native delivery requirement. The inspected public
+   Databento samples are useful negative/partial evidence but fail the mandatory
+   universe and historical-availability gates. Norgate and a Windows virtual
+   machine are no longer part of the active comparison.
 4. Authenticate representative samples and terms through the existing provider
    qualification and source-approval ledgers before downloading a sealed
    dataset or running a replay.
@@ -86,5 +97,9 @@ of the current combined-universe strategy.
 - Norgate macOS/Windows limitation: https://norgatedata.com/ndu-faq.php
 - Norgate Python limitation: https://norgatedata.com/subscribe/subscribe.php
 - Intrinio products and access: https://intrinio.com/pricing
+- Databento security-master documentation: https://databento.com/docs/schemas-and-data-formats/security-master
+- Databento corporate-actions documentation: https://databento.com/docs/schemas-and-data-formats/corporate-actions
+- Databento US security-master sample: https://sample-pcaps-dl.databento.com/reference/databento-secmaster-us-2021-06.csv
+- Databento US corporate-actions sample: https://sample-pcaps-dl.databento.com/reference/databento-corporate-actions-us-20200825.csv
 - Nasdaq Global Index Watch architecture: https://indexes.nasdaq.com/docs/Nasdaq_Index_Methodology_Guide.pdf
 - Nasdaq Data Link API product model: https://docs.data.nasdaq.com/docs/data-organization
