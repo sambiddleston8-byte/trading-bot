@@ -31,7 +31,15 @@ def test_legacy_learning_records_each_exact_horizon_price(monkeypatch, tmp_path)
         def history(self, symbol, **kwargs):
             raise AssertionError("horizon prices are supplied by the test")
 
-    engine = LearningEngine(path, history_client=UnusedHistoryClient())
+    class UnusedPriceClient:
+        def last_price(self, symbol):
+            raise AssertionError("horizon prices are supplied by the test")
+
+    engine = LearningEngine(
+        path,
+        history_client=UnusedHistoryClient(),
+        price_client=UnusedPriceClient(),
+    )
     engine._save(
         [{
             "Ticker": "TEST",

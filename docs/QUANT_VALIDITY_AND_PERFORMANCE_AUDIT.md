@@ -58,6 +58,20 @@ learning, AWS scheduling or real-money trading.
   point-in-time, survivorship and replay-admission flags are visible truth and
   confer no authority downstream. Remaining research and multi-factor
   yfinance callers are outside this batch.
+- The three direct `fast_info` current-price readers — portfolio monitoring,
+  legacy learning and universe symbol validation — now cross a second bounded
+  yfinance boundary sharing the same provider key, pacing and circuit. It
+  validates the symbol before SDK construction, invokes the SDK once, retains
+  only a positive finite scalar from either real `fast_info` access shape, and
+  redacts every failure to a fixed reason code with counters-only metadata.
+  A missing or unusable per-symbol price becomes `PRICE_UNAVAILABLE` without
+  consuming shared circuit credit: monitoring returns `None`, symbol
+  validation returns `False`, and learning uses its existing `1d` history fallback. The
+  observation records false authenticated, point-in-time, survivorship-safe,
+  tradeable-quote and replay-admission flags, so this number may not be used as
+  an execution price, a prior close, a settlement input or replay evidence.
+  Broad `.info`, statement and calendar yfinance callers are outside this
+  batch.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive reads now share one
   secret-safe access coordinator. It applies process-wide provider pacing, at
   most one retry for connection failures or HTTP 502/503/504, capped backoff,

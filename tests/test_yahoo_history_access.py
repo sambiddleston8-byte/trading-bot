@@ -30,22 +30,21 @@ ROOT = Path(__file__).resolve().parents[1]
 DIRECT_YFINANCE_IMPORT_ALLOWLIST = {
     "bots/competitors/analyser.py",
     "bots/earnings/analyser.py",
-    "core/application/portfolio_monitor_service.py",
     "core/catalyst_engine.py",
     "core/data_sources/analyst_source.py",
     "core/data_sources/earnings_source.py",
+    "core/data_sources/yahoo_fast_info_access.py",
     "core/data_sources/yahoo_history_access.py",
     "core/data_sources/yahoo_source.py",
     "core/financial_data.py",
-    "core/learning_engine.py",
     "core/multi_factor_engine.py",
     "core/research/catalyst_engine.py",
     "core/research_engine.py",
-    "core/stock_universe.py",
     "core/valuation_engine.py",
 }
-# `core/learning_engine.py` keeps yfinance only for its non-history
-# `fast_info` current-price read; its historical reads cross this boundary.
+# Remaining entries are research, statement, calendar and broad `.info`
+# callers; the history and `fast_info` current-price boundaries are the only
+# reviewed price entry points.
 
 
 class Clock:
@@ -291,14 +290,18 @@ def test_migrated_legacy_callers_use_injected_history_boundary():
     ]
 
 
-def test_migrated_learning_and_ranking_callers_preserve_exact_request_shapes(monkeypatch, tmp_path):
+def test_migrated_learning_and_ranking_callers_preserve_exact_request_shapes(tmp_path):
     fake = FakeObservationClient(price_frame())
 
-    class NoFastInfo:
-        fast_info: dict = {}
+    class UnavailablePriceClient:
+        def last_price(self, symbol):
+            raise RuntimeError("no current price is available")
 
-    monkeypatch.setattr("core.learning_engine.yf.Ticker", lambda ticker: NoFastInfo())
-    learning = LearningEngine(tmp_path / "learning.json", history_client=fake)
+    learning = LearningEngine(
+        tmp_path / "learning.json",
+        history_client=fake,
+        price_client=UnavailablePriceClient(),
+    )
     tracker = ExpectedReturnTracker(tmp_path / "predictions.json", history_client=fake)
     ranker = UniverseRanker(tmp_path / "rankings.json", history_client=fake)
 

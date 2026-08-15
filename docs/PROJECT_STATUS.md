@@ -949,6 +949,25 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   inadmissible as replay evidence; the boundary's false flags are visible
   truth, not propagated authority, and yfinance's internal HTTP remains
   opaque. Tests use injected fakes and no Yahoo request was made.
+- The three direct `fast_info` current-price readers — paper portfolio
+  monitoring, legacy learning and stock-universe symbol validation — now enter
+  yfinance through a second injected boundary that shares the same provider
+  key, pacing and failure circuit as the history boundary. Symbols are checked
+  before the SDK ticker is built, the SDK is invoked once per read, and only a
+  validated positive finite scalar is retained: no mapping, attribute payload
+  or provider field is stored or exposed. Missing, boolean, non-finite, non-
+  positive and otherwise malformed prices fail closed, and every SDK failure is
+  normalised to one fixed message with a stable reason code and counters-only
+  access metadata. A missing or unusable per-symbol price becomes the stable
+  `PRICE_UNAVAILABLE` outcome without consuming shared circuit credit;
+  monitoring returns `None`, symbol validation returns `False`, and learning
+  still falls back to its `1d` history boundary read. These three modules no longer import
+  yfinance and the direct-import inventory records the reduced list. The
+  observation carries explicit false authenticated, point-in-time,
+  survivorship-safe, tradeable-quote and replay-admission flags: this is a late
+  unqualified Yahoo number for paper monitoring and symbol screening only, not
+  an official quote, an execution price, a prior close or an account-bound
+  value. Tests use injected fakes and no Yahoo request was made.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive requests now pass through
   a shared process-local access coordinator. It gently spaces requests across
   separate client instances, retries only connection failures and HTTP

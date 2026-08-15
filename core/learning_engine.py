@@ -2,8 +2,7 @@ import json
 import os
 from datetime import datetime, timedelta
 
-import yfinance as yf
-
+from core.data_sources.yahoo_fast_info_access import YahooFastInfoClient
 from core.data_sources.yahoo_history_access import YahooHistoryClient
 
 
@@ -20,6 +19,7 @@ class LearningEngine:
         self,
         path="data/learning_history.json",
         history_client=None,
+        price_client=None,
     ):
 
         self.path = path
@@ -27,6 +27,12 @@ class LearningEngine:
         self.history_client = (
             history_client
             or YahooHistoryClient()
+        )
+
+        self.price_client = (
+            price_client
+            if price_client is not None
+            else YahooFastInfoClient()
         )
 
         directory = os.path.dirname(
@@ -184,17 +190,9 @@ class LearningEngine:
 
         try:
 
-            data = yf.Ticker(
+            return self.price_client.last_price(
                 ticker
-            )
-
-            price = data.fast_info.get(
-                "last_price"
-            )
-
-            if price is not None:
-
-                return float(price)
+            ).last_price
 
         except Exception:
 
