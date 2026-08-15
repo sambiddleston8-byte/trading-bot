@@ -62,7 +62,8 @@ The least-waste sequence is:
 
 1. Do not upgrade FMP or EODHD on the evidence currently available.
 2. Ask any remaining candidate for representative samples and exact terms, not
-   another general marketing confirmation.
+   another general marketing confirmation. Use the standardized request and
+   fail-closed checklist in `docs/HISTORICAL_PROVIDER_SAMPLE_REQUEST.md`.
 3. Compare scoped Intrinio, Polygon.io, Databento and direct-Nasdaq samples and
    quotes only within the cloud-native delivery requirement. Norgate and a
    Windows virtual machine are no longer part of the active comparison.

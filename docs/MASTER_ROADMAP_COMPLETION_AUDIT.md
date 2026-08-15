@@ -149,8 +149,9 @@ prevent continued use of current/free entitlements for supplementary research.
    only local updater paths, including Norgate plus a Windows extraction layer,
    are excluded from the selected architecture. Do not buy an incomplete S&P-
    only product for the combined mandate. See
-   `docs/HISTORICAL_PROVIDER_OPTIONS.md`. Credentials must not enter chat, Git,
-   tests or model prompts.
+   `docs/HISTORICAL_PROVIDER_OPTIONS.md` and use the exact evidence request in
+   `docs/HISTORICAL_PROVIDER_SAMPLE_REQUEST.md`. Credentials must not enter
+   chat, Git, tests or model prompts.
 3. Qualify and, only after separate human approval, admit a genuinely sealed
    point-in-time dataset covering membership removals, delistings, terminal
    outcomes, corporate actions, total return, corrections and market calendars.

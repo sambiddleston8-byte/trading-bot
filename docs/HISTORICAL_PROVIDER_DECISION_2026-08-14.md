@@ -92,6 +92,11 @@ period, not merely advertise one endpoint:
 7. representative sample files that pass the existing provider-neutral
    qualification controls before payment.
 
+Use `docs/HISTORICAL_PROVIDER_SAMPLE_REQUEST.md` for every candidate so terms,
+documentation and samples are requested and assessed against the same exact
+questions. A vendor-specific omission remains unresolved; it must not be filled
+from another candidate's answer.
+
 ## Spending gate
 
 No agent or automated worker may purchase, upgrade, subscribe to, or recommend
