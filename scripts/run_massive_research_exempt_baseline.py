@@ -78,7 +78,10 @@ def main() -> int:
             store=store,
             admitted_root=args.research_store_root,
         )
-        screen = vectorbt_fixed_parameter_screen(admitted)
+        screen = vectorbt_fixed_parameter_screen(
+            admitted,
+            campaign_state_ledger=ledger,
+        )
         output = {
             "exemption": exemption,
             "train_validation_research_bar_count": len(admitted),
