@@ -40,6 +40,7 @@ AUTHENTICATED_REPLAY_ROLES = {
 }
 ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v3"
 _ATTESTATION_FACTORY_TOKEN = object()
+_RESEARCH_EXEMPTION_FACTORY_TOKEN = object()
 
 
 def _decimal(value: Any, name: str, *, positive: bool = False) -> Decimal:
@@ -217,6 +218,120 @@ class ReplayDataAttestation:
                 character not in "0123456789abcdef" for character in digest.lower()
             ):
                 raise ValueError("every authenticated replay role requires a SHA-256 pin")
+
+
+@dataclass(frozen=True, init=False)
+class ResearchExemptionDataAttestation:
+    """Explicit human research assumption, never authenticated source evidence.
+
+    This narrowly scoped type lets the mechanical engine exercise an explicitly
+    exempt research dataset without forging ``ReplayDataAttestation``.  Its
+    factory is intentionally private to the engine module; callers must use the
+    public classmethod, which fixes every authority-bearing flag false.
+    """
+
+    source_id: str
+    source_content_sha256: str
+    validation_receipt_sha256: str
+    derivation_policy_version: str
+    evidence_role_hashes: tuple[tuple[str, str], ...]
+    exemption_id: str
+    exemption_record_sha256: str
+    authenticated_replay_evidence: bool
+    provider_evidence: bool
+    performance_claim_allowed: bool
+    broker_connection_allowed: bool
+    orders_submitted: bool
+    live_trading_enabled: bool
+
+    def __init__(
+        self,
+        *,
+        source_id: str,
+        source_content_sha256: str,
+        validation_receipt_sha256: str,
+        derivation_policy_version: str,
+        evidence_role_hashes: tuple[tuple[str, str], ...],
+        exemption_id: str,
+        exemption_record_sha256: str,
+        _factory_token: object | None = None,
+    ) -> None:
+        if _factory_token is not _RESEARCH_EXEMPTION_FACTORY_TOKEN:
+            raise ValueError(
+                "ResearchExemptionDataAttestation must be issued by its explicit factory"
+            )
+        values = {
+            "source_id": source_id,
+            "source_content_sha256": source_content_sha256,
+            "validation_receipt_sha256": validation_receipt_sha256,
+            "derivation_policy_version": derivation_policy_version,
+            "evidence_role_hashes": evidence_role_hashes,
+            "exemption_id": exemption_id,
+            "exemption_record_sha256": exemption_record_sha256,
+            "authenticated_replay_evidence": False,
+            "provider_evidence": False,
+            "performance_claim_allowed": False,
+            "broker_connection_allowed": False,
+            "orders_submitted": False,
+            "live_trading_enabled": False,
+        }
+        for name, value in values.items():
+            object.__setattr__(self, name, value)
+        self.validate()
+
+    @classmethod
+    def _from_explicit_research_exemption(
+        cls,
+        *,
+        source_id: str,
+        source_content_sha256: str,
+        validation_receipt_sha256: str,
+        derivation_policy_version: str,
+        evidence_role_hashes: tuple[tuple[str, str], ...],
+        exemption_id: str,
+        exemption_record_sha256: str,
+    ) -> ResearchExemptionDataAttestation:
+        return cls(
+            source_id=source_id,
+            source_content_sha256=source_content_sha256,
+            validation_receipt_sha256=validation_receipt_sha256,
+            derivation_policy_version=derivation_policy_version,
+            evidence_role_hashes=evidence_role_hashes,
+            exemption_id=exemption_id,
+            exemption_record_sha256=exemption_record_sha256,
+            _factory_token=_RESEARCH_EXEMPTION_FACTORY_TOKEN,
+        )
+
+    def validate(self) -> None:
+        if not self.source_id.startswith("RESEARCH_EXEMPTION:"):
+            raise ValueError("research-exempt source_id must be explicitly labelled")
+        for name in (
+            "source_content_sha256",
+            "validation_receipt_sha256",
+            "exemption_record_sha256",
+        ):
+            digest = str(getattr(self, name)).lower()
+            if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+                raise ValueError(f"{name} must be a SHA-256 digest")
+        if not self.derivation_policy_version.strip() or not self.exemption_id.strip():
+            raise ValueError("research exemption identity is incomplete")
+        if not self.evidence_role_hashes or tuple(sorted(self.evidence_role_hashes)) != self.evidence_role_hashes:
+            raise ValueError("research-exempt role hashes must be nonempty and sorted")
+        for role, digest in self.evidence_role_hashes:
+            if not role.startswith("ASSUMED_") or len(digest) != 64 or any(
+                c not in "0123456789abcdef" for c in digest.lower()
+            ):
+                raise ValueError("research-exempt roles must be explicit assumptions with SHA-256 pins")
+        for name in (
+            "authenticated_replay_evidence",
+            "provider_evidence",
+            "performance_claim_allowed",
+            "broker_connection_allowed",
+            "orders_submitted",
+            "live_trading_enabled",
+        ):
+            if getattr(self, name) is not False:
+                raise ValueError("research exemption cannot grant authority")
 
 
 @dataclass(frozen=True)
@@ -680,8 +795,13 @@ class GuardrailedBacktestEngine:
         *,
         config: BacktestConfig,
         fee_schedule: ExchangeFeeSchedule,
-        data_attestation: ReplayDataAttestation,
+        data_attestation: ReplayDataAttestation | ResearchExemptionDataAttestation,
     ) -> None:
+        if type(data_attestation) not in {
+            ReplayDataAttestation,
+            ResearchExemptionDataAttestation,
+        }:
+            raise ValueError("data_attestation has an unsupported authority type")
         data_attestation.validate()
         self.config = config
         self.fee_schedule = fee_schedule
