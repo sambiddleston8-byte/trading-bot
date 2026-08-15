@@ -979,6 +979,20 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   provider fetch, admission, parameter search, untouched-test opening or replay
   has occurred. Neither local ledger can detect an owner deleting and rebuilding
   every local artifact; external anchoring remains a later explicit evidence gate.
+- The user-selected conservative baseline now has a separate causal strategy
+  adapter for future authenticated replay. It fixes the existing trend/momentum
+  method at 20/50/20 observations with no parameter search, uses Decimal rather
+  than pandas/float indicator arithmetic, enters only at scores 80 or 90, exits
+  at scores 60 or below and otherwise holds; fewer than 50 observations also
+  holds. The complete fixed parameter contract is revalidated on every call.
+  Mixed-symbol, substituted-parameter and non-causal history inputs fail closed.
+  The adapter receives only closed history; the guardrailed engine retains sole
+  control of next-open execution, risk sizing, stops, costs and settlement. AAPL
+  and MSFT are separate candidate instruments and SPY is benchmark-only. The
+  exact acquisition/split window, execution profile and success thresholds
+  still require explicit approval before the one immutable Massive
+  preregistration. No plan was registered, no data was fetched, no result was
+  calculated and no broker or trading authority was added.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
