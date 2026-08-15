@@ -215,8 +215,20 @@ granted.
 
 Campaign v2 proposal
 `ff4ca9a0919e43044337e609140197bb5869681e47e226720b12df64075cc82b`
-is pending explicit human approval and is deliberately incompatible with the
-v1 preregistration schema. It authorizes no append, data call or evaluation. It
+was explicitly approved and registered through the separate v2-only schema
+before the untouched window begins. Approval record
+`09a2acfc37629e9c7287c8a875de0b52209f65459efc4478ca3d0ed93ffc06df`,
+exemption-extension record
+`8a25bf21c4f5f945bac32181d1556503f2f58bcd44e3b220909c06b3d350388d`
+and preregistration `HQP2-074A7002D313E7C24C64EADE9DCDF4BB` / record
+`cc626aa7c4aedab63bce51cae5dd9e90a1f5d81f00bd46a49fb956cfe4dcf210`
+form one immutable chain pinned to clean Git `d5476c6`, the exact v1 closure,
+preregistration and entitlement evidence. The extension is authorized but not
+applied to any capture, and no future assumption has been asserted. The empty
+owner-only v2 raw root is disjoint from v1 and known admitted research storage.
+Provider access, capture activation, data opening, evaluation and untouched
+access remain false; entitlement revalidation and separate capture
+authorization are mandatory before any request. The contract
 retains the unchanged AAPL/MSFT 20/50/20 strategy and conservative execution
 policy, with SPY as a matched-timing price-return diagnostic, over a new 1 March
 2026-28 February 2027 window: TRAIN March-June, VALIDATION July-August and a
@@ -225,14 +237,13 @@ one-observation purge, one-observation embargo and a single untouched execution
 are contract fields. AAPL and MSFT must each pass BASE and PESSIMISTIC profiles
 with at least two completed trades, non-negative mechanical and SPY-relative
 price returns, and drawdown no worse than 20%; insufficient trades are
-inconclusive without rerun. The package discloses that all v1 data were opened
+inconclusive without rerun. The chain discloses that all v1 data were opened
 and its result was known when v2 was proposed; any overlap is confined to v2
-TRAIN/VALIDATION, never its untouched window. A linked exemption extension is
-still pending and could assert only completed captured slices after approval.
-Before any v2 activity, code must provide a future-window schema, an explicit
-approval record, distinct v2 ledger and quarantine root, full capture-chain
-binding and the repaired purge/embargo gates. Claude Opus returned PASS after
-red-teaming these controls; no provider call or evaluation was performed.
+TRAIN/VALIDATION, never its untouched window. The v1 schema remains unchanged;
+the v2 schema enforces preregistration before 1 September 2026, exact parent
+hashes, full capture binding, repaired purge/embargo gates and deny-by-default
+provider policy. Claude Opus returned PASS after all red-team findings were
+corrected; no provider call or evaluation was performed.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -264,16 +275,17 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. **Campaign v1 closed; Campaign v2 awaits explicit approval:** v1 is archived
-   as protocol-nonconformant and cannot be admitted, optimized, evaluated or
-   rerun. Review Campaign v2 proposal hash
-   `ff4ca9a0919e43044337e609140197bb5869681e47e226720b12df64075cc82b`.
-   Approval would authorize implementation of the v2 preregistration boundary,
-   linked research-exemption extension and isolated storage controls—not a data
-   call or evaluation. Its untouched window does not finish until 28 February
-   2027, so no conforming untouched result can exist before then. Historical
-   availability, stable identity, account entitlement, replay permission and
-   required provider roles remain unresolved throughout.
+2. **Campaign v2 controls registered; provider access remains blocked:** v1 is
+   archived and cannot be admitted, optimized, evaluated or rerun. The v2
+   approval, exemption extension and preregistration are sealed, but the raw
+   root is empty and every data/evaluation authority is false. Revalidate the
+   Massive account entitlement and add a separate bounded capture-activation
+   record before considering any completed historical slice request. Do not
+   request a slice ending on or after the request date, and do not apply the
+   research exemption until an exact completed capture exists. The untouched
+   window does not finish until 28 February 2027, so no conforming untouched
+   result can exist before then. Historical availability, stable identity,
+   replay permission and required provider roles remain unresolved throughout.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-
