@@ -803,8 +803,10 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   policy v2 revalidates the authenticated admission and strategy parent and
   rejects any different strategy version, parameters, code file, entry point,
   Git commit or evaluation dates. This closes a post-access cherry-picking
-  route, but no real strategy has been preregistered and no sealed replay has
-  run. Claude passed the ledger and binding reviews after retracting a proposed
+  route, but no real strategy specification has been appended to this separate
+  authenticated replay-plan ledger and no sealed replay has run. The Massive
+  quarantine campaign preregistration described below does not satisfy that
+  distinct ledger. Claude passed the ledger and binding reviews after retracting a proposed
   date-type defect that the canonical conversion and regression tests disproved.
 - Verified immutable investment decisions can now be converted into one
   tamper-evident, simulation-only signal per ticker and market close. The
@@ -957,7 +959,8 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   passes the records through the canonical single-role cutoff validator. It
   cannot backdate availability, issue a complete engine batch, authenticate the
   source, qualify semantics, run a replay, connect a broker or enable orders.
-- The next Massive acquisition boundary is implemented but inactive. An
+- The Massive acquisition boundary has now been executed once for its exact
+  preregistered campaign. An
   owner-only, single-campaign, locally tamper-evident preregistration ledger must
   first bind the exact
   AAPL/MSFT/SPY basket, at most 366 calendar days, contiguous ordered
@@ -975,9 +978,11 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   path. The new modules have no direct admission, simulation-engine or broker
   import/wiring; the wrapper cannot satisfy `SyntheticPilotBar` or issue a
   source/replay attestation. It grants no authority to admit data, calculate
-  performance or contact a broker. All tests use fake responses. No real preregistration,
-  provider fetch, admission, parameter search, untouched-test opening or replay
-  has occurred. Neither local ledger can detect an owner deleting and rebuilding
+  performance or contact a broker. Boundary tests still use fake responses, but
+  the real preregistration `HQP-DCE89C243F16E9C659B3B339A08DE350` has now
+  captured all 36/36 fixed AAPL/MSFT/SPY response slices owner-only in raw
+  quarantine. No admission, parameter search, untouched-test opening or replay
+  occurred. Neither local ledger can detect an owner deleting and rebuilding
   every local artifact; external anchoring remains a later explicit evidence gate.
 - The user-selected conservative baseline now has a separate causal strategy
   adapter for future authenticated replay. It fixes the existing trend/momentum
@@ -988,9 +993,9 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   Mixed-symbol, substituted-parameter and non-causal history inputs fail closed.
   The adapter receives only closed history; the guardrailed engine retains sole
   control of next-open execution, risk sizing, stops, costs and settlement. AAPL
-  and MSFT are separate candidate instruments and SPY is benchmark-only. No plan
-  was registered, no data was fetched, no result was calculated and no broker or
-  trading authority was added.
+  and MSFT are separate candidate instruments and SPY is benchmark-only. The
+  subsequent campaign record and quarantine fetch add no result, broker or
+  trading authority.
 - The user has now approved those remaining campaign choices. A separate inert
   campaign contract fixes the 1 August 2025 through 31 July 2026 acquisition
   window, contiguous train/validation/untouched-test splits, 50-observation
@@ -1014,8 +1019,24 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   `d20899e47335d6fa4ee2a5773fcd1cf12f1b921018a775a4525e7bc166a4dc6d`).
   Its official public terms-page bytes are retained owner-only with their exact
   hash, but terms assertions, account entitlement and historical replay use
-  remain explicitly unauthenticated/unconfirmed. No market-data provider byte
-  was requested or admitted, and all broker/trading authorities remain false.
+  remain explicitly unauthenticated/unconfirmed. The authorized fetch then
+  retained all 36/36 preregistered slices with zero missing captures; the final
+  capture-chain record hash is
+  `3ccee45a3cb33a42e1d13adbf8f86b5e187c004b0950a8b62bb0fee7a1a20b98`.
+  The 27
+  TRAIN/VALIDATION slices normalize to 145 TRAIN and 43 VALIDATION sessions for
+  each symbol, with no duplicate observation IDs or out-of-slice bars; the nine
+  UNTOUCHED_TEST captures were integrity-rehashed by the store but never returned
+  to the normalizer or opened for evaluation.
+  Every staged timestamp basis is `LOCAL_RETRIEVAL_ONLY_UNQUALIFIED`, with
+  `effective_at` and `available_at` equal to local retrieval on 15 August 2026.
+  Those retrieval-late values cannot lawfully support decisions inside the
+  preregistered 2025–2026 window. The adapter also does not independently bind
+  its caller-supplied retrieval timestamp or requested slice to a verified
+  quarantine record, so the observed reconciliation is not yet an enforced
+  admission invariant. Zero bytes were admitted, authenticated or made engine-
+  ready; the single untouched evaluation was refused rather than consumed, and
+  all broker/trading authorities remain false.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
