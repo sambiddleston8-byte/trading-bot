@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import ast
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
+from core.application.portfolio_market_exposure_service import PortfolioMarketExposureService
 from core.backtest import BacktestEngine
 from core.baseline_comparison import BaselineComparison
 from core.benchmark_engine import BenchmarkEngine
@@ -16,32 +18,34 @@ from core.data_sources.yahoo_history_access import (
     YahooHistoryClient,
     YahooHistoryObservation,
 )
+from core.expected_return_tracker import ExpectedReturnTracker
 from core.history import HistoryEngine
+from core.learning_engine import LearningEngine
 from core.market_data_cache import MarketDataCache
 from core.system_backtest import SystemBacktest
+from core.universe_ranker import UniverseRanker
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DIRECT_YFINANCE_IMPORT_ALLOWLIST = {
     "bots/competitors/analyser.py",
     "bots/earnings/analyser.py",
-    "core/application/portfolio_market_exposure_service.py",
     "core/application/portfolio_monitor_service.py",
     "core/catalyst_engine.py",
     "core/data_sources/analyst_source.py",
     "core/data_sources/earnings_source.py",
     "core/data_sources/yahoo_history_access.py",
     "core/data_sources/yahoo_source.py",
-    "core/expected_return_tracker.py",
     "core/financial_data.py",
     "core/learning_engine.py",
     "core/multi_factor_engine.py",
     "core/research/catalyst_engine.py",
     "core/research_engine.py",
     "core/stock_universe.py",
-    "core/universe_ranker.py",
     "core/valuation_engine.py",
 }
+# `core/learning_engine.py` keeps yfinance only for its non-history
+# `fast_info` current-price read; its historical reads cross this boundary.
 
 
 class Clock:
@@ -284,6 +288,37 @@ def test_migrated_legacy_callers_use_injected_history_boundary():
             },
         ),
         ("AAPL", {"start": "2025-01-01", "end": "2025-02-01"}),
+    ]
+
+
+def test_migrated_learning_and_ranking_callers_preserve_exact_request_shapes(monkeypatch, tmp_path):
+    fake = FakeObservationClient(price_frame())
+
+    class NoFastInfo:
+        fast_info: dict = {}
+
+    monkeypatch.setattr("core.learning_engine.yf.Ticker", lambda ticker: NoFastInfo())
+    learning = LearningEngine(tmp_path / "learning.json", history_client=fake)
+    tracker = ExpectedReturnTracker(tmp_path / "predictions.json", history_client=fake)
+    ranker = UniverseRanker(tmp_path / "rankings.json", history_client=fake)
+
+    assert learning.get_current_price("AAPL") == 11.0
+    assert learning.get_horizon_price("AAPL", datetime(2025, 1, 1)) == 10.0
+    assert tracker.get_current_price("AAPL") == 11.0
+    assert tracker.get_future_price("AAPL", "2025-01-01", 30) == 10.0
+    assert list(ranker.load_prices("AAPL")["Close"]) == [10.0, 11.0]
+    assert PortfolioMarketExposureService.review(
+        {"holdings": [{"ticker": "aapl", "weight": 1.0}]},
+        history_client=fake,
+    )["covered_holdings"] == 1
+
+    assert fake.calls == [
+        ("AAPL", {"period": "1d"}),
+        ("AAPL", {"start": "2025-01-01", "end": "2025-01-11"}),
+        ("AAPL", {"period": "5d"}),
+        ("AAPL", {"start": "2025-01-31", "end": "2025-02-10"}),
+        ("AAPL", {"period": "2y", "auto_adjust": True}),
+        ("AAPL", {"period": "1y", "auto_adjust": False}),
     ]
 
 

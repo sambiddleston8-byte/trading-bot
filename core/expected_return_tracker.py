@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime, timedelta
 
-import yfinance as yf
+from core.data_sources.yahoo_history_access import YahooHistoryClient
 
 
 class ExpectedReturnTracker:
@@ -10,9 +10,15 @@ class ExpectedReturnTracker:
     def __init__(
         self,
         path="data/expected_return_predictions.json",
+        history_client=None,
     ):
 
         self.path = path
+
+        self.history_client = (
+            history_client
+            or YahooHistoryClient()
+        )
 
         directory = os.path.dirname(
             self.path
@@ -109,13 +115,10 @@ class ExpectedReturnTracker:
 
         try:
 
-            ticker = yf.Ticker(
-                symbol
-            )
-
-            history = ticker.history(
-                period="5d"
-            )
+            history = self.history_client.history(
+                symbol,
+                period="5d",
+            ).frame
 
             if history.empty:
 
@@ -364,18 +367,15 @@ class ExpectedReturnTracker:
 
         try:
 
-            ticker = yf.Ticker(
-                symbol
-            )
-
             prediction_datetime = datetime.fromisoformat(str(prediction_date))
             target_date = prediction_datetime + timedelta(days=int(horizon_days))
             end_date = target_date + timedelta(days=10)
 
-            history = ticker.history(
+            history = self.history_client.history(
+                symbol,
                 start=target_date.date().isoformat(),
                 end=end_date.date().isoformat(),
-            )
+            ).frame
 
             if history.empty:
 

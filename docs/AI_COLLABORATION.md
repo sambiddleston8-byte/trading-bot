@@ -36,6 +36,15 @@ capacity remaining.
 Unused allowance is preferable to unnecessary work. Neither model is invoked
 merely to consume remaining capacity.
 
+While the included Claude allowance is the more available of the two, the user
+prefers that reasoning-heavy implementation and review are routed to Claude,
+and that Codex emphasises coordination, deterministic checks and independent
+adjudication of Claude's output. This is a routing preference only. It never
+reduces test coverage, never bypasses Opus routing for high-risk investment,
+security, execution or persistence work, never removes Codex's independent
+verification of a Claude change, and never relaxes any stop condition or
+user-approval boundary in this document.
+
 ## Streamlined delivery protocol
 
 - Group closely related roadmap work into cohesive medium-sized batches and

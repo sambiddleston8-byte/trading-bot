@@ -932,6 +932,23 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   availability and source semantics remain outside this boundary. Other
   yfinance-backed research and learning callers remain to be migrated. Tests
   use injected fakes and no Yahoo request was made.
+- The legacy learning, expected-return, universe-ranking and portfolio market-
+  exposure readers now enter yfinance through the same injected boundary. Each
+  call keeps its existing request shape exactly — learning `1d` and expected-
+  return `5d` current prices, both exclusive-end horizon date ranges, the
+  ranker's two-year adjusted load and the exposure service's one-year
+  unadjusted load — and each keeps its existing safe result when there is no
+  data or the read fails: `None`, a skipped symbol, or a visible LIMITED /
+  UNAVAILABLE exposure entry rather than a fabricated value. No horizon, date
+  exclusivity, adjusted/unadjusted choice or investment formula changed. The
+  expected-return, universe-ranking and exposure modules no longer import
+  yfinance at all; the learning engine keeps it only for its non-history
+  `fast_info` current-price read, and the repository's direct-import inventory
+  test records that reduced list. These observations remain current, back-
+  adjusted or unqualified, non-point-in-time, non-survivorship-safe and
+  inadmissible as replay evidence; the boundary's false flags are visible
+  truth, not propagated authority, and yfinance's internal HTTP remains
+  opaque. Tests use injected fakes and no Yahoo request was made.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive requests now pass through
   a shared process-local access coordinator. It gently spaces requests across
   separate client instances, retries only connection failures and HTTP
