@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import hashlib
@@ -7,6 +8,7 @@ import json
 
 import pytest
 
+from core.decision_ledger import LedgerIntegrityError
 from core.guardrailed_backtest import (
     BacktestConfig,
     ExchangeFeeSchedule,
@@ -23,6 +25,10 @@ from core.research.massive_research_exempt_replay import (
     ResearchBar,
     ResearchExemptionLedger,
     _bars_from_captures,
+    _capture_payloads,
+    _evaluation_slices,
+    _require_aligned_test_sessions,
+    _require_registered_chain,
     execute_untouched_once,
     register_exemption,
     vectorbt_fixed_parameter_screen,
@@ -88,6 +94,73 @@ def test_exemption_rejects_incomplete_capture_chain(tmp_path):
         )
 
 
+def test_existing_exemption_must_match_the_complete_requested_payload(tmp_path):
+    ledger = ResearchExemptionLedger(tmp_path / "audit.jsonl")
+    register_exemption(
+        ledger=ledger,
+        preregistration=preregistration(),
+        captures=captures(),
+        authorized_by="FIRST_USER",
+    )
+    with pytest.raises(LedgerIntegrityError, match="differs from request"):
+        register_exemption(
+            ledger=ledger,
+            preregistration=preregistration(),
+            captures=captures(),
+            authorized_by="SUBSTITUTED_USER",
+        )
+
+
+def test_registered_capture_chain_is_enforced():
+    rows = []
+    roles = ["TRAIN"] * 21 + ["VALIDATION"] * 6 + ["UNTOUCHED_TEST"] * 9
+    for index, role in enumerate(roles):
+        rows.append(
+            {
+                "split_role": role,
+                "record_hash": hashlib.sha256(str(index).encode()).hexdigest(),
+                "preregistration_id": "HQP-TEST",
+                "preregistration_record_hash": "a" * 64,
+            }
+        )
+    exemption = {
+        "payload": {
+            "capture_chain_final_hash": rows[-1]["record_hash"],
+            "preregistration_id": "HQP-TEST",
+            "preregistration_record_hash": "a" * 64,
+        }
+    }
+    _require_registered_chain(exemption, rows)
+    changed = [dict(row) for row in rows]
+    changed[-1]["record_hash"] = "f" * 64
+    with pytest.raises(LedgerIntegrityError, match="registered research exemption chain"):
+        _require_registered_chain(exemption, changed)
+    changed = [dict(row) for row in rows]
+    changed[21]["split_role"] = "TRAIN"
+    with pytest.raises(LedgerIntegrityError, match="registered research exemption chain"):
+        _require_registered_chain(exemption, changed)
+
+
+def test_unique_ledger_event_is_enforced_inside_append_lock(tmp_path):
+    ledger = ResearchExemptionLedger(tmp_path / "audit.jsonl")
+    ledger.append("UNTOUCHED_TEST_CONSUMPTION_STARTED", {"sequence": 1}, unique=True)
+    with pytest.raises(ValueError, match="exactly once"):
+        ledger.append("UNTOUCHED_TEST_CONSUMPTION_STARTED", {"sequence": 2}, unique=True)
+
+
+def test_ledger_detects_tampering_and_chain_break(tmp_path):
+    ledger = ResearchExemptionLedger(tmp_path / "audit.jsonl")
+    ledger.append("UNTOUCHED_TEST_RESULT_RECORDED", {"value": "original"})
+    path = tmp_path / "audit.jsonl"
+    path.chmod(0o600)
+    row = json.loads(path.read_text())
+    row["payload"]["value"] = "changed"
+    path.write_text(json.dumps(row, separators=(",", ":")) + "\n")
+    path.chmod(0o600)
+    with pytest.raises(LedgerIntegrityError, match="line 1 is invalid"):
+        ledger.records()
+
+
 def test_massive_conversion_records_assumed_close_availability_and_exact_provenance():
     payload = json.dumps(
         {
@@ -132,6 +205,55 @@ def test_massive_conversion_records_assumed_close_availability_and_exact_provena
     assert material["payload_sha256"] == digest
     assert material["availability_basis"].startswith("EXPLICIT_HUMAN_RESEARCH_ASSUMPTION")
 
+    changed = dict(capture)
+    changed["payload_sha256"] = "0" * 64
+    with pytest.raises(LedgerIntegrityError, match="payload no longer matches"):
+        _bars_from_captures(
+            captures=[changed],
+            payloads={"HQCAP-ONE": payload},
+            exemption_id="RIXA-TEST",
+        )
+
+    wrong_symbol = json.loads(payload)
+    wrong_symbol["ticker"] = "MSFT"
+    wrong_payload = json.dumps(wrong_symbol, separators=(",", ":")).encode()
+    changed = dict(capture)
+    changed["payload_sha256"] = hashlib.sha256(wrong_payload).hexdigest()
+    with pytest.raises(LedgerIntegrityError, match="symbol violates"):
+        _bars_from_captures(
+            captures=[changed],
+            payloads={"HQCAP-ONE": wrong_payload},
+            exemption_id="RIXA-TEST",
+        )
+
+
+def test_untouched_and_path_escape_are_rejected_before_blob_read(tmp_path):
+    class Store:
+        blob_directory = tmp_path / "blobs"
+
+    Store.blob_directory.mkdir()
+    with pytest.raises(ValueError, match="one-shot consumption authority"):
+        _capture_payloads(
+            Store(),
+            [{"split_role": "UNTOUCHED_TEST", "blob_relative_path": "unused"}],
+            allow_untouched=False,
+        )
+    outside = tmp_path / "outside.blob"
+    outside.write_bytes(b"payload")
+    outside.chmod(0o400)
+    with pytest.raises(LedgerIntegrityError, match="escaped"):
+        _capture_payloads(
+            Store(),
+            [
+                {
+                    "split_role": "TRAIN",
+                    "blob_relative_path": "../outside.blob",
+                    "quarantine_capture_id": "HQCAP-ESCAPE",
+                }
+            ],
+            allow_untouched=False,
+        )
+
 
 def research_rows() -> list[ResearchBar]:
     rows: list[ResearchBar] = []
@@ -171,12 +293,17 @@ def research_rows() -> list[ResearchBar]:
 
 
 def test_vectorbt_screen_uses_only_the_sole_preregistered_parameter_set():
-    result = vectorbt_fixed_parameter_screen(research_rows())
+    rows = research_rows()
+    result = vectorbt_fixed_parameter_screen(rows)
     assert result["candidate_parameter_count"] == 1
     assert result["parameter_search_allowed"] is False
     assert result["screen_type"].endswith("NOT_OPTIMIZATION")
     assert result["performance_claim_allowed"] is False
     assert len(result["results"]) == 4
+    aapl = [row for row in rows if row.market_bar.symbol == "AAPL"]
+    train = [row for row in aapl if row.split_role == "TRAIN"]
+    expected = train[-1].market_bar.open / train[0].market_bar.close - Decimal("1")
+    assert Decimal(result["results"][0]["benchmark_buy_hold_return"]) == expected
 
 
 def test_research_attestation_cannot_be_forged_and_grants_no_authority():
@@ -201,6 +328,63 @@ def test_research_attestation_cannot_be_forged_and_grants_no_authority():
         ),
         data_attestation=issued,
     )
+    class AttestationSubclass(ResearchExemptionDataAttestation):
+        pass
+
+    subclass = object.__new__(AttestationSubclass)
+    for name in issued.__dataclass_fields__:
+        object.__setattr__(subclass, name, getattr(issued, name))
+    with pytest.raises(ValueError, match="unsupported authority type"):
+        GuardrailedBacktestEngine(
+            config=BacktestConfig(initial_cash=Decimal("100000")),
+            fee_schedule=ExchangeFeeSchedule(
+                "TEST", (ExchangeFeeTier(None, Decimal("1"), Decimal("0")),)
+            ),
+            data_attestation=subclass,
+        )
+
+
+def test_preregistered_purge_and_embargo_are_applied_to_future_evaluations():
+    admitted = research_rows()
+    source = [row for row in admitted if row.market_bar.symbol == "AAPL"][-5:]
+    test = [replace(row, split_role="UNTOUCHED_TEST") for row in source]
+    warmup, evaluation = _evaluation_slices(
+        admitted_bars=admitted,
+        test_bars=test,
+        symbol="AAPL",
+        protocol={
+            "warmup_observations": 50,
+            "purge_observations": 1,
+            "embargo_observations": 1,
+        },
+    )
+    aapl_prior = [row for row in admitted if row.market_bar.symbol == "AAPL"]
+    assert len(warmup) == 50
+    assert warmup[-1] == aapl_prior[-2]
+    assert evaluation == test[1:]
+
+
+def test_candidate_and_benchmark_test_sessions_must_align():
+    rows = research_rows()
+    template = [row for row in rows if row.market_bar.symbol == "AAPL"][:3]
+    test: list[ResearchBar] = []
+    for symbol in ("AAPL", "MSFT", "SPY"):
+        for row in template:
+            market = replace(row.market_bar, symbol=symbol)
+            test.append(replace(row, market_bar=market, split_role="UNTOUCHED_TEST"))
+    _require_aligned_test_sessions(test)
+    changed = list(test)
+    changed[-1] = replace(
+        changed[-1],
+        market_bar=replace(
+            changed[-1].market_bar,
+            open_at=changed[-1].market_bar.open_at + timedelta(days=1),
+            close_at=changed[-1].market_bar.close_at + timedelta(days=1),
+            available_at=changed[-1].market_bar.available_at + timedelta(days=1),
+        ),
+    )
+    with pytest.raises(LedgerIntegrityError, match="sessions do not align"):
+        _require_aligned_test_sessions(changed)
 
 
 def test_untouched_consumption_refuses_a_second_attempt_before_store_access(tmp_path):

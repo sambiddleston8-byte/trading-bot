@@ -45,6 +45,7 @@ from core.research.conservative_baseline_campaign import (
     SPLITS,
     approved_execution_policy_sha256,
     approved_execution_profile,
+    approved_evaluation_protocol,
 )
 from core.research.conservative_baseline_strategy import (
     ConservativeBaselineStrategy,
@@ -131,6 +132,15 @@ def _read_private(path: Path, *, maximum: int) -> bytes:
     return path.read_bytes()
 
 
+def _write_all(descriptor: int, payload: bytes) -> None:
+    offset = 0
+    while offset < len(payload):
+        written = os.write(descriptor, payload[offset:])
+        if written <= 0:
+            raise OSError("research exemption append made no progress")
+        offset += written
+
+
 class ResearchExemptionLedger:
     """Owner-only hash chain for exemption, admission, consumption and results."""
 
@@ -176,14 +186,26 @@ class ResearchExemptionLedger:
             prior = row["record_hash"]
         return rows
 
-    def append(self, event_type: str, payload: Mapping[str, Any]) -> dict[str, Any]:
+    def append(
+        self,
+        event_type: str,
+        payload: Mapping[str, Any],
+        *,
+        unique: bool = False,
+    ) -> dict[str, Any]:
         _private_directory(self.path.parent)
         lock = self.path.with_suffix(self.path.suffix + ".lock")
-        descriptor = os.open(lock, os.O_CREAT | os.O_RDWR, 0o600)
+        descriptor = os.open(
+            lock,
+            os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0),
+            0o600,
+        )
         try:
             os.fchmod(descriptor, 0o600)
             fcntl.flock(descriptor, fcntl.LOCK_EX)
             existing = self.records()
+            if unique and any(row["event_type"] == event_type for row in existing):
+                raise ValueError(f"{event_type} may be recorded exactly once")
             envelope = {
                 "schema_version": SCHEMA_VERSION,
                 "policy_version": POLICY_VERSION,
@@ -197,7 +219,7 @@ class ResearchExemptionLedger:
             target = os.open(self.path, flags, 0o600)
             try:
                 os.fchmod(target, 0o600)
-                os.write(target, (_canonical_json(envelope) + "\n").encode("utf-8"))
+                _write_all(target, (_canonical_json(envelope) + "\n").encode("utf-8"))
                 os.fsync(target)
             finally:
                 os.close(target)
@@ -260,12 +282,6 @@ def register_exemption(
         raise ValueError("exemption requires the exact approved campaign window and splits")
     if len(captures) != 36 or not captures:
         raise ValueError("exemption requires the complete 36-capture chain")
-    existing = [
-        row for row in ledger.records()
-        if row["event_type"] == "RESEARCH_EXEMPTION_REGISTERED"
-    ]
-    if existing:
-        return existing[0]
     payload = {
         "authorized_by": str(authorized_by).strip(),
         "authorization_basis": "EXPLICIT_USER_INSTRUCTION_IN_CODEX_TASK",
@@ -289,6 +305,14 @@ def register_exemption(
     if not payload["authorized_by"]:
         raise ValueError("authorized_by is required")
     payload["exemption_id"] = "RIXA-" + _hash(payload)[:32].upper()
+    existing = [
+        row for row in ledger.records()
+        if row["event_type"] == "RESEARCH_EXEMPTION_REGISTERED"
+    ]
+    if existing:
+        if len(existing) != 1 or existing[0]["payload"] != payload:
+            raise LedgerIntegrityError("registered research exemption differs from request")
+        return existing[0]
     return ledger.append("RESEARCH_EXEMPTION_REGISTERED", payload)
 
 
@@ -297,6 +321,30 @@ def _exemption(ledger: ResearchExemptionLedger) -> dict[str, Any]:
     if len(rows) != 1:
         raise ValueError("exactly one research exemption must be registered")
     return rows[0]
+
+
+def _require_registered_chain(
+    exemption: Mapping[str, Any], captures: Sequence[Mapping[str, Any]]
+) -> None:
+    payload = exemption["payload"]
+    role_counts = {
+        role: sum(row["split_role"] == role for row in captures)
+        for role in (*RESEARCH_ROLES, TEST_ROLE)
+    }
+    if (
+        len(captures) != 36
+        or role_counts != {"TRAIN": 21, "VALIDATION": 6, "UNTOUCHED_TEST": 9}
+        or captures[-1]["record_hash"] != payload["capture_chain_final_hash"]
+        or any(
+            row["preregistration_id"] != payload["preregistration_id"]
+            or row["preregistration_record_hash"]
+            != payload["preregistration_record_hash"]
+            for row in captures
+        )
+    ):
+        raise LedgerIntegrityError(
+            "captures no longer match the registered research exemption chain"
+        )
 
 
 def _session_times(window_start: datetime) -> tuple[datetime, datetime]:
@@ -384,7 +432,11 @@ def admit_train_validation(
     admitted_root: str | Path,
 ) -> tuple[ResearchBar, ...]:
     exemption = _exemption(ledger)
-    captures = [r for r in store.verify() if r["split_role"] in RESEARCH_ROLES]
+    verified = store.verify()
+    _require_registered_chain(exemption, verified)
+    captures = [r for r in verified if r["split_role"] in RESEARCH_ROLES]
+    if len(captures) != 27:
+        raise LedgerIntegrityError("research admission requires exactly 27 captures")
     payloads = _capture_payloads(store, captures, allow_untouched=False)
     bars = _bars_from_captures(
         captures=captures,
@@ -520,7 +572,7 @@ def vectorbt_fixed_parameter_screen(bars: Sequence[ResearchBar]) -> dict[str, An
             trades = portfolio.trades.records
             closed = trades[trades["status"] == 1]
             win_rate = None if not len(closed) else float((closed["pnl"] > 0).sum() / len(closed))
-            benchmark = symbol_rows[last - 1].market_bar.close / symbol_rows[first].market_bar.close - Decimal("1")
+            benchmark = symbol_rows[last].market_bar.open / symbol_rows[first].market_bar.close - Decimal("1")
             results.append(
                 {
                     "symbol": symbol,
@@ -570,12 +622,51 @@ def _result_material(result: Any) -> dict[str, Any]:
         "completed_trade_count": len(result.completed_trades),
         "engine_config_sha256": result.engine_config_sha256,
         "strategy_source_sha256": result.strategy_source_sha256,
+        "source_content_sha256": result.source_content_sha256,
+        "evidence_role_hashes": [list(item) for item in result.evidence_role_hashes],
+        "evaluation_start": result.evaluation_start.isoformat(),
+        "evaluation_end": result.evaluation_end.isoformat(),
+        "engine_policy_version": result.engine_policy_version,
         "mechanical_simulation_only": True,
         "performance_claim_allowed": False,
         "broker_connection_allowed": False,
         "orders_submitted": False,
         "live_trading_enabled": False,
     }
+
+
+def _evaluation_slices(
+    *,
+    admitted_bars: Sequence[ResearchBar],
+    test_bars: Sequence[ResearchBar],
+    symbol: str,
+    protocol: Mapping[str, Any],
+) -> tuple[list[ResearchBar], list[ResearchBar]]:
+    warmup_count = int(protocol["warmup_observations"])
+    purge_count = int(protocol["purge_observations"])
+    embargo_count = int(protocol["embargo_observations"])
+    prior = [row for row in admitted_bars if row.market_bar.symbol == symbol]
+    eligible_prior = prior[: len(prior) - purge_count] if purge_count else prior
+    warmup = eligible_prior[-warmup_count:]
+    test = [row for row in test_bars if row.market_bar.symbol == symbol][embargo_count:]
+    if len(warmup) != warmup_count or len(test) < 3:
+        raise ValueError(f"{symbol} lacks the preregistered warmup or test rows")
+    return warmup, test
+
+
+def _require_aligned_test_sessions(test_bars: Sequence[ResearchBar]) -> None:
+    sessions_by_symbol = {
+        symbol: tuple(
+            row.market_bar.open_at
+            for row in test_bars
+            if row.market_bar.symbol == symbol
+        )
+        for symbol in TARGET_BASKET
+    }
+    if not all(sessions_by_symbol.values()) or len(set(sessions_by_symbol.values())) != 1:
+        raise LedgerIntegrityError(
+            "untouched candidate and benchmark sessions do not align"
+        )
 
 
 def execute_untouched_once(
@@ -589,7 +680,15 @@ def execute_untouched_once(
     rows = ledger.records()
     if any(r["event_type"] == "UNTOUCHED_TEST_CONSUMPTION_STARTED" for r in rows):
         raise ValueError("the single untouched-test evaluation has already been consumed")
-    captures = [r for r in store.verify() if r["split_role"] == TEST_ROLE]
+    verified = store.verify()
+    _require_registered_chain(exemption, verified)
+    captures = [r for r in verified if r["split_role"] == TEST_ROLE]
+    if len(captures) != 9:
+        raise LedgerIntegrityError("untouched consumption requires exactly nine captures")
+    protocol = approved_evaluation_protocol()
+    maximum_evaluations = int(protocol["maximum_untouched_test_evaluations"])
+    if maximum_evaluations != 1:
+        raise ValueError("research-exempt baseline requires an exact one-test protocol")
     repository_root = Path(__file__).resolve().parents[2]
     runner_source_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     git_revision = current_git_revision(repository_root)
@@ -598,7 +697,7 @@ def execute_untouched_once(
         "exemption_record_hash": exemption["record_hash"],
         "source_capture_ids": [r["quarantine_capture_id"] for r in captures],
         "source_payload_hashes": [r["payload_sha256"] for r in captures],
-        "maximum_untouched_test_evaluations": 1,
+        "maximum_untouched_test_evaluations": maximum_evaluations,
         "evaluation_number": 1,
         "selection_source": "SOLE_PREREGISTERED_PARAMETER_SET",
         "vectorbt_screen_sha256": _hash(vectorbt_screen),
@@ -610,7 +709,11 @@ def execute_untouched_once(
         "orders_submitted": False,
         "live_trading_enabled": False,
     }
-    consumption = ledger.append("UNTOUCHED_TEST_CONSUMPTION_STARTED", start_payload)
+    consumption = ledger.append(
+        "UNTOUCHED_TEST_CONSUMPTION_STARTED",
+        start_payload,
+        unique=True,
+    )
     payloads = _capture_payloads(store, captures, allow_untouched=True)
     test_bars = _bars_from_captures(
         captures=captures,
@@ -634,11 +737,17 @@ def execute_untouched_once(
         exemption_record_sha256=exemption["record_hash"],
     )
     engine_results: list[dict[str, Any]] = []
+    warmup_count = int(protocol["warmup_observations"])
+    purge_count = int(protocol["purge_observations"])
+    embargo_count = int(protocol["embargo_observations"])
+    _require_aligned_test_sessions(test_bars)
     for symbol in EVALUATED_SYMBOLS:
-        warmup = [r for r in admitted_bars if r.market_bar.symbol == symbol][-50:]
-        test = [r for r in test_bars if r.market_bar.symbol == symbol]
-        if len(warmup) != 50 or len(test) < 3:
-            raise ValueError(f"{symbol} lacks the preregistered warmup or test rows")
+        warmup, test = _evaluation_slices(
+            admitted_bars=admitted_bars,
+            test_bars=test_bars,
+            symbol=symbol,
+            protocol=protocol,
+        )
         engine_bars = [r.market_bar for r in (*warmup, *test)]
         evaluation_start = test[0].market_bar.close_at
         # The penultimate session is reserved for a causal next-open exit and
@@ -676,8 +785,8 @@ def execute_untouched_once(
                 evaluation_end=evaluation_end,
             )
             engine_results.append({"symbol": symbol, **_result_material(result)})
-    benchmark = [r for r in test_bars if r.market_bar.symbol == BENCHMARK_SYMBOL]
-    benchmark_return = benchmark[-3].market_bar.close / benchmark[0].market_bar.close - Decimal("1")
+    benchmark = [r for r in test_bars if r.market_bar.symbol == BENCHMARK_SYMBOL][embargo_count:]
+    benchmark_return = benchmark[-2].market_bar.open / benchmark[0].market_bar.close - Decimal("1")
     report = {
         "status": "COMPLETED_RESEARCH_EXEMPTION_NOT_EVIDENTIARY",
         "campaign_policy_version": CAMPAIGN_POLICY_VERSION,
@@ -689,6 +798,9 @@ def execute_untouched_once(
         "research_runner_source_sha256": runner_source_sha256,
         "untouched_evaluation_number": 1,
         "untouched_test_reusable": False,
+        "warmup_observations": warmup_count,
+        "purge_observations": purge_count,
+        "embargo_observations": embargo_count,
         "evaluation_liquidation_policy": (
             "PENULTIMATE_CAPTURED_SESSION_OPEN_RESERVED_AS_NEXT_OPEN_LIQUIDATION;"
             "FINAL_CAPTURED_SESSION_OPEN_RESERVED_FOR_ONE_SESSION_CASH_SETTLEMENT"
