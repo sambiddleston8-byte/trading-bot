@@ -28,7 +28,6 @@ from core.universe_ranker import UniverseRanker
 
 ROOT = Path(__file__).resolve().parents[1]
 DIRECT_YFINANCE_IMPORT_ALLOWLIST = {
-    "bots/competitors/analyser.py",
     "bots/earnings/analyser.py",
     "core/catalyst_engine.py",
     "core/data_sources/analyst_source.py",
@@ -41,9 +40,12 @@ DIRECT_YFINANCE_IMPORT_ALLOWLIST = {
     "core/research/catalyst_engine.py",
     "core/valuation_engine.py",
 }
-# Remaining entries are statement, calendar and broad, still-unmigrated `.info`
-# callers; the history, `fast_info` current-price and allowlisted `.info`
-# profile boundaries are the only reviewed Yahoo entry points.
+# Remaining entries include statement/calendar callers and broad, still-
+# unmigrated `.info` callers such as `FinancialDataEngine`; the history,
+# `fast_info` current-price and allowlisted `.info` profile boundaries are the
+# only reviewed Yahoo entry points. Migrated Yahoo source and valuation readers
+# keep yfinance solely for their untouched non-profile APIs;
+# `tests/test_yahoo_info_consumers.py` pins that separation.
 
 
 class Clock:

@@ -1,9 +1,54 @@
-import yfinance as yf
-
 from core.company_context import CompanyContext
+from core.data_sources.yahoo_info_access import YahooInfoClient, validate_info_number
+
+
+def _ranking_number(value):
+    """Match peer-boundary numeric validation for subject ranking inputs."""
+
+    try:
+        return validate_info_number(value)
+    except ValueError:
+        return None
 
 
 class CompetitorAnalyser:
+
+    def __init__(
+        self,
+        info_client=None,
+    ):
+
+        self.info_client = (
+            info_client
+            if info_client is not None
+            else YahooInfoClient()
+        )
+
+    def get_peer_info(
+        self,
+        peer,
+    ):
+        """Return allowlisted peer profile scalars, or ``{}`` when unusable.
+
+        A peer whose read fails is skipped exactly as before, and the failure
+        carries no provider, request or exception text into the caller.
+        """
+
+        try:
+
+            observation = (
+                self.info_client.info(
+                    peer
+                )
+            )
+
+            return dict(
+                observation.fields
+            )
+
+        except Exception:
+
+            return {}
 
     def analyse(self, context: CompanyContext):
 
@@ -101,9 +146,9 @@ class CompetitorAnalyser:
 
             try:
 
-                peer_info = yf.Ticker(
+                peer_info = self.get_peer_info(
                     peer
-                ).info
+                )
 
                 if not peer_info:
                     continue
@@ -167,6 +212,9 @@ class CompetitorAnalyser:
         # Subject Company
         # --------------------------------
 
+        # Only the three ranking inputs are validated here. The remaining
+        # subject fields stay as raw passthrough until the separately deferred
+        # FinancialDataEngine profile aggregator is inventoried and migrated.
         subject = {
 
             "Ticker":
@@ -183,8 +231,10 @@ class CompetitorAnalyser:
                 ),
 
             "PE":
-                info.get(
-                    "trailingPE"
+                _ranking_number(
+                    info.get(
+                        "trailingPE"
+                    )
                 ),
 
             "Forward PE":
@@ -193,13 +243,17 @@ class CompetitorAnalyser:
                 ),
 
             "Revenue Growth":
-                info.get(
-                    "revenueGrowth"
+                _ranking_number(
+                    info.get(
+                        "revenueGrowth"
+                    )
                 ),
 
             "Profit Margin":
-                info.get(
-                    "profitMargins"
+                _ranking_number(
+                    info.get(
+                        "profitMargins"
+                    )
                 ),
 
             "Operating Margin":

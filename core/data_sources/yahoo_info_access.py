@@ -19,11 +19,18 @@ from core.data_sources.yahoo_history_access import validate_yahoo_symbol
 
 _MAXIMUM_TEXT_LENGTH = 200
 
-# Only the fields the migrated research and multi-factor readers, and the
-# portfolio pipeline reading through ``MultiFactorEngine.get_info``, actually
-# consume are accepted. Everything else in the provider mapping - including
+# Only the fields the migrated readers actually consume are accepted: the
+# research, multi-factor and competitor analysers, the portfolio pipeline
+# reading through ``MultiFactorEngine.get_info``, the Yahoo source fetch and
+# the valuation engine. Everything else in the provider mapping - including
 # fields yfinance may add later - is discarded at this boundary and can never
 # reach a caller.
+#
+# ``FinancialDataEngine.get_company_info`` is deliberately not migrated yet and
+# still reads ``Ticker.info`` directly. It feeds the broad ``CompanyContext``,
+# whose analysers read profile fields well outside this allowlist, so it needs
+# its own separately inventoried batch. No field is admitted here for those
+# deferred consumers.
 TEXT_FIELDS: tuple[str, ...] = (
     "longName",
     "sector",
@@ -47,10 +54,17 @@ NUMERIC_FIELDS: tuple[str, ...] = (
     "priceToBook",
     "profitMargins",
     "quickRatio",
+    # An unqualified late provider number, exactly like ``currentPrice``: it is
+    # neither a tradeable quote nor an official prior close, and admitting it
+    # here adds no authority to either field.
+    "regularMarketPrice",
     "returnOnAssets",
     "returnOnEquity",
     "returnOnInvestedCapital",
     "revenueGrowth",
+    "sharesOutstanding",
+    "totalCash",
+    "totalDebt",
     "trailingPE",
 )
 
@@ -75,7 +89,9 @@ class YahooInfoObservation:
     provider field can reach a caller through this observation.  The values are
     unqualified late provider numbers.  They are not official settlement
     prices, prior closes, tradeable quotes, account-bound values or replay
-    evidence, and their presence proves no temporal completeness.
+    evidence, and their presence proves no temporal completeness.  That applies
+    without exception to the profile price fields ``currentPrice`` and
+    ``regularMarketPrice``, which remain descriptive profile scalars.
     """
 
     fields: Mapping[str, Any]

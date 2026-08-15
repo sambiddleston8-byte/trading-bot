@@ -28,10 +28,58 @@ from core.research_engine import ResearchEngine
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Modules that have no remaining need for yfinance at all. Competitor peer
+# profile reads use the boundary; its subject mapping still comes from the
+# explicitly deferred ``CompanyContext`` aggregator.
 MIGRATED_MODULES = (
+    "bots/competitors/analyser.py",
     "core/multi_factor_engine.py",
     "core/research_engine.py",
 )
+
+# Every module that reads a profile field through the boundary, including those
+# still importing yfinance for the untouched statement and estimate
+# APIs. ``core/financial_data.py`` is absent on purpose: its cached
+# ``get_company_info`` still reads ``Ticker.info`` directly and feeds the broad
+# ``CompanyContext``, so it is deferred to a separately inventoried batch and
+# must not pull its analysers' fields into this allowlist.
+INFO_READING_MODULES = MIGRATED_MODULES + (
+    "core/data_sources/yahoo_source.py",
+    "core/portfolio_pipeline.py",
+    "core/valuation_engine.py",
+)
+
+BOUNDARY_INFO_RECEIVERS = {
+    "bots/competitors/analyser.py": {"peer_info"},
+    "core/data_sources/yahoo_source.py": {"info"},
+    "core/multi_factor_engine.py": {"info"},
+    "core/portfolio_pipeline.py": {"info"},
+    "core/research_engine.py": {"info"},
+    "core/valuation_engine.py": {"info"},
+}
+
+
+def collect_info_field_reads(relative):
+    """Return every profile field name a module reads from a boundary mapping.
+
+    Receiver names are explicit so a raw mapping from the deferred
+    ``CompanyContext`` aggregator cannot inflate the boundary allowlist.
+    """
+    tree = ast.parse((ROOT / relative).read_text(encoding="utf-8"), filename=relative)
+    fields = set()
+    for node in ast.walk(tree):
+        if not (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "get"
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id in BOUNDARY_INFO_RECEIVERS[relative]
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+        ):
+            continue
+        fields.add(node.args[0].value)
+    return fields
 
 
 class Clock:
@@ -141,19 +189,8 @@ def test_only_allowlisted_fields_survive_the_boundary():
 
 def test_allowlist_covers_exactly_the_fields_the_migrated_consumers_read():
     read_fields = set()
-    for relative in MIGRATED_MODULES + ("core/portfolio_pipeline.py",):
-        tree = ast.parse((ROOT / relative).read_text(encoding="utf-8"), filename=relative)
-        for node in ast.walk(tree):
-            if (
-                isinstance(node, ast.Call)
-                and isinstance(node.func, ast.Attribute)
-                and node.func.attr == "get"
-                and isinstance(node.func.value, ast.Name)
-                and node.func.value.id == "info"
-                and node.args
-                and isinstance(node.args[0], ast.Constant)
-            ):
-                read_fields.add(node.args[0].value)
+    for relative in INFO_READING_MODULES:
+        read_fields |= collect_info_field_reads(relative)
 
     assert read_fields == INFO_FIELD_ALLOWLIST
     assert not set(TEXT_FIELDS) & set(NUMERIC_FIELDS)

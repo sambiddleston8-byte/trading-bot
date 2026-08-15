@@ -1,13 +1,35 @@
 import math
 
+from core.data_sources.yahoo_info_access import YahooInfoClient
+
 
 class YahooSource:
 
     SOURCE_NAME = "Yahoo Finance / yfinance"
 
-    def __init__(self):
+    def __init__(self, info_client=None):
+        # yfinance is still required for the statement and estimate reads,
+        # which this batch does not touch. The profile read no longer uses it.
         import yfinance as yf
         self.yf = yf
+        self.info_client = (
+            info_client
+            if info_client is not None
+            else YahooInfoClient()
+        )
+
+    def get_company_info(self, symbol):
+        """Return allowlisted profile scalars, or ``{}`` when unusable.
+
+        The no-data contract of ``fetch`` is unchanged: an unusable read still
+        yields an empty mapping rather than a partial or invented one, and no
+        provider, request or exception text escapes.
+        """
+
+        try:
+            return dict(self.info_client.info(symbol).fields)
+        except Exception:
+            return {}
 
     def safe_float(self, value, default=None):
         try:
@@ -253,10 +275,7 @@ class YahooSource:
         # COMPANY INFO
         # --------------------------------------------------------
 
-        try:
-            info = ticker.info
-        except Exception:
-            info = {}
+        info = self.get_company_info(symbol)
 
         # --------------------------------------------------------
         # FINANCIAL STATEMENTS
