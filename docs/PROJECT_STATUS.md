@@ -1099,6 +1099,35 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   failed diagnostic is not a track record and must never support promotion.
   After those corrections and expanded boundary tests, the final focused Claude
   Opus correction review returned PASS with no release blockers.
+- Campaign v1 is formally archived as `CLOSED_PROTOCOL_NONCONFORMANT` in its
+  original append-only exemption ledger. Closure record
+  `bc245c30a4dc744f30ccd2bba9381a213dc18d0fe867434ad1c225bd7c0d44d5`
+  binds the four reviewed v1 records and records both the omitted purge/embargo
+  and the unregistered, timing-misaligned SPY diagnostic. The closure preserves
+  the human Research Index & Availability Exemption only for its original
+  AAPL/MSFT/SPY scope; it grants no extension, provider evidence, admission,
+  performance, broker, order or trading authority. Code now fails closed if v1
+  admission, VectorBT screening or untouched execution is attempted again.
+- A sealed Campaign v2 proposal is ready for explicit human approval; it is not
+  a preregistration and authorizes no data call or evaluation. Proposal hash
+  `ff4ca9a0919e43044337e609140197bb5869681e47e226720b12df64075cc82b`
+  fixes AAPL/MSFT candidates with SPY as benchmark, the unchanged 20/50/20
+  strategy and conservative execution policy, and a fresh 1 March 2026 through
+  28 February 2027 acquisition window. TRAIN is March-June 2026, VALIDATION is
+  July-August 2026 and the never-opened UNTOUCHED_TEST is September 2026-
+  February 2027. The protocol mandates 50 observations of warm-up, one
+  observation of purge, one observation of embargo, one untouched evaluation,
+  separately passing AAPL and MSFT under BASE and PESSIMISTIC profiles, at
+  least two completed trades, non-negative mechanical price return and matched-
+  timing SPY-relative return, and maximum drawdown no worse than 20%. Fewer than
+  two trades is inconclusive, never a pass or permission to rerun. The known v1
+  window and result are disclosed; its opened test overlaps only v2 TRAIN/
+  VALIDATION and never v2 UNTOUCHED_TEST. The proposed exemption extension is
+  pending and would assert each completed historical capture slice only after
+  approval, never a future slice in advance. The current v1 preregistration
+  schema structurally rejects this proposal; approval would first require a
+  future-window v2 schema, a distinct ledger and quarantine root, capture-chain
+  binding, and continued mandatory purge/embargo enforcement.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact

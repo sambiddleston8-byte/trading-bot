@@ -175,6 +175,7 @@ class ResearchExemptionLedger:
                         "TRAIN_VALIDATION_RESEARCH_ADMITTED",
                         "UNTOUCHED_TEST_CONSUMPTION_STARTED",
                         "UNTOUCHED_TEST_RESULT_RECORDED",
+                        "CAMPAIGN_V1_CLOSED_PROTOCOL_NONCONFORMANT",
                     }
                 ):
                     raise ValueError("boundary mismatch")
@@ -316,6 +317,137 @@ def register_exemption(
     return ledger.append("RESEARCH_EXEMPTION_REGISTERED", payload)
 
 
+_CAMPAIGN_V1_COMPLETED_EVENTS = (
+    "RESEARCH_EXEMPTION_REGISTERED",
+    "TRAIN_VALIDATION_RESEARCH_ADMITTED",
+    "UNTOUCHED_TEST_CONSUMPTION_STARTED",
+    "UNTOUCHED_TEST_RESULT_RECORDED",
+)
+
+
+def _validated_campaign_v1_prefix(
+    rows: Sequence[Mapping[str, Any]],
+) -> tuple[Mapping[str, Any], ...]:
+    prefix = tuple(rows[:4])
+    if (
+        len(prefix) != 4
+        or tuple(row["event_type"] for row in prefix)
+        != _CAMPAIGN_V1_COMPLETED_EVENTS
+    ):
+        raise LedgerIntegrityError("Campaign v1 audit chain is incomplete or reordered")
+    exemption, _, _, result = prefix
+    if (
+        result["payload"].get("result_sha256")
+        != "05adfe5236ea7bd50c57b2e04326ec421253365c4b51e9cb83ceb86b86fe4ac1"
+        or result["payload"].get("untouched_test_reusable") is not False
+        or result["payload"].get("exemption_id")
+        != exemption["payload"].get("exemption_id")
+    ):
+        raise LedgerIntegrityError("Campaign v1 result identity is not the reviewed result")
+    return prefix
+
+
+def _campaign_v1_closure_core(
+    prefix: Sequence[Mapping[str, Any]], actor: str
+) -> dict[str, Any]:
+    exemption, admission, consumption, result = prefix
+    return {
+        "authorized_by": actor,
+        "authorization_basis": "EXPLICIT_USER_INSTRUCTION_IN_CODEX_TASK",
+        "campaign_policy_version": CAMPAIGN_POLICY_VERSION,
+        "campaign_status": "CLOSED_PROTOCOL_NONCONFORMANT",
+        "closure_reason_codes": [
+            "PREREGISTERED_PURGE_AND_EMBARGO_OMITTED",
+            "SPY_DIAGNOSTIC_TIMING_MISALIGNED_AND_NOT_REGISTERED_COMPLETE_RETURN",
+        ],
+        "remediation_pull_requests": [
+            {"number": 255, "scope": "CAPTURE_BOUND_NORMALIZATION_FOUNDATION"},
+            {
+                "number": 257,
+                "scope": (
+                    "PURGE_EMBARGO_ONE_SHOT_AND_MATCHED_BENCHMARK_TIMING_"
+                    "ENFORCEMENT"
+                ),
+            },
+        ],
+        "exemption_id": exemption["payload"]["exemption_id"],
+        "exemption_record_hash": exemption["record_hash"],
+        "research_exemption_active_for_original_scope": True,
+        "research_exemption_scope_extension_granted": False,
+        "train_validation_admission_record_hash": admission["record_hash"],
+        "untouched_consumption_record_hash": consumption["record_hash"],
+        "result_record_hash": result["record_hash"],
+        "result_sha256": result["payload"]["result_sha256"],
+        "campaign_v1_archived": True,
+        "campaign_v1_evaluation_allowed": False,
+        "campaign_v1_untouched_reusable": False,
+        "campaign_v1_data_never_untouched_for_future_campaigns": True,
+        "provider_evidence": False,
+        "authenticated_replay_evidence": False,
+        "canonical_dataset_admitted": False,
+        "performance_claim_allowed": False,
+        "broker_connection_allowed": False,
+        "orders_submitted": False,
+        "live_trading_enabled": False,
+    }
+
+
+def close_campaign_v1(
+    *,
+    ledger: ResearchExemptionLedger,
+    authorized_by: str,
+) -> dict[str, Any]:
+    """Close v1 without reading data or extending its exemption scope."""
+
+    actor = str(authorized_by or "").strip()
+    if not actor:
+        raise ValueError("authorized_by is required")
+    rows = ledger.records()
+    prefix = _validated_campaign_v1_prefix(rows)
+    closures = [
+        row
+        for row in rows
+        if row["event_type"] == "CAMPAIGN_V1_CLOSED_PROTOCOL_NONCONFORMANT"
+    ]
+    core = _campaign_v1_closure_core(prefix, actor)
+    if closures:
+        if len(rows) != 5 or len(closures) != 1 or rows[-1] != closures[0]:
+            raise LedgerIntegrityError("Campaign v1 closure chain is invalid")
+        existing = closures[0]["payload"]
+        existing_core = {
+            key: value
+            for key, value in existing.items()
+            if key not in {"git_revision", "closure_module_sha256"}
+        }
+        if existing_core != core:
+            raise LedgerIntegrityError("Campaign v1 closure differs from request")
+        return closures[0]
+    if len(rows) != 4:
+        raise LedgerIntegrityError("Campaign v1 closure chain contains extra events")
+    repository_root = Path(__file__).resolve().parents[2]
+    payload = {
+        **core,
+        "git_revision": current_git_revision(repository_root),
+        "closure_module_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    }
+    return ledger.append(
+        "CAMPAIGN_V1_CLOSED_PROTOCOL_NONCONFORMANT",
+        payload,
+        unique=True,
+    )
+
+
+def _require_campaign_v1_open(ledger: ResearchExemptionLedger) -> None:
+    rows = ledger.records()
+    if any(
+        row["event_type"] == "CAMPAIGN_V1_CLOSED_PROTOCOL_NONCONFORMANT"
+        for row in rows
+    ):
+        raise ValueError("Campaign v1 is closed and cannot be admitted or evaluated")
+    if sum(row["event_type"] == "RESEARCH_EXEMPTION_REGISTERED" for row in rows) != 1:
+        raise ValueError("Campaign v1 requires exactly one registered research exemption")
+
+
 def _exemption(ledger: ResearchExemptionLedger) -> dict[str, Any]:
     rows = [r for r in ledger.records() if r["event_type"] == "RESEARCH_EXEMPTION_REGISTERED"]
     if len(rows) != 1:
@@ -431,6 +563,7 @@ def admit_train_validation(
     store: MassiveHistoricalQuarantineStore,
     admitted_root: str | Path,
 ) -> tuple[ResearchBar, ...]:
+    _require_campaign_v1_open(ledger)
     exemption = _exemption(ledger)
     verified = store.verify()
     _require_registered_chain(exemption, verified)
@@ -519,8 +652,13 @@ def _strategy_signals(
     return entries, exits
 
 
-def vectorbt_fixed_parameter_screen(bars: Sequence[ResearchBar]) -> dict[str, Any]:
+def vectorbt_fixed_parameter_screen(
+    bars: Sequence[ResearchBar],
+    *,
+    campaign_state_ledger: ResearchExemptionLedger,
+) -> dict[str, Any]:
     """Evaluate the sole preregistered parameter set; this is not optimization."""
+    _require_campaign_v1_open(campaign_state_ledger)
     import math
     import pandas as pd
     import vectorbt
@@ -676,6 +814,7 @@ def execute_untouched_once(
     admitted_bars: Sequence[ResearchBar],
     vectorbt_screen: Mapping[str, Any],
 ) -> dict[str, Any]:
+    _require_campaign_v1_open(ledger)
     exemption = _exemption(ledger)
     rows = ledger.records()
     if any(r["event_type"] == "UNTOUCHED_TEST_CONSUMPTION_STARTED" for r in rows):

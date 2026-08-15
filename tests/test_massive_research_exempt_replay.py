@@ -292,9 +292,14 @@ def research_rows() -> list[ResearchBar]:
     return rows
 
 
-def test_vectorbt_screen_uses_only_the_sole_preregistered_parameter_set():
+def test_vectorbt_screen_uses_only_the_sole_preregistered_parameter_set(tmp_path):
     rows = research_rows()
-    result = vectorbt_fixed_parameter_screen(rows)
+    ledger = ResearchExemptionLedger(tmp_path / "open.jsonl")
+    ledger.append("RESEARCH_EXEMPTION_REGISTERED", {"exemption_id": "RIXA-TEST"})
+    result = vectorbt_fixed_parameter_screen(
+        rows,
+        campaign_state_ledger=ledger,
+    )
     assert result["candidate_parameter_count"] == 1
     assert result["parameter_search_allowed"] is False
     assert result["screen_type"].endswith("NOT_OPTIMIZATION")

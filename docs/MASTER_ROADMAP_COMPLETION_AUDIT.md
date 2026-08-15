@@ -203,6 +203,36 @@ contract. Missing corporate-action/total-return evidence, entitlement, replay
 permission, provider semantics and external anchoring remain unresolved, so
 this failed diagnostic is not a track record or promotion evidence. The final
 focused Claude Opus correction review returned PASS with no release blockers.
+Campaign v1 is now formally archived as `CLOSED_PROTOCOL_NONCONFORMANT` in the
+same append-only chain. Closure record
+`bc245c30a4dc744f30ccd2bba9381a213dc18d0fe867434ad1c225bd7c0d44d5`
+binds all four reviewed v1 records, both protocol defects and the remediation
+scope of PRs #255 and #257. It prohibits any further v1 admission, screening,
+evaluation or untouched reuse. The original-scope AAPL/MSFT/SPY Research Index
+& Availability Exemption remains a recorded human assumption only; no scope
+extension or provider, performance, broker, order or trading authority was
+granted.
+
+Campaign v2 proposal
+`ff4ca9a0919e43044337e609140197bb5869681e47e226720b12df64075cc82b`
+is pending explicit human approval and is deliberately incompatible with the
+v1 preregistration schema. It authorizes no append, data call or evaluation. It
+retains the unchanged AAPL/MSFT 20/50/20 strategy and conservative execution
+policy, with SPY as a matched-timing price-return diagnostic, over a new 1 March
+2026-28 February 2027 window: TRAIN March-June, VALIDATION July-August and a
+fresh UNTOUCHED_TEST September-February. Mandatory 50-observation warm-up,
+one-observation purge, one-observation embargo and a single untouched execution
+are contract fields. AAPL and MSFT must each pass BASE and PESSIMISTIC profiles
+with at least two completed trades, non-negative mechanical and SPY-relative
+price returns, and drawdown no worse than 20%; insufficient trades are
+inconclusive without rerun. The package discloses that all v1 data were opened
+and its result was known when v2 was proposed; any overlap is confined to v2
+TRAIN/VALIDATION, never its untouched window. A linked exemption extension is
+still pending and could assert only completed captured slices after approval.
+Before any v2 activity, code must provide a future-window schema, an explicit
+approval record, distinct v2 ledger and quarantine root, full capture-chain
+binding and the repaired purge/embargo gates. Claude Opus returned PASS after
+red-teaming these controls; no provider call or evaluation was performed.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -234,17 +264,16 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. **Baseline test consumed but protocol-nonconformant; qualification still blocked:** the exact baseline strategy,
-   acquisition window and chronological split are preregistered, and all 36/36
-   fixed AAPL/MSFT/SPY slices are retained in isolated raw quarantine. The 27
-   TRAIN/VALIDATION captures passed structural normalization. The explicit
-   research exemption and consumed untouched run are not admission or
-   qualification: historical availability, stable identity, account
-   entitlement, replay permission and required roles remain unresolved. The
-   local normalizer-to-capture binding is enforced but cannot supply those
-   external facts. The sample cannot satisfy the combined provider mandate or
-   support promotion. The diagnostic cannot be treated as a valid untouched
-   test, optimized or rerun.
+2. **Campaign v1 closed; Campaign v2 awaits explicit approval:** v1 is archived
+   as protocol-nonconformant and cannot be admitted, optimized, evaluated or
+   rerun. Review Campaign v2 proposal hash
+   `ff4ca9a0919e43044337e609140197bb5869681e47e226720b12df64075cc82b`.
+   Approval would authorize implementation of the v2 preregistration boundary,
+   linked research-exemption extension and isolated storage controls—not a data
+   call or evaluation. Its untouched window does not finish until 28 February
+   2027, so no conforming untouched result can exist before then. Historical
+   availability, stable identity, account entitlement, replay permission and
+   required provider roles remain unresolved throughout.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-
