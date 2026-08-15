@@ -151,11 +151,15 @@ per-trade/aggregate risk, 14-bar ATR/2x stop and per-candidate success gates.
 The hashable inert campaign contract now represents those choices and builds an
 engine-policy-v3 profile that enforces the position cap using the maximum
 configured adverse entry price; replay audit revalidates that cap against actual
-fills while retaining legacy v2 audit interpretation. That campaign profile is
-not yet wired into the older authenticated replay-profile resolver. A versioned
-binding that preserves old audit records remains mandatory before any admitted
-campaign replay. The assumptions are uncalibrated and authorize no performance
-claim. After PR #252 merged, clean main produced the one permitted owner-only
+fills while retaining legacy v2 audit interpretation. The authenticated
+execution-profile resolver now exposes an explicit campaign-v2 route that
+accepts only the immutable preregistration ledger plus an ID, re-verifies that
+ledger internally and requires the exact approved strategy, parameters, windows,
+policy hash, cost-policy identity and scenarios before deriving the 25% cap and
+1% aggregate risk limit.
+The absent-campaign route preserves the exact legacy-v1 profile, and campaign-v2
+is never selected implicitly. The assumptions are uncalibrated and authorize no
+performance claim. After PR #252 merged, clean main produced the one permitted owner-only
 Massive preregistration, `HQP-DCE89C243F16E9C659B3B339A08DE350` (record hash
 `d20899e47335d6fa4ee2a5773fcd1cf12f1b921018a775a4525e7bc166a4dc6d`).
 The retained official public terms-page bytes are hashed, but entitlement and
@@ -168,8 +172,12 @@ duplicate IDs or out-of-slice observations; nine UNTOUCHED_TEST captures remain
 sealed from evaluation, although store verification re-hashes their exact bytes.
 All staged availability/effectiveness bases are local-retrieval-only and
 unqualified as of 15 August 2026, too late for the registered 2025–2026 decision
-window. The normalizer also lacks an enforced binding from its caller-supplied
-retrieval time and slice to the verified capture. Zero bytes were admitted,
+window. A new store-issued wrapper closes the local normalizer-substitution gap:
+it re-verifies the capture and blob, derives retrieval time, symbol, split and
+request window only from the immutable record, checks every normalized bar
+against them and records a binding hash. Direct adapter output remains explicitly
+unbound, and untouched-test bytes still cannot be opened. This proves no provider
+origin, semantics or historical availability. Zero bytes were admitted,
 authenticated or made engine-ready; the untouched evaluation was refused, and
 every replay/broker/trading authority remains false.
 The older strict parser for execution-critical price, calendar, corporate-
@@ -209,8 +217,9 @@ prevent continued use of current/free entitlements for supplementary research.
    TRAIN/VALIDATION captures passed structural normalization; nine untouched
    captures remain sealed. Quarantine completion is not admission or
    qualification: historical availability, stable identity, account
-   entitlement, replay permission, required roles and normalizer-to-capture
-   binding remain unresolved. The sample cannot satisfy the combined provider
+   entitlement, replay permission and required roles remain unresolved. The
+   local normalizer-to-capture binding is enforced but cannot supply those
+   external facts. The sample cannot satisfy the combined provider
    mandate or support the preregistered historical decision window.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index

@@ -1009,11 +1009,15 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   declared costs, volume participation and order ages. The inert campaign
   profile builds an engine-policy-v3 configuration that enforces the cap before
   entry, and replay audit can re-derive it from the reference price, maximum
-  configured adverse costs and actual fill. It is deliberately not wired into
-  the older authenticated replay-profile resolver: before any admitted replay,
-  a later versioned batch must bind these campaign controls through that
-  authenticated route without invalidating legacy audit records. These values
-  are assumptions, not calibrations or performance evidence. After PR #252
+  configured adverse costs and actual fill. The authenticated execution-profile
+  resolver now has an explicit campaign-v2 route: it accepts only the immutable
+  preregistration ledger plus an ID, re-runs ledger verification internally and
+  requires the exact strategy, parameters, windows, policy hash, cost scenarios
+  and execution-policy identity from this approved contract before it
+  derives the 25% position cap and 1% aggregate risk limit. Omitting that ledger
+  preserves the exact legacy-v1 profile and existing audit interpretation. The
+  route grants no replay authority and is never selected implicitly. These
+  values are assumptions, not calibrations or performance evidence. After PR #252
   merged, the clean-main local ledger appended and verified exactly one
   preregistration, `HQP-DCE89C243F16E9C659B3B339A08DE350` (record hash
   `d20899e47335d6fa4ee2a5773fcd1cf12f1b921018a775a4525e7bc166a4dc6d`).
@@ -1031,10 +1035,15 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   Every staged timestamp basis is `LOCAL_RETRIEVAL_ONLY_UNQUALIFIED`, with
   `effective_at` and `available_at` equal to local retrieval on 15 August 2026.
   Those retrieval-late values cannot lawfully support decisions inside the
-  preregistered 2025–2026 window. The adapter also does not independently bind
-  its caller-supplied retrieval timestamp or requested slice to a verified
-  quarantine record, so the observed reconciliation is not yet an enforced
-  admission invariant. Zero bytes were admitted, authenticated or made engine-
+  preregistered 2025–2026 window. Direct adapter output now identifies itself as
+  unbound. The only capture-bound staging route re-verifies the quarantine
+  ledger and raw blob, derives retrieval time, symbol, split and request window
+  solely from that capture, enforces every normalized bar against those values,
+  and issues a separate non-admitted binding hash. TRAIN and VALIDATION may be
+  structurally staged; UNTOUCHED_TEST bytes remain inaccessible. This closes the
+  local metadata-substitution gap but does not authenticate provider origin,
+  qualify semantics or backdate availability. Zero bytes were admitted,
+  authenticated or made engine-
   ready; the single untouched evaluation was refused rather than consumed, and
   all broker/trading authorities remain false.
 - The pre-existing strict bitemporal replay parser is now subject to the same

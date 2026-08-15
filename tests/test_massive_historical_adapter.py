@@ -79,6 +79,7 @@ def test_synthetic_json_is_staged_through_canonical_cutoff_schema():
     assert summary["role"] == "RAW_DAILY_SESSION_BARS"
     assert summary["record_count"] == 1
     assert summary["source_payload_sha256"] == hashlib.sha256(original.payload_bytes).hexdigest()
+    assert summary["quarantine_capture_bound"] is False
     assert summary["provider_payload_semantics_qualified"] is False
     assert summary["source_bytes_authenticated"] is False
     assert summary["role_coverage_validated"] is False

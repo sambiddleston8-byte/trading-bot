@@ -67,6 +67,7 @@ BAR_OPTIONAL_FIELDS = frozenset({"n", "vw", "otc"})
 _SYMBOL_PATTERN = re.compile(r"[A-Z][A-Z0-9.\-]{0,14}")
 _STAGING_AUTHORITY = object()
 SAFETY_FLAG_NAMES = (
+    "quarantine_capture_bound",
     "provider_payload_semantics_qualified",
     "source_bytes_authenticated",
     "observation_selection_validated",
@@ -306,6 +307,7 @@ class MassiveHistoricalStagingBatch:
     observations: tuple[Mapping[str, Any], ...]
     source_payload_sha256: str
     staging_sha256: str
+    quarantine_capture_bound: bool = False
     provider_payload_semantics_qualified: bool = False
     source_bytes_authenticated: bool = False
     observation_selection_validated: bool = False
@@ -334,6 +336,7 @@ class MassiveHistoricalStagingBatch:
             "record_count": len(self.observations),
             "source_payload_sha256": self.source_payload_sha256,
             "staging_sha256": self.staging_sha256,
+            "quarantine_capture_bound": False,
             "provider_payload_semantics_qualified": False,
             "source_bytes_authenticated": False,
             "observation_selection_validated": False,
