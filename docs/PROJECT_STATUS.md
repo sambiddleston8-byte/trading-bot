@@ -984,6 +984,40 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   `currentPrice` remains an unqualified legacy input, not a tradeable quote,
   prior close, official settlement value or account-bound observation. Tests
   use injected fakes and no Yahoo or broker request was made.
+- Three further direct `.info` profile readers — competitor peer analysis, the
+  Yahoo source fetch and the valuation engine — now enter that same third
+  boundary through an injected client. Its allowlist gained only the scalars
+  those three callers already read: `regularMarketPrice`, `sharesOutstanding`,
+  `totalCash` and `totalDebt`. Formulas, the configured peer lists, ranking,
+  scoring, weights, defaults and result schema are unchanged. A peer with no
+  usable allowlisted profile field is now omitted, so eligible peer membership
+  can shrink without fabricating data. Subject ranking inputs now receive the
+  same strict numeric validation as peer inputs, preventing malformed raw
+  values from entering comparisons. Each read
+  returns a fresh plain dict, so no caller can mutate an immutable boundary
+  observation. A failed read keeps the established empty/no-data shape and logs
+  at most one fixed message that echoes neither the supplied symbol nor
+  provider or exception text. `CompetitorAnalyser` no longer imports yfinance
+  and the direct-import inventory records the reduced list; the other two
+  retain it for their untouched statement and estimate APIs. A deterministic
+  receiver inventory pins that their profile reads no longer use it. A check also
+  covers the valuation engine's complete profile dependency — its own reads
+  plus the Yahoo source fetch it reaches through `build_context`. These profile
+  values remain unauthenticated, non-point-in-time, non-survivorship-safe and
+  inadmissible as replay evidence; `currentPrice` and `regularMarketPrice` are
+  unqualified late provider numbers, not tradeable quotes, prior closes,
+  official settlement values or account-bound observations, and no fallback
+  field or fabricated value was added. Tests use injected fakes and no Yahoo
+  request was made.
+- `FinancialDataEngine.get_company_info` is deliberately still a direct
+  `Ticker.info` read and is explicitly deferred. It populates the broad
+  `CompanyContext`, whose profile, metrics, moat, management, industry and
+  fundamental analysers consume fields well outside the allowlist above —
+  including nested values the boundary rejects by design. Migrating it requires
+  its own separately inventoried batch that first enumerates those consumers;
+  no field was admitted to the boundary on their behalf, and no unrelated
+  analyser's successful semantics were changed. A deterministic test pins that
+  deferral so a silent partial migration cannot blank those inputs.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive requests now pass through
   a shared process-local access coordinator. It gently spaces requests across
   separate client instances, retries only connection failures and HTTP

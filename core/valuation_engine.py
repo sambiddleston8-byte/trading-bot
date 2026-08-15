@@ -3,11 +3,14 @@ import math
 import os
 from datetime import datetime, timezone
 
+# yfinance remains required for the income-statement and cash-flow reads
+# below, which this batch does not touch. The profile read no longer uses it.
 import yfinance as yf
 
 from core.financial_data import FinancialDataEngine
 from core.data_sources.analyst_source import AnalystSource
 from core.data_sources.earnings_source import EarningsSource
+from core.data_sources.yahoo_info_access import YahooInfoClient
 from core.validation.forecast_validator import ForecastValidator
 
 
@@ -19,7 +22,14 @@ class ValuationEngine:
         default_wacc=0.09,
         default_terminal_growth=0.03,
         output_directory="data/research/valuation",
+        info_client=None,
     ):
+
+        self.info_client = (
+            info_client
+            if info_client is not None
+            else YahooInfoClient()
+        )
 
         self.forecast_years = forecast_years
         self.default_wacc = default_wacc
@@ -91,17 +101,30 @@ class ValuationEngine:
         self,
         symbol,
     ):
+        """Return allowlisted profile scalars, or ``{}`` when unusable.
+
+        ``analyse`` already treats an empty mapping as "no company data
+        available", so the unavailable-data contract is unchanged.  The failure
+        log no longer echoes the supplied symbol or the raw exception, and a
+        fresh plain dict keeps callers away from the boundary observation.
+        """
 
         try:
 
-            return self.get_ticker(
-                symbol
-            ).info
+            observation = (
+                self.info_client.info(
+                    symbol
+                )
+            )
 
-        except Exception as error:
+            return dict(
+                observation.fields
+            )
+
+        except Exception:
 
             print(
-                f"{symbol} info failed: {error}"
+                "Yahoo info failed."
             )
 
             return {}
