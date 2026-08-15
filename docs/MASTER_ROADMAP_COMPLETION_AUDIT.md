@@ -215,8 +215,8 @@ granted.
 
 Campaign v2 proposal
 `ff4ca9a0919e43044337e609140197bb5869681e47e226720b12df64075cc82b`
-was explicitly approved and registered through the separate v2-only schema
-before the untouched window begins. Approval record
+was explicitly approved and registered through the separate v2-only schema.
+Approval record
 `09a2acfc37629e9c7287c8a875de0b52209f65459efc4478ca3d0ed93ffc06df`,
 exemption-extension record
 `8a25bf21c4f5f945bac32181d1556503f2f58bcd44e3b220909c06b3d350388d`
@@ -226,24 +226,28 @@ form one immutable chain pinned to clean Git `d5476c6`, the exact v1 closure,
 preregistration and entitlement evidence. The extension is authorized but not
 applied to any capture, and no future assumption has been asserted. The empty
 owner-only v2 raw root is disjoint from v1 and known admitted research storage.
-Provider access, capture activation, data opening, evaluation and untouched
-access remain false; entitlement revalidation and separate capture
-authorization are mandatory before any request. The contract
-retains the unchanged AAPL/MSFT 20/50/20 strategy and conservative execution
-policy, with SPY as a matched-timing price-return diagnostic, over a new 1 March
-2026-28 February 2027 window: TRAIN March-June, VALIDATION July-August and a
-fresh UNTOUCHED_TEST September-February. Mandatory 50-observation warm-up,
-one-observation purge, one-observation embargo and a single untouched execution
-are contract fields. AAPL and MSFT must each pass BASE and PESSIMISTIC profiles
-with at least two completed trades, non-negative mechanical and SPY-relative
-price returns, and drawdown no worse than 20%; insufficient trades are
-inconclusive without rerun. The chain discloses that all v1 data were opened
-and its result was known when v2 was proposed; any overlap is confined to v2
-TRAIN/VALIDATION, never its untouched window. The v1 schema remains unchanged;
-the v2 schema enforces preregistration before 1 September 2026, exact parent
-hashes, full capture binding, repaired purge/embargo gates and deny-by-default
-provider policy. Claude Opus returned PASS after all red-team findings were
-corrected; no provider call or evaluation was performed.
+Provider access, capture activation, data opening and evaluation remained false.
+On 15 August 2026 the package was found calendar-invalid for the requested
+activation: VALIDATION had not ended and UNTOUCHED_TEST was wholly future. It is
+therefore retired by code and scheduled for an immutable terminal supersession
+record at the clean release commit; it was never activated and is not reusable.
+
+Revision-1 proposal
+`7c43094e64f324d6987b67a25d03626eb4defe4096ae1b135e1c0319b60fc0d5`
+is registered in this release documentation for approval only. Its completed,
+v1-disjoint window is 1 August
+2024-31 July 2025: TRAIN through 28 February, VALIDATION March-April and
+UNTOUCHED_TEST-role May-July. Because every date was already historical at
+proposal time, the final split is explicitly a `SEALED_RETROSPECTIVE_TEST`, not
+genuinely future untouched evidence. The package makes no assertion that market
+outcomes were unknown to researchers and grants no promotion or track-record
+authority. It preserves the unchanged AAPL/MSFT 20/50/20 strategy, SPY
+diagnostic, 25% position cap, conservative costs, 50-observation warm-up,
+one-observation purge, one-observation embargo, one test execution and existing
+success thresholds. Approval, a distinct revision preregistration, entitlement
+revalidation and separate capture authorization remain mandatory before any
+provider request. No API key is requested and no provider call or evaluation
+is allowed by this proposal registration.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -275,17 +279,15 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. **Campaign v2 controls registered; provider access remains blocked:** v1 is
-   archived and cannot be admitted, optimized, evaluated or rerun. The v2
-   approval, exemption extension and preregistration are sealed, but the raw
-   root is empty and every data/evaluation authority is false. Revalidate the
-   Massive account entitlement and add a separate bounded capture-activation
-   record before considering any completed historical slice request. Do not
-   request a slice ending on or after the request date, and do not apply the
-   research exemption until an exact completed capture exists. The untouched
-   window does not finish until 28 February 2027, so no conforming untouched
-   result can exist before then. Historical availability, stable identity,
-   replay permission and required provider roles remain unresolved throughout.
+2. **Campaign v2 revision awaits approval; provider access remains blocked:**
+   the original v2 controls are retired by code and awaiting their terminal
+   local supersession record for the incomplete and future dates. Review and
+   explicitly approve revision-1 hash `7c43094e...`
+   before a distinct revision preregistration is appended. Only then revalidate
+   entitlement and separately authorize bounded quarantine capture. Treat its
+   last split as a one-shot sealed retrospective test, never as genuinely future
+   evidence or promotion authority. Historical availability, stable identity,
+   replay permission and required provider roles remain unresolved.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-

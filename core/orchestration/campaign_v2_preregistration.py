@@ -37,6 +37,12 @@ from core.research.conservative_baseline_campaign_v2_proposal import (
     CAMPAIGN_POLICY_VERSION,
     proposal_package,
 )
+from core.research.conservative_baseline_campaign_v2_revision_proposal import (
+    APPROVAL_STATUS as REVISION_APPROVAL_STATUS,
+    CALENDAR_CONFLICT_IDENTIFIED_ON,
+    CAMPAIGN_POLICY_VERSION as REVISION_CAMPAIGN_POLICY_VERSION,
+    proposal_package as revision_proposal_package,
+)
 
 if TYPE_CHECKING:
     from core.research.massive_research_exempt_replay import ResearchExemptionLedger
@@ -70,6 +76,10 @@ EVENT_SEQUENCE = (
     "CAMPAIGN_V2_RESEARCH_EXEMPTION_EXTENSION_REGISTERED",
     "CAMPAIGN_V2_QUARANTINE_PREREGISTERED",
 )
+SUPERSESSION_EVENT = "CAMPAIGN_V2_CONTROLS_SUPERSEDED_CALENDAR_CONFLICT"
+CONTROL_EVENT_SEQUENCE = (*EVENT_SEQUENCE, SUPERSESSION_EVENT)
+ORIGINAL_CONTROLS_RETIRED = True
+V1_OPENED_ACQUISITION_START = date(2025, 8, 1)
 MAX_LEDGER_BYTES = 4 * 1024 * 1024
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -195,6 +205,55 @@ def _require_before_untouched_window(
     return untouched_start
 
 
+def _verified_revision_window(proposal: Mapping[str, Any]) -> None:
+    """Independently enforce completed, contiguous, v1-disjoint revision dates."""
+
+    try:
+        acquisition_start = date.fromisoformat(
+            _required(proposal.get("acquisition_start"), "acquisition_start", 10)
+        )
+        acquisition_end = date.fromisoformat(
+            _required(proposal.get("acquisition_end"), "acquisition_end", 10)
+        )
+        conflict_date = date.fromisoformat(CALENDAR_CONFLICT_IDENTIFIED_ON)
+        splits = proposal.get("splits")
+        if (
+            not isinstance(splits, list)
+            or any(not isinstance(row, dict) for row in splits)
+            or [row.get("role") for row in splits]
+            != [
+                "TRAIN",
+                "VALIDATION",
+                "UNTOUCHED_TEST",
+            ]
+        ):
+            raise ValueError("split roles")
+        expected = acquisition_start
+        for row in splits:
+            split_start = date.fromisoformat(
+                _required(row.get("start"), "split start", 10)
+            )
+            split_end = date.fromisoformat(
+                _required(row.get("end"), "split end", 10)
+            )
+            if split_start != expected or split_end < split_start:
+                raise ValueError("split continuity")
+            expected = split_end + timedelta(days=1)
+    except (TypeError, ValueError) as error:
+        raise LedgerIntegrityError(
+            "Campaign v2 revision dates are invalid"
+        ) from error
+    if (
+        acquisition_start > acquisition_end
+        or expected != acquisition_end + timedelta(days=1)
+        or acquisition_end >= conflict_date
+        or acquisition_end >= V1_OPENED_ACQUISITION_START
+    ):
+        raise LedgerIntegrityError(
+            "Campaign v2 revision must be completed and disjoint from opened v1 data"
+        )
+
+
 def _verified_v1_parents(
     *,
     v1_exemption_ledger: ResearchExemptionLedger,
@@ -249,7 +308,7 @@ def _verified_v1_parents(
 
 
 class CampaignV2ControlLedger:
-    """Three-event immutable approval, exemption, and preregistration chain."""
+    """Immutable v2 control chain with an optional terminal supersession."""
 
     def __init__(
         self,
@@ -301,8 +360,8 @@ class CampaignV2ControlLedger:
                     set(row) != _ENVELOPE_FIELDS
                     or row["schema_version"] != SCHEMA_VERSION
                     or row["policy_version"] != POLICY_VERSION
-                    or line_number > len(EVENT_SEQUENCE)
-                    or row["event_type"] != EVENT_SEQUENCE[line_number - 1]
+                    or line_number > len(CONTROL_EVENT_SEQUENCE)
+                    or row["event_type"] != CONTROL_EVENT_SEQUENCE[line_number - 1]
                     or not isinstance(row["payload"], dict)
                     or row["previous_hash"] != previous
                     or row["record_hash"] != _record_hash(material)
@@ -460,6 +519,54 @@ class CampaignV2ControlLedger:
             or any(plan.get(name) is not False for name in FIXED_FALSE)
         ):
             raise LedgerIntegrityError("Campaign v2 preregistration is invalid")
+        if len(rows) < 4:
+            return
+        supersession = rows[3]["payload"]
+        revision = revision_proposal_package()
+        _verified_revision_window(revision)
+        if (
+            supersession.get("status")
+            != "SUPERSEDED_CALENDAR_CONFLICT_NO_DATA_ACCESSED"
+            or supersession.get("superseded_proposal_sha256") != PROPOSAL_SHA256
+            or supersession.get("superseded_preregistration_record_hash")
+            != rows[2]["record_hash"]
+            or supersession.get("superseded_preregistration_id")
+            != rows[2]["payload"]["preregistration_id"]
+            or supersession.get("replacement_proposal_sha256")
+            != revision["proposal_sha256"]
+            or supersession.get("replacement_campaign_policy_version")
+            != REVISION_CAMPAIGN_POLICY_VERSION
+            or supersession.get("replacement_approval_status")
+            != "PENDING_EXPLICIT_HUMAN_APPROVAL"
+            or REVISION_APPROVAL_STATUS != "PENDING_EXPLICIT_HUMAN_APPROVAL"
+            or supersession.get("calendar_conflict_identified_on")
+            != CALENDAR_CONFLICT_IDENTIFIED_ON
+            or supersession.get("reason_codes")
+            != revision["supersession_reason_codes"]
+            or supersession.get("replacement_window")
+            != {
+                "acquisition_start": revision["acquisition_start"],
+                "acquisition_end": revision["acquisition_end"],
+                "splits": revision["splits"],
+            }
+            or supersession.get("replacement_test_semantic_role")
+            != "SEALED_RETROSPECTIVE_TEST"
+            or supersession.get("replacement_preregistration_registered") is not False
+            or supersession.get("superseded_quarantine_file_count") != 0
+            or supersession.get("provider_request_made_under_superseded_controls")
+            is not False
+            or supersession.get("replacement_proposal_module_sha256") is None
+            or SHA256_PATTERN.fullmatch(
+                str(supersession.get("replacement_proposal_module_sha256", ""))
+            )
+            is None
+            or GIT_REVISION_PATTERN.fullmatch(
+                str(supersession.get("git_revision", ""))
+            )
+            is None
+            or any(supersession.get(name) is not False for name in FIXED_FALSE)
+        ):
+            raise LedgerIntegrityError("Campaign v2 supersession is invalid")
 
     def register_approved_package(
         self,
@@ -485,10 +592,12 @@ class CampaignV2ControlLedger:
         )
         existing = self.records()
         if existing:
+            if len(existing) == len(CONTROL_EVENT_SEQUENCE):
+                raise ValueError("Campaign v2 controls were superseded")
             if existing[0]["payload"].get("authorized_by") != actor:
                 raise LedgerIntegrityError("Campaign v2 approval authority differs")
             if len(existing) == len(EVENT_SEQUENCE):
-                return self.require(existing[-1]["payload"]["preregistration_id"])
+                return self._inactive_plan(existing[-1])
         if self._worktree_clean_resolver(self.repository_root) is not True:
             raise ValueError("Git worktree must be clean before Campaign v2 registration")
         revision = _required(
@@ -618,11 +727,23 @@ class CampaignV2ControlLedger:
         }
         plan_payload["preregistration_id"] = _plan_id(plan_payload)
         plan = self._append_expected(EVENT_SEQUENCE[2], plan_payload)
-        return self.require(plan["payload"]["preregistration_id"])
+        return self._inactive_plan(plan)
+
+    @staticmethod
+    def _inactive_plan(record: Mapping[str, Any]) -> dict[str, Any]:
+        return {
+            **record["payload"],
+            "schema_version": SCHEMA_VERSION,
+            "policy_version": POLICY_VERSION,
+            "registered_at": record["recorded_at"],
+            "record_hash": record["record_hash"],
+        }
 
     def require(self, preregistration_id: str) -> dict[str, Any]:
         identifier = _required(preregistration_id, "preregistration_id", 100)
         records = self.records()
+        if ORIGINAL_CONTROLS_RETIRED or len(records) == len(CONTROL_EVENT_SEQUENCE):
+            raise ValueError("Campaign v2 controls were superseded")
         if len(records) != len(EVENT_SEQUENCE):
             raise ValueError("Campaign v2 control package is incomplete")
         record = records[-1]
@@ -636,10 +757,78 @@ class CampaignV2ControlLedger:
             "record_hash": record["record_hash"],
         }
 
+    def supersede_calendar_conflict(self) -> dict[str, Any]:
+        """Terminally disable the approved future-window package without data access."""
+
+        records = self.records()
+        if len(records) == len(CONTROL_EVENT_SEQUENCE):
+            return records[-1]
+        if len(records) != len(EVENT_SEQUENCE):
+            raise LedgerIntegrityError(
+                "Campaign v2 must have the complete approved chain before supersession"
+            )
+        unresolved_quarantine_root = (
+            self.repository_root / QUARANTINE_ROOT_RELATIVE_PATH
+        )
+        quarantine_root = unresolved_quarantine_root.resolve()
+        if quarantine_root.exists() and (
+            unresolved_quarantine_root.is_symlink()
+            or not quarantine_root.is_dir()
+            or any(quarantine_root.iterdir())
+        ):
+            raise LedgerIntegrityError(
+                "Campaign v2 quarantine must be an empty directory before supersession"
+            )
+        if self._worktree_clean_resolver(self.repository_root) is not True:
+            raise ValueError("Git worktree must be clean before Campaign v2 supersession")
+        revision_id = _required(
+            self._git_revision_resolver(self.repository_root), "git_revision", 64
+        ).lower()
+        if GIT_REVISION_PATTERN.fullmatch(revision_id) is None:
+            raise ValueError("git_revision must be a full lowercase Git commit ID")
+        replacement = revision_proposal_package()
+        _verified_revision_window(replacement)
+        if REVISION_APPROVAL_STATUS != "PENDING_EXPLICIT_HUMAN_APPROVAL":
+            raise LedgerIntegrityError(
+                "Campaign v2 revision must remain pending explicit approval"
+            )
+        replacement_source = (
+            self.repository_root
+            / "core/research/conservative_baseline_campaign_v2_revision_proposal.py"
+        )
+        payload = {
+            "status": "SUPERSEDED_CALENDAR_CONFLICT_NO_DATA_ACCESSED",
+            "superseded_proposal_sha256": PROPOSAL_SHA256,
+            "superseded_preregistration_record_hash": records[2]["record_hash"],
+            "superseded_preregistration_id": records[2]["payload"][
+                "preregistration_id"
+            ],
+            "calendar_conflict_identified_on": CALENDAR_CONFLICT_IDENTIFIED_ON,
+            "reason_codes": replacement["supersession_reason_codes"],
+            "replacement_proposal_sha256": replacement["proposal_sha256"],
+            "replacement_campaign_policy_version": REVISION_CAMPAIGN_POLICY_VERSION,
+            "replacement_approval_status": "PENDING_EXPLICIT_HUMAN_APPROVAL",
+            "replacement_proposal_module_sha256": hashlib.sha256(
+                replacement_source.read_bytes()
+            ).hexdigest(),
+            "replacement_window": {
+                "acquisition_start": replacement["acquisition_start"],
+                "acquisition_end": replacement["acquisition_end"],
+                "splits": replacement["splits"],
+            },
+            "replacement_test_semantic_role": "SEALED_RETROSPECTIVE_TEST",
+            "replacement_preregistration_registered": False,
+            "superseded_quarantine_file_count": 0,
+            "provider_request_made_under_superseded_controls": False,
+            "git_revision": revision_id,
+            **_fixed_false(),
+        }
+        return self._append_expected(SUPERSESSION_EVENT, payload)
+
     def _append_expected(
         self, event_type: str, payload: Mapping[str, Any]
     ) -> dict[str, Any]:
-        expected_index = EVENT_SEQUENCE.index(event_type)
+        expected_index = CONTROL_EVENT_SEQUENCE.index(event_type)
         _private_directory(self.path.parent)
         lock_path = self.path.with_suffix(self.path.suffix + ".lock")
         lock = os.open(lock_path, os.O_CREAT | os.O_RDWR | _no_follow(), 0o600)

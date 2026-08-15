@@ -21,6 +21,8 @@ from core.orchestration.campaign_v2_preregistration import (
     V1_ENTITLEMENT_METADATA_SHA256,
     V1_PREREGISTRATION_RECORD_SHA256,
     CampaignV2ControlLedger,
+    CONTROL_EVENT_SEQUENCE,
+    SUPERSESSION_EVENT,
     _require_before_untouched_window,
     initialize_campaign_v2_quarantine_root,
 )
@@ -115,9 +117,14 @@ def repository(tmp_path: Path) -> Path:
     proposal_source = (
         tmp_path / "core/research/conservative_baseline_campaign_v2_proposal.py"
     )
+    revision_source = (
+        tmp_path
+        / "core/research/conservative_baseline_campaign_v2_revision_proposal.py"
+    )
     strategy_source = tmp_path / "core/research/conservative_baseline_strategy.py"
     proposal_source.parent.mkdir(parents=True)
     proposal_source.write_text("PROPOSAL = 'approved'\n")
+    revision_source.write_text("PROPOSAL = 'pending-revision'\n")
     strategy_source.write_text("class ConservativeBaselineStrategy:\n    pass\n")
     return tmp_path
 
@@ -331,10 +338,11 @@ def test_tampered_control_chain_fails_hash_verification(tmp_path):
         target.records()
 
 
-def test_fourth_record_and_out_of_order_resume_are_rejected(tmp_path):
+def test_unknown_fourth_record_and_out_of_order_resume_are_rejected(tmp_path):
     target, _ = register(tmp_path)
     rows = [json.loads(line) for line in target.path.read_text().splitlines()]
     extra = dict(rows[-1])
+    extra["event_type"] = "UNKNOWN_FOURTH_EVENT"
     extra["previous_hash"] = rows[-1]["record_hash"]
     material = {key: value for key, value in extra.items() if key != "record_hash"}
     extra["record_hash"] = hashlib.sha256(
@@ -349,6 +357,93 @@ def test_fourth_record_and_out_of_order_resume_are_rejected(tmp_path):
     other = ledger(tmp_path / "other")
     with pytest.raises(LedgerIntegrityError, match="out of order"):
         other._append_expected(EVENT_SEQUENCE[1], {})
+
+
+def test_calendar_supersession_is_terminal_fail_closed_and_idempotent(tmp_path):
+    target, plan = register(tmp_path)
+    (tmp_path / QUARANTINE_ROOT_RELATIVE_PATH).mkdir(parents=True)
+
+    first = target.supersede_calendar_conflict()
+    second = target.supersede_calendar_conflict()
+    assert first == second
+    assert [row["event_type"] for row in target.records()] == list(
+        CONTROL_EVENT_SEQUENCE
+    )
+    assert first["event_type"] == SUPERSESSION_EVENT
+    payload = first["payload"]
+    assert payload["superseded_preregistration_id"] == plan["preregistration_id"]
+    assert payload["superseded_quarantine_file_count"] == 0
+    assert payload["provider_request_made_under_superseded_controls"] is False
+    assert payload["replacement_test_semantic_role"] == "SEALED_RETROSPECTIVE_TEST"
+    assert payload["replacement_preregistration_registered"] is False
+    assert payload["data_calls_allowed"] is False
+    assert payload["evaluation_allowed"] is False
+    with pytest.raises(ValueError, match="controls were superseded"):
+        target.require(plan["preregistration_id"])
+    with pytest.raises(ValueError, match="controls were superseded"):
+        target.register_approved_package(
+            v1_exemption_ledger=VerifiedV1ExemptionLedger(),
+            v1_preregistration_ledger=VerifiedV1PreregistrationLedger(),
+            authorized_by="SAM_AND_PAT_USER_APPROVAL",
+            approval_text=APPROVAL_TEXT,
+        )
+
+
+def test_truncating_terminal_record_cannot_resurrect_retired_controls(tmp_path):
+    target, plan = register(tmp_path)
+    (tmp_path / QUARANTINE_ROOT_RELATIVE_PATH).mkdir(parents=True)
+    target.supersede_calendar_conflict()
+    rows = target.path.read_text().splitlines()
+    target.path.write_text("\n".join(rows[:3]) + "\n")
+    target.path.chmod(0o600)
+    assert len(target.records()) == 3
+    with pytest.raises(ValueError, match="controls were superseded"):
+        target.require(plan["preregistration_id"])
+
+
+def test_calendar_supersession_rejects_nonempty_quarantine(tmp_path):
+    target, _ = register(tmp_path)
+    raw = tmp_path / QUARANTINE_ROOT_RELATIVE_PATH
+    raw.mkdir(parents=True)
+    (raw / "provider-byte.bin").write_bytes(b"must not exist")
+    with pytest.raises(LedgerIntegrityError, match="empty directory"):
+        target.supersede_calendar_conflict()
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"acquisition_end": "2026-08-15"},
+        {"acquisition_end": "2025-08-01"},
+        {
+            "splits": [
+                {"role": "TRAIN", "start": "2024-08-01", "end": "2025-02-28"},
+                {"role": "VALIDATION", "start": "2025-03-02", "end": "2025-04-30"},
+                {"role": "UNTOUCHED_TEST", "start": "2025-05-01", "end": "2025-07-31"},
+            ]
+        },
+    ],
+)
+def test_supersession_independently_rejects_bad_revision_dates(
+    tmp_path, monkeypatch, changes
+):
+    target, _ = register(tmp_path)
+    replacement = registration_module.revision_proposal_package()
+    replacement.update(changes)
+    monkeypatch.setattr(
+        registration_module, "revision_proposal_package", lambda: replacement
+    )
+    with pytest.raises(LedgerIntegrityError, match="revision"):
+        target.supersede_calendar_conflict()
+
+
+def test_rehashed_calendar_supersession_authority_changes_are_rejected(tmp_path):
+    target, _ = register(tmp_path)
+    (tmp_path / QUARANTINE_ROOT_RELATIVE_PATH).mkdir(parents=True)
+    target.supersede_calendar_conflict()
+    _rewrite_rehashed_chain(target.path, 3, {"data_calls_allowed": True})
+    with pytest.raises(LedgerIntegrityError, match="supersession"):
+        target.records()
 
 
 def test_registration_requires_clean_git_identity(tmp_path):
