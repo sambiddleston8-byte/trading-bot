@@ -120,6 +120,22 @@ contract does not establish historical publication timestamps or stable row
 identities, the pilot dates both effectiveness and availability at local receipt
 and labels the derived bases unqualified. A successful sample therefore remains
 non-authenticated, semantics-unqualified, incomplete and not engine-ready.
+An inactive pre-access Massive boundary now fixes the exact AAPL/MSFT/SPY
+basket, acquisition window, ordered train/validation/untouched-test split,
+strategy source/version, complete parameter space and exact evaluation/selection
+protocol in an owner-only, one-campaign hash-chain ledger. The tool derives the
+clean Git revision and strategy hash rather than accepting them as operator
+claims. A separate content-addressed raw-response quarantine accepts only exact
+split-contained 31-day slices and binds raw/header hashes, non-secret query,
+HTTP status, request chronology, access counters, asserted-but-unauthenticated
+public terms and preregistration provenance. Its storage must
+be disjoint from admitted-source storage. The new modules have no direct
+admission, simulation-engine or broker import/wiring, cannot issue source,
+replay or synthetic-pilot attestations, and their wrapper fails the synthetic
+pilot's exact-type boundary. Deterministic
+fake responses prove the boundary; no plan has been registered and no real
+multi-ticker bytes have been requested or admitted. These local chains are not
+externally anchored and do not claim to detect deletion of every local artifact.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -151,11 +167,13 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. Use the free self-service Massive pilot to obtain one narrow representative
-   custom-bar sample without placing a credential in chat, Git, test fixtures or
-   model prompts. Validate only its documented schema and preserve every missing
-   historical-availability, identity, entitlement and role claim as unresolved.
-   This sample cannot satisfy the combined provider mandate by itself.
+2. Select and immutably preregister one exact baseline strategy/grid, acquisition
+   window and chronological split, then fetch only the fixed AAPL/MSFT/SPY plan
+   into the isolated Massive raw quarantine using a private local credential.
+   Quarantine completion is not admission or qualification: historical
+   availability, stable identity, account entitlement, replay permission and
+   role semantics remain unresolved. The sample cannot satisfy the combined
+   provider mandate by itself.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-

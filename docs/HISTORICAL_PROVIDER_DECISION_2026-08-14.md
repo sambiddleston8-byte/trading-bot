@@ -57,10 +57,10 @@ Official access references checked on 15 August 2026:
 `scripts/ingest_massive_historical_sample.py` can now stage either one bounded
 Massive custom-bars API response or a local JSON/CSV sample. API mode makes one
 fixed-host, redirect-rejecting request for at most 31 days and 120 unadjusted
-daily bars. The key is accepted only from `MASSIVE_API_KEY`, the legacy
-`POLYGON_API_KEY` environment variable, or a separately supplied local key-file
-path; it is never placed in the URL or output. File mode performs no network
-access.
+daily bars. The key is accepted only from `MASSIVE_API_KEY` or a separately
+supplied local key-file path; the legacy cross-name fallback is deliberately
+not accepted. It is never placed in the URL or output. File mode performs no
+network access.
 
 Massive documents `t` as the start of a custom aggregate window, but its sample
 contract does not prove a historical `available_at` or a stable row identifier.
@@ -70,6 +70,23 @@ It cannot admit the observation to an earlier decision. Derived identity and
 timestamp bases are explicitly marked unqualified, while source authentication,
 selection, role coverage, engine readiness, replay, broker and trading flags
 remain false.
+
+Before any wider AAPL/MSFT/SPY sample access, the exact basket, at-most-one-year
+window, ordered TRAIN/VALIDATION/UNTOUCHED_TEST split, strategy source/version,
+complete parameter grid, selection/tie-break/threshold protocol, warm-up,
+purge/embargo counts, execution-policy hash and public terms hash must be
+appended with
+`scripts/preregister_massive_quarantine.py`. Only that immutable plan can be
+passed to `scripts/fetch_massive_quarantine.py`, which requests deterministic
+split-contained 31-day slices at no more than five calls per minute and retains
+the exact raw response bytes, non-secret request query, HTTP status and response-
+header digest in owner-only content-addressed quarantine storage. The public
+rate/cost values remain labelled unauthenticated assertions. A key file
+must be a non-symlinked owner-only regular file. Quarantine is physically
+separated from declared admitted-source roots and grants no semantic,
+authentication, admission, replay, VectorBT, Guardrailed-engine, broker or
+trading authority. The local hash chains are explicitly not externally anchored.
+No real plan or multi-ticker fetch has been executed.
 
 ## Evidence status
 

@@ -957,6 +957,28 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   passes the records through the canonical single-role cutoff validator. It
   cannot backdate availability, issue a complete engine batch, authenticate the
   source, qualify semantics, run a replay, connect a broker or enable orders.
+- The next Massive acquisition boundary is implemented but inactive. An
+  owner-only, single-campaign, locally tamper-evident preregistration ledger must
+  first bind the exact
+  AAPL/MSFT/SPY basket, at most 366 calendar days, contiguous ordered
+  TRAIN/VALIDATION/UNTOUCHED_TEST windows, strategy implementation/version/hash,
+  complete bounded parameter space, evaluation metric/selection/tie-break,
+  warm-up/purge/embargo, execution-policy hash, one-test cap, clean Git revision,
+  actual strategy-source bytes and hashed public plan/terms assertions. It keeps
+  external anchoring, account entitlement, replay-use permission, terms-byte
+  authentication and every downstream authority false. A separate owner-only
+  content-addressed quarantine can then retain only the exact preregistered
+  split-contained 31-day response slices, their raw-byte and response-header
+  hashes, exact non-secret request query, HTTP status, request/retrieval
+  chronology, provider-access counters and preregistration/entitlement
+  provenance. Its path must be disjoint from every declared admitted-source
+  path. The new modules have no direct admission, simulation-engine or broker
+  import/wiring; the wrapper cannot satisfy `SyntheticPilotBar` or issue a
+  source/replay attestation. It grants no authority to admit data, calculate
+  performance or contact a broker. All tests use fake responses. No real preregistration,
+  provider fetch, admission, parameter search, untouched-test opening or replay
+  has occurred. Neither local ledger can detect an owner deleting and rebuilding
+  every local artifact; external anchoring remains a later explicit evidence gate.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
