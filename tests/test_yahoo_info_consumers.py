@@ -13,6 +13,8 @@ from types import SimpleNamespace
 import pytest
 
 from bots.competitors.analyser import CompetitorAnalyser
+from bots.fundamental.company import CompanyAnalyser
+from bots.profile.analyser import ProfileAnalyser
 from core.company_context import CompanyContext
 from core.data_sources.provider_access import ProviderAttemptMetadata
 from core.data_sources.yahoo_info_access import (
@@ -22,29 +24,28 @@ from core.data_sources.yahoo_info_access import (
     YahooInfoObservation,
 )
 from core.data_sources.yahoo_source import YahooSource
+from core.financial_data import FinancialDataEngine
 from core.valuation_engine import ValuationEngine
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# ``core/financial_data.py`` is deliberately absent: its cached
-# ``get_company_info`` still reads ``Ticker.info`` directly and feeds the broad
-# ``CompanyContext``, whose analysers consume profile fields outside this
-# allowlist.  Migrating it needs its own inventoried batch, and no field is
-# admitted to the boundary on its behalf here.
 MIGRATED_CONSUMERS = (
     "bots/competitors/analyser.py",
     "core/data_sources/yahoo_source.py",
+    "core/financial_data.py",
     "core/valuation_engine.py",
 )
 
 # The only receivers a migrated consumer may read ``.info`` from: the injected
 # boundary client, and the plain ``CompanyContext`` dataclass field that the
-# still-deferred aggregator populates.  A ``yf.Ticker(...).info`` read would add
-# an unexpected receiver here and fail the inventory test below.
+# migrated aggregator now populates from that same boundary.  A
+# ``yf.Ticker(...).info`` read would add an unexpected receiver here and fail
+# the inventory test below.
 PERMITTED_INFO_RECEIVERS = {
     "bots/competitors/analyser.py": {"self.info_client", "context"},
     "core/data_sources/yahoo_source.py": {"self.info_client"},
+    "core/financial_data.py": {"self.info_client"},
     "core/valuation_engine.py": {"self.info_client"},
 }
 
@@ -453,6 +454,224 @@ def test_valuation_analyse_fails_closed_without_company_data(tmp_path, capsys):
 
 
 # ------------------------------------------------------------------
+# FinancialDataEngine.get_company_info and CompanyContext
+# ------------------------------------------------------------------
+
+
+AGGREGATOR_PAYLOAD = {
+    "longName": "  Apple Inc.  ",
+    "shortName": "Apple",
+    "exchange": "NMS",
+    "quoteType": "EQUITY",
+    "recommendationKey": "buy",
+    "sector": "Technology",
+    "industry": "Consumer Electronics",
+    "country": "United States",
+    "city": "Cupertino",
+    "currency": "USD",
+    "website": "https://www.apple.com",
+    "longBusinessSummary": "Apple Inc. designs and sells consumer electronics.",
+    "fullTimeEmployees": 164_000,
+    "marketCap": 3_000_000_000_000,
+    "enterpriseValue": 3_050_000_000_000,
+    "previousClose": 203.75,
+    "totalRevenue": 391_035_000_000,
+    "netIncomeToCommon": 93_736_000_000,
+    "grossMargins": 0.4621,
+    "heldPercentInsiders": 0.0207,
+    "heldPercentInstitutions": 0.6153,
+    "fiftyTwoWeekHigh": 260.1,
+    "fiftyTwoWeekLow": 169.21,
+    "floatShares": 14_800_000_000,
+    "ebitda": 134_661_000_000,
+    "priceToSalesTrailing12Months": 9.4,
+    # Dropped by the boundary: nested, unknown and credential-shaped values.
+    "companyOfficers": [{"name": "A Person", "title": "CEO", "totalPay": 1}],
+    "address1": "One Apple Park Way",
+    "cookie": "session=never-expose",
+    "unknownFutureField": 1.0,
+}
+
+
+def engine_with(info_client):
+    return FinancialDataEngine(info_client=info_client)
+
+
+def test_aggregator_returns_only_validated_allowlisted_scalars():
+    fake = FakeInfoClient({"AAPL": AGGREGATOR_PAYLOAD})
+
+    info = engine_with(fake).get_company_info("AAPL")
+
+    assert fake.calls == ["AAPL"]
+    assert set(info) <= INFO_FIELD_ALLOWLIST
+    assert info["longName"] == "Apple Inc."
+    assert info["longBusinessSummary"] == (
+        "Apple Inc. designs and sells consumer electronics."
+    )
+    assert info["website"] == "https://www.apple.com"
+    # Exact integer handling is preserved for large whole-number values.
+    assert info["marketCap"] == 3_000_000_000_000
+    assert type(info["marketCap"]) is int
+    assert info["fullTimeEmployees"] == 164_000
+    assert type(info["fullTimeEmployees"]) is int
+    assert info["previousClose"] == 203.75
+    assert info["recommendationKey"] == "buy"
+    assert info["grossMargins"] == 0.4621
+    # The nested officers list and every unreviewed field are dropped whole.
+    assert "companyOfficers" not in info
+    assert "address1" not in info
+    assert "cookie" not in info
+    assert "unknownFutureField" not in info
+    assert "never-expose" not in repr(info)
+
+
+def test_aggregator_drops_malformed_values_without_fabricating_replacements():
+    fake = FakeInfoClient(
+        {
+            "AAPL": {
+                "marketCap": "3000000000000",
+                "previousClose": float("nan"),
+                "fullTimeEmployees": True,
+                "longName": "A" * 201,
+                "longBusinessSummary": "Designs\nphones.",
+                "sector": "Technology",
+            }
+        }
+    )
+
+    info = engine_with(fake).get_company_info("AAPL")
+
+    assert info == {"sector": "Technology"}
+    assert info.get("marketCap") is None
+    assert info.get("previousClose") is None
+
+
+def test_aggregator_returns_the_empty_mapping_when_the_boundary_fails(capsys):
+    fake = FakeInfoClient(error=boundary_error())
+
+    info = engine_with(fake).get_company_info("AAPL")
+
+    assert info == {}
+    assert capsys.readouterr().out == "Yahoo info failed.\n"
+
+
+def test_aggregator_failure_log_leaks_no_symbol_provider_or_exception_text(capsys):
+    fake = FakeInfoClient(error=RuntimeError("yfinance 404 for AAPL at https://host"))
+
+    assert engine_with(fake).get_company_info("AAPL") == {}
+
+    output = capsys.readouterr().out
+    assert output == "Yahoo info failed.\n"
+    for leaked in ("AAPL", "yfinance", "404", "https://host", "Yahoo Finance"):
+        assert leaked not in output.replace("Yahoo info failed.", "")
+
+
+def test_aggregator_rejects_an_unsupported_symbol_without_a_provider_call(capsys):
+    provider_symbols = []
+
+    def ticker_factory(symbol):
+        provider_symbols.append(symbol)
+        raise AssertionError("provider construction must not be reached")
+
+    client = YahooInfoClient(ticker_factory=ticker_factory)
+
+    assert engine_with(client).get_company_info("not a symbol") == {}
+    assert provider_symbols == []
+    assert capsys.readouterr().out == "Yahoo info failed.\n"
+
+
+def test_aggregator_caches_validated_dicts_and_returns_isolated_copies():
+    fake = FakeInfoClient({"AAPL": AGGREGATOR_PAYLOAD})
+    engine = engine_with(fake)
+
+    first = engine.get_company_info("AAPL")
+    first["longName"] = "mutated by one caller"
+    first["injected"] = "never-persisted"
+    second = engine.get_company_info("AAPL")
+
+    # One provider read, and one caller's mutation cannot reach another's.
+    assert fake.calls == ["AAPL"]
+    assert second["longName"] == "Apple Inc."
+    assert "injected" not in second
+    assert first is not second
+    cached = engine._info_cache["AAPL"]
+    assert type(cached) is dict
+    assert cached["longName"] == "Apple Inc."
+    assert "injected" not in cached
+
+
+def test_aggregator_does_not_cache_a_failed_read(capsys):
+    fake = FakeInfoClient({"AAPL": {"sector": "Technology"}}, error=boundary_error())
+    engine = engine_with(fake)
+
+    assert engine.get_company_info("AAPL") == {}
+    fake.error = None
+
+    assert engine.get_company_info("AAPL") == {"sector": "Technology"}
+    capsys.readouterr()
+
+
+def test_build_context_carries_boundary_fields_onto_company_context():
+    fake = FakeInfoClient({"AAPL": AGGREGATOR_PAYLOAD})
+    engine = engine_with(fake)
+
+    info = engine.get_company_info("AAPL")
+
+    context = CompanyContext(
+        symbol="AAPL",
+        info=info,
+        financials=None,
+        balance_sheet=None,
+        cashflow=None,
+        history=None,
+    )
+    profile = ProfileAnalyser().analyse(context)
+
+    assert profile["Company Name"] == "Apple Inc."
+    assert profile["Short Name"] == "Apple"
+    assert profile["Employees"] == 164_000
+    assert profile["Currency"] == "USD"
+    assert profile["Website"] == "https://www.apple.com"
+    # ``companyOfficers`` is deliberately unsupported: the key stays in the
+    # result shape, with no invented CEO behind it.
+    assert "CEO" in profile
+    assert profile["CEO"] is None
+
+
+def test_fundamental_company_recommendation_survives_the_boundary():
+    fake = FakeInfoClient({"AAPL": AGGREGATOR_PAYLOAD})
+    analyser = CompanyAnalyser.__new__(CompanyAnalyser)
+    analyser.engine = engine_with(fake)
+
+    result = analyser.summary("AAPL")
+
+    assert result["Recommendation"] == "buy"
+    assert fake.calls == ["AAPL"]
+
+
+def test_aggregator_derived_metrics_read_the_boundary_mapping():
+    fake = FakeInfoClient({"AAPL": AGGREGATOR_PAYLOAD})
+    engine = engine_with(fake)
+
+    assert engine.get_market_cap("AAPL") == 3_000_000_000_000
+    assert engine.get_enterprise_value("AAPL") == 3_050_000_000_000
+    assert engine.get_ebitda("AAPL") == 134_661_000_000
+    assert engine.get_float_shares("AAPL") == 14_800_000_000
+    assert engine.get_price_to_sales("AAPL") == 9.4
+    # One cached provider read backs all five derived helpers.
+    assert fake.calls == ["AAPL"]
+
+
+def test_aggregator_default_constructor_wires_the_boundary_client(monkeypatch):
+    class DefaultInfoClient:
+        pass
+
+    monkeypatch.setattr("core.financial_data.YahooInfoClient", DefaultInfoClient)
+
+    assert isinstance(FinancialDataEngine().info_client, DefaultInfoClient)
+
+
+# ------------------------------------------------------------------
 # Import and raw-read inventory
 # ------------------------------------------------------------------
 
@@ -503,26 +722,27 @@ def test_every_valuation_profile_field_direct_and_indirect_survives_the_boundary
     assert direct | indirect <= INFO_FIELD_ALLOWLIST
 
 
-def test_the_deferred_aggregator_still_reads_info_directly():
-    """Pin the deferred scope, so a silent partial migration cannot slip in.
-
-    ``FinancialDataEngine.get_company_info`` feeds ``CompanyContext``, whose
-    analysers read profile fields this allowlist deliberately excludes.  Routing
-    it through the boundary without first inventorying those consumers would
-    silently blank their inputs.
-    """
+def test_the_aggregator_retains_yfinance_only_for_statements_and_history():
+    """yfinance may still build tickers, but never for a profile read."""
     tree = ast.parse(
         (ROOT / "core/financial_data.py").read_text(encoding="utf-8"),
         filename="core/financial_data.py",
     )
 
-    receivers = {
-        ast.unparse(node.value)
+    ticker_attributes = {
+        node.attr
         for node in ast.walk(tree)
-        if isinstance(node, ast.Attribute) and node.attr == "info"
+        if isinstance(node, ast.Attribute)
+        and ast.unparse(node.value) == "self.get_company(symbol)"
     }
 
-    assert receivers == {"self.get_company(symbol)"}
+    assert ticker_attributes == {
+        "financials",
+        "balance_sheet",
+        "cashflow",
+        "history",
+    }
+    assert "info" not in ticker_attributes
 
 
 @pytest.mark.parametrize("relative", MIGRATED_CONSUMERS)
