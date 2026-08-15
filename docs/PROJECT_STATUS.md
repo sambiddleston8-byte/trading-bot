@@ -934,9 +934,29 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   marketing claims, screenshots and delivery technology never count as sample
   evidence. Missing items remain `UNRESOLVED`, any blocking gap fails
   qualification, and even a complete result stops at
-  `PASSED_AWAITING_HUMAN_APPROVAL`. The pack is ready for the user to send
-  separately to Intrinio, Polygon.io, Databento and Nasdaq, but no message has
-  been sent and no external account, trial, download or purchase is authorized.
+  `PASSED_AWAITING_HUMAN_APPROVAL`. The pack remains the qualification contract,
+  but no message was sent; manual outreach is superseded by the bounded
+  self-service pilot below.
+- Manual vendor outreach is now skipped in favour of the lowest-friction free
+  self-service integration pilot. Current official access terms make Massive
+  (formerly Polygon.io) the pilot choice: Stocks Basic is advertised at zero
+  monthly cost with dashboard API-key issuance, while Databento requires payment
+  information for metered credits and Intrinio warns its free sandbox may be
+  incomplete or stale. The dated official references are recorded in
+  `docs/HISTORICAL_PROVIDER_DECISION_2026-08-14.md`. This is an access decision,
+  not provider qualification.
+  A new isolated Massive adapter accepts only the documented custom-bars JSON
+  shape or its exact CSV projection, only as unadjusted raw daily session bars.
+  Synthetic tests run first. A separate CLI can read a local sample without a
+  network call or make one fixed-host, no-redirect, 31-day/120-row API request
+  after a key is supplied through an environment variable or local key file.
+  The key never enters the URL or result. Because provider documentation does
+  not prove historical publication time or stable row identity, the adapter
+  uses local receipt as the earliest conservative `effective_at` and
+  `available_at`, labels derived identity and timestamp bases unqualified, and
+  passes the records through the canonical single-role cutoff validator. It
+  cannot backdate availability, issue a complete engine batch, authenticate the
+  source, qualify semantics, run a replay, connect a broker or enable orders.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact

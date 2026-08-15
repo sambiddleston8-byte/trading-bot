@@ -112,6 +112,14 @@ observations; explicitly scheduled event/state/calendar roles may be known
 before their future effective instant. Provider-specific normalization and
 qualified role payload schemas therefore remain prerequisites to engine adapters
 rather than being guessed from synthetic fixtures.
+One provider-specific staging pilot now covers Massive's documented unadjusted
+stock custom-bar JSON shape and an exact CSV projection. It validates a single
+`RAW_DAILY_SESSION_BARS` role through the same canonical cutoff and hash checks
+without weakening the complete-engine role-coverage gate. Because the public
+contract does not establish historical publication timestamps or stable row
+identities, the pilot dates both effectiveness and availability at local receipt
+and labels the derived bases unqualified. A successful sample therefore remains
+non-authenticated, semantics-unqualified, incomplete and not engine-ready.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -143,7 +151,12 @@ prevent continued use of current/free entitlements for supplementary research.
 
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
-2. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
+2. Use the free self-service Massive pilot to obtain one narrow representative
+   custom-bar sample without placing a credential in chat, Git, test fixtures or
+   model prompts. Validate only its documented schema and preserve every missing
+   historical-availability, identity, entitlement and role claim as unresolved.
+   This sample cannot satisfy the combined provider mandate by itself.
+3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-
    only local updater paths, including Norgate plus a Windows extraction layer,
@@ -152,10 +165,10 @@ prevent continued use of current/free entitlements for supplementary research.
    `docs/HISTORICAL_PROVIDER_OPTIONS.md` and use the exact evidence request in
    `docs/HISTORICAL_PROVIDER_SAMPLE_REQUEST.md`. Credentials must not enter
    chat, Git, tests or model prompts.
-3. Qualify and, only after separate human approval, admit a genuinely sealed
+4. Qualify and, only after separate human approval, admit a genuinely sealed
    point-in-time dataset covering membership removals, delistings, terminal
    outcomes, corporate actions, total return, corrections and market calendars.
-4. Use the recorded-decision adapter for bounded causal execution diagnostics,
+5. Use the recorded-decision adapter for bounded causal execution diagnostics,
    define canonical role schemas and observation-level cutoff filters without
    inventing provider evidence, then supply the ledger-issued active-pipeline
    invocation with qualified historical adapters and run it through the approved no-
@@ -163,7 +176,7 @@ prevent continued use of current/free entitlements for supplementary research.
    mechanical out-of-sample and robustness results. Do not treat the adapter or
    the sealed invocation boundary as a substitute for replaying research
    generation.
-5. Accumulate the fixed future shadow/paper evidence before any strategy
+6. Accumulate the fixed future shadow/paper evidence before any strategy
    promotion decision or performance claim.
 
 AWS deployment, an actual Hermes worker and broker paper submission remain

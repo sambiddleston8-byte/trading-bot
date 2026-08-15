@@ -262,6 +262,51 @@ def _normalize_observation(
     )
 
 
+def validate_historical_role_cutoff_observations(
+    *,
+    role: str,
+    decision_at: str | datetime,
+    observations: Sequence[Mapping[str, Any]],
+) -> tuple[Mapping[str, Any], ...]:
+    """Validate one role's staged observations without issuing an engine batch.
+
+    Provider pilots often obtain one representative dataset before every role
+    required by an engine is available.  This boundary applies the same field,
+    timestamp, cutoff, hash, ordering and identity checks used by the complete
+    engine gate, but deliberately does not validate role coverage or produce an
+    engine-ready :class:`HistoricalRoleCutoffBatch`.
+    """
+
+    verify_role_schema_registry()
+    verify_contract_integrity()
+    resolved_role = _text(role, "role", maximum=100)
+    if resolved_role not in ROLE_SCHEMAS:
+        raise ValueError("role is outside the canonical historical role registry")
+    if isinstance(observations, (str, bytes)) or not isinstance(observations, Sequence):
+        raise ValueError("observations must be an ordered sequence")
+    schema = ROLE_SCHEMAS[resolved_role]
+    if not observations and not schema.empty_observations_allowed:
+        raise ValueError(f"observations for dense role {resolved_role} must be nonempty")
+    cutoff = _timestamp(decision_at, "decision_at")
+    records = tuple(
+        _normalize_observation(value, expected_role=resolved_role, decision_at=cutoff)
+        for value in observations
+    )
+    identities = [
+        (
+            item["provider_id"],
+            item["provider_dataset_id"],
+            item["provider_record_id"],
+        )
+        for item in records
+    ]
+    if identities != sorted(identities):
+        raise ValueError(f"observations for {resolved_role} must be canonically ordered")
+    if len(identities) != len(set(identities)):
+        raise ValueError(f"observations for {resolved_role} repeat a provider record identity")
+    return records
+
+
 @dataclass(frozen=True, slots=True)
 class HistoricalRoleCutoffBatch:
     """Immutable cutoff-checked observations for one active replay engine."""

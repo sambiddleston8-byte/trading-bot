@@ -26,6 +26,51 @@ capability. Each still needs representative files and exact terms proving the
 complete combined-universe mandate before qualification or any purchase
 recommendation. The GBP 0 spending gate remains unchanged.
 
+## Free integration pilot — Massive, 15 August 2026
+
+Manual vendor-email outreach is no longer the next step. For a credentialed
+schema pilot, Massive (formerly Polygon.io) is the most direct current option:
+its Stocks Basic plan is advertised at USD 0 per month, supports immediate
+dashboard API-key access, five calls per minute and two years of historical
+end-of-day stock data. Databento provides useful sign-up credits but requires
+payment information and can charge beyond the credit; Intrinio provides a free
+developer sandbox but states that the sandbox may be incomplete or out of date.
+This selects the lowest-friction integration pilot only; it does not qualify
+Massive for the combined historical replay mandate.
+
+Official access references checked on 15 August 2026:
+
+- Massive Stocks Basic plan and limits:
+  https://massive.com/stocks?auth=signup
+- Databento payment-information requirement:
+  https://databento.com/blog/why-payment-information-required
+- Intrinio Developer Sandbox limitations:
+  https://product.intrinio.com/developer-sandbox
+
+- Create the free Massive account:
+  https://massive.com/dashboard/signup
+- Retrieve the API key after login:
+  https://massive.com/dashboard
+- Confirm the custom-bars response contract:
+  https://massive.com/docs/rest/stocks/aggregates/custom-bars
+
+`scripts/ingest_massive_historical_sample.py` can now stage either one bounded
+Massive custom-bars API response or a local JSON/CSV sample. API mode makes one
+fixed-host, redirect-rejecting request for at most 31 days and 120 unadjusted
+daily bars. The key is accepted only from `MASSIVE_API_KEY`, the legacy
+`POLYGON_API_KEY` environment variable, or a separately supplied local key-file
+path; it is never placed in the URL or output. File mode performs no network
+access.
+
+Massive documents `t` as the start of a custom aggregate window, but its sample
+contract does not prove a historical `available_at` or a stable row identifier.
+The pilot therefore preserves the bar-window start only inside the payload and
+uses local receipt time as the conservative `effective_at` and `available_at`.
+It cannot admit the observation to an earlier decision. Derived identity and
+timestamp bases are explicitly marked unqualified, while source authentication,
+selection, role coverage, engine readiness, replay, broker and trading flags
+remain false.
+
 ## Evidence status
 
 The user obtained written support answers from FMP and EODHD and transcribed
@@ -92,10 +137,12 @@ period, not merely advertise one endpoint:
 7. representative sample files that pass the existing provider-neutral
    qualification controls before payment.
 
-Use `docs/HISTORICAL_PROVIDER_SAMPLE_REQUEST.md` for every candidate so terms,
-documentation and samples are requested and assessed against the same exact
-questions. A vendor-specific omission remains unresolved; it must not be filled
-from another candidate's answer.
+The standardized evidence questions in
+`docs/HISTORICAL_PROVIDER_SAMPLE_REQUEST.md` remain the qualification contract,
+but no manual vendor email is currently planned. Public documentation and
+self-service samples can populate only the questions they actually prove. A
+vendor-specific omission remains unresolved; it must not be filled from another
+candidate's answer or inferred from a successful API call.
 
 ## Spending gate
 
@@ -127,5 +174,8 @@ software can genuinely use.
 
 ## Safety boundary
 
-This decision authorizes no purchase, data download, provider approval, replay,
-performance claim, broker connection, paper order or real-money trading.
+This decision authorizes the user to create a free Massive account and a later
+single bounded sample request after supplying the credential locally. It
+authorizes no paid plan, trial that can incur a charge, bulk download, provider
+qualification or approval, replay, performance claim, broker connection, paper
+order or real-money trading.
