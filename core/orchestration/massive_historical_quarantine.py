@@ -25,6 +25,7 @@ from core.data_sources.provider_access import safe_access_dict
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 from core.orchestration.historical_quarantine_preregistration import (
     ENDPOINT_TEMPLATE,
+    POLICY_VERSION as LEGACY_PREREGISTRATION_POLICY_VERSION,
     HistoricalQuarantinePreregistrationLedger,
 )
 from core.orchestration.massive_historical_adapter import (
@@ -169,6 +170,19 @@ def _date(value: Any, name: str) -> date:
     if resolved.isoformat() != value:
         raise ValueError(f"{name} must be a canonical ISO date")
     return resolved
+
+
+def _provider_data_calls_authorized(plan: Mapping[str, Any]) -> bool:
+    """Keep the sealed v1 plan usable; every newer/unknown plan must opt in."""
+
+    return (
+        plan.get("policy_version") == LEGACY_PREREGISTRATION_POLICY_VERSION
+        or (
+            plan.get("policy_version")
+            == "massive-future-window-preregistration-v2"
+            and plan.get("data_calls_allowed") is True
+        )
+    )
 
 
 def _check_regular_descriptor(descriptor: int, *, mode: int, name: str) -> None:
@@ -459,6 +473,8 @@ class MassiveHistoricalQuarantineStore:
         allow_existing: bool = True,
     ) -> dict[str, Any]:
         plan = self.preregistration_ledger.require(preregistration_id)
+        if not _provider_data_calls_authorized(plan):
+            raise ValueError("preregistration does not authorize provider data calls")
         if not isinstance(payload, bytes) or not payload or len(payload) > MAX_PAYLOAD_BYTES:
             raise ValueError("quarantine payload must contain between 1 byte and 5 MiB")
         ticker = _required(symbol, "symbol", 32)
@@ -507,6 +523,12 @@ class MassiveHistoricalQuarantineStore:
         )
         if requested < access_not_before or retrieved < requested or recorded < retrieved:
             raise ValueError("request, retrieval and recording chronology is invalid")
+        if (
+            plan.get("request_slice_must_be_complete_and_historical_at_fetch_time")
+            is True
+            and end >= requested.date()
+        ):
+            raise ValueError("request slice was not fully historical before provider access")
         now = datetime.now(timezone.utc)
         if not now - MAX_CLOCK_SKEW <= recorded <= now + MAX_CLOCK_SKEW:
             raise ValueError("recording clock must match actual capture time")
@@ -636,6 +658,13 @@ class MassiveHistoricalQuarantineStore:
                     and requested
                     >= _timestamp(plan["data_access_not_before"], "data_access_not_before")
                     and requested <= retrieved <= recorded
+                    and (
+                        plan.get(
+                            "request_slice_must_be_complete_and_historical_at_fetch_time"
+                        )
+                        is not True
+                        or end < requested.date()
+                    )
                     and recorded <= datetime.now(timezone.utc) + MAX_CLOCK_SKEW
                     and record["media_type"] == "application/json"
                     and record["response_status_code"] == 200
@@ -942,6 +971,8 @@ class MassiveHistoricalQuarantineFetcher:
 
     def fetch(self, preregistration_id: str) -> dict[str, Any]:
         plan = self.store.preregistration_ledger.require(preregistration_id)
+        if not _provider_data_calls_authorized(plan):
+            raise ValueError("preregistration does not authorize provider data calls")
         if plan["entitlement_metadata"]["asserted_request_limit_per_minute"] != 5:
             raise ValueError("preregistered request limit does not match the fetch client")
         captured = {
@@ -956,6 +987,12 @@ class MassiveHistoricalQuarantineFetcher:
         }
         for symbol, split_role, request_start, request_end in planned_request_slices(plan):
             if (symbol, split_role, request_start, request_end) in captured:
+                continue
+            if (
+                plan.get("request_slice_must_be_complete_and_historical_at_fetch_time")
+                is True
+                and _date(request_end, "request_end") >= datetime.now(timezone.utc).date()
+            ):
                 continue
             fetched = self.client.fetch_daily_bars(
                 symbol=symbol,
