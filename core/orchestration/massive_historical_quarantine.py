@@ -8,7 +8,7 @@ pilot attestations.  No historical availability or provider payload semantics
 are inferred here.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field as dataclass_field
 from datetime import date, datetime, timedelta, timezone
 import fcntl
 import hashlib
@@ -27,8 +27,13 @@ from core.orchestration.historical_quarantine_preregistration import (
     ENDPOINT_TEMPLATE,
     HistoricalQuarantinePreregistrationLedger,
 )
-from core.orchestration.massive_historical_adapter import MassiveHistoricalSampleClient
-from core.orchestration.massive_historical_adapter import REQUEST_QUERY_CANONICAL
+from core.orchestration.massive_historical_adapter import (
+    MassiveHistoricalAdapter,
+    MassiveHistoricalSampleClient,
+    MassiveHistoricalSource,
+    MassiveHistoricalStagingBatch,
+    REQUEST_QUERY_CANONICAL,
+)
 
 
 SCHEMA_VERSION = "1.0"
@@ -37,6 +42,8 @@ MAX_PAYLOAD_BYTES = 5 * 1024 * 1024
 MAX_LEDGER_BYTES = 64 * 1024 * 1024
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+_QUARANTINED_PAYLOAD_AUTHORITY = object()
+_BOUND_STAGING_AUTHORITY = object()
 FIXED_TRUE = (
     "raw_response_bytes_retained",
     "payload_hash_verified",
@@ -291,8 +298,14 @@ class QuarantinedHistoricalPayload:
     replay_data_attestation_issued: bool = False
     synthetic_pilot_attestation_issued: bool = False
     engine_input_ready: bool = False
+    _authority: object = dataclass_field(default=None, repr=False)
 
     def __post_init__(self) -> None:
+        if self._authority is not _QUARANTINED_PAYLOAD_AUTHORITY:
+            raise PermissionError(
+                "QuarantinedHistoricalPayload must be issued by the verified store"
+            )
+        object.__setattr__(self, "_authority", None)
         if (
             self.quarantine_only is not True
             or self.replay_data_attestation_issued is not False
@@ -300,6 +313,79 @@ class QuarantinedHistoricalPayload:
             or self.engine_input_ready is not False
         ):
             raise ValueError("quarantined payload authority flags were altered")
+
+
+@dataclass(frozen=True, slots=True)
+class QuarantineBoundHistoricalStagingBatch:
+    """Non-admitted staging whose capture identity is fixed by the store."""
+
+    quarantine_capture_id: str
+    quarantine_record_hash: str
+    preregistration_id: str
+    symbol: str
+    split_role: str
+    request_start: str
+    request_end: str
+    retrieved_at: str
+    source_payload_sha256: str
+    staging: MassiveHistoricalStagingBatch
+    capture_binding_sha256: str
+    quarantine_only: bool = True
+    dataset_admitted: bool = False
+    engine_input_ready: bool = False
+    replay_executed: bool = False
+    broker_connection_allowed: bool = False
+    orders_submitted: bool = False
+    live_trading_enabled: bool = False
+    _authority: object = dataclass_field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self._authority is not _BOUND_STAGING_AUTHORITY:
+            raise PermissionError(
+                "QuarantineBoundHistoricalStagingBatch must be issued by the verified store"
+            )
+        object.__setattr__(self, "_authority", None)
+        if not isinstance(self.staging, MassiveHistoricalStagingBatch):
+            raise ValueError("staging must be a MassiveHistoricalStagingBatch")
+        if (
+            self.quarantine_only is not True
+            or self.dataset_admitted is not False
+            or self.engine_input_ready is not False
+            or self.replay_executed is not False
+            or self.broker_connection_allowed is not False
+            or self.orders_submitted is not False
+            or self.live_trading_enabled is not False
+            or self.staging.engine_input_ready is not False
+            or self.staging.replay_executed is not False
+        ):
+            raise ValueError("capture-bound staging authority flags were altered")
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "quarantine_capture_id": self.quarantine_capture_id,
+            "quarantine_record_hash": self.quarantine_record_hash,
+            "preregistration_id": self.preregistration_id,
+            "symbol": self.symbol,
+            "split_role": self.split_role,
+            "request_start": self.request_start,
+            "request_end": self.request_end,
+            "retrieved_at": self.retrieved_at,
+            "source_payload_sha256": self.source_payload_sha256,
+            "staging_sha256": self.staging.staging_sha256,
+            "capture_binding_sha256": self.capture_binding_sha256,
+            "quarantine_capture_bound": True,
+            "provider_payload_semantics_qualified": False,
+            "source_bytes_authenticated": False,
+            "observation_selection_validated": False,
+            "role_coverage_validated": False,
+            "quarantine_only": True,
+            "dataset_admitted": False,
+            "engine_input_ready": False,
+            "replay_executed": False,
+            "broker_connection_allowed": False,
+            "orders_submitted": False,
+            "live_trading_enabled": False,
+        }
 
 
 class MassiveHistoricalQuarantineStore:
@@ -632,6 +718,85 @@ class MassiveHistoricalQuarantineStore:
         return QuarantinedHistoricalPayload(
             record=MappingProxyType(dict(record)),
             payload_bytes=payload,
+            _authority=_QUARANTINED_PAYLOAD_AUTHORITY,
+        )
+
+    def stage_verified_capture(
+        self,
+        quarantine_capture_id: str,
+        *,
+        decision_at: str | datetime,
+    ) -> QuarantineBoundHistoricalStagingBatch:
+        """Normalize one non-test capture with all source metadata store-bound."""
+
+        captured = self.read_verified(quarantine_capture_id)
+        record = captured.record
+        if record["split_role"] not in {"TRAIN", "VALIDATION"}:
+            raise ValueError("only train or validation captures may be staged")
+        staging = MassiveHistoricalAdapter().normalize(
+            source=MassiveHistoricalSource(
+                transport_format="JSON",
+                retrieved_at=record["retrieved_at"],
+                payload_bytes=captured.payload_bytes,
+            ),
+            decision_at=decision_at,
+        )
+        start = _date(record["request_start"], "request_start")
+        end = _date(record["request_end"], "request_end")
+        if (
+            staging.retrieved_at != record["retrieved_at"]
+            or staging.source_payload_sha256 != record["payload_sha256"]
+        ):
+            raise LedgerIntegrityError(
+                "normalized staging no longer matches its verified capture"
+            )
+        for observation in staging.observations:
+            try:
+                ticker = observation["payload"]["ticker"]
+                window = datetime.fromisoformat(
+                    observation["payload"]["bar_window_start_at"]
+                ).astimezone(timezone.utc)
+            except (KeyError, TypeError, ValueError) as error:
+                raise LedgerIntegrityError(
+                    "normalized staging lacks capture-bound identity"
+                ) from error
+            if (
+                ticker != record["symbol"]
+                or not start <= window.date() <= end
+                or observation["retrieved_at"] != record["retrieved_at"]
+                or observation["source_payload_sha256"] != record["payload_sha256"]
+            ):
+                raise LedgerIntegrityError(
+                    "normalized staging violates its symbol, slice or retrieval binding"
+                )
+        binding_material = {
+            "quarantine_capture_id": record["quarantine_capture_id"],
+            "quarantine_record_hash": record["record_hash"],
+            "preregistration_id": record["preregistration_id"],
+            "symbol": record["symbol"],
+            "split_role": record["split_role"],
+            "request_start": record["request_start"],
+            "request_end": record["request_end"],
+            "retrieved_at": record["retrieved_at"],
+            "source_payload_sha256": record["payload_sha256"],
+            "staging_sha256": staging.staging_sha256,
+        }
+        binding_hash = hashlib.sha256(
+            _canonical_json(binding_material).encode("utf-8")
+        ).hexdigest()
+        return QuarantineBoundHistoricalStagingBatch(
+            quarantine_capture_id=record["quarantine_capture_id"],
+            quarantine_record_hash=record["record_hash"],
+            preregistration_id=record["preregistration_id"],
+            symbol=record["symbol"],
+            split_role=record["split_role"],
+            request_start=record["request_start"],
+            request_end=record["request_end"],
+            retrieved_at=record["retrieved_at"],
+            source_payload_sha256=record["payload_sha256"],
+            staging=staging,
+            capture_binding_sha256=binding_hash,
+            _authority=_BOUND_STAGING_AUTHORITY,
         )
 
     def status(self, preregistration_id: str) -> dict[str, Any]:

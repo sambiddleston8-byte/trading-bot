@@ -20,6 +20,7 @@ from core.orchestration.massive_historical_adapter import MassiveFetchedPayload
 from core.orchestration.massive_historical_quarantine import (
     MassiveHistoricalQuarantineFetcher,
     MassiveHistoricalQuarantineStore,
+    QuarantineBoundHistoricalStagingBatch,
     QuarantinedHistoricalPayload,
     planned_request_slices,
 )
@@ -170,6 +171,149 @@ def test_retains_exact_raw_bytes_owner_only_and_rehashes_every_read(tmp_path):
     assert type(verified) is QuarantinedHistoricalPayload
     assert verified.payload_bytes == raw
     assert verified.engine_input_ready is False
+
+
+def test_only_store_issued_quarantine_objects_can_cross_the_staging_boundary(tmp_path):
+    target, plan = store(tmp_path)
+    record = capture(target, plan)
+
+    with pytest.raises(PermissionError, match="issued by the verified store"):
+        QuarantinedHistoricalPayload(record=record, payload_bytes=payload())
+    with pytest.raises(PermissionError, match="issued by the verified store"):
+        QuarantineBoundHistoricalStagingBatch(
+            quarantine_capture_id=record["quarantine_capture_id"],
+            quarantine_record_hash=record["record_hash"],
+            preregistration_id=record["preregistration_id"],
+            symbol="AAPL",
+            split_role="TRAIN",
+            request_start="2025-08-01",
+            request_end="2025-08-31",
+            retrieved_at=record["retrieved_at"],
+            source_payload_sha256=record["payload_sha256"],
+            staging=None,
+            capture_binding_sha256="0" * 64,
+        )
+    issued = target.stage_verified_capture(
+        record["quarantine_capture_id"],
+        decision_at=record["retrieved_at"],
+    )
+    fields = {
+        "quarantine_capture_id": issued.quarantine_capture_id,
+        "quarantine_record_hash": issued.quarantine_record_hash,
+        "preregistration_id": issued.preregistration_id,
+        "symbol": issued.symbol,
+        "split_role": issued.split_role,
+        "request_start": issued.request_start,
+        "request_end": issued.request_end,
+        "retrieved_at": issued.retrieved_at,
+        "source_payload_sha256": issued.source_payload_sha256,
+        "staging": issued.staging,
+        "capture_binding_sha256": issued.capture_binding_sha256,
+        "_authority": module._BOUND_STAGING_AUTHORITY,
+    }
+    with pytest.raises(ValueError, match="authority flags were altered"):
+        QuarantineBoundHistoricalStagingBatch(**fields, engine_input_ready=True)
+    with pytest.raises(ValueError, match="must be a MassiveHistoricalStagingBatch"):
+        QuarantineBoundHistoricalStagingBatch(**{**fields, "staging": object()})
+
+
+def test_store_binds_normalization_to_verified_capture_metadata(tmp_path):
+    target, plan = store(tmp_path)
+    record = capture(target, plan)
+
+    result = target.stage_verified_capture(
+        record["quarantine_capture_id"],
+        decision_at=record["retrieved_at"],
+    )
+
+    assert result.quarantine_capture_id == record["quarantine_capture_id"]
+    assert result.quarantine_record_hash == record["record_hash"]
+    assert result.preregistration_id == plan["preregistration_id"]
+    assert result.symbol == "AAPL"
+    assert result.split_role == "TRAIN"
+    assert result.request_start == "2025-08-01"
+    assert result.request_end == "2025-08-31"
+    assert result.retrieved_at == record["retrieved_at"]
+    assert result.source_payload_sha256 == record["payload_sha256"]
+    assert len(result.capture_binding_sha256) == 64
+    assert result.staging.observations[0]["payload"]["ticker"] == "AAPL"
+    assert result.staging.observations[0]["retrieved_at"] == record["retrieved_at"]
+    assert result.staging.as_dict()["quarantine_capture_bound"] is False
+    assert result.as_dict()["quarantine_capture_bound"] is True
+    assert result.as_dict()["dataset_admitted"] is False
+    assert result.as_dict()["engine_input_ready"] is False
+    assert result.as_dict()["provider_payload_semantics_qualified"] is False
+    assert result.as_dict()["source_bytes_authenticated"] is False
+    assert result.as_dict()["observation_selection_validated"] is False
+    assert result.as_dict()["role_coverage_validated"] is False
+
+
+def test_validation_capture_uses_the_same_store_bound_staging_path(tmp_path):
+    target, plan = store(tmp_path)
+    raw = json.loads(payload())
+    raw["results"][0]["t"] = int(
+        datetime(2026, 3, 2, tzinfo=UTC).timestamp() * 1000
+    )
+    record = capture(
+        target,
+        plan,
+        request_start="2026-03-01",
+        request_end="2026-03-31",
+        request_uri=(
+            "https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/"
+            "2026-03-01/2026-03-31"
+        ),
+        raw=json.dumps(raw, sort_keys=True, separators=(",", ":")).encode(),
+    )
+
+    result = target.stage_verified_capture(
+        record["quarantine_capture_id"],
+        decision_at=record["retrieved_at"],
+    )
+
+    assert result.split_role == "VALIDATION"
+    assert result.as_dict()["quarantine_capture_bound"] is True
+
+
+def test_capture_bound_staging_rejects_forged_cutoff_symbol_and_slice(tmp_path):
+    target, plan = store(tmp_path)
+    record = capture(target, plan)
+    retrieved = datetime.fromisoformat(record["retrieved_at"])
+    with pytest.raises(ValueError, match="available_at is after the decision"):
+        target.stage_verified_capture(
+            record["quarantine_capture_id"],
+            decision_at=retrieved - timedelta(microseconds=1),
+        )
+
+    symbol_root = tmp_path / "symbol"
+    symbol_root.mkdir()
+    mismatched_target, mismatched_plan = store(symbol_root)
+    mismatched = capture(
+        mismatched_target,
+        mismatched_plan,
+        raw=payload(symbol="MSFT"),
+    )
+    with pytest.raises(LedgerIntegrityError, match="symbol, slice or retrieval"):
+        mismatched_target.stage_verified_capture(
+            mismatched["quarantine_capture_id"],
+            decision_at=mismatched["retrieved_at"],
+        )
+
+    slice_root = tmp_path / "slice"
+    slice_root.mkdir()
+    outside_target, outside_plan = store(slice_root)
+    raw = json.loads(payload())
+    raw["results"][0]["t"] = 1_756_684_800_000  # 2025-09-01 UTC
+    outside = capture(
+        outside_target,
+        outside_plan,
+        raw=json.dumps(raw, sort_keys=True, separators=(",", ":")).encode(),
+    )
+    with pytest.raises(LedgerIntegrityError, match="symbol, slice or retrieval"):
+        outside_target.stage_verified_capture(
+            outside["quarantine_capture_id"],
+            decision_at=outside["retrieved_at"],
+        )
 
 
 def test_quarantine_and_admitted_roots_must_be_disjoint(tmp_path):
@@ -357,6 +501,11 @@ def test_untouched_test_bytes_are_retained_but_cannot_be_opened(tmp_path):
     assert target.verify() == [record]
     with pytest.raises(ValueError, match="cannot be opened"):
         target.read_verified(record["quarantine_capture_id"])
+    with pytest.raises(ValueError, match="cannot be opened"):
+        target.stage_verified_capture(
+            record["quarantine_capture_id"],
+            decision_at=record["retrieved_at"],
+        )
 
 
 class FakeClient:
