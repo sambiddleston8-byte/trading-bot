@@ -27,3 +27,5 @@ data/research/massive_quarantine/
 data/research/massive_quarantine_preregistration.jsonl*
 # Local research-exempt admitted copies remain offline and unpublished.
 data/research/massive_research_exempt_admitted/
+# Campaign v2 approval ledger and raw quarantine remain owner-local and unpublished.
+data/research/massive_campaign_v2/

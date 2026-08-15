@@ -1108,10 +1108,25 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   AAPL/MSFT/SPY scope; it grants no extension, provider evidence, admission,
   performance, broker, order or trading authority. Code now fails closed if v1
   admission, VectorBT screening or untouched execution is attempted again.
-- A sealed Campaign v2 proposal is ready for explicit human approval; it is not
-  a preregistration and authorizes no data call or evaluation. Proposal hash
+- Campaign v2 proposal
   `ff4ca9a0919e43044337e609140197bb5869681e47e226720b12df64075cc82b`
-  fixes AAPL/MSFT candidates with SPY as benchmark, the unchanged 20/50/20
+  was explicitly approved and registered before its 1 September 2026 untouched
+  window. Approval record
+  `09a2acfc37629e9c7287c8a875de0b52209f65459efc4478ca3d0ed93ffc06df`
+  is bound to the exact approval text and clean Git revision `d5476c6`. Linked
+  exemption-extension record
+  `8a25bf21c4f5f945bac32181d1556503f2f58bcd44e3b220909c06b3d350388d`
+  is `AUTHORIZED_NOT_APPLIED_TO_ANY_CAPTURE`: it preserves the AAPL/MSFT/SPY
+  human-assumption scope but asserts nothing about a future or uncaptured slice.
+  Preregistration `HQP2-074A7002D313E7C24C64EADE9DCDF4BB` (record
+  `cc626aa7c4aedab63bce51cae5dd9e90a1f5d81f00bd46a49fb956cfe4dcf210`)
+  transitively binds the exact v1 closure, v1 preregistration, entitlement body
+  and digest, approval, exemption extension, proposal and strategy source.
+  Its distinct owner-only raw root exists and is empty. Provider calls,
+  capture activation, data opening, evaluation and untouched access remain
+  fixed false; entitlement revalidation and separate capture authorization are
+  required before any provider request. Unknown policy versions fail closed.
+  The registered contract fixes AAPL/MSFT candidates with SPY as benchmark, the unchanged 20/50/20
   strategy and conservative execution policy, and a fresh 1 March 2026 through
   28 February 2027 acquisition window. TRAIN is March-June 2026, VALIDATION is
   July-August 2026 and the never-opened UNTOUCHED_TEST is September 2026-
@@ -1122,12 +1137,12 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   timing SPY-relative return, and maximum drawdown no worse than 20%. Fewer than
   two trades is inconclusive, never a pass or permission to rerun. The known v1
   window and result are disclosed; its opened test overlaps only v2 TRAIN/
-  VALIDATION and never v2 UNTOUCHED_TEST. The proposed exemption extension is
-  pending and would assert each completed historical capture slice only after
-  approval, never a future slice in advance. The current v1 preregistration
-  schema structurally rejects this proposal; approval would first require a
-  future-window v2 schema, a distinct ledger and quarantine root, capture-chain
-  binding, and continued mandatory purge/embargo enforcement.
+  VALIDATION and never v2 UNTOUCHED_TEST. The v1 schema remains unchanged and
+  structurally rejects v2. The new v2-only schema enforces the distinct ledger
+  and quarantine roots, capture-chain binding, mandatory purge/embargo, exact
+  one-shot test cap and preregistration-before-untouched wall-clock boundary.
+  After correcting all Opus findings, the final focused Opus review returned
+  PASS with no release blockers. No provider call or evaluation was performed.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
