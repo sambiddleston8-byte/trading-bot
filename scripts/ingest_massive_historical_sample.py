@@ -57,7 +57,7 @@ def _local_source(
 
 
 def _api_key(path: Path | None) -> str:
-    environment_key = os.getenv("MASSIVE_API_KEY") or os.getenv("POLYGON_API_KEY")
+    environment_key = os.getenv("MASSIVE_API_KEY")
     if path is not None and environment_key:
         raise ValueError("use either an API-key environment variable or --api-key-file")
     if path is None:

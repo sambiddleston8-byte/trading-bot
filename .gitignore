@@ -21,3 +21,7 @@ data/backups/
 
 # Local append-only job events and advisory lock files
 data/runtime/
+
+# Local quarantined provider responses and preregistration ledgers
+data/research/massive_quarantine/
+data/research/massive_quarantine_preregistration.jsonl*

@@ -205,6 +205,7 @@ class Response:
     def __init__(self, payload: bytes, status_code: int = 200):
         self.content = payload
         self.status_code = status_code
+        self.headers = {"Content-Type": "application/json; charset=utf-8"}
 
 
 class Access:
@@ -255,6 +256,12 @@ def test_api_fetch_is_one_bounded_fixed_host_request_with_header_auth_and_no_red
         "timeout": 20,
         "allow_redirects": False,
     }
+    assert result.request_uri == url
+    assert result.request_query_canonical == "adjusted=false&limit=120&sort=asc"
+    assert result.response_status_code == 200
+    assert result.media_type == "application/json"
+    assert result.requested_at == "2026-08-15T10:00:00.000000+00:00"
+    assert result.retrieved_at == "2026-08-15T10:00:00.000000+00:00"
     assert result.provider_access["request_headers_recorded"] is False
 
 

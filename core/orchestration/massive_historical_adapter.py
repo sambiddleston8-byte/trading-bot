@@ -53,6 +53,10 @@ SUPPORTED_FORMATS = frozenset({JSON_FORMAT, CSV_FORMAT})
 MAX_SOURCE_BYTES = 5 * 1024 * 1024
 MAX_RECORDS = 120
 MAX_RANGE_DAYS = 31
+REQUEST_QUERY = MappingProxyType(
+    {"adjusted": "false", "sort": "asc", "limit": MAX_RECORDS}
+)
+REQUEST_QUERY_CANONICAL = "adjusted=false&limit=120&sort=asc"
 CSV_FIELDS = ("ticker", "adjusted", "o", "h", "l", "c", "v", "t", "n", "vw", "otc")
 ROOT_REQUIRED_FIELDS = frozenset({"ticker", "adjusted", "status", "results"})
 ROOT_OPTIONAL_FIELDS = frozenset(
@@ -408,13 +412,22 @@ class MassiveHistoricalAdapter:
 @dataclass(frozen=True, slots=True)
 class MassiveFetchedPayload:
     payload_bytes: bytes
+    request_uri: str
+    request_query_canonical: str
+    requested_at: str
     retrieved_at: str
+    response_status_code: int
+    response_headers_sha256: str
+    media_type: str
     provider_access: Mapping[str, Any]
 
 
 class MassiveHistoricalSampleClient:
     BASE_URL = "https://api.massive.com"
-    ACCESS_POLICY = ProviderAccessPolicy(maximum_attempts=1)
+    ACCESS_POLICY = ProviderAccessPolicy(
+        minimum_interval_seconds=12.0,
+        maximum_attempts=1,
+    )
 
     def __init__(
         self,
@@ -431,7 +444,7 @@ class MassiveHistoricalSampleClient:
         self._api_key = api_key
         self._session = session or requests.Session()
         self._access = access or ProviderAccessCoordinator.for_provider(
-            "POLYGON_API_KEY",
+            "MASSIVE_API_KEY",
             "Massive historical sample",
             policy=self.ACCESS_POLICY,
         )
@@ -446,9 +459,8 @@ class MassiveHistoricalSampleClient:
             raise ValueError("start and end must be ISO dates") from error
         if end_date < start_date or (end_date - start_date).days >= MAX_RANGE_DAYS:
             raise ValueError("Massive sample date range must be ordered and at most 31 days")
-        requested_at = datetime.fromisoformat(
-            _canonical_timestamp(self._clock(), "request clock")
-        )
+        canonical_requested_at = _canonical_timestamp(self._clock(), "request clock")
+        requested_at = datetime.fromisoformat(canonical_requested_at)
         if end_date >= requested_at.date():
             raise ValueError("Massive historical sample must end before the request date")
         url = f"{self.BASE_URL}/v2/aggs/ticker/{ticker}/range/1/day/{start_date.isoformat()}/{end_date.isoformat()}"
@@ -456,7 +468,7 @@ class MassiveHistoricalSampleClient:
             result = self._access.get(
                 self._session,
                 url,
-                params={"adjusted": "false", "sort": "asc", "limit": MAX_RECORDS},
+                params=REQUEST_QUERY,
                 headers={"Authorization": f"Bearer {self._api_key}"},
                 timeout=20,
                 allow_redirects=False,
@@ -469,6 +481,36 @@ class MassiveHistoricalSampleClient:
             raise MassiveHistoricalIngestError("Massive sample redirect was rejected")
         if status != 200:
             raise MassiveHistoricalIngestError("Massive sample request was rejected")
+        headers = getattr(response, "headers", None)
+        if not isinstance(headers, Mapping) or len(headers) > 100:
+            raise MassiveHistoricalIngestError("Massive sample response headers are invalid")
+        canonical_headers: dict[str, str] = {}
+        for key, value in headers.items():
+            name = str(key).strip().lower()
+            header_value = str(value).strip()
+            if (
+                not name
+                or name in canonical_headers
+                or len(name) > 200
+                or len(header_value) > 10_000
+            ):
+                raise MassiveHistoricalIngestError(
+                    "Massive sample response headers are invalid"
+                )
+            canonical_headers[name] = header_value
+        media_type = canonical_headers.get("content-type", "").split(";", 1)[0].lower()
+        if media_type != "application/json":
+            raise MassiveHistoricalIngestError(
+                "Massive sample response media type is invalid"
+            )
+        response_headers_sha256 = hashlib.sha256(
+            json.dumps(
+                canonical_headers,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode("utf-8")
+        ).hexdigest()
         payload = getattr(response, "content", None)
         if not isinstance(payload, bytes) or not payload or len(payload) > MAX_SOURCE_BYTES:
             raise MassiveHistoricalIngestError("Massive sample response size is invalid")
@@ -478,6 +520,12 @@ class MassiveHistoricalSampleClient:
             raise MassiveHistoricalIngestError("Massive access metadata is invalid")
         return MassiveFetchedPayload(
             payload_bytes=payload,
+            request_uri=url,
+            request_query_canonical=REQUEST_QUERY_CANONICAL,
+            requested_at=canonical_requested_at,
             retrieved_at=retrieved_at,
+            response_status_code=200,
+            response_headers_sha256=response_headers_sha256,
+            media_type=media_type,
             provider_access=MappingProxyType(access_metadata),
         )

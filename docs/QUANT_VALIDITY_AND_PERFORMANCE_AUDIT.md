@@ -126,6 +126,13 @@ learning, AWS scheduling or real-money trading.
   unmodelled; and float arithmetic followed by nine-decimal quantization is not
   Decimal parity with the authenticated engine. The cost-free first-close
   benchmark is diagnostic and not like-for-like execution evidence.
+- A separate Massive raw-response quarantine cannot emit either pilot or replay
+  attestation and its new modules have no direct import or wiring to VectorBT,
+  the guardrailed engine, admission or broker code. It retains only exact preregistered provider bytes
+  and immutable provenance; qualification and admission remain later explicit
+  gates. This preserves the `SyntheticPilotBar` type boundary and prevents a
+  downloaded response from becoming a simulation input by storage location or
+  wrapper conversion alone.
 
 ## Trust-critical backlog before paper submission or learning
 
