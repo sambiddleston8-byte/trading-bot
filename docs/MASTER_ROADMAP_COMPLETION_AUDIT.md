@@ -229,12 +229,13 @@ owner-only v2 raw root is disjoint from v1 and known admitted research storage.
 Provider access, capture activation, data opening and evaluation remained false.
 On 15 August 2026 the package was found calendar-invalid for the requested
 activation: VALIDATION had not ended and UNTOUCHED_TEST was wholly future. It is
-therefore retired by code and scheduled for an immutable terminal supersession
-record at the clean release commit; it was never activated and is not reusable.
+therefore retired by code and closed by terminal supersession record
+`3f8f1c3e9ddc85f3e34ed484d7162b565525d6eb73488bb1c99c73ab01f845e5`
+at clean Git `8cd3cff`; it was never activated and is not reusable.
 
 Revision-1 proposal
 `7c43094e64f324d6987b67a25d03626eb4defe4096ae1b135e1c0319b60fc0d5`
-is registered in this release documentation for approval only. Its completed,
+is registered by that terminal record for approval only. Its completed,
 v1-disjoint window is 1 August
 2024-31 July 2025: TRAIN through 28 February, VALIDATION March-April and
 UNTOUCHED_TEST-role May-July. Because every date was already historical at
@@ -280,9 +281,9 @@ prevent continued use of current/free entitlements for supplementary research.
 1. Register the selected zero-return Sortino target only when a genuine future
    portfolio version and measurement window exist; do not invent either.
 2. **Campaign v2 revision awaits approval; provider access remains blocked:**
-   the original v2 controls are retired by code and awaiting their terminal
-   local supersession record for the incomplete and future dates. Review and
-   explicitly approve revision-1 hash `7c43094e...`
+   the original v2 controls are retired by code and terminally superseded for
+   their incomplete and future dates. Review and explicitly approve revision-1
+   hash `7c43094e...`
    before a distinct revision preregistration is appended. Only then revalidate
    entitlement and separately authorize bounded quarantine capture. Treat its
    last split as a one-shot sealed retrospective test, never as genuinely future

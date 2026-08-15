@@ -1125,12 +1125,13 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   capture activation, data opening and evaluation stayed fixed false. On 15
   August 2026 the requested activation exposed a calendar conflict: VALIDATION
   was incomplete and UNTOUCHED_TEST lay in the future. The old controls are
-  retired by code and scheduled for an immutable terminal supersession record
-  at the clean release commit; they cannot authorize capture or evaluation.
+  retired by code and closed by terminal supersession record
+  `3f8f1c3e9ddc85f3e34ed484d7162b565525d6eb73488bb1c99c73ab01f845e5`
+  at clean Git `8cd3cff`; they cannot authorize capture or evaluation.
 - Campaign v2 revision-1 proposal
   `7c43094e64f324d6987b67a25d03626eb4defe4096ae1b135e1c0319b60fc0d5`
-  is registered in the release documentation with
-  `PENDING_EXPLICIT_HUMAN_APPROVAL` and grants no access.
+  is registered by that terminal record with `PENDING_EXPLICIT_HUMAN_APPROVAL`
+  and grants no access.
   It uses only completed dates outside the opened v1 window: 1 August 2024-
   31 July 2025, with TRAIN through 28 February, VALIDATION March-April and the
   UNTOUCHED_TEST-role May-July. The last split is explicitly classified as a
