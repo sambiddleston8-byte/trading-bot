@@ -888,6 +888,29 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   order and live-trading authority false. It is deliberately not wired into the
   research pipeline: role-specific canonical schemas and observation-level
   filtering are still required before any engine can consume these bytes.
+- A canonical historical-observation envelope now covers exactly every dataset
+  role declared by the active replay input contract. Each normalized record
+  must carry its role, provider/dataset/record identity, `effective_at`,
+  `available_at`, `retrieved_at`, the exact per-observation cutoff, raw-source
+  and normalized-payload SHA-256 digests, and a finite canonical-JSON payload.
+  The cutoff boundary is fail-closed for the exact role set of one artifact-
+  backed engine and rejects the whole batch when any `available_at` is after
+  its decision timestamp, when cutoffs differ, identities repeat, chronology
+  is invalid, or a normalized payload hash does not match. Realized-data roles
+  also reject future-effective observations, while scheduled event, membership,
+  terminal and calendar roles may retain a future `effective_at` only when the
+  record was already available by the cutoff. Dense roles require at least one
+  observation; sparse event roles may be empty without claiming completeness.
+  Retrieval may occur after the historical decision because it records archival
+  acquisition, not historical knowability. The result is immutable, digest-
+  bound and can bind to a ledger-issued invocation clock, while provider-
+  payload qualification,
+  source authentication, upstream vintage selection, role completeness,
+  dataset-commitment binding, engine readiness, replay, broker, order and live-
+  trading authority remain explicitly false. Deterministic synthetic fixtures
+  cover the boundary without provider access. Provider-specific payload
+  normalization and role semantics remain deferred until qualified samples
+  exist; the envelope does not invent them or make an engine adapter ready.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
