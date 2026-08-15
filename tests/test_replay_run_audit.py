@@ -508,6 +508,95 @@ def test_terminal_settlement_cannot_claim_execution_costs():
         module._validate_engine_execution_economics(payload, engine)
 
 
+def test_position_fraction_cap_is_revalidated_against_execution_reference_price():
+    payload = module._result_payload(result())
+    engine = json.loads(payload["engine_config_canonical_json"])
+    engine["config"]["maximum_position_fraction"] = "0.0001"
+    for item in payload["sizing_decisions"]:
+        module._validate_sizing(item, engine)
+
+    with pytest.raises(ValueError, match="position-fraction cap"):
+        module._match_executions_and_sizing(
+            payload["executions"], payload["sizing_decisions"], engine
+        )
+
+
+def test_legacy_v2_engine_records_remain_interpretable_without_position_cap():
+    payload = module._result_payload(result())
+    engine = json.loads(payload["engine_config_canonical_json"])
+    engine["engine_policy_version"] = "causal-single-instrument-guardrailed-backtest-v2"
+    engine["config"].pop("maximum_position_fraction")
+    payload["engine_policy_version"] = engine["engine_policy_version"]
+
+    module._validate_engine_execution_economics(payload, engine)
+    for item in payload["sizing_decisions"]:
+        module._validate_sizing(item, engine)
+    module._match_executions_and_sizing(
+        payload["executions"], payload["sizing_decisions"], engine
+    )
+
+
+def test_unknown_engine_policy_version_fails_closed():
+    payload = module._result_payload(result())
+    engine = json.loads(payload["engine_config_canonical_json"])
+    engine["engine_policy_version"] = "causal-single-instrument-guardrailed-backtest-v4"
+    payload["engine_policy_version"] = engine["engine_policy_version"]
+
+    with pytest.raises(ValueError, match="unsupported by replay audit"):
+        module._validate_engine_execution_economics(payload, engine)
+
+
+@pytest.mark.parametrize(
+    ("constraint", "risk_per_share", "risk_budget"),
+    [
+        ("NO_POSITIVE_ATR_RISK_DISTANCE", "0", "0"),
+        ("UNIVERSE_INELIGIBLE_AT_EXECUTION", "10", None),
+    ],
+)
+def test_declared_rejected_buy_sizing_paths_remain_auditable(
+    constraint, risk_per_share, risk_budget
+):
+    payload = module._result_payload(result())
+    engine = json.loads(payload["engine_config_canonical_json"])
+    trace = dict(payload["sizing_decisions"][0])
+    trace.update(
+        risk_per_share=risk_per_share,
+        risk_budget=risk_budget,
+        risk_quantity_limit="0",
+        liquidity_quantity_limit="0",
+        cash_quantity_limit="0",
+        requested_quantity="0",
+        filled_quantity="0",
+        limiting_constraints=[constraint],
+        stop_price_after=None,
+    )
+
+    module._validate_sizing(trace, engine)
+
+
+@pytest.mark.parametrize(
+    ("requested", "constraints", "message"),
+    [
+        ("6", ["RISK_BUDGET"], "exceeds its risk quantity"),
+        ("4", ["RISK_BUDGET"], "lacks its position-fraction constraint"),
+    ],
+)
+def test_v3_buy_request_cannot_bypass_risk_or_position_constraints(
+    requested, constraints, message
+):
+    payload = module._result_payload(result())
+    engine = json.loads(payload["engine_config_canonical_json"])
+    trace = dict(payload["sizing_decisions"][0])
+    trace.update(
+        requested_quantity=requested,
+        filled_quantity=requested,
+        limiting_constraints=constraints,
+    )
+
+    with pytest.raises(ValueError, match=message):
+        module._validate_sizing(trace, engine)
+
+
 @pytest.mark.parametrize(
     "mutator",
     [
