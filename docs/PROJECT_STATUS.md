@@ -1008,9 +1008,14 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   the older authenticated replay-profile resolver: before any admitted replay,
   a later versioned batch must bind these campaign controls through that
   authenticated route without invalidating legacy audit records. These values
-  are assumptions, not calibrations or performance evidence. The immutable
-  preregistration has not yet been appended; no provider byte was requested and
-  all broker/trading authorities remain false.
+  are assumptions, not calibrations or performance evidence. After PR #252
+  merged, the clean-main local ledger appended and verified exactly one
+  preregistration, `HQP-DCE89C243F16E9C659B3B339A08DE350` (record hash
+  `d20899e47335d6fa4ee2a5773fcd1cf12f1b921018a775a4525e7bc166a4dc6d`).
+  Its official public terms-page bytes are retained owner-only with their exact
+  hash, but terms assertions, account entitlement and historical replay use
+  remain explicitly unauthenticated/unconfirmed. No market-data provider byte
+  was requested or admitted, and all broker/trading authorities remain false.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact

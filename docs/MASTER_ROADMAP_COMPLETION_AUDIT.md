@@ -154,8 +154,13 @@ fills while retaining legacy v2 audit interpretation. That campaign profile is
 not yet wired into the older authenticated replay-profile resolver. A versioned
 binding that preserves old audit records remains mandatory before any admitted
 campaign replay. The assumptions are uncalibrated and authorize no performance
-claim. The single Massive preregistration is still unapplied and no provider
-byte has been accessed.
+claim. After PR #252 merged, clean main produced the one permitted owner-only
+Massive preregistration, `HQP-DCE89C243F16E9C659B3B339A08DE350` (record hash
+`d20899e47335d6fa4ee2a5773fcd1cf12f1b921018a775a4525e7bc166a4dc6d`).
+The retained official public terms-page bytes are hashed, but entitlement and
+historical replay permission remain unresolved. No market-data provider byte
+has been requested or admitted, and every replay/broker/trading authority
+remains false.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
