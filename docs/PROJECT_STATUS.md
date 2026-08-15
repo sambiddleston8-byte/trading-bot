@@ -926,6 +926,17 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   explicitly synthetic. The module contains no HTTP/provider SDK, file read,
   broker or execution path and cannot qualify payload semantics, authenticate
   source evidence, prove completeness, admit a dataset or make an engine ready.
+- A standardized cloud-native provider enquiry and sample-acceptance checklist
+  now maps every question directly to the provider-qualification ledger's
+  required universes, internal uses, capabilities, corporate actions and three
+  point-in-time clocks. It requires separate authenticated terms,
+  documentation and machine-readable sample bytes for the exact product/plan;
+  marketing claims, screenshots and delivery technology never count as sample
+  evidence. Missing items remain `UNRESOLVED`, any blocking gap fails
+  qualification, and even a complete result stops at
+  `PASSED_AWAITING_HUMAN_APPROVAL`. The pack is ready for the user to send
+  separately to Intrinio, Polygon.io, Databento and Nasdaq, but no message has
+  been sent and no external account, trial, download or purchase is authorized.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
