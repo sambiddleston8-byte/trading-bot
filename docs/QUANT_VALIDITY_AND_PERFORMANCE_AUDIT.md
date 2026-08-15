@@ -47,6 +47,17 @@ learning, AWS scheduling or real-money trading.
   operations, authenticate returned content or establish historical
   availability. Remaining yfinance research and learning callers are outside
   this batch.
+- The legacy learning, expected-return, universe-ranking and portfolio market-
+  exposure price reads now cross the same boundary with unchanged request
+  shapes and unchanged safe no-data behaviour. Horizons, exclusive end dates,
+  adjusted/unadjusted choices and return formulas are untouched. Valid frames
+  therefore retain the same calculations, while malformed frames or an open
+  shared circuit now fail closed instead of producing an outcome. These reads
+  stay current, back-adjusted or unqualified, non-point-in-time, non-
+  survivorship-safe and inadmissible as replay evidence; the boundary's false
+  point-in-time, survivorship and replay-admission flags are visible truth and
+  confer no authority downstream. Remaining research and multi-factor
+  yfinance callers are outside this batch.
 - Optional FMP, EODHD, Alpha Vantage, FRED and Massive reads now share one
   secret-safe access coordinator. It applies process-wide provider pacing, at
   most one retry for connection failures or HTTP 502/503/504, capped backoff,

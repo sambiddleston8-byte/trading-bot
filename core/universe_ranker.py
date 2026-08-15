@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 
+from core.data_sources.yahoo_history_access import YahooHistoryClient
 from core.stock_universe import StockUniverse
 from core.historical_signal import HistoricalSignalEngine
 
@@ -11,9 +12,14 @@ class UniverseRanker:
     def __init__(
         self,
         output_path="data/universe_rankings.json",
+        history_client=None,
     ):
 
         self.output_path = output_path
+
+        # The boundary client is resolved on first use so that an unavailable
+        # SDK stays a per-symbol skip rather than a construction failure.
+        self.history_client = history_client
 
         directory = os.path.dirname(
             self.output_path
@@ -40,14 +46,16 @@ class UniverseRanker:
 
         try:
 
-            import yfinance as yf
+            client = (
+                self.history_client
+                or YahooHistoryClient()
+            )
 
-            data = yf.Ticker(
-                symbol
-            ).history(
+            data = client.history(
+                symbol,
                 period="2y",
                 auto_adjust=True,
-            )
+            ).frame
 
             if data.empty:
                 return None

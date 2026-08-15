@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 
 import yfinance as yf
 
+from core.data_sources.yahoo_history_access import YahooHistoryClient
+
 
 class LearningEngine:
 
@@ -17,9 +19,15 @@ class LearningEngine:
     def __init__(
         self,
         path="data/learning_history.json",
+        history_client=None,
     ):
 
         self.path = path
+
+        self.history_client = (
+            history_client
+            or YahooHistoryClient()
+        )
 
         directory = os.path.dirname(
             self.path
@@ -194,11 +202,10 @@ class LearningEngine:
 
         try:
 
-            data = yf.Ticker(
-                ticker
-            ).history(
-                period="1d"
-            )
+            data = self.history_client.history(
+                ticker,
+                period="1d",
+            ).frame
 
             if not data.empty:
 
@@ -215,10 +222,11 @@ class LearningEngine:
     def get_horizon_price(self, ticker, target_date):
         """Return the first trading close on/after an exact calendar horizon."""
         try:
-            data = yf.Ticker(ticker).history(
+            data = self.history_client.history(
+                ticker,
                 start=target_date.date().isoformat(),
                 end=(target_date + timedelta(days=10)).date().isoformat(),
-            )
+            ).frame
             if data.empty:
                 return None
             price = float(data["Close"].iloc[0])

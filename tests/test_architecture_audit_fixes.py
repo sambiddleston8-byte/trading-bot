@@ -9,27 +9,29 @@ from core.research.market_regime_engine import MarketRegimeEngine
 from core.walk_forward_backtest import WalkForwardBacktest
 
 
-def test_future_price_uses_a_single_explicit_date_range(monkeypatch, tmp_path):
+def test_future_price_uses_a_single_explicit_date_range(tmp_path):
     calls = []
 
-    class Ticker:
-        def history(self, **kwargs):
-            calls.append(kwargs)
-            return pd.DataFrame({"Close": [100.0, 101.0, 102.0]})
+    class HistoryClient:
+        def history(self, symbol, **kwargs):
+            calls.append((symbol, kwargs))
+            frame = pd.DataFrame({"Close": [100.0, 101.0, 102.0]})
+            return type("Observation", (), {"frame": frame})()
 
-    monkeypatch.setattr(
-        "core.expected_return_tracker.yf.Ticker",
-        lambda symbol: Ticker(),
-    )
-    tracker = ExpectedReturnTracker(tmp_path / "predictions.json")
+    tracker = ExpectedReturnTracker(tmp_path / "predictions.json", history_client=HistoryClient())
 
     assert tracker.get_future_price("TEST", "2025-01-01", 30) == 100.0
-    assert calls == [{"start": "2025-01-31", "end": "2025-02-10"}]
+    assert calls == [("TEST", {"start": "2025-01-31", "end": "2025-02-10"})]
 
 
 def test_legacy_learning_records_each_exact_horizon_price(monkeypatch, tmp_path):
     path = tmp_path / "learning.json"
-    engine = LearningEngine(path)
+
+    class UnusedHistoryClient:
+        def history(self, symbol, **kwargs):
+            raise AssertionError("horizon prices are supplied by the test")
+
+    engine = LearningEngine(path, history_client=UnusedHistoryClient())
     engine._save(
         [{
             "Ticker": "TEST",

@@ -9,6 +9,8 @@ their broad sector labels.
 
 from typing import Any, Callable
 
+from core.data_sources.yahoo_history_access import YahooHistoryClient
+
 
 class PortfolioMarketExposureService:
     MIN_RETURN_OBSERVATIONS = 60
@@ -23,11 +25,11 @@ class PortfolioMarketExposureService:
             return None
 
     @staticmethod
-    def history(ticker: str):
+    def history(ticker: str, *, history_client: Any = None):
         try:
-            import yfinance as yf
+            client = history_client or YahooHistoryClient()
 
-            return yf.Ticker(str(ticker).upper()).history(period="1y", auto_adjust=False)
+            return client.history(str(ticker).upper(), period="1y", auto_adjust=False).frame
         except Exception:
             return None
 
@@ -52,6 +54,7 @@ class PortfolioMarketExposureService:
         portfolio: dict[str, Any],
         *,
         history_lookup: Callable[[str], Any] | None = None,
+        history_client: Any = None,
     ) -> dict[str, Any]:
         """Measure observable liquidity and price-history overlap.
 
@@ -72,7 +75,9 @@ class PortfolioMarketExposureService:
             holding for holding in portfolio.get("holdings") or []
             if isinstance(holding, dict) and holding.get("ticker")
         ]
-        history_lookup = history_lookup or cls.history
+        history_lookup = history_lookup or (
+            lambda ticker: cls.history(ticker, history_client=history_client)
+        )
         prices: dict[str, Any] = {}
         liquidity: list[dict[str, Any]] = []
         industry_weights: dict[str, float] = {}
