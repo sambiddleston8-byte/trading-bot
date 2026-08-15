@@ -96,6 +96,37 @@ learning, AWS scheduling or real-money trading.
   for already-recorded decisions, not the historical validity of the research
   process that produced them.
 
+- An isolated VectorBT research pilot now exists for synthetic data only. It is
+  single-instrument and long-only, binds every signal to an exact bar close with
+  both close-level and bar-availability causality checks, and executes every
+  strategy signal at exactly the next bar open. Same-bar strategy-signal
+  execution is impossible. Its `SyntheticPilotAttestation` is content-addressed to the
+  supplied bars and cannot be confused with `ReplayDataAttestation`; its bar type
+  cannot reach `GuardrailedBacktestEngine`. VectorBT is imported lazily, only
+  `Portfolio.from_signals` is called, and every execution semantic is pinned
+  rather than defaulted. Closed and open trades are separated, and undefined
+  win rate or Sharpe is recorded as `null` rather than fabricated as zero.
+  Defined numeric results are quantized to nine decimal places and stored
+  in a separate `VECTORBT_SYNTHETIC_PILOT_ONLY` ledger with every broker, paper,
+  live, performance, promotion and track-record flag false,
+  `cash_settlement_modelled` false and
+  `parity_with_guardrailed_engine_proven` false. Its benchmark and Sharpe are
+  labelled `DIAGNOSTIC_ONLY` with an explicit zero risk-free rate and 252-day
+  annualization; exact daily spacing is required before either is computed. The
+  stop uses the actual entry fill and adverse stop-market fills rather than a
+  recovered bar close; partial fills are disabled and rejected orders fail the
+  run. VectorBT cannot activate the stop on the entry bar; that limitation is
+  recorded.
+  These metrics satisfy neither `SharpeMetricReadinessGate` nor the
+  benchmark evidence rules and never enter an existing performance ledger. This
+  pilot replaces nothing, validates nothing and is not replay evidence. Note that
+  `vectorbt==1.1.0` is Apache 2.0 **with Commons Clause**, not plain Apache 2.0.
+  Total return includes open-position mark-to-market value; volume does not add
+  liquidity modelling; settlement, corporate actions and terminal outcomes are
+  unmodelled; and float arithmetic followed by nine-decimal quantization is not
+  Decimal parity with the authenticated engine. The cost-free first-close
+  benchmark is diagnostic and not like-for-like execution evidence.
+
 ## Trust-critical backlog before paper submission or learning
 
 1. Give every decision input `effective_at`, `available_at`, `retrieved_at`,
