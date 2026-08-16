@@ -271,6 +271,17 @@ covering 1 August 2024, bind current terms without recording credential
 material, and freshly recompute the parent, proposal, strategy and clean-Git
 identities. The approval record cannot authenticate, activate, fetch, open,
 admit or evaluate anything.
+Massive entitlement evidence is now structurally separated into hashed public
+documentation and hashed authenticated account evidence. Published plan tables
+may support product-level facts only: Custom Bars advertise Stocks Basic Free
+end-of-day access with two years of history, while Day Aggregates flat files
+are not included in that free plan. Public pages, market-data payloads and
+provider `request_id` values are forbidden as account-binding evidence. The
+only accepted account-binding source classes are an official authenticated
+account endpoint or authenticated dashboard export. A complete assessment is
+still only input to a later separately authorized activation record; all
+provider, evaluation and trading authority remains false. No current account
+evidence has been collected.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -307,7 +318,9 @@ prevent continued use of current/free entitlements for supplementary research.
    their incomplete and future dates. Exact approval and the distinct inert
    revision preregistration are registered. The hash-specific activation
    proposal approval is now recorded but inactive. Next, supply authenticated
-   account-bound entitlement evidence before key use or provider data. Recompute Git and source
+   account-bound entitlement evidence before key use or provider data. The new
+   evidence schema explicitly forbids treating public plan pages, a market-data
+   response or its `request_id` as account binding. Recompute Git and source
    identities at activation rather than trusting stored attestations. Treat the
    last split as a one-shot sealed retrospective test, never as genuinely future
    evidence or promotion authority. Historical availability, stable identity,
