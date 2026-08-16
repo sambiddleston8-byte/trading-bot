@@ -135,8 +135,9 @@ The authenticated Plans page has no JSON download, so a separate fail-closed
 boundary can now seal one exact credential-free HTML `tr` fragment selected
 from the sole Stocks plan row locally observed at `/dashboard/subscriptions`.
 The operator must attest that page-level selection, which is explicitly not
-independently verified by the fragment. The parser derives only the exact
-whole-cell labels `Stocks Basic`, `Individual`, and `$0/m`, and
+independently verified by the fragment. The parser requires the exact four-cell
+row `Stocks Basic Open in new window`, `Individual`, `$0/m`, `Upgrade`, then
+derives only the narrower plan, customer-type and displayed-price labels, and
 binds that partial evidence to the already-proven public-documentation parent.
 It does not infer account identity, account-to-plan binding, daily-bars,
 dividend or split entitlement, lookback, or zero incremental data cost; every

@@ -92,8 +92,9 @@ Because the authenticated Plans page exposes no JSON export control, a disjoint
 partial-evidence ledger can seal the exact credential-free HTML `tr` fragment
 from the sole Stocks plan row locally observed at `/dashboard/subscriptions`.
 That page-level selection is operator-attested and explicitly not independently
-verified by the fragment. Only exact whole-cell visible `Stocks Basic`,
-`Individual`, and `$0/m` labels are rederived. Its exact parent
+verified by the fragment. The exact four-cell row `Stocks Basic Open in new
+window`, `Individual`, `$0/m`, `Upgrade` must match before the narrower plan,
+customer-type and displayed-price labels are rederived. Its exact parent
 IDs and hashes bind already-proven public product documentation without turning
 those provider-level facts into current account entitlements. Account identity,
 account-to-plan binding, daily bars, dividends, splits, lookback, provider

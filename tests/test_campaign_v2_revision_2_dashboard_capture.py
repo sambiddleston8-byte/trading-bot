@@ -12,7 +12,8 @@ from core.orchestration.campaign_v2_revision_2_account_entitlement import (
     PUBLIC_DOCUMENTATION_RECORD_SHA256,
 )
 from core.orchestration.campaign_v2_revision_2_dashboard_capture import (
-    CAPTURE_KIND, CampaignV2Revision2DashboardCaptureLedger,
+    CAPTURE_KIND, EXPECTED_VISIBLE_CELLS,
+    CampaignV2Revision2DashboardCaptureLedger,
     build_dashboard_capture_evidence,
 )
 
@@ -20,7 +21,8 @@ NOW = datetime.now(timezone.utc).replace(microsecond=0)
 
 
 def _html(plan="Stocks Basic", customer="Individual", price="$0/m"):
-    return f'<tr role="row"><td>{plan}</td><td>{customer}</td><td>{price}</td></tr>'.encode()
+    return (f'<tr role="row"><td>{plan}<span>Open in new window</span></td>'
+            f'<td>{customer}</td><td>{price}</td><td>Upgrade</td></tr>').encode()
 
 
 def _capture(**changes):
@@ -53,6 +55,7 @@ def test_derives_only_visible_labels_and_keeps_semantics_unresolved():
     assert evidence["capture_kind"] == CAPTURE_KIND
     assert evidence["sole_stocks_plan_row_attested"] is True
     assert evidence["row_selection_semantics"].endswith("NOT_INDEPENDENTLY_VERIFIED")
+    assert evidence["observed_cells"] == list(EXPECTED_VISIBLE_CELLS)
     for field in ("account_identity_proven", "account_to_plan_binding_proven", "daily_bars_access_confirmed",
                   "dividends_access_confirmed", "stock_splits_access_confirmed", "historical_lookback_start_proven",
                   "zero_incremental_cost_proven", "evidence_complete_for_separate_capture_activation_record"):
@@ -88,21 +91,41 @@ def test_rejects_unqualified_or_unsafe_capture(change):
 
 def test_hidden_text_cannot_prove_visible_label():
     payload = b"<tr><td>Stocks Basic Individual<script>$0/m</script></td></tr>"
-    with pytest.raises(ValueError, match="whole-cell"):
+    with pytest.raises(ValueError, match="hidden or malformed"):
         build_dashboard_capture_evidence(_capture(payload_bytes=payload), assessed_at=NOW)
 
 
 @pytest.mark.parametrize("payload", [
     _html(plan="Stocks Basic Plus"),
     _html(price="$0/month"),
-    b'<tr><td>Stocks</td><td>Basic</td><td>Individual</td><td>$0/m</td></tr>',
-    b'<tr><td hidden>Stocks Basic</td><td>Individual</td><td>$0/m</td></tr>',
-    b'<tr><td style="display:none">Stocks Basic</td><td>Individual</td><td>$0/m</td></tr>',
-    b'<tr><td>Stocks Basic</td><td>Individual</td><td aria-hidden="true">$0/m</td></tr>',
+    b'<tr><td>Stocks</td><td>Basic</td><td>Individual</td><td>$0/m</td><td>Upgrade</td></tr>',
+    b'<tr><td hidden>Stocks Basic</td><td>Individual</td><td>$0/m</td><td>Upgrade</td></tr>',
+    b'<tr><td style="display:none">Stocks Basic</td><td>Individual</td><td>$0/m</td><td>Upgrade</td></tr>',
+    b'<tr><td>Stocks Basic Open in new window</td><td>Individual</td><td aria-hidden="true">$0/m</td><td>Upgrade</td></tr>',
 ])
 def test_requires_exact_whole_visible_cells(payload):
     with pytest.raises(ValueError):
         build_dashboard_capture_evidence(_capture(payload_bytes=payload), assessed_at=NOW)
+
+
+def test_accepts_empty_hidden_decorative_void_element():
+    payload = _html().replace(
+        b"Stocks Basic",
+        b'<img aria-hidden="true" src="decorative.svg">Stocks Basic',
+    )
+    evidence = build_dashboard_capture_evidence(_capture(payload_bytes=payload), assessed_at=NOW)
+    assert evidence["observed_cells"] == list(EXPECTED_VISIBLE_CELLS)
+
+
+def test_rejects_stray_end_tag_cell_permutation_and_intercell_text():
+    payloads = (
+        _html().replace(b"Stocks Basic", b'<span aria-hidden="true"></i>Stocks Basic</span>'),
+        b'<tr><td>Stocks Basic Open in new window</td><td>$0/m</td><td>Individual</td><td>Upgrade</td></tr>',
+        b'<tr><td>Stocks Basic Open in new window</td>unexpected<td>Individual</td><td>$0/m</td><td>Upgrade</td></tr>',
+    )
+    for payload in payloads:
+        with pytest.raises(ValueError):
+            build_dashboard_capture_evidence(_capture(payload_bytes=payload), assessed_at=NOW)
 
 
 @pytest.mark.parametrize("change", [{"record_hash": "f" * 64}, {"proposal_sha256": "f" * 64},
