@@ -159,16 +159,23 @@ def _write_all(descriptor: int, payload: bytes) -> None:
 
 def _private_directory(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True, mode=0o700)
-    details = path.lstat()
-    if (
-        path.is_symlink()
-        or not stat.S_ISDIR(details.st_mode)
-        or details.st_uid != os.geteuid()
-    ):
-        raise LedgerIntegrityError("capture approval directory is unsafe")
-    os.chmod(path, 0o700)
-    if stat.S_IMODE(path.stat().st_mode) != 0o700:
-        raise LedgerIntegrityError("capture approval directory must be owner-only")
+    if path.resolve() != path.absolute():
+        raise LedgerIntegrityError("capture approval directory has a symlinked path")
+    descriptor = os.open(
+        path,
+        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | _no_follow(),
+    )
+    try:
+        details = os.fstat(descriptor)
+        if not stat.S_ISDIR(details.st_mode) or details.st_uid != os.geteuid():
+            raise LedgerIntegrityError("capture approval directory is unsafe")
+        os.fchmod(descriptor, 0o700)
+        if stat.S_IMODE(os.fstat(descriptor).st_mode) != 0o700:
+            raise LedgerIntegrityError(
+                "capture approval directory must be owner-only"
+            )
+    finally:
+        os.close(descriptor)
 
 
 def _approval_record_id(payload: Mapping[str, Any]) -> str:
@@ -217,7 +224,25 @@ class CampaignV2RevisionCaptureApprovalLedger:
                 or details.st_size > MAX_LEDGER_BYTES
             ):
                 raise LedgerIntegrityError("capture approval ledger is unsafe")
-            raw = os.read(descriptor, MAX_LEDGER_BYTES + 1)
+            expected_size = details.st_size
+            chunks: list[bytes] = []
+            bytes_read = 0
+            while bytes_read < expected_size:
+                chunk = os.read(
+                    descriptor,
+                    min(64 * 1024, expected_size - bytes_read),
+                )
+                if not chunk:
+                    raise LedgerIntegrityError(
+                        "capture approval ledger ended before its stated size"
+                    )
+                chunks.append(chunk)
+                bytes_read += len(chunk)
+            if os.read(descriptor, 1):
+                raise LedgerIntegrityError(
+                    "capture approval ledger grew during verification"
+                )
+            raw = b"".join(chunks)
         finally:
             os.close(descriptor)
         if raw and not raw.endswith(b"\n"):
@@ -260,6 +285,13 @@ class CampaignV2RevisionCaptureApprovalLedger:
                 current_real_world_date=recording_date
             )
             parent = dict(self._parent_resolver())
+            partition_ends = [
+                *(
+                    date.fromisoformat(item["end"])
+                    for item in proposal["authorized_splits"]
+                ),
+                date.fromisoformat(proposal["sealed_split"]["end"]),
+            ]
             material = {key: value for key, value in row.items() if key != "record_hash"}
             boundary = (
                 set(row) == _ENVELOPE_FIELDS
@@ -274,7 +306,8 @@ class CampaignV2RevisionCaptureApprovalLedger:
                 == "CAMPAIGN_V2_REVISION_1_CAPTURE_PROPOSAL_APPROVAL"
                 and payload.get("status")
                 == "APPROVED_ENTITLEMENT_AND_ACTIVATION_PENDING"
-                and bool(payload.get("approved_by"))
+                and _required(payload.get("approved_by"), "approved_by", 150)
+                == payload.get("approved_by")
                 and payload.get("authorization_basis")
                 == "EXACT_USER_APPROVAL_IN_CODEX_TASK"
                 and payload.get("approval_text") == required_approval_text()
@@ -303,6 +336,8 @@ class CampaignV2RevisionCaptureApprovalLedger:
                     str(payload.get("strategy_source_sha256", ""))
                 )
                 is not None
+                and payload.get("strategy_source_path")
+                == "core/research/conservative_baseline_strategy.py"
                 and payload.get("target_basket") == proposal["target_basket"]
                 and payload.get("authorized_splits")
                 == proposal["authorized_splits"]
@@ -314,7 +349,8 @@ class CampaignV2RevisionCaptureApprovalLedger:
                 == "SEALED_RETROSPECTIVE_TEST"
                 and payload.get("all_partition_ends_on_or_before_recording_date")
                 is True
-                and recording_date <= date.today()
+                and all(item <= recording_date for item in partition_ends)
+                and recording_date <= datetime.now(timezone.utc).date()
                 and abs((recording_date - recorded.date()).days) <= 1
                 and payload.get("entitlement_evidence_status") == "NOT_COLLECTED"
                 and payload.get("next_required_boundary")
@@ -358,9 +394,9 @@ class CampaignV2RevisionCaptureApprovalLedger:
             raise LedgerIntegrityError("capture approval parent preregistration differs")
         recording_date = now.date()
         proposal = activation_proposal(current_real_world_date=recording_date)
-        proposal_source = (
-            self.repository_root
-            / "core/research/campaign_v2_revision_capture_activation_proposal.py"
+        _, proposal_source_hash = _strategy_source_identity(
+            self.repository_root,
+            "core/research/campaign_v2_revision_capture_activation_proposal.py",
         )
         strategy_path, strategy_hash = _strategy_source_identity(
             self.repository_root,
@@ -374,9 +410,7 @@ class CampaignV2RevisionCaptureApprovalLedger:
             "approval_text": required_approval_text(),
             "approval_scope": "TRAIN_VALIDATION_CAPTURE_PROPOSAL_ONLY_NO_DATA_CALL",
             "proposal_sha256": proposal["proposal_sha256"],
-            "proposal_module_sha256": hashlib.sha256(
-                proposal_source.read_bytes()
-            ).hexdigest(),
+            "proposal_module_sha256": proposal_source_hash,
             "parent_preregistration_id": PARENT_PREREGISTRATION_ID,
             "parent_preregistration_record_sha256": (
                 PARENT_PREREGISTRATION_RECORD_SHA256

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -60,6 +61,21 @@ def _record(tmp_path: Path) -> dict:
     )
 
 
+def _rewrite_with_valid_hash(path: Path, row: dict) -> None:
+    material = {key: value for key, value in row.items() if key != "record_hash"}
+    row["record_hash"] = hashlib.sha256(
+        json.dumps(
+            material,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    path.write_text(json.dumps(row, sort_keys=True) + "\n")
+    os.chmod(path, 0o600)
+
+
 def test_exact_approval_is_recorded_once_with_every_authority_false(tmp_path):
     ledger = _ledger(tmp_path)
     record = ledger.record_approval(
@@ -104,6 +120,16 @@ def test_approval_cannot_be_misrepresented_as_fetch_authority(tmp_path):
     assert record["data_calls_allowed"] is False
     assert record["provider_bytes_accessed"] is False
     assert record["untouched_test_opened"] is False
+
+
+def test_approval_identity_is_anchored_in_authoritative_documents(tmp_path):
+    record = _record(tmp_path)
+    for relative in (
+        "docs/PROJECT_STATUS.md",
+        "docs/MASTER_ROADMAP_COMPLETION_AUDIT.md",
+    ):
+        text = (ROOT / relative).read_text()
+        assert record["proposal_sha256"] in text
 
 
 def test_wrong_text_dirty_git_or_wrong_parent_fails_before_append(tmp_path):
@@ -158,6 +184,8 @@ def test_existing_approval_cannot_change_authority(tmp_path):
         (("payload", "entitlement_evidence_status"), "COLLECTED"),
         (("payload", "authorized_request_count"), 36),
         (("payload", "sealed_split", "role"), "TRAIN"),
+        (("payload", "strategy_source_path"), "core/research/other.py"),
+        (("payload", "approved_by"), 7),
         (("previous_hash",), "f" * 64),
     ],
 )
@@ -169,11 +197,43 @@ def test_tampering_is_detected(tmp_path, path, value):
     for key in path[:-1]:
         target = target[key]
     target[path[-1]] = value
-    ledger.path.write_text(json.dumps(row, sort_keys=True) + "\n")
-    os.chmod(ledger.path, 0o600)
+    _rewrite_with_valid_hash(ledger.path, row)
 
-    with pytest.raises(LedgerIntegrityError, match="inert boundary"):
+    with pytest.raises(LedgerIntegrityError, match="capture approval"):
         ledger.records()
+
+
+def test_unsafe_mode_symlink_and_second_record_fail_closed(tmp_path):
+    mode_ledger = _ledger(tmp_path / "mode")
+    mode_ledger.record_approval(
+        approved_by="SAM_AND_PAT_USER_APPROVAL",
+        approval_text=required_approval_text(),
+    )
+    os.chmod(mode_ledger.path, 0o644)
+    with pytest.raises(LedgerIntegrityError, match="unsafe"):
+        mode_ledger.records()
+
+    link_ledger = _ledger(tmp_path / "link")
+    link_ledger.record_approval(
+        approved_by="SAM_AND_PAT_USER_APPROVAL",
+        approval_text=required_approval_text(),
+    )
+    target = link_ledger.path.with_name("real.jsonl")
+    link_ledger.path.rename(target)
+    link_ledger.path.symlink_to(target)
+    with pytest.raises(OSError):
+        link_ledger.records()
+
+    second_ledger = _ledger(tmp_path / "second")
+    second_ledger.record_approval(
+        approved_by="SAM_AND_PAT_USER_APPROVAL",
+        approval_text=required_approval_text(),
+    )
+    line = second_ledger.path.read_bytes()
+    second_ledger.path.write_bytes(line + line)
+    os.chmod(second_ledger.path, 0o600)
+    with pytest.raises(LedgerIntegrityError, match="exactly one"):
+        second_ledger.records()
 
 
 def test_module_has_no_network_credential_quarantine_replay_or_broker_capability():

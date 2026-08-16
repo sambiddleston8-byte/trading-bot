@@ -1153,16 +1153,20 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   revalidation, capture activation, exemption application, provider access,
   data opening and evaluation all remain false. No API key was requested and
   no provider call or evaluation was performed.
-- Pending capture-activation proposal
+- Approved but inactive capture-activation proposal
   `ac80cd34ccfd9a620daa7d81812261f97a144402e56e7b3eb20825565266d02a`
-  grants no access. It fixes exactly 27 quarantine-only requests: 21 TRAIN and
-  six VALIDATION slices across AAPL/MSFT/SPY. All nine UNTOUCHED_TEST-role
-  slices remain sealed and cannot be requested under it. A later activation
-  record must bind separate exact human approval, authenticated account and
-  zero-incremental-cost entitlement evidence covering 1 August 2024, current
-  terms, the exact parent/proposal/strategy identities and a clean Git revision.
-  Credential values must never enter the record, Git, tests or model prompts.
-  No activation record, key request or provider call has occurred.
+  received exact human approval on 16 August 2026. Owner-only approval record
+  `CV2R1CAP-3072E69774CF1438898644B7ECFB6495`, record hash
+  `42431cf0471f9697c6a77f9d7366d671196d89b898d533e01f98d883382267a1`,
+  binds it to clean Git `50f7afe` and still grants no access. It fixes exactly
+  27 quarantine-only requests: 21 TRAIN and six VALIDATION slices across
+  AAPL/MSFT/SPY. All nine UNTOUCHED_TEST-role slices remain sealed and cannot
+  be requested under it. A later activation record must bind authenticated
+  account and zero-incremental-cost entitlement evidence covering 1 August
+  2024, current terms and freshly recomputed parent/proposal/strategy/Git
+  identities. Credential values must never enter the record, Git, tests or
+  model prompts. Entitlement revalidation, activation, key use and provider
+  access remain false; no provider call has occurred.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
