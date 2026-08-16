@@ -61,6 +61,18 @@ persist separately in the owner-only content store for deterministic
 re-derivation. These public bytes remain
 incapable of authenticating the user's account, plan or key.
 
+The streamlined implementation now expresses Stage-0 completion as the exact
+conjunction of a safe temporary credential-file presence check and an effective
+bounded provider-use authorization. It does not treat a key as authorization.
+The five former entitlement/document evidence modules are preserved unchanged
+as read-only historical records and removed from the active dashboard's import
+dependency. A deterministic September-window capture specification exists only
+for synthetic engineering; its registered-window mismatch and missing effective
+activation keep provider use false. Strict offline daily-bar and corporate-
+action parsers can produce hash-bound point-in-time staging envelopes from
+synthetic fixtures, but provider semantics, admission and evaluation remain
+unqualified and no network capture has occurred.
+
 The Streamlit shell now exposes a thin Campaign Audit preview, but this does
 not advance the active stage. It reads only deterministic contract constants
 and shows the immutable proposal/public-documentation chain, unresolved
