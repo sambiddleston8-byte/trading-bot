@@ -100,9 +100,18 @@ those provider-level facts into current account entitlements. Account identity,
 account-to-plan binding, daily bars, dividends, splits, lookback, provider
 origin and zero incremental data cost all remain explicitly unresolved.
 Ambiguous full-page captures, substrings, explicit hidden markup, screenshots,
-transcripts, wrong paths and
-rewritten/wrapped fragments are rejected. No real row capture has been retained
-and every activation and downstream authority is false.
+transcripts, wrong paths and rewritten/wrapped fragments are rejected. PR #275
+merged the complete-row compatibility boundary at
+`eae19b61fef903d1048eb51c8b30c7abfe60b774`; afterward the exact authenticated
+Stocks row was retained owner-only and registered as
+`CV2R2DASH-6DF966621092349395BC7B782BDC03E7`, record
+`f724c56171ecce98a75cf761e505ba05c2a0e1a32b5a4a689ca4d206999857d5`,
+payload `5a2ef5f4aad07421662567d54fb6731f6db25099385ed56c697eab6c5da2a832`,
+bundle `6df966621092349395bc7b782bdc03e78b2a7b36bb38ad3064154e674272be6c`.
+That advances only the partial dashboard-label sub-gate; account identity,
+account-to-plan binding, endpoint access, lookback, zero incremental data cost,
+provider origin and every activation/downstream authority remain unresolved or
+false.
 
 The fixed local account-export inbox now has an offline verifier. It requires
 owner-only exact JSON export and hash-bound manifest files, delegates fact extraction to
