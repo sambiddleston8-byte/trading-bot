@@ -30,6 +30,8 @@ DASHBOARD_EVIDENCE_ID = "CV2R2DASH-6DF966621092349395BC7B782BDC03E7"
 DASHBOARD_RECORD_SHA256 = "f724c56171ecce98a75cf761e505ba05c2a0e1a32b5a4a689ca4d206999857d5"
 DASHBOARD_PAYLOAD_SHA256 = "5a2ef5f4aad07421662567d54fb6731f6db25099385ed56c697eab6c5da2a832"
 DASHBOARD_BUNDLE_SHA256 = "6df966621092349395bc7b782bdc03e78b2a7b36bb38ad3064154e674272be6c"
+ACCOUNT_PLAN_EVIDENCE_ID = "CV2R2ACCTPLAN-D378C5884B4A8103783242A31CBACAB3"
+ACCOUNT_PLAN_RECORD_SHA256 = "6c790610d51a703e4b2f0fde6cf312bf88f2ea384b055ffda44773c728cf6c17"
 
 
 def campaign_audit_snapshot() -> dict[str, Any]:
@@ -69,7 +71,12 @@ def campaign_audit_snapshot() -> dict[str, Any]:
                 "identity": DASHBOARD_EVIDENCE_ID,
             },
             {
-                "gate": "Account-bound entitlement",
+                "gate": "Account-to-plan same-session supplement",
+                "status": "REGISTERED_LOCAL_ATTESTATION_ONLY",
+                "identity": ACCOUNT_PLAN_EVIDENCE_ID,
+            },
+            {
+                "gate": "Account-bound endpoint entitlement",
                 "status": "UNRESOLVED",
                 "identity": "NONE",
             },
@@ -83,8 +90,9 @@ def campaign_audit_snapshot() -> dict[str, Any]:
             "visible_dashboard_labels": "REGISTERED_PARTIAL_LABELS_ONLY_NOT_ACCOUNT_BINDING",
             "dashboard_authentication_basis": "LOCAL_OPERATOR_ATTESTATION_ONLY",
             "row_selection_semantics": "PAGE_UNIQUENESS_NOT_INDEPENDENTLY_VERIFIED",
-            "account_identity": "UNRESOLVED",
-            "account_to_plan_binding": "UNRESOLVED",
+            "account_identity": "LOCALLY_OBSERVED_HASH_SEALED_CLEAR_IDENTITY_PRIVATE",
+            "account_to_plan_binding": "LOCAL_SAME_SESSION_ATTESTATION_ONLY_CRYPTOGRAPHIC_BINDING_UNRESOLVED",
+            "account_plan_observation_bracket": "22.826_SECONDS",
             "daily_bars": "PUBLIC_PRODUCT_FACT_ONLY_ACCOUNT_ACCESS_UNRESOLVED",
             "dividends": "PUBLIC_PRODUCT_FACT_ONLY_ACCOUNT_ACCESS_UNRESOLVED",
             "stock_splits": "PUBLIC_PRODUCT_FACT_ONLY_ACCOUNT_ACCESS_UNRESOLVED",
@@ -98,6 +106,7 @@ def campaign_audit_snapshot() -> dict[str, Any]:
             "dashboard_record_sha256": DASHBOARD_RECORD_SHA256,
             "dashboard_payload_sha256": DASHBOARD_PAYLOAD_SHA256,
             "dashboard_bundle_sha256": DASHBOARD_BUNDLE_SHA256,
+            "account_plan_record_sha256": ACCOUNT_PLAN_RECORD_SHA256,
         },
         "requested_variant": {
             "window": f"{REQUESTED_START} to {REQUESTED_END}",
@@ -111,7 +120,7 @@ def campaign_audit_snapshot() -> dict[str, Any]:
             "REVISION_2_ALREADY_APPROVED_AND_REGISTERED_NO_DUPLICATE_APPROVAL",
             f"REQUESTED_START_BUFFER_{requested_buffer}_DAYS_BELOW_{MINIMUM_ROLLING_LOOKBACK_BUFFER_DAYS}_DAY_MINIMUM",
             "SPY_ONLY_CORPORATE_ACTION_SCOPE_DIFFERS_FROM_APPROVED_AAPL_MSFT_SPY_POLICY",
-            "AUTHENTICATED_ACCOUNT_IDENTITY_UNRESOLVED",
+            "LOCAL_SAME_SESSION_ACCOUNT_PLAN_ATTESTATION_IS_NOT_CRYPTOGRAPHIC_PROVIDER_BINDING",
             "ACCOUNT_BOUND_DAILY_BARS_DIVIDENDS_SPLITS_LOOKBACK_AND_ZERO_COST_UNRESOLVED",
             "NO_CAPTURE_ACTIVATION_OR_PROVIDER_REQUEST_AUTHORITY",
         ],
