@@ -7,6 +7,7 @@ import pytest
 
 from core.features.pit_feature_contract import PITFeatureRecord, _record, build_revision_matrix, build_technical_feature_matrices, campaign_observation_cutoff, revise_feature_record, validate_revision_chain
 from core.orchestration.stage2_qualification import _at,_bar_available,_bar_close,_sessions
+from core.research.stage3_feature_strategy_evaluation import evaluate
 
 def canonical(v):return json.dumps(v,sort_keys=True,separators=(",",":"),allow_nan=False).encode()
 RETRIEVED_AT="2026-08-16T20:00:00+00:00"
@@ -125,3 +126,18 @@ def test_future_input_changes_no_earlier_feature_values(tmp_path):
     before_later=next(x for x in before["rows"] if x["entity_id"]=="AAPL" and x["effective_at"][:10]=="2025-03-05")
     after_later=next(x for x in after["rows"] if x["entity_id"]=="AAPL" and x["effective_at"][:10]=="2025-03-05")
     assert after_later["values"]!=before_later["values"]
+
+def test_stage3_feature_strategy_evaluation_uses_bounded_partitions(tmp_path):
+    environment(tmp_path);build(tmp_path)
+    pins={role:json.loads((tmp_path/f"data/research/massive_campaign_v2_revision_2/stage3/technical_features/{role.lower()}_matrix.json").read_text())["matrix_sha256"] for role in ("TRAIN","VALIDATION")}
+    with pytest.raises(ValueError,match="admitted matrix pin"):evaluate(tmp_path)
+    report=evaluate(tmp_path,admitted_matrix_sha256=pins)
+    assert report["partitions"]["TRAIN"]["source_sessions"]==103
+    assert report["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]["evaluated_sessions"]==103
+    assert report["partitions"]["VALIDATION"]["source_sessions"]==42
+    assert report["partitions"]["VALIDATION"]["scenarios"]["PESSIMISTIC"]["composite"]["evaluated_sessions"]==42
+    assert report["one_bar_train_purge"] is report["one_bar_validation_embargo"] is True
+    assert report["train_purged_decision_at"]==report["partitions"]["TRAIN"]["evaluation_end"]
+    assert report["validation_embargoed_decision_at"][:10]==report["partitions"]["VALIDATION"]["evaluation_start"][:10]
+    assert report["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]["completed_trade_count"]>0
+    assert report["untouched_test_included"] is False
