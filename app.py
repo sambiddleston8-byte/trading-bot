@@ -15,7 +15,12 @@ navigation = st.navigation(
             title="Portfolio Construction",
             icon="💼",
             default=True,
-        )
+        ),
+        st.Page(
+            "pages/Campaign_Audit.py",
+            title="Campaign Audit",
+            icon="🔒",
+        ),
     ]
 )
 navigation.run()

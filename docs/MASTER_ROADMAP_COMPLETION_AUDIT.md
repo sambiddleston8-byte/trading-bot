@@ -61,6 +61,17 @@ persist separately in the owner-only content store for deterministic
 re-derivation. These public bytes remain
 incapable of authenticating the user's account, plan or key.
 
+The Streamlit shell now exposes a thin Campaign Audit preview, but this does
+not advance the active stage. It reads only deterministic contract constants
+and shows the immutable proposal/public-documentation chain, unresolved
+account entitlement, proposal hashes, compliance blockers and fixed-false
+authorities. It contains no credential or action controls and is labelled
+`PREVIEW_ONLY_LOCKED_BY_STAGE_0`. The requested 1 September 2024 start is not a
+valid replacement Revision-2 proposal: its 16-day buffer violates the existing
+30-day minimum and its SPY-only corporate-action scope differs from the
+registered AAPL/MSFT/SPY policy. The approved proposal hash and preregistration
+remain unchanged; no duplicate approval was manufactured.
+
 A separate Revision-2 account-entitlement boundary now prevents reuse of the
 superseded Revision-1 assumptions. It can retain one exact credential-free JSON
 export privately when locally attested as captured from an official authenticated
