@@ -64,12 +64,17 @@ The inert proposal
 `cafbaef235d8379e29b17d057ac87a77c452260680afd20bf8c7e4fd24671654`
 received exact human approval on 16 August 2026. The new owner-only,
 single-record Revision-2 registration boundary accepts only that exact text,
-requires a clean worktree, records the full Git identity and verifies both Revision-1 immutable
-parents before appending. It terminally supersedes the inactive Revision-1
-preregistration and approved capture proposal; it does not erase or modify
-their local records or research outputs. The append remains sequenced after
-this implementation reaches clean `main`, so the recorded Git identity cannot
-refer to an unmerged working tree.
+requires a clean worktree, records the full Git identity and verifies both
+Revision-1 immutable parents before appending. PR #266 merged the boundary and
+the owner-local append then registered
+`HQP2R2-4E0CA212575663AA7010D87EA36B58E5`, record
+`48554e1ebdce8d9641362d1d9843c27bb8d07de2413db72c4b074166fcc70743`,
+against clean merged Git
+`d6baad465ac866a7c36c963585c1c5b0fc103801`. It terminally supersedes the
+inactive Revision-1 preregistration and approved-but-never-activated capture
+proposal; it does not erase or modify their local records or research outputs.
+The distinct Revision-2 raw root is owner-only, empty and disjoint from prior
+quarantine and admitted storage.
 
 The approved package covers 1 October 2024 through 31 July 2025: TRAIN ends 28 February, VALIDATION covers March-April, and the
 `SEALED_RETROSPECTIVE_TEST` role covers May-July. On the 16 August 2026 proposal
@@ -77,8 +82,9 @@ date, 1 October retains a 46-day buffer inside Massive's published rolling
 two-year free-plan history assumption. The proposal expires after 1 September
 2026; any later activation requires a new window, and activation must recompute
 the rolling boundary rather than reuse the proposal-date calculation.
-Until the Revision-2 record is appended from clean `main`, Revision-1 remains
-approved but inactive and no provider gate advances.
+The registration advances only the Stage-0 control gate. API-key requests,
+public-document evidence, authenticated account evidence, capture activation,
+provider calls, payload access, admission and evaluation all remain false.
 
 The proposed quarantine scope is now unadjusted daily bars plus the official
 `/stocks/v1/dividends` and `/stocks/v1/splits` endpoints for AAPL, MSFT and SPY.

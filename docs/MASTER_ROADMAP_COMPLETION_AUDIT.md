@@ -27,12 +27,17 @@ Stage 0 is active. Campaign v2 revision-2 proposal
 `cafbaef235d8379e29b17d057ac87a77c452260680afd20bf8c7e4fd24671654`
 received exact human approval on 16 August 2026. A new owner-only,
 single-record registration boundary accepts only that approval, requires a
-clean worktree, records the full Git revision, and verifies the exact inactive Revision-1
-preregistration and capture-approval records before terminally superseding
-them. The immutable append is deliberately deferred until this implementation
-is merged, so the recorded source identity cannot point at an unmerged tree.
-No Revision-1 evidence is deleted or rewritten, and no provider gate advances
-before that append. The package proposes completed dates from 1 October 2024 through 31 July 2025
+clean worktree, records the full Git revision, and verifies the exact inactive
+Revision-1 preregistration and capture-approval records before terminally
+superseding them. PR #266 merged that boundary; the subsequent owner-local
+append registered `HQP2R2-4E0CA212575663AA7010D87EA36B58E5`, record
+`48554e1ebdce8d9641362d1d9843c27bb8d07de2413db72c4b074166fcc70743`,
+against clean merged Git
+`d6baad465ac866a7c36c963585c1c5b0fc103801`. No Revision-1 evidence was
+deleted or rewritten. The new private quarantine root is empty and disjoint.
+Every API-key, documentation/account-evidence, capture, provider-byte,
+admission, evaluation, AWS, broker, order and trading authority flag remains
+false. The package covers completed dates from 1 October 2024 through 31 July 2025
 with a 46-day buffer inside the human-computed two-year rolling free-history
 boundary as of 16 August 2026. It expires after 1 September 2026 and requires
 activation-time recomputation, and keeps the May-July partition explicitly classified as a
