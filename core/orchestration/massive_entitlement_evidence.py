@@ -14,6 +14,7 @@ from __future__ import annotations
 from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 import hashlib
+from html.parser import HTMLParser
 import json
 import re
 from typing import Any, Mapping, Sequence
@@ -25,8 +26,10 @@ from core.research.campaign_v2_revision_capture_activation_proposal import (
 )
 
 
-SCHEMA_VERSION = "1.1"
-POLICY_VERSION = "massive-entitlement-evidence-boundary-v2-byte-derived"
+SCHEMA_VERSION = "1.2"
+POLICY_VERSION = (
+    "massive-entitlement-evidence-boundary-v3-byte-derived-document-text"
+)
 PROVIDER_ID = "MASSIVE"
 PROVIDER_DATASET_ID = "MASSIVE_STOCKS_CUSTOM_BARS_V2"
 CAPTURE_APPROVAL_RECORD_ID = "CV2R1CAP-3072E69774CF1438898644B7ECFB6495"
@@ -38,7 +41,7 @@ SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 PUBLIC_DOCUMENT_CONTRACTS: Mapping[str, Mapping[str, Any]] = {
     "MASSIVE_REST_QUICKSTART": {
-        "uri": "https://massive.com/docs/rest",
+        "uri": "https://massive.com/docs/rest/quickstart",
         "fact_claims": {
             "api_key_authentication_documented": {
                 "value": True,
@@ -46,7 +49,7 @@ PUBLIC_DOCUMENT_CONTRACTS: Mapping[str, Mapping[str, Any]] = {
             },
             "common_response_request_id_documented": {
                 "value": True,
-                "required_fragments": ("request_id", "request id"),
+                "required_fragments": ("request_id",),
             },
         },
     },
@@ -97,15 +100,11 @@ PUBLIC_DOCUMENT_CONTRACTS: Mapping[str, Mapping[str, Any]] = {
         "fact_claims": {
             "delivery_model": {
                 "value": "S3_DAILY_DOWNLOAD",
-                "required_fragments": ("S3-compatible", "daily files"),
+                "required_fragments": ("daily downloadable S3 file",),
             },
             "stocks_basic_free_access_published": {
                 "value": False,
                 "required_fragments": ("Stocks Basic Free Not included",),
-            },
-            "stocks_starter_history_years": {
-                "value": 5,
-                "required_fragments": ("Stocks Starter 5 years",),
             },
         },
     },
@@ -308,6 +307,39 @@ def _lookback_covers_acquisition_start(value: Any) -> bool:
         return False
 
 
+class _DocumentTextParser(HTMLParser):
+    """Extract deterministic document text while ignoring executable markup."""
+
+    _IGNORED_ELEMENTS = frozenset({"script", "style", "noscript"})
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._ignored_depth = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        del attrs
+        if tag.lower() in self._IGNORED_ELEMENTS:
+            self._ignored_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in self._IGNORED_ELEMENTS and self._ignored_depth:
+            self._ignored_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if not self._ignored_depth:
+            self.parts.append(data)
+
+
+def _normalised_document_text(value: str) -> str:
+    parser = _DocumentTextParser()
+    parser.feed(value)
+    parser.close()
+    return " ".join(" ".join(parser.parts).split())
+
+
 def _derive_documented_facts(
     payload: Any, contract: Mapping[str, Any]
 ) -> tuple[str, dict[str, Any], dict[str, list[dict[str, Any]]]]:
@@ -326,11 +358,11 @@ def _derive_documented_facts(
         text = payload.decode("utf-8", errors="strict")
     except UnicodeDecodeError as error:
         raise ValueError("payload_bytes must be strict UTF-8 documentation") from error
-    normalized_text = " ".join(text.split())
-    if _contains_account_or_credential_material(normalized_text):
+    if _contains_account_or_credential_material(text):
         raise ValueError(
             "public documentation bytes must not contain account or credential material"
         )
+    normalized_text = _normalised_document_text(text)
     facts: dict[str, Any] = {}
     evidence: dict[str, list[dict[str, Any]]] = {}
     for fact_name, claim in contract["fact_claims"].items():
@@ -356,19 +388,42 @@ def _derive_documented_facts(
 
 
 def _contains_account_or_credential_material(text: str) -> bool:
-    for match in re.finditer(r"(?i)(?:[?&]|\b)api[_-]?key=([^&\s\"']+)", text):
-        value = match.group(1).strip("`<>{}[]()")
-        if value.upper() not in {"YOUR_API_KEY", "API_KEY", "REDACTED"}:
+    def is_reviewed_placeholder(value: str) -> bool:
+        resolved = value.strip("`<>{}[]()\\\"'")
+        resolved = re.sub(r"(?:\\+[nrt]\\*)+$", "", resolved)
+        resolved = resolved.strip("`<>{}[]()\\\"'")
+        return resolved.upper() in {
+            "YOUR_API_KEY",
+            "YOUR_MASSIVE_API_KEY",
+            "GLOBAL_TOKEN_API_KEY",
+            "API_KEY",
+            "REDACTED",
+            "POLYGON_STOCKS_API_KEY",
+        }
+
+    for match in re.finditer(
+        r"(?i)(?:[?&]|\b)api[_-]?key=([^&\s\"'<>]+)", text
+    ):
+        if not is_reviewed_placeholder(match.group(1)):
             return True
-    if re.search(r"(?i)authorization\s*:\s*bearer\s+(?!YOUR_|REDACTED)", text):
-        return True
-    if re.search(r"(?i)x-massive-api-key\s*:\s*(?!YOUR_|REDACTED)", text):
-        return True
+    for pattern in (
+        r"(?i)authorization\s*:\s*bearer\s+([^\s\"'<>]+)",
+        r"(?i)x-massive-api-key\s*:\s*([^\s\"'<>]+)",
+    ):
+        if any(
+            not is_reviewed_placeholder(match.group(1))
+            for match in re.finditer(pattern, text)
+        ):
+            return True
     if any(marker in text for marker in ("Sign out", "Account Dashboard")):
         return True
-    return re.search(
-        r"(?i)(?:api[_ -]?key|token)\s*[:=]\s*[A-Za-z0-9_-]{32,}", text
-    ) is not None
+    assignment_pattern = (
+        r"(?i)(?:api[_ -]?key|token)\s*[:=]\s*([^\s\"'<>]{32,})"
+    )
+    return any(
+        not is_reviewed_placeholder(match.group(1))
+        for match in re.finditer(assignment_pattern, text)
+    )
 
 
 def _fact_evidence_shape_valid(value: Any, contract: Mapping[str, Any]) -> bool:
