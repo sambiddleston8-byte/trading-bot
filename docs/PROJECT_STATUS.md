@@ -70,6 +70,25 @@ boundary on the proposal date, below the immutable 30-day minimum, and because
 SPY-only corporate actions differ from the approved AAPL/MSFT/SPY total-return
 policy. No duplicate Revision-2 proposal or approval was created.
 
+The active Stage-0 status projection is now deliberately small:
+`credential_present AND provider_use_authorized`. Credential presence checks
+only that the fixed temporary-key path is an owner-only regular file and never
+reads or displays its bytes. The five earlier Revision-2 account/public
+evidence components remain intact and importable but are indexed as read-only
+historical records rather than active readiness inputs. The requested AAPL,
+MSFT and SPY 1 September 2024--31 July 2025 daily-bar/dividend/split capture has
+an exact deterministic specification, but it is synthetic-only and keeps
+`provider_use_authorized` false because its start differs from the registered
+1 October window and no effective capture-activation record exists.
+
+Stage-2 synthetic engineering has begun without provider access. The existing
+strict unadjusted daily-bar adapter and content-addressed quarantine are now
+complemented by strict dividend and split normalization into the canonical
+point-in-time corporate-event envelope. Synthetic `reported_at` values govern
+availability but remain explicitly unqualified; exact decimals, event dates,
+USD dividends, basket/window bounds, unique identities, pagination and source
+hashes fail closed. These outputs are staging-only, not admitted engine inputs.
+
 ### Stage 0 Campaign v2 revision-2 proposal
 
 The inert proposal

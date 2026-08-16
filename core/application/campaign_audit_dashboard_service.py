@@ -5,7 +5,15 @@ from __future__ import annotations
 from datetime import date
 from typing import Any
 
-from core.orchestration.campaign_v2_revision_2_account_entitlement import (
+from core.orchestration.campaign_stage_readiness import (
+    LEGACY_EVIDENCE_ARCHIVE,
+    credential_file_present,
+    stage_0_readiness,
+)
+from core.research.campaign_v2_revision_2_capture_specification import (
+    capture_specification,
+)
+from core.research.campaign_v2_revision_2_registered_chain import (
     PREREGISTRATION_ID,
     PREREGISTRATION_RECORD_SHA256,
     PROPOSAL_SHA256,
@@ -32,8 +40,6 @@ DASHBOARD_PAYLOAD_SHA256 = "5a2ef5f4aad07421662567d54fb6731f6db25099385ed56c697e
 DASHBOARD_BUNDLE_SHA256 = "6df966621092349395bc7b782bdc03e78b2a7b36bb38ad3064154e674272be6c"
 ACCOUNT_PLAN_EVIDENCE_ID = "CV2R2ACCTPLAN-D378C5884B4A8103783242A31CBACAB3"
 ACCOUNT_PLAN_RECORD_SHA256 = "6c790610d51a703e4b2f0fde6cf312bf88f2ea384b055ffda44773c728cf6c17"
-
-
 def campaign_audit_snapshot() -> dict[str, Any]:
     """Return a fixed, secret-free projection with no filesystem or network I/O."""
 
@@ -41,9 +47,14 @@ def campaign_audit_snapshot() -> dict[str, Any]:
         date.fromisoformat(REQUESTED_START)
         - date.fromisoformat(EARLIEST_PUBLISHED_FREE_HISTORY_ON_PROPOSAL_DATE)
     ).days
+    readiness = stage_0_readiness(
+        credential_present=credential_file_present(),
+        provider_use_authorized=capture_specification()["provider_use_authorized"],
+    )
     return {
         "dashboard_mode": "READ_ONLY_STAGE_1_PREVIEW",
-        "stage_0_status": "INCOMPLETE_BLOCKED",
+        "stage_0_status": readiness["stage_0_status"],
+        "stage_0_readiness": readiness,
         "stage_1_status": "PREVIEW_ONLY_LOCKED_BY_STAGE_0",
         "approved_revision_2": {
             "proposal_sha256": PROPOSAL_SHA256,
@@ -108,6 +119,8 @@ def campaign_audit_snapshot() -> dict[str, Any]:
             "dashboard_bundle_sha256": DASHBOARD_BUNDLE_SHA256,
             "account_plan_record_sha256": ACCOUNT_PLAN_RECORD_SHA256,
         },
+        "legacy_evidence_archive": [dict(item) for item in LEGACY_EVIDENCE_ARCHIVE],
+        "capture_specification": capture_specification(),
         "requested_variant": {
             "window": f"{REQUESTED_START} to {REQUESTED_END}",
             "history_buffer_days": requested_buffer,
