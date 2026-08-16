@@ -17,19 +17,25 @@ def test_snapshot_fails_closed_and_rejects_requested_revision_2_variant():
     assert snapshot["entitlement_status"]["visible_dashboard_labels"] == (
         "REGISTERED_PARTIAL_LABELS_ONLY_NOT_ACCOUNT_BINDING"
     )
+    assert snapshot["entitlement_status"]["account_identity"].startswith("LOCALLY_OBSERVED_HASH_SEALED")
+    assert snapshot["entitlement_status"]["account_plan_observation_bracket"] == "22.826_SECONDS"
     assert all("UNRESOLVED" in snapshot["entitlement_status"][field] for field in (
-        "account_identity", "account_to_plan_binding", "daily_bars", "dividends",
+        "account_to_plan_binding", "daily_bars", "dividends",
         "stock_splits", "lookback", "zero_incremental_cost", "provider_origin",
     ))
     assert [item["status"] for item in snapshot["campaign_chain"]] == [
         "REGISTERED_INERT", "REGISTERED_PRODUCT_FACTS_ONLY",
-        "REGISTERED_PARTIAL_LABEL_EVIDENCE", "UNRESOLVED", "NOT_AUTHORIZED",
+        "REGISTERED_PARTIAL_LABEL_EVIDENCE", "REGISTERED_LOCAL_ATTESTATION_ONLY",
+        "UNRESOLVED", "NOT_AUTHORIZED",
     ]
-    assert len(snapshot["evidence_hashes"]) == 5
+    assert len(snapshot["evidence_hashes"]) == 6
     assert snapshot["campaign_chain"][2]["identity"] == "CV2R2DASH-6DF966621092349395BC7B782BDC03E7"
+    assert snapshot["campaign_chain"][3]["identity"] == "CV2R2ACCTPLAN-D378C5884B4A8103783242A31CBACAB3"
     assert snapshot["evidence_hashes"]["dashboard_record_sha256"] == "f724c56171ecce98a75cf761e505ba05c2a0e1a32b5a4a689ca4d206999857d5"
     assert snapshot["evidence_hashes"]["dashboard_payload_sha256"] == "5a2ef5f4aad07421662567d54fb6731f6db25099385ed56c697eab6c5da2a832"
     assert snapshot["evidence_hashes"]["dashboard_bundle_sha256"] == "6df966621092349395bc7b782bdc03e78b2a7b36bb38ad3064154e674272be6c"
+    assert snapshot["evidence_hashes"]["account_plan_record_sha256"] == "6c790610d51a703e4b2f0fde6cf312bf88f2ea384b055ffda44773c728cf6c17"
+    assert not any("identity" in key or "account_plan_payload" in key for key in snapshot["evidence_hashes"])
     assert snapshot["entitlement_status"]["dashboard_authentication_basis"] == "LOCAL_OPERATOR_ATTESTATION_ONLY"
     assert snapshot["entitlement_status"]["row_selection_semantics"].endswith("NOT_INDEPENDENTLY_VERIFIED")
     assert "NO_CAPTURE_ACTIVATION_OR_PROVIDER_REQUEST_AUTHORITY" in snapshot["compliance_block_reasons"]

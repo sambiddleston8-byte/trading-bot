@@ -159,6 +159,23 @@ binding, endpoint entitlements, lookback, zero incremental data cost and
 provider origin remain unresolved, and every activation/downstream authority
 remains false.
 
+PR #277 added a separate owner-only same-session supplement boundary and
+merged at `1b69b0dcee0554c4f0d96fbd24212f806f2f3041`. The exact Connected
+Account row was then bracketed by a re-observation of the already registered
+plan-row payload in the same authenticated browser session, 22.826 seconds
+apart, and registered as
+`CV2R2ACCTPLAN-D378C5884B4A8103783242A31CBACAB3`, record
+`6c790610d51a703e4b2f0fde6cf312bf88f2ea384b055ffda44773c728cf6c17`.
+The clear account identity remains only in the owner-only read-only blob; the
+ledger exposes its hash. Neither that identity hash nor the exact
+PII-containing payload hash is repeated in public audit docs or the dashboard
+projection. This advances local account observation and local
+same-session attestation only. Provider origin and account-to-plan binding are
+not cryptographically verified, and daily bars, dividends, splits, historical
+lookback and zero incremental cost remain unresolved. API-key requests,
+provider calls, capture activation, admission, evaluation, broker actions,
+orders and live trading all remain false.
+
 An offline-only wrapper now fixes the ignored owner-only inbox filenames for
 that export and its hash-bound capture manifest. It rejects browser HTML, loose file
 permissions, symlinks, credentials and ambiguous or missing JSON pointers, then

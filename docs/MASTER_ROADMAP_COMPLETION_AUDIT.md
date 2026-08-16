@@ -113,6 +113,19 @@ account-to-plan binding, endpoint access, lookback, zero incremental data cost,
 provider origin and every activation/downstream authority remain unresolved or
 false.
 
+PR #277 subsequently merged the owner-only account-to-plan same-session
+supplement at `1b69b0dcee0554c4f0d96fbd24212f806f2f3041`. The exact
+Connected Account row and the already registered plan row were observed in the
+same authenticated browser session 22.826 seconds apart. The supplement is
+registered as `CV2R2ACCTPLAN-D378C5884B4A8103783242A31CBACAB3`, record
+`6c790610d51a703e4b2f0fde6cf312bf88f2ea384b055ffda44773c728cf6c17`.
+The exact row containing the clear identity remains owner-only and read-only;
+the identity and exact PII-containing payload hashes are intentionally omitted
+from this public audit. This is a local timing/session attestation, not
+cryptographic provider-origin or account-to-plan proof. Endpoint access,
+lookback and zero incremental cost remain unresolved, and every activation and
+downstream authority stays false.
+
 The fixed local account-export inbox now has an offline verifier. It requires
 owner-only exact JSON export and hash-bound manifest files, delegates fact extraction to
 the same Revision-2 JSON-pointer boundary and emits only a redacted summary.
