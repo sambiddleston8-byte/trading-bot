@@ -256,6 +256,17 @@ quarantine is empty and disjoint. Entitlement revalidation, capture activation,
 exemption application, provider access, data opening, evaluation, broker
 access, orders and trading remain false and require later bounded authority.
 No API key is requested and no provider call or evaluation is allowed.
+
+Pending capture-activation proposal
+`ac80cd34ccfd9a620daa7d81812261f97a144402e56e7b3eb20825565266d02a`
+is inert and awaits separate exact approval plus authenticated entitlement
+evidence. It fixes 27 exact 31-day-or-shorter requests: 21 TRAIN and six
+VALIDATION across AAPL/MSFT/SPY. All nine UNTOUCHED_TEST-role slices remain
+sealed and unrequestable. Activation must prove an authenticated account-bound
+zero-incremental-cost entitlement that covers 1 August 2024, bind current terms
+without recording credential material, and recompute the parent, proposal,
+strategy and clean-Git identities. The proposal itself cannot authenticate,
+activate, fetch, open, admit or evaluate anything.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -290,13 +301,13 @@ prevent continued use of current/free entitlements for supplementary research.
 2. **Campaign v2 revision preregistered; provider access remains blocked:**
    the original v2 controls are retired by code and terminally superseded for
    their incomplete and future dates. Exact approval and the distinct inert
-   revision preregistration are registered. Next, revalidate entitlement and
-   require a separate bounded capture authorization before requesting a key or
-   provider data. Recompute Git and source identities at activation rather than
-   trusting stored attestations. Treat the last split as a one-shot sealed
-   retrospective test, never as genuinely future evidence or promotion
-   authority. Historical availability, stable identity, replay permission and
-   required provider roles remain unresolved.
+   revision preregistration are registered. Next, separately approve pending
+   activation proposal `ac80cd34...`, then supply authenticated entitlement
+   evidence before requesting a key or provider data. Recompute Git and source
+   identities at activation rather than trusting stored attestations. Treat the
+   last split as a one-shot sealed retrospective test, never as genuinely future
+   evidence or promotion authority. Historical availability, stable identity,
+   replay permission and required provider roles remain unresolved.
 3. Obtain exact entitlement/sample confirmation for a cloud-native Mac/Linux-
    compatible HTTPS REST or versioned flat-file provider covering both index
    histories, symbol lineage, delisted prices and terminal outcomes. Windows-
