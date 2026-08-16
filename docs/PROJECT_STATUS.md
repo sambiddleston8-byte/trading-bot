@@ -145,7 +145,19 @@ one remains explicitly unresolved and capture activation stays false. Full-page
 captures with repeated product labels, substrings, explicit hidden markup,
 screenshots, transcripts, wrong paths
 and rewritten/wrapped fragments fail closed. Tests use deterministic synthetic
-HTML only, and no real dashboard row was retained.
+HTML only. After PR #275 merged the complete-row compatibility boundary at
+`eae19b61fef903d1048eb51c8b30c7abfe60b774`, the exact authenticated Stocks
+row was retained owner-only and registered as
+`CV2R2DASH-6DF966621092349395BC7B782BDC03E7`, record
+`f724c56171ecce98a75cf761e505ba05c2a0e1a32b5a4a689ca4d206999857d5`,
+with exact payload hash
+`5a2ef5f4aad07421662567d54fb6731f6db25099385ed56c697eab6c5da2a832`
+and evidence bundle
+`6df966621092349395bc7b782bdc03e78b2a7b36bb38ad3064154e674272be6c`.
+This registers only partial label evidence: account identity, account-to-plan
+binding, endpoint entitlements, lookback, zero incremental data cost and
+provider origin remain unresolved, and every activation/downstream authority
+remains false.
 
 An offline-only wrapper now fixes the ignored owner-only inbox filenames for
 that export and its hash-bound capture manifest. It rejects browser HTML, loose file

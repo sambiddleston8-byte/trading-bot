@@ -26,6 +26,10 @@ from core.research.conservative_baseline_campaign_v2_revision_2_proposal import 
 
 REQUESTED_START = "2024-09-01"
 REQUESTED_END = "2025-07-31"
+DASHBOARD_EVIDENCE_ID = "CV2R2DASH-6DF966621092349395BC7B782BDC03E7"
+DASHBOARD_RECORD_SHA256 = "f724c56171ecce98a75cf761e505ba05c2a0e1a32b5a4a689ca4d206999857d5"
+DASHBOARD_PAYLOAD_SHA256 = "5a2ef5f4aad07421662567d54fb6731f6db25099385ed56c697eab6c5da2a832"
+DASHBOARD_BUNDLE_SHA256 = "6df966621092349395bc7b782bdc03e78b2a7b36bb38ad3064154e674272be6c"
 
 
 def campaign_audit_snapshot() -> dict[str, Any]:
@@ -61,8 +65,8 @@ def campaign_audit_snapshot() -> dict[str, Any]:
             },
             {
                 "gate": "Authenticated dashboard labels",
-                "status": "BOUNDARY_IMPLEMENTED_NO_REAL_CAPTURE",
-                "identity": "UNREGISTERED",
+                "status": "REGISTERED_PARTIAL_LABEL_EVIDENCE",
+                "identity": DASHBOARD_EVIDENCE_ID,
             },
             {
                 "gate": "Account-bound entitlement",
@@ -76,7 +80,9 @@ def campaign_audit_snapshot() -> dict[str, Any]:
             },
         ],
         "entitlement_status": {
-            "visible_dashboard_labels": "UNRESOLVED_NO_DASHBOARD_CAPTURE_RETAINED",
+            "visible_dashboard_labels": "REGISTERED_PARTIAL_LABELS_ONLY_NOT_ACCOUNT_BINDING",
+            "dashboard_authentication_basis": "LOCAL_OPERATOR_ATTESTATION_ONLY",
+            "row_selection_semantics": "PAGE_UNIQUENESS_NOT_INDEPENDENTLY_VERIFIED",
             "account_identity": "UNRESOLVED",
             "account_to_plan_binding": "UNRESOLVED",
             "daily_bars": "PUBLIC_PRODUCT_FACT_ONLY_ACCOUNT_ACCESS_UNRESOLVED",
@@ -89,6 +95,9 @@ def campaign_audit_snapshot() -> dict[str, Any]:
         "evidence_hashes": {
             "public_documentation_record_sha256": PUBLIC_DOCUMENTATION_RECORD_SHA256,
             "public_documentation_bundle_sha256": PUBLIC_DOCUMENTATION_BUNDLE_SHA256,
+            "dashboard_record_sha256": DASHBOARD_RECORD_SHA256,
+            "dashboard_payload_sha256": DASHBOARD_PAYLOAD_SHA256,
+            "dashboard_bundle_sha256": DASHBOARD_BUNDLE_SHA256,
         },
         "requested_variant": {
             "window": f"{REQUESTED_START} to {REQUESTED_END}",
