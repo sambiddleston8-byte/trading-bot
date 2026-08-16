@@ -10,7 +10,7 @@ It has no broker, network, credential, or order-submission capability.
 
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
-from decimal import Decimal, InvalidOperation, ROUND_FLOOR
+from decimal import Context, Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_EVEN, localcontext
 import copy
 import hashlib
 import inspect
@@ -26,6 +26,9 @@ from typing import Any, Iterable, Mapping, Protocol, Sequence
 ZERO = Decimal("0")
 ONE = Decimal("1")
 BPS = Decimal("10000")
+ATR_DECIMAL_CONTEXT = Context(
+    prec=34, rounding=ROUND_HALF_EVEN, Emin=-999999, Emax=999999
+)
 ACTION_HOLD = "HOLD"
 ACTION_ENTER_LONG = "ENTER_LONG"
 ACTION_EXIT_LONG = "EXIT_LONG"
@@ -705,16 +708,17 @@ class BacktestResult:
 def _atr(history: Sequence[MarketBar], window: int) -> Decimal | None:
     if len(history) < window + 1:
         return None
-    true_ranges: list[Decimal] = []
-    for prior, current in zip(history[-window - 1 : -1], history[-window:]):
-        true_ranges.append(
-            max(
-                current.high - current.low,
-                abs(current.high - prior.close),
-                abs(current.low - prior.close),
+    with localcontext(ATR_DECIMAL_CONTEXT):
+        true_ranges: list[Decimal] = []
+        for prior, current in zip(history[-window - 1 : -1], history[-window:]):
+            true_ranges.append(
+                max(
+                    current.high - current.low,
+                    abs(current.high - prior.close),
+                    abs(current.low - prior.close),
+                )
             )
-        )
-    return sum(true_ranges, ZERO) / Decimal(len(true_ranges))
+        return sum(true_ranges, ZERO) / Decimal(len(true_ranges))
 
 
 def _lagged_liquidity(history: Sequence[MarketBar], lookback: int) -> Decimal | None:
@@ -1511,7 +1515,31 @@ class GuardrailedBacktestEngine:
                 if action not in {ACTION_HOLD, ACTION_ENTER_LONG, ACTION_EXIT_LONG}:
                     raise ValueError("strategy returned an unsupported action")
                 if action == ACTION_ENTER_LONG and symbol not in positions and symbol not in pending:
-                    atr = _atr(history, self.config.atr_window)
+                    feature_atr = getattr(strategy_instance, "atr_for_signal", None)
+                    if feature_atr is not None and not callable(feature_atr):
+                        raise ValueError("strategy ATR provider is invalid")
+                    historical_atr = _atr(history, self.config.atr_window)
+                    atr = (
+                        _decimal(
+                            feature_atr(symbol, tuple(history), parameters),
+                            "strategy feature ATR",
+                            positive=True,
+                        )
+                        if feature_atr is not None
+                        else historical_atr
+                    )
+                    if feature_atr is not None:
+                        if historical_atr is None:
+                            raise ValueError(
+                                "strategy feature ATR lacks causal bar history"
+                            )
+                        tolerance = max(
+                            Decimal("1e-24"), abs(historical_atr) * Decimal("1e-24")
+                        )
+                        if abs(atr - historical_atr) > tolerance:
+                            raise ValueError(
+                                "strategy feature ATR differs from causal bar-derived ATR"
+                            )
                     if atr is not None:
                         pending[symbol] = (action, "STRATEGY_SIGNAL", bar.available_at, atr)
                 elif action == ACTION_EXIT_LONG and symbol in positions:
