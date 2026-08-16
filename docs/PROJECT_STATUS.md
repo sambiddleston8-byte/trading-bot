@@ -89,6 +89,16 @@ availability but remain explicitly unqualified; exact decimals, event dates,
 USD dividends, basket/window bounds, unique identities, pagination and source
 hashes fail closed. These outputs are staging-only, not admitted engine inputs.
 
+The next Stage-2 functional batch implements an explicitly operator-authorized,
+quarantine-only capture runner for the registered AAPL/MSFT/SPY TRAIN and
+VALIDATION window. Its fixed plan contains 21 unadjusted daily-bar slices and
+six dividend/split requests, rejects redirects and pagination, retains exact
+payload hashes in owner-only storage, produces a deterministic completeness
+report, and keeps the May--July retrospective test sealed. The temporary key is
+read only from `/private/tmp/massive_api_key.txt` and removed by the CLI after
+the attempt. Admission, evaluation and every broker/trading authority remain
+false; corporate-action historical `reported_at` semantics remain unresolved.
+
 ### Stage 0 Campaign v2 revision-2 proposal
 
 The inert proposal
