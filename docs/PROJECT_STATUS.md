@@ -102,6 +102,23 @@ evidenced by the record above; API-key requests, authenticated account
 evidence, capture activation, provider market-data calls, payload access,
 admission and evaluation remain false.
 
+The next Stage-0 boundary is implemented but contains no real account evidence.
+It accepts only exact credential-free JSON bytes locally attested as exported
+from an official authenticated Massive account endpoint or dashboard, and requires
+capture-specific JSON pointers so provider fields are extracted rather than
+guessed. It must derive the account-identity hash, named plan, daily-bars,
+dividend and split access, lookback coverage through 1 October 2024, and exact
+zero incremental cost from those same bytes while preserving the preregistered
+30-day rolling-history buffer. The bytes and ledger are owner-
+only and content-addressed; credentials, public pages, market-data responses and
+request IDs are rejected as account binding. Provider origin remains explicitly
+operator-attested and cryptographically unverified, so the record is tamper-
+evident but not independent provider-origin proof. Activation must rerun the
+rolling-window check. Even a complete record keeps key
+use, capture activation, provider calls, admission, evaluation and every
+trading/deployment authority false until a separate bounded activation. No
+authenticated export has been supplied or registered.
+
 The proposed quarantine scope is now unadjusted daily bars plus the official
 `/stocks/v1/dividends` and `/stocks/v1/splits` endpoints for AAPL, MSFT and SPY.
 This scope is necessary but not sufficient for a SPY-relative total-return

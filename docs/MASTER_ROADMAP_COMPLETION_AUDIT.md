@@ -61,6 +61,22 @@ persist separately in the owner-only content store for deterministic
 re-derivation. These public bytes remain
 incapable of authenticating the user's account, plan or key.
 
+A separate Revision-2 account-entitlement boundary now prevents reuse of the
+superseded Revision-1 assumptions. It can retain one exact credential-free JSON
+export privately when locally attested as captured from an official authenticated
+account endpoint or dashboard,
+then resolves capture-supplied JSON pointers back into those bytes. Qualification
+requires a hashed account identity, named plan, explicit access to daily bars,
+dividends and splits, lookback coverage preserving the registered 30-day buffer
+before 1 October 2024, and exact zero incremental cost. Missing or changed fields
+fail closed; no rate limit is invented. Provider origin is hash-sealed as locally
+attested but cryptographically unverified, matching the tamper-evident but
+explicitly unauthenticated boundary used elsewhere. The activation-time rolling
+window must be revalidated. The evidence record remains input only to a later activation and fixes
+all key-use, provider, admission, evaluation, deployment and trading authorities
+false. The boundary is tested only with deterministic synthetic bytes; no real
+authenticated export or account-entitlement record exists.
+
 VectorBT is not on the revision-2 critical path and provides no parameter
 selection value for the one fixed 20/50/20 configuration. The proposal names
 `GuardrailedBacktestEngine` as the sole authoritative evaluator and retains the
@@ -385,9 +401,11 @@ prevent continued use of current/free entitlements for supplementary research.
    their incomplete and future dates. Exact approval and the distinct inert
    revision preregistration are registered. The hash-specific activation
    proposal approval is now recorded but inactive. Next, supply authenticated
-   account-bound entitlement evidence before key use or provider data. The new
-   evidence schema explicitly forbids treating public plan pages, a market-data
-   response or its `request_id` as account binding. Recompute Git and source
+   account-bound entitlement evidence before key use or provider data. The
+   Revision-2 schema requires the exact authenticated export bytes and
+   capture-specific JSON pointers, and explicitly forbids treating public plan
+   pages, a market-data response or its `request_id` as account binding.
+   Recompute Git and source
    identities at activation rather than trusting stored attestations. Treat the
    last split as a one-shot sealed retrospective test, never as genuinely future
    evidence or promotion authority. Historical availability, stable identity,
