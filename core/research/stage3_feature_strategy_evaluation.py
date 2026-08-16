@@ -1,6 +1,7 @@
 """Offline TRAIN/VALIDATION evaluation of the admitted PIT technical strategy."""
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import date, datetime, time, timezone
 from decimal import Decimal, localcontext
 import hashlib
@@ -16,6 +17,7 @@ from core.guardrailed_backtest import (
     CorporateAction,
     ExchangeFeeSchedule,
     ExchangeFeeTier,
+    ExecutionRecord,
     GuardrailedBacktestEngine,
     MarketBar,
     ResearchExemptionDataAttestation,
@@ -196,6 +198,232 @@ def _sharpe(curve: Sequence[Decimal], initial: Decimal) -> Decimal | None:
     return mean / variance.sqrt() * ANNUALIZATION_SESSIONS.sqrt()
 
 
+def _is_filled_trade_execution(execution: ExecutionRecord) -> bool:
+    return execution.filled_quantity > 0 and execution.action in {"BUY", "SELL"}
+
+
+def _trade_and_cost_attribution(
+    results: Mapping[str, BacktestResult], *, initial_equity: Decimal
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    if set(results) != set(SYMBOLS):
+        raise ValueError("trade attribution requires the exact campaign symbol set")
+
+    def precise_sum(values: Iterable[Decimal]) -> Decimal:
+        with localcontext() as context:
+            context.prec = 50
+            return sum(values, Decimal("0"))
+
+    def precise_product(left: Decimal, right: Decimal) -> Decimal:
+        with localcontext() as context:
+            context.prec = 50
+            return left * right
+
+    def precise_ratio(numerator: Decimal, denominator: Decimal) -> Decimal:
+        with localcontext() as context:
+            context.prec = 50
+            return numerator / denominator
+
+    def matches_engine_decimal(actual: Decimal, expected: Decimal) -> bool:
+        tolerance = max(
+            Decimal("1e-24"),
+            precise_product(abs(expected), Decimal("1e-27")),
+        )
+        return abs(precise_sum((actual, -expected))) <= tolerance
+
+    logs: list[dict[str, Any]] = []
+    all_filled: list[tuple[str, int, ExecutionRecord]] = []
+    attributed_execution_keys: set[tuple[str, int]] = set()
+    for symbol in SYMBOLS:
+        result = results[symbol]
+        # GuardrailedBacktestEngine permits one non-scaling position per symbol
+        # and refuses to return while a position remains open.  Bind the same
+        # deterministic entry/window contract enforced by replay_run_audit to
+        # stable execution indices instead of process-local object identities.
+        filled = [
+            (index, execution)
+            for index, execution in enumerate(result.executions)
+            if _is_filled_trade_execution(execution)
+        ]
+        all_filled.extend((symbol, index, execution) for index, execution in filled)
+        trades = list(result.completed_trades)
+        if trades != sorted(trades, key=lambda trade: (trade.opened_at, trade.closed_at)):
+            raise ValueError("completed trades changed deterministic engine order")
+        if any(
+            left.closed_at >= right.opened_at
+            for left, right in zip(trades, trades[1:])
+        ):
+            raise ValueError("completed trade windows overlap")
+        for trade in trades:
+            entries = [
+                (index, execution)
+                for index, execution in filled
+                if execution.action == "BUY"
+                and execution.executed_at == trade.opened_at
+                and (symbol, index) not in attributed_execution_keys
+            ]
+            exits = [
+                (index, execution)
+                for index, execution in filled
+                if execution.action == "SELL"
+                and trade.opened_at <= execution.executed_at <= trade.closed_at
+                and (symbol, index) not in attributed_execution_keys
+            ]
+            if len(entries) != 1 or not exits:
+                raise ValueError("completed trade lacks exact filled execution support")
+            if max(execution.executed_at for _, execution in exits) != trade.closed_at:
+                raise ValueError("completed trade lacks its final filled exit")
+            entry_index, entry = entries[0]
+            final_exit = max(
+                exits, key=lambda item: (item[1].executed_at, item[0])
+            )[1]
+            entry_total_cost = precise_sum(
+                (
+                    precise_product(entry.filled_quantity, entry.execution_price),
+                    entry.fee,
+                )
+            )
+            exit_net_proceeds = precise_sum(
+                (
+                    precise_product(
+                        execution.filled_quantity, execution.execution_price
+                    )
+                    - execution.fee
+                    for _, execution in exits
+                )
+            )
+            if not matches_engine_decimal(entry_total_cost, trade.entry_total_cost):
+                raise ValueError("completed trade cost differs from its filled entry")
+            if not matches_engine_decimal(
+                exit_net_proceeds, trade.exit_net_proceeds
+            ):
+                raise ValueError("completed trade proceeds differ from its filled exits")
+            if final_exit.reason != trade.exit_reason:
+                raise ValueError("completed trade reason differs from its final exit")
+            supporting = entries + exits
+            supporting_keys = {(symbol, index) for index, _ in supporting}
+            attributed_execution_keys.update(supporting_keys)
+            fees = precise_sum(execution.fee for _, execution in supporting)
+            adverse_cost = precise_sum(
+                precise_product(
+                    (
+                        execution.execution_price - execution.reference_price
+                        if execution.action == "BUY"
+                        else execution.reference_price - execution.execution_price
+                    ),
+                    execution.filled_quantity,
+                )
+                for _, execution in supporting
+            )
+            reference_notional = precise_sum(
+                precise_product(
+                    execution.reference_price, execution.filled_quantity
+                )
+                for _, execution in supporting
+            )
+            if reference_notional <= 0:
+                raise ValueError("filled trade lacks positive reference notional")
+            net_pnl = trade.exit_net_proceeds - trade.entry_total_cost
+            identity = {
+                "symbol": symbol,
+                "opened_at": trade.opened_at.isoformat(),
+                "closed_at": trade.closed_at.isoformat(),
+                "entry_total_cost": _decimal(trade.entry_total_cost),
+                "exit_net_proceeds": _decimal(trade.exit_net_proceeds),
+            }
+            with localcontext() as context:
+                context.prec = 50
+                adverse_bps = (
+                    adverse_cost / reference_notional * Decimal("10000")
+                )
+            logs.append(
+                {
+                    "trade_id": "PITTRADE-"
+                    + hashlib.sha256(_canonical(identity)).hexdigest()[:32].upper(),
+                    **identity,
+                    "execution_indices": [index for index, _ in supporting],
+                    "entry_filled_quantity": _decimal(entry.filled_quantity),
+                    "exit_filled_quantity": _decimal(
+                        precise_sum(
+                            execution.filled_quantity for _, execution in exits
+                        )
+                    ),
+                    "net_profit_loss": _decimal(net_pnl),
+                    "net_return": _decimal(trade.return_rate),
+                    "exit_reason": trade.exit_reason,
+                    "entry_execution_index": entry_index,
+                    "entry_executed_at": entry.executed_at.isoformat(),
+                    "exit_execution_indices": [index for index, _ in exits],
+                    "final_exit_executed_at": max(
+                        execution.executed_at for _, execution in exits
+                    ).isoformat(),
+                    "entry_execution_count": len(entries),
+                    "exit_execution_count": len(exits),
+                    "fees": _decimal(fees),
+                    "adverse_execution_cost": _decimal(adverse_cost),
+                    "combined_execution_cost": _decimal(
+                        precise_sum((fees, adverse_cost))
+                    ),
+                    "notional_weighted_adverse_execution_bps": _decimal(
+                        adverse_bps
+                    ),
+                }
+            )
+    logs.sort(
+        key=lambda row: (
+            datetime.fromisoformat(row["opened_at"]),
+            row["symbol"],
+            row["trade_id"],
+        )
+    )
+    expected_execution_keys = {
+        (symbol, index) for symbol, index, _ in all_filled
+    }
+    if attributed_execution_keys != expected_execution_keys:
+        raise ValueError("filled execution is not attributed to a completed trade")
+    fees = precise_sum(execution.fee for _, _, execution in all_filled)
+    adverse = precise_sum(
+        precise_product(
+            (
+                execution.execution_price - execution.reference_price
+                if execution.action == "BUY"
+                else execution.reference_price - execution.execution_price
+            ),
+            execution.filled_quantity,
+        )
+        for _, _, execution in all_filled
+    )
+    if fees != precise_sum(Decimal(row["fees"]) for row in logs):
+        raise ValueError("trade fees do not reconcile to engine executions")
+    if adverse != precise_sum(
+        Decimal(row["adverse_execution_cost"]) for row in logs
+    ):
+        raise ValueError("trade fill costs do not reconcile to engine executions")
+    realized = precise_sum(Decimal(row["net_profit_loss"]) for row in logs)
+    ending = precise_sum(results[symbol].ending_equity for symbol in SYMBOLS)
+    residual = precise_sum((ending, -initial_equity, -realized))
+    cash_reconciliation_tolerance = precise_product(
+        initial_equity, Decimal("1e-24")
+    )
+    if abs(residual) > cash_reconciliation_tolerance:
+        raise ValueError(
+            "cash P&L residual requires an independently attributed cash-flow ledger"
+        )
+    attribution = {
+        "fees": _decimal(fees),
+        "adverse_execution_cost": _decimal(adverse),
+        "combined_execution_cost": _decimal(precise_sum((fees, adverse))),
+        "combined_execution_cost_fraction_of_initial_equity": _decimal(
+            precise_ratio(precise_sum((fees, adverse)), initial_equity)
+        ),
+        "realized_net_trade_profit_loss": _decimal(realized),
+        "cash_pnl_reconciliation_residual": _decimal(residual),
+        "cash_reconciliation_tolerance": _decimal(cash_reconciliation_tolerance),
+        "filled_execution_count": len(all_filled),
+        "definition": "fees plus adverse BUY/SELL fill-price distance from the engine reference price; exact stable-index binding under the engine's one-position and mandatory-horizon-exit invariants; cash flows such as dividends are unsupported unless independently attributed; excludes opportunity cost and market movement",
+    }
+    return logs, attribution
+
+
 def _composite_metrics(
     results: Mapping[str, BacktestResult],
     *,
@@ -213,7 +441,7 @@ def _composite_metrics(
         execution
         for result in results.values()
         for execution in result.executions
-        if execution.filled_quantity > 0 and execution.action in {"BUY", "SELL"}
+        if _is_filled_trade_execution(execution)
     ]
     turnover = (
         sum(
@@ -226,6 +454,14 @@ def _composite_metrics(
     )
     total_return = ending / initial - Decimal("1")
     sharpe = _sharpe(composite, initial)
+    trade_logs, cost_attribution = _trade_and_cost_attribution(
+        results, initial_equity=initial
+    )
+    if (
+        len(trade_logs) != len(trades)
+        or cost_attribution["filled_execution_count"] != len(filled)
+    ):
+        raise ValueError("trade and execution attribution does not reconcile")
     return {
         "evaluated_sessions": len(sessions),
         "starting_equity": _decimal(initial),
@@ -244,6 +480,8 @@ def _composite_metrics(
         "annual_turnover": _decimal(turnover),
         "completed_trade_count": len(trades),
         "filled_order_count": len(filled),
+        "trade_log": trade_logs,
+        "execution_cost_attribution": cost_attribution,
         "spy_buy_hold_total_return": _decimal(benchmark_return),
         "excess_return_vs_spy": _decimal(total_return - benchmark_return),
         "sharpe_definition": "sqrt(252) * mean(daily composite return) / sample standard deviation(daily composite return); risk-free rate 0",

@@ -140,4 +140,10 @@ def test_stage3_feature_strategy_evaluation_uses_bounded_partitions(tmp_path):
     assert report["train_purged_decision_at"]==report["partitions"]["TRAIN"]["evaluation_end"]
     assert report["validation_embargoed_decision_at"][:10]==report["partitions"]["VALIDATION"]["evaluation_start"][:10]
     assert report["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]["completed_trade_count"]>0
+    composite=report["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]
+    assert len(composite["trade_log"])==composite["completed_trade_count"]
+    assert composite["execution_cost_attribution"]["filled_execution_count"]==composite["filled_order_count"]
+    assert len({row["trade_id"] for row in composite["trade_log"]})==len(composite["trade_log"])
+    attribution=composite["execution_cost_attribution"]
+    assert abs(Decimal(attribution["cash_pnl_reconciliation_residual"]))<=Decimal(attribution["cash_reconciliation_tolerance"])
     assert report["untouched_test_included"] is False
