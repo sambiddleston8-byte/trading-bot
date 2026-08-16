@@ -73,6 +73,15 @@ action parsers can produce hash-bound point-in-time staging envelopes from
 synthetic fixtures, but provider semantics, admission and evaluation remain
 unqualified and no network capture has occurred.
 
+A bounded Stage-2 runner now fixes the authorized operational surface to 27
+TRAIN/VALIDATION requests: 21 unadjusted daily-bar slices and one dividends and
+one splits request per AAPL/MSFT/SPY symbol. It has no untouched-test,
+admission, evaluation, broker or order path. Exact response bytes are retained
+owner-only by content hash and the CLI removes its fixed temporary key file
+after the attempt. Synthetic tests prove request bounding, quarantine-only
+reporting and redirect rejection; no live capture is claimed by implementation
+or tests.
+
 The Streamlit shell now exposes a thin Campaign Audit preview, but this does
 not advance the active stage. It reads only deterministic contract constants
 and shows the immutable proposal/public-documentation chain, unresolved
