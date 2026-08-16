@@ -1,12 +1,55 @@
 # Master Roadmap completion audit
 
-Audited: 15 August 2026
+Audited: 16 August 2026
 
 This is the evidence-based distinction between implemented foundations and an
 operationally complete platform. A closed issue or passing unit test proves only
 the boundary that it covers. It does not prove that an external account is
 connected, a real dataset is complete, a worker is running, or an investment
 method works out of sample.
+
+## Adopted eight-stage delivery order
+
+The active roadmap is: (0) entitlement/window reconciliation; (1) a thin
+read-only provenance and audit dashboard; (2) qualified baseline capture,
+TRAIN/VALIDATION conformance and one sealed retrospective evaluation; (3) the
+point-in-time feature contract; (4) bounded SEC Form 4, STOCK Act,
+fundamental/DCF, catalyst and technical feature slices; (5) purged/embargoed WFO
+and a past-failure-only meta-label veto after adequate qualified observations;
+(6) expanded feature/model/fold dashboarding; and (7) an Alpaca-first paper
+execution ladder after the existing evidence gates, with IBKR later. AWS stays
+deferred and live trading requires a separate future decision. This ordering
+puts schemas and causal evidence before ML, uses the thin dashboard only as a
+debugging surface, and avoids rebuilding the UI around unstable feature or
+model contracts.
+
+Stage 0 is active. Campaign v2 revision-2 proposal
+`cafbaef235d8379e29b17d057ac87a77c452260680afd20bf8c7e4fd24671654`
+is pending exact human approval. It replaces revision-1 only after approval and
+registration, proposes completed dates from 1 October 2024 through 31 July 2025
+with a 46-day buffer inside the human-computed two-year rolling free-history
+boundary as of 16 August 2026. It expires after 1 September 2026 and requires
+activation-time recomputation, and keeps the May-July partition explicitly classified as a
+single-open `SEALED_RETROSPECTIVE_TEST`. The scope covers unadjusted daily bars,
+dividends and stock splits for AAPL/MSFT/SPY. Public documentation inputs are
+exact bytes whose hashes are computed internally; account/credential material
+is rejected, only hashes/facts/locators persist, and assessment re-derives them
+from the exact bytes supplied ephemerally. These public bytes remain
+incapable of authenticating the user's account, plan or key.
+
+VectorBT is not on the revision-2 critical path and provides no parameter
+selection value for the one fixed 20/50/20 configuration. The proposal names
+`GuardrailedBacktestEngine` as the sole authoritative evaluator and retains the
+existing 25% position cap, cost scenarios, purge, embargo and one-test limit.
+Corporate-action capture alone does not prove completeness, point-in-time
+availability or total-return semantics; those remain fail-closed prerequisites.
+The proposal permits only raw cash accrued on an in-window ex-dividend date and
+raw in-window split ratios, forbids provider adjusted factors that could encode
+post-window events, and sources later-partition warm-up only from strictly
+earlier admitted observations.
+The proposal authorizes no preregistration mutation, credential request,
+provider request, payload access, admission, evaluation, AWS resource creation,
+broker connection or trading action.
 
 ## Phase evidence matrix
 

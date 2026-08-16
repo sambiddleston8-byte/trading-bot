@@ -26,12 +26,80 @@ deployment, external-account and trading stop categories remain human-only.
 
 ## Current phase
 
-Cross-phase foundation implementation with Phase 5 evidence acquisition as the
-critical path. Safe boundaries now exist through Phase 10, but later phases are
-not operationally complete. Alpaca, AWS, Hermes, Capitol Trades, Obsidian and
-Buzz are not connected or activated, and results are not eligible for learning
-or track-record claims. The requirement-by-requirement distinction is recorded
-in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
+The adopted research delivery sequence is now the eight-stage revised roadmap
+below, with **Stage 0** as the only active stage. Safe foundations still exist
+across the older phase audit, but later capabilities are not operationally
+complete. Alpaca, IBKR, AWS, Hermes, political-disclosure feeds, Obsidian and
+Buzz are not connected or activated, and results are not eligible for learning,
+promotion or track-record claims. The requirement-by-requirement distinction is
+recorded in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
+
+1. **Stage 0 — entitlement/window reconciliation:** approve and register an
+   entitlement-compatible campaign; bind public documentation facts to exact
+   bytes; retain authenticated account entitlement as a separate unresolved
+   gate.
+2. **Stage 1 — thin read-only research dashboard:** expose provenance, cutoff,
+   quarantine and audit failures for debugging, without trading controls or
+   authoritative calculations.
+3. **Stage 2 — baseline capture and validation:** quarantine and qualify the
+   fixed baseline dataset, validate TRAIN/VALIDATION, then permit at most one
+   sealed retrospective test through the authoritative engine.
+4. **Stage 3 — point-in-time feature contract:** specify identity, timestamps,
+   revisions, availability, missingness and provenance before adding sources.
+5. **Stage 4 — bounded feature slices:** add SEC Form 4, STOCK Act, fundamentals,
+   catalysts and technicals one reviewed slice at a time behind quarantine.
+6. **Stage 5 — WFO and failure-veto meta-labeling:** layer purged/embargoed
+   rolling evaluation and a past-only risk veto over the unchanged pipeline,
+   only after sufficient qualified observations exist.
+7. **Stage 6 — dashboard expansion:** add feature, fold, model and rationale
+   inspection after their schemas stabilize.
+8. **Stage 7 — paper-execution ladder:** keep AWS deferred; complete read-only
+   account evidence and shadow controls before any separately authorized Alpaca
+   paper execution, with IBKR later. Live trading remains a separate future
+   human decision.
+
+### Stage 0 Campaign v2 revision-2 proposal
+
+The inert proposal
+`cafbaef235d8379e29b17d057ac87a77c452260680afd20bf8c7e4fd24671654`
+is pending exact human approval. It proposes 1 October 2024 through 31 July
+2025: TRAIN ends 28 February, VALIDATION covers March-April, and the
+`SEALED_RETROSPECTIVE_TEST` role covers May-July. On the 16 August 2026 proposal
+date, 1 October retains a 46-day buffer inside Massive's published rolling
+two-year free-plan history assumption. The proposal expires after 1 September
+2026; any later activation requires a new window, and activation must recompute
+the rolling boundary rather than reuse the proposal-date calculation.
+Revision-1 remains an approved
+but inactive historical record and is superseded only after exact revision-2
+approval and registration.
+
+The proposed quarantine scope is now unadjusted daily bars plus the official
+`/stocks/v1/dividends` and `/stocks/v1/splits` endpoints for AAPL, MSFT and SPY.
+This scope is necessary but not sufficient for a SPY-relative total-return
+gate: corporate-action completeness, timing semantics and point-in-time
+availability must still be proven before admission or evaluation. The proposed
+calculation uses raw `cash_amount` accrued on an in-window ex-dividend date,
+does not reinvest it, applies only in-window raw split ratios, and forbids
+provider `historical_adjustment_factor` and `split_adjusted_cash_amount` fields
+from evaluation because they may incorporate later events. Indicators in later
+partitions may warm only from strictly earlier admitted bars, which are not
+scored. Public plan,
+history and endpoint facts are no longer copied from a static table alone. The
+entitlement evidence builder accepts exact UTF-8 documentation bytes, rejects
+account or credential material, and retains only internally computed hashes,
+facts and locators. Assessment requires the exact bytes again and re-derives
+every hash, fact and locator ephemerally; page contents are never persisted in
+the evidence bundle. Only reviewed contiguous entitlement phrases are accepted
+and a wording change fails closed. Public documentation
+still cannot authenticate an account, plan or key.
+
+VectorBT remains available only as a non-authoritative isolated research pilot;
+it is removed from this campaign's critical path. The fixed parameter space has
+no screening step, and only
+`core.guardrailed_backtest:GuardrailedBacktestEngine` is proposed as the
+authoritative evaluator. No preregistration append, key request, provider call,
+payload access, data admission, evaluation or AWS resource creation is
+authorized by this proposal.
 
 ## Completed
 

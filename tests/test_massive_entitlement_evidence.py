@@ -22,13 +22,22 @@ from core.orchestration.massive_entitlement_evidence import (
 NOW = datetime(2026, 8, 16, 12, 0, tzinfo=timezone.utc)
 
 
-def _documents() -> list[dict[str, str]]:
+def _document_payload(contract: dict) -> bytes:
+    fragments = [
+        fragment
+        for claim in contract["fact_claims"].values()
+        for fragment in claim["required_fragments"]
+    ]
+    return ("Synthetic deterministic documentation fixture\n" + "\n".join(fragments)).encode()
+
+
+def _documents() -> list[dict]:
     return [
         {
             "document_id": document_id,
             "uri": contract["uri"],
             "retrieved_at": "2026-08-16T11:00:00+00:00",
-            "payload_sha256": hashlib.sha256(document_id.encode()).hexdigest(),
+            "payload_bytes": _document_payload(contract),
         }
         for document_id, contract in PUBLIC_DOCUMENT_CONTRACTS.items()
     ]
@@ -36,6 +45,13 @@ def _documents() -> list[dict[str, str]]:
 
 def _public() -> dict:
     return build_public_documentation_evidence(_documents(), assessed_at=NOW)
+
+
+def _payloads() -> dict[str, bytes]:
+    return {
+        document["document_id"]: document["payload_bytes"]
+        for document in _documents()
+    }
 
 
 def _account(**changes) -> dict:
@@ -87,6 +103,21 @@ def test_public_docs_preserve_product_facts_but_never_prove_account_binding():
         document["authenticated_account_evidence"] is False
         for document in evidence["documents"]
     )
+    by_id = {document["document_id"]: document for document in evidence["documents"]}
+    assert by_id["MASSIVE_STOCKS_DIVIDENDS"]["documented_facts"][
+        "stocks_basic_free_history_years"
+    ] == 2
+    assert by_id["MASSIVE_STOCKS_SPLITS"]["documented_facts"][
+        "endpoint_path"
+    ] == "/stocks/v1/splits"
+    for document in evidence["documents"]:
+        source = next(
+            item for item in _documents() if item["document_id"] == document["document_id"]
+        )
+        assert document["payload_sha256"] == hashlib.sha256(
+            source["payload_bytes"]
+        ).hexdigest()
+        assert set(document["fact_evidence"]) == set(document["documented_facts"])
 
 
 def test_public_docs_must_bind_all_exact_official_bytes_before_assessment():
@@ -102,6 +133,120 @@ def test_public_docs_must_bind_all_exact_official_bytes_before_assessment():
     future[0]["retrieved_at"] = "2026-08-16T12:00:01+00:00"
     with pytest.raises(ValueError, match="after assessment"):
         build_public_documentation_evidence(future, assessed_at=NOW)
+
+    missing_fact = _documents()
+    missing_fact[1]["payload_bytes"] = b"unrelated official-looking words"
+    with pytest.raises(ValueError, match="do not prove"):
+        build_public_documentation_evidence(missing_fact, assessed_at=NOW)
+
+    caller_hash = _documents()
+    caller_hash[0]["payload_sha256"] = "a" * 64
+    with pytest.raises(ValueError, match="fields differ"):
+        build_public_documentation_evidence(caller_hash, assessed_at=NOW)
+
+    decoy = _documents()
+    decoy[1]["payload_bytes"] = (
+        b"Stocks Basic Free Not included elsewhere Plan Access Included "
+        b"without the reviewed all-plans statement"
+    )
+    with pytest.raises(ValueError, match="do not prove"):
+        build_public_documentation_evidence(decoy, assessed_at=NOW)
+
+
+@pytest.mark.parametrize(
+    ("payload", "message"),
+    [
+        ("not-bytes", "exact bytes"),
+        (b"", "nonempty"),
+        (b"x" * 2_000_001, "at most 2 MB"),
+        (b"\xff\xfe", "strict UTF-8"),
+    ],
+)
+def test_public_document_payload_boundary_rejects_invalid_bytes(payload, message):
+    documents = _documents()
+    documents[0]["payload_bytes"] = payload
+    with pytest.raises(ValueError, match=message):
+        build_public_documentation_evidence(documents, assessed_at=NOW)
+
+
+def test_document_hash_changes_when_nonsemantic_payload_bytes_change():
+    original = _documents()
+    changed = _documents()
+    changed[0]["payload_bytes"] += b"\nProvider footer revision"
+    original_evidence = build_public_documentation_evidence(original, assessed_at=NOW)
+    changed_evidence = build_public_documentation_evidence(changed, assessed_at=NOW)
+    original_by_id = {
+        item["document_id"]: item for item in original_evidence["documents"]
+    }
+    changed_by_id = {
+        item["document_id"]: item for item in changed_evidence["documents"]
+    }
+    assert original_by_id["MASSIVE_REST_QUICKSTART"]["documented_facts"] == (
+        changed_by_id["MASSIVE_REST_QUICKSTART"]["documented_facts"]
+    )
+    assert original_by_id["MASSIVE_REST_QUICKSTART"]["payload_sha256"] != (
+        changed_by_id["MASSIVE_REST_QUICKSTART"]["payload_sha256"]
+    )
+
+
+def test_documentation_bytes_reject_account_or_credential_material():
+    secret = _documents()
+    secret[0]["payload_bytes"] += b"\napiKey=liveAccountToken1234567890abcdef"
+    with pytest.raises(ValueError, match="account or credential material"):
+        build_public_documentation_evidence(secret, assessed_at=NOW)
+
+    placeholder = _documents()
+    placeholder[0]["payload_bytes"] += b"\napiKey=YOUR_API_KEY"
+    build_public_documentation_evidence(placeholder, assessed_at=NOW)
+
+
+def test_assessment_rederives_every_fact_and_locator_from_supplied_exact_bytes():
+    public = _public()
+    payloads = _payloads()
+    for document in public["documents"]:
+        normalized = " ".join(
+            payloads[document["document_id"]].decode("utf-8").split()
+        )
+        contract = PUBLIC_DOCUMENT_CONTRACTS[document["document_id"]]
+        for fact_name, claim in contract["fact_claims"].items():
+            for locator, fragment in zip(
+                document["fact_evidence"][fact_name],
+                claim["required_fragments"],
+                strict=True,
+            ):
+                assert normalized[
+                    locator["normalized_text_start"] : locator["normalized_text_end"]
+                ] == fragment
+
+    tampered = deepcopy(public)
+    tampered["documents"][0]["fact_evidence"][
+        next(iter(tampered["documents"][0]["fact_evidence"]))
+    ][0]["normalized_text_start"] += 1
+    _rehash(tampered, "evidence_bundle_sha256")
+    with pytest.raises(ValueError, match="invalid or tampered"):
+        assess_capture_activation_evidence(
+            public_documentation=tampered,
+            public_documentation_payloads=payloads,
+            authenticated_account=None,
+        )
+
+    replaced_payloads = dict(payloads)
+    replaced_payloads[public["documents"][0]["document_id"]] = (
+        b"synthetic replacement without contract evidence"
+    )
+    with pytest.raises(ValueError, match="invalid or tampered"):
+        assess_capture_activation_evidence(
+            public_documentation=public,
+            public_documentation_payloads=replaced_payloads,
+            authenticated_account=None,
+        )
+
+    with pytest.raises(ValueError, match="invalid or tampered"):
+        assess_capture_activation_evidence(
+            public_documentation=public,
+            public_documentation_payloads=None,
+            authenticated_account=None,
+        )
 
 
 @pytest.mark.parametrize(
@@ -142,7 +287,9 @@ def test_authenticated_evidence_rejects_missing_or_substituted_proof(changes, me
 
 def test_public_docs_alone_leave_activation_blocked_and_every_authority_false():
     assessment = assess_capture_activation_evidence(
-        public_documentation=_public(), authenticated_account=None
+        public_documentation=_public(),
+        public_documentation_payloads=_payloads(),
+        authenticated_account=None,
     )
 
     assert assessment["capture_approval_record_id"] == CAPTURE_APPROVAL_RECORD_ID
@@ -168,7 +315,9 @@ def test_public_docs_alone_leave_activation_blocked_and_every_authority_false():
 
 def test_complete_evidence_only_qualifies_a_later_activation_record():
     assessment = assess_capture_activation_evidence(
-        public_documentation=_public(), authenticated_account=_account()
+        public_documentation=_public(),
+        public_documentation_payloads=_payloads(),
+        authenticated_account=_account(),
     )
 
     assert assessment["evidence_complete_for_separate_activation_record"] is True
@@ -184,7 +333,9 @@ def test_rehashed_semantic_tampering_still_fails_closed():
     _rehash(public, "evidence_bundle_sha256")
     with pytest.raises(ValueError, match="invalid or tampered"):
         assess_capture_activation_evidence(
-            public_documentation=public, authenticated_account=None
+            public_documentation=public,
+            public_documentation_payloads=_payloads(),
+            authenticated_account=None,
         )
 
     account = deepcopy(_account())
@@ -192,7 +343,9 @@ def test_rehashed_semantic_tampering_still_fails_closed():
     _rehash(account, "evidence_bundle_sha256")
     with pytest.raises(ValueError, match="invalid or tampered"):
         assess_capture_activation_evidence(
-            public_documentation=_public(), authenticated_account=account
+            public_documentation=_public(),
+            public_documentation_payloads=_payloads(),
+            authenticated_account=account,
         )
 
     malformed_date = deepcopy(_account())
@@ -200,7 +353,9 @@ def test_rehashed_semantic_tampering_still_fails_closed():
     _rehash(malformed_date, "evidence_bundle_sha256")
     with pytest.raises(ValueError, match="invalid or tampered"):
         assess_capture_activation_evidence(
-            public_documentation=_public(), authenticated_account=malformed_date
+            public_documentation=_public(),
+            public_documentation_payloads=_payloads(),
+            authenticated_account=malformed_date,
         )
 
 
