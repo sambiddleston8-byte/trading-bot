@@ -119,6 +119,13 @@ use, capture activation, provider calls, admission, evaluation and every
 trading/deployment authority false until a separate bounded activation. No
 authenticated export has been supplied or registered.
 
+An offline-only wrapper now fixes the ignored owner-only inbox filenames for
+that export and its hash-bound capture manifest. It rejects browser HTML, loose file
+permissions, symlinks, credentials and ambiguous or missing JSON pointers, then
+returns a redacted verification summary without writing the evidence ledger.
+Offline PASS is not registration, cryptographic provider-origin proof, capture
+activation or authority for a key or data call.
+
 The proposed quarantine scope is now unadjusted daily bars plus the official
 `/stocks/v1/dividends` and `/stocks/v1/splits` endpoints for AAPL, MSFT and SPY.
 This scope is necessary but not sufficient for a SPY-relative total-return

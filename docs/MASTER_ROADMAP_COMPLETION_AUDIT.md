@@ -77,6 +77,13 @@ all key-use, provider, admission, evaluation, deployment and trading authorities
 false. The boundary is tested only with deterministic synthetic bytes; no real
 authenticated export or account-entitlement record exists.
 
+The fixed local account-export inbox now has an offline verifier. It requires
+owner-only exact JSON export and hash-bound manifest files, delegates fact extraction to
+the same Revision-2 JSON-pointer boundary and emits only a redacted summary.
+It has no ledger-write, network, credential, provider, replay or broker path;
+therefore a verifier PASS still leaves account evidence unregistered and every
+downstream authority false.
+
 VectorBT is not on the revision-2 critical path and provides no parameter
 selection value for the one fixed 20/50/20 configuration. The proposal names
 `GuardrailedBacktestEngine` as the sole authoritative evaluator and retains the
