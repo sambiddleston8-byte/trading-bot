@@ -13,6 +13,7 @@ import core.orchestration.massive_entitlement_evidence as module
 from core.orchestration.massive_entitlement_evidence import (
     CAPTURE_APPROVAL_RECORD_ID,
     PUBLIC_DOCUMENT_CONTRACTS,
+    _derive_documented_facts,
     assess_capture_activation_evidence,
     build_authenticated_account_evidence,
     build_public_documentation_evidence,
@@ -198,6 +199,76 @@ def test_documentation_bytes_reject_account_or_credential_material():
     placeholder = _documents()
     placeholder[0]["payload_bytes"] += b"\napiKey=YOUR_API_KEY"
     build_public_documentation_evidence(placeholder, assessed_at=NOW)
+
+    tagged_placeholder = _documents()
+    tagged_placeholder[0]["payload_bytes"] += (
+        b"\n<code>apiKey=YOUR_API_KEY</code></pre><div>public example</div>"
+    )
+    build_public_documentation_evidence(tagged_placeholder, assessed_at=NOW)
+
+    escaped_legacy_placeholder = _documents()
+    escaped_legacy_placeholder[0]["payload_bytes"] += (
+        b"\nAuthorization: Bearer POLYGON_STOCKS_API_KEY\\\\n\\"
+    )
+    build_public_documentation_evidence(
+        escaped_legacy_placeholder,
+        assessed_at=NOW,
+    )
+
+    escaped_massive_placeholder = _documents()
+    escaped_massive_placeholder[0]["payload_bytes"] += (
+        b"\nAuthorization: Bearer YOUR_MASSIVE_API_KEY\\\\\\n\\"
+    )
+    build_public_documentation_evidence(
+        escaped_massive_placeholder,
+        assessed_at=NOW,
+    )
+
+    documented_global_placeholder = _documents()
+    documented_global_placeholder[0]["payload_bytes"] += (
+        b"\napiKey=GLOBAL_TOKEN_API_KEY\\\\n\\"
+    )
+    build_public_documentation_evidence(
+        documented_global_placeholder,
+        assessed_at=NOW,
+    )
+
+
+def test_documented_facts_are_derived_across_html_tags_but_not_scripts():
+    contract = {
+        "fact_claims": {
+            "plan_access": {
+                "value": True,
+                "required_fragments": (
+                    "Plan Access Included in all Stocks plans",
+                ),
+            }
+        }
+    }
+    payload = (
+        b"<html><body><p>Plan <span>Access</span> Included in all Stocks "
+        b"plans</p><script>irrelevant executable text</script>"
+        b"</body></html>"
+    )
+    _, facts, evidence = _derive_documented_facts(payload, contract)
+    assert facts == {"plan_access": True}
+    assert evidence["plan_access"][0]["normalized_text_start"] == 0
+
+
+def test_script_only_fact_does_not_satisfy_public_document_contract():
+    contract = {
+        "fact_claims": {
+            "plan_access": {
+                "value": True,
+                "required_fragments": ("Plan Access Included",),
+            }
+        }
+    }
+    with pytest.raises(ValueError, match="do not prove"):
+        _derive_documented_facts(
+            b"<html><script>Plan Access Included</script><body>Other</body></html>",
+            contract,
+        )
 
 
 def test_assessment_rederives_every_fact_and_locator_from_supplied_exact_bytes():
