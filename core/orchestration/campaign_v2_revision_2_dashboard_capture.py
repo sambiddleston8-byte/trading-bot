@@ -40,6 +40,12 @@ EXPECTED_VISIBLE_LABELS = {
     "customer_type_label": "Individual",
     "displayed_price_label": "$0/m",
 }
+EXPECTED_VISIBLE_CELLS = (
+    "Stocks Basic Open in new window",
+    "Individual",
+    "$0/m",
+    "Upgrade",
+)
 CONTROL_LEDGER_RELATIVE_PATH = Path("data/research/massive_campaign_v2_revision_2/account_entitlement/dashboard_capture_evidence.jsonl")
 BLOB_ROOT_RELATIVE_PATH = Path("data/research/massive_campaign_v2_revision_2/account_entitlement/dashboard_capture_blobs")
 CAPTURE_KIND = "AUTHENTICATED_DASHBOARD_STOCKS_PLAN_ROW_HTML"
@@ -76,39 +82,59 @@ def _timestamp(value: Any, name: str) -> datetime:
 
 
 class _VisibleText(HTMLParser):
+    VOID_TAGS = frozenset({"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"})
+
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.parts: list[str] = []
-        self.hidden_depth = 0
+        self.open_tags: list[tuple[str, bool]] = []
         self.cell_parts: list[str] | None = None
         self.cells: list[str] = []
         self.unsafe_hidden_markup = False
+        self.hidden_label_text = False
+        self.outside_cell_text = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = {name.lower(): value for name, value in attrs}
         style = attributes.get("style") or ""
-        if ("hidden" in attributes or (attributes.get("aria-hidden") or "").lower() == "true"
-                or re.search(r"(?i)(?:display\s*:\s*none|visibility\s*:\s*hidden)", style)):
-            self.unsafe_hidden_markup = True
-        if tag.lower() in {"script", "style", "noscript", "template"}:
-            self.hidden_depth += 1
-        elif tag.lower() in {"td", "th"}:
+        normalized_tag = tag.lower()
+        hidden = (bool(self.open_tags and self.open_tags[-1][1])
+                  or tag.lower() in {"script", "style", "noscript", "template"}
+                  or "hidden" in attributes
+                  or (attributes.get("aria-hidden") or "").lower() == "true"
+                  or re.search(r"(?i)(?:display\s*:\s*none|visibility\s*:\s*hidden)", style) is not None)
+        if normalized_tag not in self.VOID_TAGS:
+            self.open_tags.append((normalized_tag, hidden))
+        if normalized_tag in {"td", "th"}:
             if self.cell_parts is not None:
                 self.unsafe_hidden_markup = True
             self.cell_parts = []
 
     def handle_endtag(self, tag: str) -> None:
-        if tag.lower() in {"script", "style", "noscript", "template"} and self.hidden_depth:
-            self.hidden_depth -= 1
-        elif tag.lower() in {"td", "th"} and self.cell_parts is not None:
+        normalized_tag = tag.lower()
+        if not self.open_tags or self.open_tags[-1][0] != normalized_tag:
+            self.unsafe_hidden_markup = True
+            return
+        if normalized_tag in {"td", "th"} and self.cell_parts is not None:
             self.cells.append(" ".join(" ".join(self.cell_parts).split()))
             self.cell_parts = None
+        self.open_tags.pop()
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+        if tag.lower() not in self.VOID_TAGS:
+            self.handle_endtag(tag)
 
     def handle_data(self, data: str) -> None:
-        if not self.hidden_depth:
+        hidden = bool(self.open_tags and self.open_tags[-1][1])
+        if hidden and any(label in data for label in EXPECTED_VISIBLE_LABELS.values()):
+            self.hidden_label_text = True
+        if not hidden:
             self.parts.append(data)
             if self.cell_parts is not None:
                 self.cell_parts.append(data)
+            elif data.strip() and any(tag == "tr" for tag, _ in self.open_tags):
+                self.outside_cell_text = True
 
 
 def _visible_cells(payload: bytes) -> tuple[str, list[str]]:
@@ -130,7 +156,8 @@ def _visible_cells(payload: bytes) -> tuple[str, list[str]]:
     parser = _VisibleText()
     parser.feed(text)
     parser.close()
-    if parser.unsafe_hidden_markup or parser.cell_parts is not None:
+    if (parser.unsafe_hidden_markup or parser.hidden_label_text or parser.outside_cell_text
+            or parser.cell_parts is not None or parser.open_tags):
         raise ValueError("hidden or malformed dashboard-row markup cannot prove visible labels")
     visible = " ".join(" ".join(parser.parts).split())
     return visible, parser.cells
@@ -171,9 +198,8 @@ def build_dashboard_capture_evidence(capture: Mapping[str, Any], *, assessed_at:
     uri = _source_uri(capture["source_uri"])
     payload = capture["payload_bytes"]
     visible, cells = _visible_cells(payload)
-    for name, label in EXPECTED_VISIBLE_LABELS.items():
-        if cells.count(label) != 1:
-            raise ValueError(f"dashboard capture must contain exactly one whole-cell {name}")
+    if cells != list(EXPECTED_VISIBLE_CELLS):
+        raise ValueError("dashboard capture cells differ from the exact Stocks plan row")
     result: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION, "policy_version": POLICY_VERSION,
         "provider_id": "MASSIVE", "assessed_at": assessed.isoformat(timespec="microseconds"),
@@ -184,6 +210,7 @@ def build_dashboard_capture_evidence(capture: Mapping[str, Any], *, assessed_at:
         "authenticated_session_attested": True, "authentication_basis": "LOCAL_OPERATOR_ATTESTATION_ONLY",
         "sole_stocks_plan_row_attested": True,
         "row_selection_semantics": "OPERATOR_SELECTED_FRAGMENT_PAGE_UNIQUENESS_NOT_INDEPENDENTLY_VERIFIED",
+        "observed_cells": list(EXPECTED_VISIBLE_CELLS),
         "observed_labels": dict(EXPECTED_VISIBLE_LABELS),
         "public_documentation_evidence_id": PUBLIC_DOCUMENTATION_EVIDENCE_ID,
         "public_documentation_record_sha256": PUBLIC_DOCUMENTATION_RECORD_SHA256,
