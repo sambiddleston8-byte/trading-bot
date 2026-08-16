@@ -76,15 +76,31 @@ proposal; it does not erase or modify their local records or research outputs.
 The distinct Revision-2 raw root is owner-only, empty and disjoint from prior
 quarantine and admitted storage.
 
+PR #268 then added the separate Revision-2 public-documentation evidence
+boundary. After merge at
+`afd5af1818da545d6d180c23566bc9e439a8bdfd`, five exact official Massive
+documentation payloads were stored as owner-only, read-only content-addressed
+blobs and registered as
+`CV2R2DOC-C4321E5E3D2555A95EDB89499A1EA6A5`, record
+`0bbcde43deb5d5afc5977dad17949f6484905711cbe07d6d7af5ebe19cd39a99`.
+The internally re-derived public evidence bundle is
+`feae2c94bf9ee136e64409076f3ec5dc33f42902b566043cd71c66e61927761b`.
+It proves only the reviewed published API-authentication, Custom Bars,
+Day-Aggregate flat-file, dividend and split documentation facts. Account
+identity, account plan, current entitlement, capture activation, data calls,
+admission, evaluation, broker access, orders and live trading all remain false.
+
 The approved package covers 1 October 2024 through 31 July 2025: TRAIN ends 28 February, VALIDATION covers March-April, and the
 `SEALED_RETROSPECTIVE_TEST` role covers May-July. On the 16 August 2026 proposal
 date, 1 October retains a 46-day buffer inside Massive's published rolling
 two-year free-plan history assumption. The proposal expires after 1 September
 2026; any later activation requires a new window, and activation must recompute
 the rolling boundary rather than reuse the proposal-date calculation.
-The registration advances only the Stage-0 control gate. API-key requests,
-public-document evidence, authenticated account evidence, capture activation,
-provider calls, payload access, admission and evaluation all remain false.
+The preregistration record advances only the Stage-0 control gate and retains
+its original fixed-false flags. The separate public-documentation gate is now
+evidenced by the record above; API-key requests, authenticated account
+evidence, capture activation, provider market-data calls, payload access,
+admission and evaluation remain false.
 
 The proposed quarantine scope is now unadjusted daily bars plus the official
 `/stocks/v1/dividends` and `/stocks/v1/splits` endpoints for AAPL, MSFT and SPY.
@@ -101,9 +117,11 @@ history and endpoint facts are no longer copied from a static table alone. The
 entitlement evidence builder accepts exact UTF-8 documentation bytes, rejects
 account or credential material, and retains only internally computed hashes,
 facts and locators. Assessment requires the exact bytes again and re-derives
-every hash, fact and locator ephemerally; page contents are never persisted in
-the evidence bundle. Only reviewed contiguous entitlement phrases are accepted
-and a wording change fails closed. Public documentation
+every hash, fact and locator. The evidence bundle contains no page contents;
+the separate campaign-bound owner-only store retains the exact blobs so every
+fact can be reverified rather than trusting metadata alone. Only reviewed
+contiguous entitlement phrases are accepted and a wording change fails closed.
+Public documentation
 still cannot authenticate an account, plan or key.
 
 VectorBT remains available only as a non-authoritative isolated research pilot;
