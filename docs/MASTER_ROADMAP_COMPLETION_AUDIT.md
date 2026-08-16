@@ -82,6 +82,18 @@ after the attempt. Synthetic tests prove request bounding, quarantine-only
 reporting and redirect rejection; no live capture is claimed by implementation
 or tests.
 
+The captured TRAIN/VALIDATION bytes subsequently passed a deterministic XNYS
+calendar, OHLCV and cross-symbol synchronization qualification. Content-hashed
+clean artifacts were admitted for those two roles only. Dividend availability
+is conservatively assigned to 16:00 New York time on the documented official
+declaration date; the supporting registered documentation payload is pinned.
+There were no captured splits, and the contract rejects any future split that
+lacks a documented announcement date. A VALIDATION-only authoritative-engine
+rehearsal verifies one-observation purge and embargo, 50-observation warmup,
+BASE/PESSIMISTIC execution-cost floors and excess-return plumbing against
+matched-window SPY buy-and-hold without
+granting performance, promotion, broker or trading authority.
+
 The Streamlit shell now exposes a thin Campaign Audit preview, but this does
 not advance the active stage. It reads only deterministic contract constants
 and shows the immutable proposal/public-documentation chain, unresolved
