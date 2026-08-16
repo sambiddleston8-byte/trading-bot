@@ -1,8 +1,9 @@
 """Exact-byte authenticated dashboard evidence for Campaign v2 R2.
 
-This offline-only boundary seals credential-free HTML and derives only three
-fixed visible labels. It cannot infer account identity, API entitlements,
-lookback, incremental cost, or any downstream authority.
+This offline-only boundary seals one exact credential-free HTML ``tr`` fragment
+from the authenticated Plans table and derives only three fixed visible labels.
+It cannot infer account identity, API entitlements, lookback, incremental cost,
+or any downstream authority.
 """
 
 from __future__ import annotations
@@ -29,10 +30,10 @@ from core.orchestration.campaign_v2_revision_2_public_documentation import (
     CampaignV2Revision2PublicDocumentationLedger,
 )
 
-SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "massive-campaign-v2-r2-dashboard-capture-v1"
+SCHEMA_VERSION = "1.1"
+POLICY_VERSION = "massive-campaign-v2-r2-dashboard-plan-row-capture-v2"
 EVENT_TYPE = "CAMPAIGN_V2_REVISION_2_DASHBOARD_CAPTURE_SEALED"
-MAX_PAYLOAD_BYTES = 2 * 1024 * 1024
+MAX_PAYLOAD_BYTES = 64 * 1024
 MAX_LEDGER_BYTES = 4 * 1024 * 1024
 EXPECTED_VISIBLE_LABELS = {
     "plan_label": "Stocks Basic",
@@ -41,7 +42,8 @@ EXPECTED_VISIBLE_LABELS = {
 }
 CONTROL_LEDGER_RELATIVE_PATH = Path("data/research/massive_campaign_v2_revision_2/account_entitlement/dashboard_capture_evidence.jsonl")
 BLOB_ROOT_RELATIVE_PATH = Path("data/research/massive_campaign_v2_revision_2/account_entitlement/dashboard_capture_blobs")
-_CAPTURE_FIELDS = frozenset({"captured_at", "source_uri", "payload_bytes", "authenticated_session_attested"})
+CAPTURE_KIND = "AUTHENTICATED_DASHBOARD_STOCKS_PLAN_ROW_HTML"
+_CAPTURE_FIELDS = frozenset({"captured_at", "source_uri", "capture_kind", "payload_bytes", "authenticated_session_attested", "sole_stocks_plan_row_attested"})
 _UNRESOLVED = (
     "account_identity_proven", "account_to_plan_binding_proven",
     "daily_bars_access_confirmed", "dividends_access_confirmed",
@@ -78,41 +80,68 @@ class _VisibleText(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.parts: list[str] = []
         self.hidden_depth = 0
+        self.cell_parts: list[str] | None = None
+        self.cells: list[str] = []
+        self.unsafe_hidden_markup = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = {name.lower(): value for name, value in attrs}
+        style = attributes.get("style") or ""
+        if ("hidden" in attributes or (attributes.get("aria-hidden") or "").lower() == "true"
+                or re.search(r"(?i)(?:display\s*:\s*none|visibility\s*:\s*hidden)", style)):
+            self.unsafe_hidden_markup = True
         if tag.lower() in {"script", "style", "noscript", "template"}:
             self.hidden_depth += 1
+        elif tag.lower() in {"td", "th"}:
+            if self.cell_parts is not None:
+                self.unsafe_hidden_markup = True
+            self.cell_parts = []
 
     def handle_endtag(self, tag: str) -> None:
         if tag.lower() in {"script", "style", "noscript", "template"} and self.hidden_depth:
             self.hidden_depth -= 1
+        elif tag.lower() in {"td", "th"} and self.cell_parts is not None:
+            self.cells.append(" ".join(" ".join(self.cell_parts).split()))
+            self.cell_parts = None
 
     def handle_data(self, data: str) -> None:
         if not self.hidden_depth:
             self.parts.append(data)
+            if self.cell_parts is not None:
+                self.cell_parts.append(data)
 
 
-def _visible_text(payload: bytes) -> str:
+def _visible_cells(payload: bytes) -> tuple[str, list[str]]:
     if type(payload) is not bytes or not 0 < len(payload) <= MAX_PAYLOAD_BYTES:
-        raise ValueError("payload_bytes must be nonempty exact bytes within 2 MB")
+        raise ValueError("payload_bytes must be nonempty exact bytes within 64 KB")
     try:
         text = payload.decode("utf-8", errors="strict")
     except UnicodeDecodeError as error:
         raise ValueError("dashboard capture must be strict UTF-8 HTML") from error
-    if not re.search(r"(?is)<!doctype\s+html|<html(?:\s|>)", text):
-        raise ValueError("dashboard capture must be exact HTML bytes")
-    if re.search(r"(?i)(?:api[_-]?key|authorization|access[_-]?token|refresh[_-]?token|password|secret)\s*[:=]", text):
+    stripped = text.strip()
+    if (re.match(r"(?is)^<tr(?:\s|>)", stripped) is None
+            or re.search(r"(?is)</tr>$", stripped) is None
+            or len(re.findall(r"(?is)<tr(?:\s|>)", stripped)) != 1
+            or len(re.findall(r"(?is)</tr>", stripped)) != 1
+            or re.search(r"(?is)<!doctype\s+html|<html(?:\s|>)", stripped)):
+        raise ValueError("dashboard capture must be one exact HTML table-row fragment")
+    if re.search(r"(?i)(?:api[_-]?key|authorization|access[_-]?token|refresh[_-]?token|password|secret|session(?:_id)?|csrf(?:-token)?|cookie|sid|token)\s*[:=]", text) or re.search(r"(?i)bearer\s+\S+|eyJ[A-Za-z0-9_-]{10,}", text):
         raise ValueError("credential material must not be retained")
     parser = _VisibleText()
     parser.feed(text)
     parser.close()
-    return " ".join(" ".join(parser.parts).split())
+    if parser.unsafe_hidden_markup or parser.cell_parts is not None:
+        raise ValueError("hidden or malformed dashboard-row markup cannot prove visible labels")
+    visible = " ".join(" ".join(parser.parts).split())
+    return visible, parser.cells
 
 
 def _source_uri(value: Any) -> str:
     if (not isinstance(value, str) or not value or value != value.strip()
             or len(value) > 500 or any(ord(character) < 32 for character in value)):
         raise ValueError("source_uri must be canonical text")
+    if value != "https://massive.com/dashboard/subscriptions":
+        raise ValueError("source_uri must be the canonical Massive Plans page")
     parts = urlsplit(value)
     try:
         port = parts.port
@@ -120,7 +149,7 @@ def _source_uri(value: Any) -> str:
         raise ValueError("source_uri must be an official Massive HTTPS page") from error
     if (parts.scheme != "https" or parts.hostname not in {"massive.com", "www.massive.com"}
             or parts.username is not None or parts.password is not None or port is not None
-            or parts.query or parts.fragment):
+            or parts.path != "/dashboard/subscriptions" or parts.query or parts.fragment):
         raise ValueError("source_uri must be an official Massive HTTPS page")
     return value
 
@@ -135,19 +164,26 @@ def build_dashboard_capture_evidence(capture: Mapping[str, Any], *, assessed_at:
         raise ValueError("dashboard capture cannot postdate assessment")
     if capture["authenticated_session_attested"] is not True:
         raise ValueError("capture requires local authenticated-session attestation")
+    if capture["capture_kind"] != CAPTURE_KIND:
+        raise ValueError("capture_kind must identify the exact Stocks plan row")
+    if capture["sole_stocks_plan_row_attested"] is not True:
+        raise ValueError("capture requires local sole-Stocks-row attestation")
     uri = _source_uri(capture["source_uri"])
     payload = capture["payload_bytes"]
-    visible = _visible_text(payload)
+    visible, cells = _visible_cells(payload)
     for name, label in EXPECTED_VISIBLE_LABELS.items():
-        if visible.count(label) != 1:
-            raise ValueError(f"dashboard capture must contain exactly one visible {name}")
+        if cells.count(label) != 1:
+            raise ValueError(f"dashboard capture must contain exactly one whole-cell {name}")
     result: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION, "policy_version": POLICY_VERSION,
         "provider_id": "MASSIVE", "assessed_at": assessed.isoformat(timespec="microseconds"),
         "captured_at": captured.isoformat(timespec="microseconds"), "source_uri": uri,
+        "capture_kind": CAPTURE_KIND,
         "payload_sha256": hashlib.sha256(payload).hexdigest(), "payload_byte_length": len(payload),
         "visible_text_sha256": hashlib.sha256(visible.encode()).hexdigest(),
         "authenticated_session_attested": True, "authentication_basis": "LOCAL_OPERATOR_ATTESTATION_ONLY",
+        "sole_stocks_plan_row_attested": True,
+        "row_selection_semantics": "OPERATOR_SELECTED_FRAGMENT_PAGE_UNIQUENESS_NOT_INDEPENDENTLY_VERIFIED",
         "observed_labels": dict(EXPECTED_VISIBLE_LABELS),
         "public_documentation_evidence_id": PUBLIC_DOCUMENTATION_EVIDENCE_ID,
         "public_documentation_record_sha256": PUBLIC_DOCUMENTATION_RECORD_SHA256,
@@ -277,7 +313,9 @@ class CampaignV2Revision2DashboardCaptureLedger:
             finally:
                 os.close(descriptor)
             rebuilt = build_dashboard_capture_evidence({"captured_at": evidence["captured_at"], "source_uri": evidence["source_uri"],
-                "payload_bytes": payload, "authenticated_session_attested": evidence["authenticated_session_attested"]}, assessed_at=evidence["assessed_at"])
+                "capture_kind": evidence["capture_kind"], "payload_bytes": payload,
+                "sole_stocks_plan_row_attested": evidence["sole_stocks_plan_row_attested"],
+                "authenticated_session_attested": evidence["authenticated_session_attested"]}, assessed_at=evidence["assessed_at"])
         except (KeyError, OSError, TypeError, ValueError) as error:
             raise LedgerIntegrityError("Dashboard-capture record or blob is unsafe") from error
         material = {key: value for key, value in row.items() if key != "record_hash"}
@@ -308,6 +346,11 @@ class CampaignV2Revision2DashboardCaptureLedger:
             raise LedgerIntegrityError("Different dashboard capture cannot replace evidence")
         payload, digest = capture["payload_bytes"], evidence["payload_sha256"]
         relative = Path("sha256") / digest[:2] / f"{digest}.html"
+        recorded = _timestamp(self._clock(), "recorded_at")
+        assessed = _timestamp(evidence["assessed_at"], "assessed_at")
+        actual_now = datetime.now(timezone.utc)
+        if not assessed <= recorded <= actual_now + MAX_CLOCK_SKEW or recorded < actual_now - MAX_CLOCK_SKEW:
+            raise ValueError("recording clock is outside the safe assessment window")
         _private_directory(self.path.parent); _private_directory(self.blob_root)
         _private_directory(self.blob_root / "sha256"); _private_directory((self.blob_root / relative).parent)
         blob = self.blob_root / relative
@@ -324,11 +367,6 @@ class CampaignV2Revision2DashboardCaptureLedger:
                 _write_all(descriptor, payload); os.fsync(descriptor)
             finally:
                 os.close(descriptor)
-        recorded = _timestamp(self._clock(), "recorded_at")
-        assessed = _timestamp(evidence["assessed_at"], "assessed_at")
-        actual_now = datetime.now(timezone.utc)
-        if not assessed <= recorded <= actual_now + MAX_CLOCK_SKEW or recorded < actual_now - MAX_CLOCK_SKEW:
-            raise ValueError("recording clock is outside the safe assessment window")
         record: dict[str, Any] = {"schema_version": SCHEMA_VERSION, "policy_version": POLICY_VERSION, "event_type": EVENT_TYPE,
             "recorded_at": recorded.isoformat(timespec="microseconds"),
             "evidence_id": "CV2R2DASH-" + evidence["evidence_bundle_sha256"][:32].upper(), "preregistration_id": PREREGISTRATION_ID,

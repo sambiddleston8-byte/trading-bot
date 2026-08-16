@@ -89,14 +89,19 @@ false. The boundary is tested only with deterministic synthetic bytes; no real
 authenticated export or account-entitlement record exists.
 
 Because the authenticated Plans page exposes no JSON export control, a disjoint
-partial-evidence ledger can seal exact credential-free HTML and rederive only
-the visible `Stocks Basic`, `Individual`, and `$0/m` labels. Its exact parent
+partial-evidence ledger can seal the exact credential-free HTML `tr` fragment
+from the sole Stocks plan row locally observed at `/dashboard/subscriptions`.
+That page-level selection is operator-attested and explicitly not independently
+verified by the fragment. Only exact whole-cell visible `Stocks Basic`,
+`Individual`, and `$0/m` labels are rederived. Its exact parent
 IDs and hashes bind already-proven public product documentation without turning
 those provider-level facts into current account entitlements. Account identity,
 account-to-plan binding, daily bars, dividends, splits, lookback, provider
-origin and zero incremental data cost all remain explicitly unresolved. No real
-page capture has been retained and every activation and downstream authority is
-false.
+origin and zero incremental data cost all remain explicitly unresolved.
+Ambiguous full-page captures, substrings, explicit hidden markup, screenshots,
+transcripts, wrong paths and
+rewritten/wrapped fragments are rejected. No real row capture has been retained
+and every activation and downstream authority is false.
 
 The fixed local account-export inbox now has an offline verifier. It requires
 owner-only exact JSON export and hash-bound manifest files, delegates fact extraction to
