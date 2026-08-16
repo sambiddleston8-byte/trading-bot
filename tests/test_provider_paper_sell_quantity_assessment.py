@@ -327,7 +327,7 @@ def test_fresh_base_shadow_cannot_reuse_stale_quantities(tmp_path, monkeypatch):
     class LaterDateTime(datetime):
         @classmethod
         def now(cls, tz=None):
-            return datetime.now(timezone.utc) + timedelta(seconds=240)
+            return BASE_NOW + timedelta(seconds=240)
 
     monkeypatch.setattr(module, "datetime", LaterDateTime)
     result = assess(values)
