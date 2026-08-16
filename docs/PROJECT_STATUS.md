@@ -119,6 +119,15 @@ use, capture activation, provider calls, admission, evaluation and every
 trading/deployment authority false until a separate bounded activation. No
 authenticated export has been supplied or registered.
 
+The authenticated Plans page has no JSON download, so a separate fail-closed
+boundary can now seal one exact credential-free HTML page capture. It derives
+only the exact visible labels `Stocks Basic`, `Individual`, and `$0/m`, and
+binds that partial evidence to the already-proven public-documentation parent.
+It does not infer account identity, account-to-plan binding, daily-bars,
+dividend or split entitlement, lookback, or zero incremental data cost; every
+one remains explicitly unresolved and capture activation stays false. Tests use
+deterministic synthetic HTML only, and no real dashboard page was retained.
+
 An offline-only wrapper now fixes the ignored owner-only inbox filenames for
 that export and its hash-bound capture manifest. It rejects browser HTML, loose file
 permissions, symlinks, credentials and ambiguous or missing JSON pointers, then
