@@ -99,6 +99,23 @@ read only from `/private/tmp/massive_api_key.txt` and removed by the CLI after
 the attempt. Admission, evaluation and every broker/trading authority remain
 false; corporate-action historical `reported_at` semantics remain unresolved.
 
+Stage-2 qualification now validates the captured bytes against an explicit XNYS
+session calendar for October 2024 through April 2025 (including the 9 January
+2025 national day-of-mourning closure), exact OHLCV constraints and identical
+AAPL/MSFT/SPY session sets. Dividend availability uses 16:00
+`America/New_York` on Massive's documented official `declaration_date`, pinned
+to the registered documentation bytes. No splits occurred; a future split
+without a documented announcement-date field fails closed. Qualified TRAIN and
+VALIDATION artifacts are immutable owner-only clean-store files; the untouched
+test remains unadmitted.
+
+The Stage-3 VALIDATION conformance rehearsal uses only
+`GuardrailedBacktestEngine`, removes one terminal TRAIN observation for purge,
+embargoes the first VALIDATION observation, warms on 50 earlier observations,
+and scores 41 VALIDATION sessions. BASE and PESSIMISTIC cost floors and
+excess total return versus matched-window SPY buy-and-hold are exercised mechanically. Results carry no
+performance or promotion authority.
+
 ### Stage 0 Campaign v2 revision-2 proposal
 
 The inert proposal
