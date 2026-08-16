@@ -25,8 +25,14 @@ model contracts.
 
 Stage 0 is active. Campaign v2 revision-2 proposal
 `cafbaef235d8379e29b17d057ac87a77c452260680afd20bf8c7e4fd24671654`
-is pending exact human approval. It replaces revision-1 only after approval and
-registration, proposes completed dates from 1 October 2024 through 31 July 2025
+received exact human approval on 16 August 2026. A new owner-only,
+single-record registration boundary accepts only that approval, requires a
+clean worktree, records the full Git revision, and verifies the exact inactive Revision-1
+preregistration and capture-approval records before terminally superseding
+them. The immutable append is deliberately deferred until this implementation
+is merged, so the recorded source identity cannot point at an unmerged tree.
+No Revision-1 evidence is deleted or rewritten, and no provider gate advances
+before that append. The package proposes completed dates from 1 October 2024 through 31 July 2025
 with a 46-day buffer inside the human-computed two-year rolling free-history
 boundary as of 16 August 2026. It expires after 1 September 2026 and requires
 activation-time recomputation, and keeps the May-July partition explicitly classified as a
