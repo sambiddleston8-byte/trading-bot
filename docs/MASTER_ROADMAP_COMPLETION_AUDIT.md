@@ -257,16 +257,20 @@ exemption application, provider access, data opening, evaluation, broker
 access, orders and trading remain false and require later bounded authority.
 No API key is requested and no provider call or evaluation is allowed.
 
-Pending capture-activation proposal
+Approved but inactive capture-activation proposal
 `ac80cd34ccfd9a620daa7d81812261f97a144402e56e7b3eb20825565266d02a`
-is inert and awaits separate exact approval plus authenticated entitlement
-evidence. It fixes 27 exact 31-day-or-shorter requests: 21 TRAIN and six
-VALIDATION across AAPL/MSFT/SPY. All nine UNTOUCHED_TEST-role slices remain
-sealed and unrequestable. Activation must prove an authenticated account-bound
-zero-incremental-cost entitlement that covers 1 August 2024, bind current terms
-without recording credential material, and recompute the parent, proposal,
-strategy and clean-Git identities. The proposal itself cannot authenticate,
-activate, fetch, open, admit or evaluate anything.
+received exact human approval on 16 August 2026. Owner-only approval record
+`CV2R1CAP-3072E69774CF1438898644B7ECFB6495` (record hash
+`42431cf0471f9697c6a77f9d7366d671196d89b898d533e01f98d883382267a1`)
+binds it to clean Git `50f7afe` while every entitlement, activation, provider,
+evaluation and trading authority remains false. It fixes 27 exact 31-day-or-
+shorter requests: 21 TRAIN and six VALIDATION across AAPL/MSFT/SPY. All nine
+UNTOUCHED_TEST-role slices remain sealed and unrequestable. Activation must
+still prove an authenticated account-bound zero-incremental-cost entitlement
+covering 1 August 2024, bind current terms without recording credential
+material, and freshly recompute the parent, proposal, strategy and clean-Git
+identities. The approval record cannot authenticate, activate, fetch, open,
+admit or evaluate anything.
 The older strict parser for execution-critical price, calendar, corporate-
 action, delisting, universe-membership and daily-bar roles now enforces the
 same content-store binding. Schemas for the six newer research roles will be
@@ -301,9 +305,9 @@ prevent continued use of current/free entitlements for supplementary research.
 2. **Campaign v2 revision preregistered; provider access remains blocked:**
    the original v2 controls are retired by code and terminally superseded for
    their incomplete and future dates. Exact approval and the distinct inert
-   revision preregistration are registered. Next, separately approve pending
-   activation proposal `ac80cd34...`, then supply authenticated entitlement
-   evidence before requesting a key or provider data. Recompute Git and source
+   revision preregistration are registered. The hash-specific activation
+   proposal approval is now recorded but inactive. Next, supply authenticated
+   account-bound entitlement evidence before key use or provider data. Recompute Git and source
    identities at activation rather than trusting stored attestations. Treat the
    last split as a one-shot sealed retrospective test, never as genuinely future
    evidence or promotion authority. Historical availability, stable identity,
