@@ -94,6 +94,16 @@ BASE/PESSIMISTIC execution-cost floors and excess-return plumbing against
 matched-window SPY buy-and-hold without
 granting performance, promotion, broker or trading authority.
 
+Stage 3 now has its first admitted feature family. The canonical contract binds
+five distinct timestamps, feature/entity identity, definition identity,
+revisions and content-hashed provenance. Four daily technical values are
+derived only from trailing completed bars, and derived availability must equal
+the latest availability among every contributing row. Automated tests reject
+hash-valid future-input leakage, revision forgery, missing cross-sectional rows
+and changes to later observations that alter earlier feature values. Only TRAIN
+and VALIDATION feature matrices are admitted; no test bytes or performance
+authority are introduced.
+
 The Streamlit shell now exposes a thin Campaign Audit preview, but this does
 not advance the active stage. It reads only deterministic contract constants
 and shows the immutable proposal/public-documentation chain, unresolved

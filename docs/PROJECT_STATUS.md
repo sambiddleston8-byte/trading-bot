@@ -116,6 +116,16 @@ and scores 41 VALIDATION sessions. BASE and PESSIMISTIC cost floors and
 excess total return versus matched-window SPY buy-and-hold are exercised mechanically. Results carry no
 performance or promotion authority.
 
+The first Stage-3 feature vertical slice now defines an immutable five-timestamp
+row contract: `effective_at`, `reported_at`, `available_at`, `retrieved_at` and
+`observation_cutoff_at`, plus stable feature/entity identity, definition hash,
+revision chain and exact input-row/artifact provenance. The first admitted
+family derives 20/50-session moving averages, 20-session momentum and 14-session
+ATR solely from completed admitted bars. Every feature's availability is the
+maximum availability of its 50-row trailing input set. TRAIN produces 54 fully
+aligned sessions after warmup and VALIDATION produces all 42 sessions using
+past TRAIN warmup; the untouched test remains excluded.
+
 ### Stage 0 Campaign v2 revision-2 proposal
 
 The inert proposal
