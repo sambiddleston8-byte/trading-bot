@@ -1167,6 +1167,18 @@ in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
   identities. Credential values must never enter the record, Git, tests or
   model prompts. Entitlement revalidation, activation, key use and provider
   access remain false; no provider call has occurred.
+- Massive entitlement evidence now has a deterministic, network-free boundary.
+  Exact public documentation bytes can be timestamped and hashed separately
+  from authenticated account evidence. The published Custom Bars plan table
+  can establish that Stocks Basic Free advertises end-of-day access and two
+  years of history; the Day Aggregates flat-file table explicitly says that
+  flat files are not included in that free plan. Neither public documentation,
+  a successful market-data response nor its provider `request_id` may prove an
+  account identity, named subscription or current account entitlement. Only an
+  official authenticated account endpoint or authenticated dashboard export
+  can supply that binding, and even a complete evidence assessment grants no
+  activation or data-call authority. No public-document bytes or authenticated
+  account evidence have yet been registered under this new schema.
 - The pre-existing strict bitemporal replay parser is now subject to the same
   authenticated-content-store binding: parsed price, calendar, corporate-
   action, delisting, membership and daily-bar bytes must come from the exact
