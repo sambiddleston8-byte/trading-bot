@@ -58,6 +58,18 @@ recorded in `docs/MASTER_ROADMAP_COMPLETION_AUDIT.md`.
    paper execution, with IBKR later. Live trading remains a separate future
    human decision.
 
+The application shell now includes a read-only Campaign Audit preview for the
+future Stage 1 surface. It deterministically shows the registered Revision-2
+proposal/preregistration and public-documentation chain, current entitlement
+gaps, evidence hashes, compliance block reasons and an all-false authority
+matrix. The preview is explicitly `PREVIEW_ONLY_LOCKED_BY_STAGE_0`; it has no
+credential input, API-key request, provider request, capture activation,
+admission, evaluation or trading control. A requested 1 September 2024 start is
+shown as rejected because it retains only 16 days beyond the published rolling
+boundary on the proposal date, below the immutable 30-day minimum, and because
+SPY-only corporate actions differ from the approved AAPL/MSFT/SPY total-return
+policy. No duplicate Revision-2 proposal or approval was created.
+
 ### Stage 0 Campaign v2 revision-2 proposal
 
 The inert proposal
