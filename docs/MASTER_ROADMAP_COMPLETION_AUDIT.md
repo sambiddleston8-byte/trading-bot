@@ -35,17 +35,30 @@ append registered `HQP2R2-4E0CA212575663AA7010D87EA36B58E5`, record
 against clean merged Git
 `d6baad465ac866a7c36c963585c1c5b0fc103801`. No Revision-1 evidence was
 deleted or rewritten. The new private quarantine root is empty and disjoint.
-Every API-key, documentation/account-evidence, capture, provider-byte,
-admission, evaluation, AWS, broker, order and trading authority flag remains
-false. The package covers completed dates from 1 October 2024 through 31 July 2025
+The immutable preregistration retains every API-key, documentation/account-
+evidence, capture, provider-byte, admission, evaluation, AWS, broker, order and
+trading authority flag as false. PR #268 subsequently added a disjoint
+owner-only public-documentation store. After clean merge at
+`afd5af1818da545d6d180c23566bc9e439a8bdfd`, five exact official Massive pages
+were content-addressed and registered as
+`CV2R2DOC-C4321E5E3D2555A95EDB89499A1EA6A5`, record
+`0bbcde43deb5d5afc5977dad17949f6484905711cbe07d6d7af5ebe19cd39a99`,
+with re-derived evidence-bundle hash
+`feae2c94bf9ee136e64409076f3ec5dc33f42902b566043cd71c66e61927761b`.
+The exact blobs are read-only and rehashed on every verification; the ledger
+contains only hashes, fact locators and fixed-false authority fields. This
+completes only the public-documentation sub-gate. Account identity, named plan,
+current entitlement, capture activation and every downstream authority remain
+unproven or false. The package covers completed dates from 1 October 2024 through 31 July 2025
 with a 46-day buffer inside the human-computed two-year rolling free-history
 boundary as of 16 August 2026. It expires after 1 September 2026 and requires
 activation-time recomputation, and keeps the May-July partition explicitly classified as a
 single-open `SEALED_RETROSPECTIVE_TEST`. The scope covers unadjusted daily bars,
 dividends and stock splits for AAPL/MSFT/SPY. Public documentation inputs are
 exact bytes whose hashes are computed internally; account/credential material
-is rejected, only hashes/facts/locators persist, and assessment re-derives them
-from the exact bytes supplied ephemerally. These public bytes remain
+is rejected, hashes/facts/locators persist in the ledger, and the exact bytes
+persist separately in the owner-only content store for deterministic
+re-derivation. These public bytes remain
 incapable of authenticating the user's account, plan or key.
 
 VectorBT is not on the revision-2 critical path and provides no parameter
