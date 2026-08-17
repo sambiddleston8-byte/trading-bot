@@ -117,6 +117,8 @@ def _validate(result: BacktestResult) -> None:
 def evaluate_train_portfolio_conformance(
     repository_root: Path,
     *,
+    admitted_train_matrix_sha256: str = ADMITTED_MATRIX_SHA256["TRAIN"],
+    expected_form4_artifact_sha256: str = ADMITTED_FORM4_ARTIFACT_SHA256,
     write_output: bool = True,
 ) -> dict[str, Any]:
     stage2 = repository_root / ROOT / "stage2"
@@ -133,7 +135,7 @@ def evaluate_train_portfolio_conformance(
 
     matrix_path = repository_root / ROOT / "stage3/technical_features/train_matrix.json"
     matrix = json.loads(matrix_path.read_text())
-    if matrix.get("matrix_sha256") != ADMITTED_MATRIX_SHA256["TRAIN"]:
+    if matrix.get("matrix_sha256") != admitted_train_matrix_sha256:
         raise ValueError("TRAIN feature matrix differs from its admitted pin")
     feature_sessions = sorted({row["effective_at"][:10] for row in matrix["rows"]})
     if len(feature_sessions) < 5:
@@ -213,13 +215,13 @@ def evaluate_train_portfolio_conformance(
         def run(order_reversed: bool) -> BacktestResult:
             consumer = PITFeatureConsumer(
                 matrix,
-                expected_matrix_sha256=ADMITTED_MATRIX_SHA256["TRAIN"],
+                expected_matrix_sha256=admitted_train_matrix_sha256,
                 suppressed_decision_ats=suppressed,
             )
             strategy = ExecutiveIntentSignalAdapter(
                 consumer,
                 insider_specialist=SECForm4InsiderSpecialistBot(
-                    form4, expected_sha256=ADMITTED_FORM4_ARTIFACT_SHA256
+                    form4, expected_sha256=expected_form4_artifact_sha256
                 ),
                 liquidation_signal_at=liquidation_signal_at,
             )
@@ -230,7 +232,7 @@ def evaluate_train_portfolio_conformance(
                     role="TRAIN-PORTFOLIO-CONFORMANCE",
                     symbol="AAPL-MSFT-SPY",
                     source_sha256=source_sha256,
-                    feature_sha256=ADMITTED_MATRIX_SHA256["TRAIN"],
+                    feature_sha256=admitted_train_matrix_sha256,
                     qualification_sha256=qualification_sha256,
                     receipt_sha256=qualification["qualification_sha256"],
                 ),
