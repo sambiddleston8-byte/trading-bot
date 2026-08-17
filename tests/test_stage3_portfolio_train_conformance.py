@@ -32,6 +32,12 @@ from core.research.stage4_train_fundamental_evaluation import (
     STATUS as FUNDAMENTAL_STATUS,
     evaluate_train_fundamental_ablation,
 )
+from core.research.catalyst_event_specialist import build_catalyst_event_artifact
+from core.research.stage4_train_catalyst_evaluation import (
+    CATALYST_ARTIFACT,
+    STATUS as CATALYST_STATUS,
+    evaluate_train_catalyst_ablation,
+)
 
 
 ROOT = "data/research/massive_campaign_v2_revision_2"
@@ -226,5 +232,44 @@ def test_synthetic_fundamental_ablation_runs_both_cost_models_and_stays_research
         for policy in report["policies"].values()
     )
     assert report["evaluation_metadata"]["registration_decision"] == "RESEARCH_ONLY"
+    assert report["promotion_allowed"] is False
+    assert sealed_test.read_text() == "sealed TEST must not be read"
+
+
+def test_synthetic_catalyst_ablation_runs_both_cost_models_and_stays_research_only(tmp_path):
+    matrix_sha256, form4_sha256, sealed_test = _synthetic_admitted_train(tmp_path)
+    rows = []
+    for symbol, impact in (("AAPL", "0.8"), ("MSFT", "0.4"), ("SPY", "-0.3")):
+        rows.append({
+            "symbol": symbol,
+            "event_id": f"{symbol}-SYNTHETIC-Q3",
+            "event_type": "EARNINGS_RESULT",
+            "effective_at": "2024-10-31T20:00:00+00:00",
+            "reported_at": "2024-11-01T21:00:00+00:00",
+            "available_at": "2024-11-01T21:00:00+00:00",
+            "revision": 1,
+            "directional_impact": impact,
+            "confidence": "0.75",
+            "source_payload_sha256": _sha(f"catalyst:{symbol}".encode()),
+            "source_locator": f"synthetic://catalyst/{symbol}/2024Q3",
+        })
+    catalyst = build_catalyst_event_artifact(rows, retrieved_at="2025-03-01T00:00:00+00:00")
+    path = tmp_path / CATALYST_ARTIFACT
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(_canonical(catalyst) + b"\n")
+    report = evaluate_train_catalyst_ablation(
+        tmp_path,
+        admitted_train_matrix_sha256=matrix_sha256,
+        expected_form4_artifact_sha256=form4_sha256,
+        expected_catalyst_artifact_sha256=catalyst["artifact_sha256"],
+    )
+    assert report["status"] == CATALYST_STATUS
+    assert set(report["policies"]) == {
+        "TECHNICAL_INSIDER_BASELINE", "TECHNICAL_INSIDER_CATALYST",
+    }
+    assert all(set(policy["aggregate"]) == {"BASE", "PESSIMISTIC"} for policy in report["policies"].values())
+    metadata = report["evaluation_metadata"]
+    assert metadata["registration_decision"] == "RESEARCH_ONLY"
+    assert metadata["fixture_limitation"] == "AAPL/MSFT/SPY is short, narrow, and non-promotable"
     assert report["promotion_allowed"] is False
     assert sealed_test.read_text() == "sealed TEST must not be read"

@@ -976,3 +976,23 @@ class FundamentalResearchExecutiveAggregatorBot(ExecutiveAggregatorBot):
         "SEC_FORM4_INSIDER": Decimal("0.33"),
         "FUNDAMENTAL_VALUATION": Decimal("0.33"),
     }
+
+
+class CatalystResearchExecutiveAggregatorBot(ExecutiveAggregatorBot):
+    """Stage-4 Catalyst candidate; isolated from unregistered research slices."""
+
+    VERSION = "ultimate-executive-portfolio-catalyst-research-v1"
+    REQUIRED_SPECIALISTS = (
+        "TECHNICAL",
+        "SEC_FORM4_INSIDER",
+        "CATALYST_EVENT",
+    )
+    SPECIALIST_VERSIONS = {
+        **ExecutiveAggregatorBot.SPECIALIST_VERSIONS,
+        "CATALYST_EVENT": "catalyst-event-specialist-v1",
+    }
+    WEIGHTS = {
+        "TECHNICAL": Decimal("0.34"),
+        "SEC_FORM4_INSIDER": Decimal("0.33"),
+        "CATALYST_EVENT": Decimal("0.33"),
+    }
