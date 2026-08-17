@@ -41,8 +41,8 @@ from core.research.pit_feature_signal_adapter import (
 
 NY = ZoneInfo("America/New_York")
 ROOT = Path("data/research/massive_campaign_v2_revision_2")
-OUTPUT = ROOT / "stage3/feature_strategy_evaluation.json"
-CONFIRMED_TREND_OUTPUT = ROOT / "stage3/momentum_confirmed_strategy_evaluation.json"
+OUTPUT = ROOT / "stage3/train_feature_strategy_evaluation_v2.json"
+CONFIRMED_TREND_OUTPUT = ROOT / "stage3/train_momentum_confirmed_strategy_evaluation_v2.json"
 INITIAL_CASH_PER_SYMBOL = Decimal("100000")
 ANNUALIZATION_SESSIONS = Decimal("252")
 ADMITTED_MATRIX_SHA256 = {
@@ -534,7 +534,7 @@ def _spy_buy_hold_total_return(
 def _evaluate_strategy(
     repository_root: Path,
     *,
-    admitted_matrix_sha256: Mapping[str, str],
+    admitted_train_matrix_sha256: str,
     strategy_adapter: type[DeterministicSignalAdapter],
     strategy_parameters: Mapping[str, Any],
     strategy_name: str,
@@ -546,40 +546,28 @@ def _evaluate_strategy(
     qualification_bytes = (stage2 / "qualification_report.json").read_bytes()
     qualification = json.loads(qualification_bytes)
     qualification_sha256 = _hash(qualification_bytes)
-    clean_paths = {
-        "TRAIN": stage2 / "clean_feature_store/train.json",
-        "VALIDATION": stage2 / "clean_feature_store/validation.json",
-    }
-    matrix_paths = {
-        "TRAIN": repository_root / ROOT / "stage3/technical_features/train_matrix.json",
-        "VALIDATION": repository_root / ROOT / "stage3/technical_features/validation_matrix.json",
-    }
-    clean_bytes = {role: path.read_bytes() for role, path in clean_paths.items()}
-    for role, payload in clean_bytes.items():
-        if _hash(payload) != qualification["artifacts"][role]:
-            raise ValueError("clean partition differs from qualification")
-    partitions = {role: json.loads(payload) for role, payload in clean_bytes.items()}
-    matrices = {role: json.loads(path.read_text()) for role, path in matrix_paths.items()}
-    matrix_hashes = dict(admitted_matrix_sha256)
-    if set(matrix_hashes) != {"TRAIN", "VALIDATION"}:
-        raise ValueError("both admitted matrix pins are required")
-    if any(matrices[role].get("matrix_sha256") != matrix_hashes[role] for role in matrices):
-        raise ValueError("feature matrix differs from the admitted matrix pin")
-    train_purged_at = max(row["effective_at"] for row in matrices["TRAIN"]["rows"])
-    validation_embargoed_at = min(row["effective_at"] for row in matrices["VALIDATION"]["rows"])
+    train_bytes = (stage2 / "clean_feature_store/train.json").read_bytes()
+    if _hash(train_bytes) != qualification["artifacts"]["TRAIN"]:
+        raise ValueError("clean TRAIN partition differs from qualification")
+    partitions = {"TRAIN": json.loads(train_bytes)}
+    train_matrix = json.loads(
+        (
+            repository_root
+            / ROOT
+            / "stage3/technical_features/train_matrix.json"
+        ).read_text()
+    )
+    if train_matrix.get("matrix_sha256") != admitted_train_matrix_sha256:
+        raise ValueError("TRAIN feature matrix differs from the admitted matrix pin")
+    matrices = {"TRAIN": train_matrix}
+    matrix_hashes = {"TRAIN": admitted_train_matrix_sha256}
+    train_purged_at = max(row["effective_at"] for row in train_matrix["rows"])
     consumers = {
         "TRAIN": PITFeatureConsumer(
-            matrices["TRAIN"],
-            expected_matrix_sha256=matrix_hashes["TRAIN"],
+            train_matrix,
+            expected_matrix_sha256=admitted_train_matrix_sha256,
             suppressed_decision_ats=(
                 train_purged_at,
-            ),
-        ),
-        "VALIDATION": PITFeatureConsumer(
-            matrices["VALIDATION"],
-            expected_matrix_sha256=matrix_hashes["VALIDATION"],
-            suppressed_decision_ats=(
-                validation_embargoed_at,
             ),
         ),
     }
@@ -594,35 +582,33 @@ def _evaluate_strategy(
         "initial_cash_per_symbol": _decimal(INITIAL_CASH_PER_SYMBOL),
         "one_bar_train_purge": bool(train_purged_at),
         "train_purged_decision_at": train_purged_at,
-        "one_bar_validation_embargo": bool(validation_embargoed_at),
-        "validation_embargoed_decision_at": validation_embargoed_at,
+        "source_partition": "TRAIN",
+        "validation_data_read": False,
+        "validation_evaluation_authorized": False,
         "untouched_test_included": False,
         "parameter_search_allowed": False,
         "performance_claim_allowed": False,
         "promotion_allowed": False,
-        "source_artifact_sha256": dict(qualification["artifacts"]),
+        "source_artifact_sha256": {
+            "TRAIN": qualification["artifacts"]["TRAIN"]
+        },
         "feature_matrix_sha256": matrix_hashes,
         "qualification_report_artifact_sha256": qualification_sha256,
         "partitions": {},
     }
     if variant_lineage is not None:
         report["strategy_variant_lineage"] = dict(variant_lineage)
-    all_actions = partitions["TRAIN"]["corporate_actions"] + partitions["VALIDATION"]["corporate_actions"]
+    all_actions = partitions["TRAIN"]["corporate_actions"]
     if any(action["action_type"] == "SPLIT" for action in all_actions):
         raise ValueError(
             "this raw-feature evaluation requires a split-free admitted window"
         )
-    for role in ("TRAIN", "VALIDATION"):
+    for role in ("TRAIN",):
         role_bars = sorted(
             partitions[role]["bars"], key=lambda row: (row["session_date"], row["symbol"])
         )
         sessions = sorted({row["session_date"] for row in role_bars})
-        if role == "TRAIN":
-            warmup: list[Mapping[str, Any]] = []
-        else:
-            train = partitions["TRAIN"]["bars"]
-            train_sessions = sorted({row["session_date"] for row in train})[-50:]
-            warmup = [row for row in train if row["session_date"] in train_sessions]
+        warmup: list[Mapping[str, Any]] = []
         evaluation_start = datetime.fromisoformat(
             next(row["open_at"] for row in role_bars if row["session_date"] == sessions[0])
         )
@@ -649,10 +635,8 @@ def _evaluate_strategy(
         }
         if feature_sessions != required_feature_sessions:
             raise ValueError("admitted feature matrix does not cover the evaluation window")
-        if role == "TRAIN" and train_purged_at[:10] != evaluation_end_day:
+        if train_purged_at[:10] != evaluation_end_day:
             raise ValueError("TRAIN purge is not the final evaluation decision")
-        if role == "VALIDATION" and validation_embargoed_at[:10] != sessions[0]:
-            raise ValueError("VALIDATION embargo is not the first evaluation decision")
         role_report: dict[str, Any] = {
             "source_sessions": len(sessions),
             "evaluation_start": evaluation_start.isoformat(),
@@ -741,17 +725,23 @@ def _evaluate_strategy(
 def evaluate(
     repository_root: Path,
     *,
-    admitted_matrix_sha256: Mapping[str, str] = ADMITTED_MATRIX_SHA256,
+    admitted_train_matrix_sha256: str = ADMITTED_MATRIX_SHA256["TRAIN"],
+    authorized_validation_pass_id: str | None = None,
 ) -> dict[str, Any]:
+    if authorized_validation_pass_id is not None:
+        raise ValueError(
+            "legacy Stage-3 evaluation is TRAIN-only; VALIDATION requires the "
+            "future Stage-5 authorization register"
+        )
     return _evaluate_strategy(
         repository_root,
-        admitted_matrix_sha256=admitted_matrix_sha256,
+        admitted_train_matrix_sha256=admitted_train_matrix_sha256,
         strategy_adapter=DeterministicSignalAdapter,
         strategy_parameters=deterministic_signal_parameters(),
         strategy_name=(
             "SMA20_GT_SMA50_AND_MOMENTUM20_GT_ZERO_WITH_ADMITTED_ATR14_SIZING"
         ),
-        status="TRAIN_VALIDATION_FEATURE_STRATEGY_EVALUATED",
+        status="TRAIN_ONLY_FEATURE_STRATEGY_EVALUATED",
         output=OUTPUT,
     )
 
@@ -759,24 +749,29 @@ def evaluate(
 def evaluate_momentum_confirmed(
     repository_root: Path,
     *,
-    admitted_matrix_sha256: Mapping[str, str] = ADMITTED_MATRIX_SHA256,
+    admitted_train_matrix_sha256: str = ADMITTED_MATRIX_SHA256["TRAIN"],
+    authorized_validation_pass_id: str | None = None,
 ) -> dict[str, Any]:
+    if authorized_validation_pass_id is not None:
+        raise ValueError(
+            "legacy Stage-3 evaluation is TRAIN-only; VALIDATION requires the "
+            "future Stage-5 authorization register"
+        )
     return _evaluate_strategy(
         repository_root,
-        admitted_matrix_sha256=admitted_matrix_sha256,
+        admitted_train_matrix_sha256=admitted_train_matrix_sha256,
         strategy_adapter=MomentumConfirmedSignalAdapter,
         strategy_parameters=momentum_confirmed_signal_parameters(),
         strategy_name=(
             "TWO_SESSION_RISING_MOMENTUM_CONFIRMATION_WITH_"
             "SMA20_GT_SMA50_AND_ADMITTED_ATR14_SIZING"
         ),
-        status="TRAIN_VALIDATION_MOMENTUM_CONFIRMED_STRATEGY_EVALUATED",
+        status="TRAIN_ONLY_MOMENTUM_CONFIRMED_STRATEGY_EVALUATED",
         output=CONFIRMED_TREND_OUTPUT,
         variant_lineage={
             "policy_version": CONFIRMED_POLICY_VERSION,
             "parent_policy_version": POLICY_VERSION,
-            "validation_evaluation_ordinal": 2,
-            "validation_reused": True,
             "parameter_selection_partition": "TRAIN_ONLY",
+            "validation_data_read": False,
         },
     )

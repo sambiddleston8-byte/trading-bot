@@ -169,18 +169,27 @@ def test_future_input_changes_no_earlier_feature_values(tmp_path):
     after_later=next(x for x in after["rows"] if x["entity_id"]=="AAPL" and x["effective_at"][:10]=="2025-03-05")
     assert after_later["values"]!=before_later["values"]
 
-def test_stage3_feature_strategy_evaluation_uses_bounded_partitions(tmp_path):
+def test_stage3_feature_strategy_evaluation_is_train_only(tmp_path):
     environment(tmp_path);build(tmp_path)
-    pins={role:json.loads((tmp_path/f"data/research/massive_campaign_v2_revision_2/stage3/technical_features/{role.lower()}_matrix.json").read_text())["matrix_sha256"] for role in ("TRAIN","VALIDATION")}
+    train_matrix=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    pin=json.loads(train_matrix.read_text())["matrix_sha256"]
+    validation_matrix=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/validation_matrix.json"
+    validation_store=tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/validation.json"
+    validation_matrix.write_text("sealed VALIDATION matrix must not be read")
+    validation_store.write_text("sealed VALIDATION store must not be read")
     with pytest.raises(ValueError,match="admitted matrix pin"):evaluate(tmp_path)
-    report=evaluate(tmp_path,admitted_matrix_sha256=pins)
+    report=evaluate(tmp_path,admitted_train_matrix_sha256=pin)
+    assert report["status"]=="TRAIN_ONLY_FEATURE_STRATEGY_EVALUATED"
+    assert report["source_partition"]=="TRAIN"
+    assert set(report["partitions"])=={"TRAIN"}
     assert report["partitions"]["TRAIN"]["source_sessions"]==103
     assert report["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]["evaluated_sessions"]==103
-    assert report["partitions"]["VALIDATION"]["source_sessions"]==42
-    assert report["partitions"]["VALIDATION"]["scenarios"]["PESSIMISTIC"]["composite"]["evaluated_sessions"]==42
-    assert report["one_bar_train_purge"] is report["one_bar_validation_embargo"] is True
+    assert report["one_bar_train_purge"] is True
     assert report["train_purged_decision_at"]==report["partitions"]["TRAIN"]["evaluation_end"]
-    assert report["validation_embargoed_decision_at"][:10]==report["partitions"]["VALIDATION"]["evaluation_start"][:10]
+    assert report["validation_data_read"] is False
+    assert report["validation_evaluation_authorized"] is False
+    assert set(report["source_artifact_sha256"])=={"TRAIN"}
+    assert set(report["feature_matrix_sha256"])=={"TRAIN"}
     assert report["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]["completed_trade_count"]>0
     composite=report["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]
     assert len(composite["trade_log"])==composite["completed_trade_count"]
@@ -189,26 +198,48 @@ def test_stage3_feature_strategy_evaluation_uses_bounded_partitions(tmp_path):
     attribution=composite["execution_cost_attribution"]
     assert abs(Decimal(attribution["cash_pnl_reconciliation_residual"]))<=Decimal(attribution["cash_reconciliation_tolerance"])
     assert report["untouched_test_included"] is False
+    assert validation_matrix.read_text()=="sealed VALIDATION matrix must not be read"
+    assert validation_store.read_text()=="sealed VALIDATION store must not be read"
+    with pytest.raises(ValueError,match="future Stage-5 authorization register"):
+        evaluate(
+            tmp_path,
+            admitted_train_matrix_sha256=pin,
+            authorized_validation_pass_id="UNREGISTERED-PASS",
+        )
 
 
-def test_momentum_confirmed_strategy_runs_over_bounded_partitions(tmp_path):
+def test_momentum_confirmed_strategy_is_train_only(tmp_path):
     environment(tmp_path);build(tmp_path)
-    pins={role:json.loads((tmp_path/f"data/research/massive_campaign_v2_revision_2/stage3/technical_features/{role.lower()}_matrix.json").read_text())["matrix_sha256"] for role in ("TRAIN","VALIDATION")}
-    baseline=evaluate(tmp_path,admitted_matrix_sha256=pins)
-    confirmed=evaluate_momentum_confirmed(tmp_path,admitted_matrix_sha256=pins)
-    assert confirmed["status"]=="TRAIN_VALIDATION_MOMENTUM_CONFIRMED_STRATEGY_EVALUATED"
+    train_matrix=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    pin=json.loads(train_matrix.read_text())["matrix_sha256"]
+    validation_matrix=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/validation_matrix.json"
+    validation_store=tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/validation.json"
+    validation_matrix.unlink()
+    validation_store.unlink()
+    baseline=evaluate(tmp_path,admitted_train_matrix_sha256=pin)
+    confirmed=evaluate_momentum_confirmed(
+        tmp_path,admitted_train_matrix_sha256=pin
+    )
+    assert confirmed["status"]=="TRAIN_ONLY_MOMENTUM_CONFIRMED_STRATEGY_EVALUATED"
     assert confirmed["evaluation_sha256"]!=baseline["evaluation_sha256"]
     assert confirmed["strategy_variant_lineage"]=={
         "policy_version":"admitted-pit-momentum-confirmed-signal-v2",
         "parent_policy_version":"admitted-pit-technical-signal-v1",
-        "validation_evaluation_ordinal":2,
-        "validation_reused":True,
         "parameter_selection_partition":"TRAIN_ONLY",
+        "validation_data_read":False,
     }
     assert confirmed["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]["evaluated_sessions"]==103
-    assert confirmed["partitions"]["VALIDATION"]["scenarios"]["BASE"]["composite"]["evaluated_sessions"]==42
-    assert confirmed["one_bar_train_purge"] is confirmed["one_bar_validation_embargo"] is True
+    assert set(confirmed["partitions"])=={"TRAIN"}
+    assert confirmed["one_bar_train_purge"] is True
+    assert confirmed["validation_data_read"] is False
+    assert confirmed["validation_evaluation_authorized"] is False
     assert confirmed["untouched_test_included"] is False
+    with pytest.raises(ValueError,match="future Stage-5 authorization register"):
+        evaluate_momentum_confirmed(
+            tmp_path,
+            admitted_train_matrix_sha256=pin,
+            authorized_validation_pass_id="UNREGISTERED-PASS",
+        )
 
 
 def test_train_rolling_diagnostic_executes_three_folds_without_validation(tmp_path):
