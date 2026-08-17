@@ -1016,3 +1016,23 @@ class PoliticalResearchExecutiveAggregatorBot(ExecutiveAggregatorBot):
         "SEC_FORM4_INSIDER": Decimal("0.33"),
         "POLITICAL_DISCLOSURE": Decimal("0.33"),
     }
+
+
+class MacroResearchExecutiveAggregatorBot(ExecutiveAggregatorBot):
+    """Stage-4 Macro/Cross-Asset candidate; alpha-only and research-only."""
+
+    VERSION = "ultimate-executive-portfolio-macro-research-v1"
+    REQUIRED_SPECIALISTS = (
+        "TECHNICAL",
+        "SEC_FORM4_INSIDER",
+        "MACRO_CROSS_ASSET",
+    )
+    SPECIALIST_VERSIONS = {
+        **ExecutiveAggregatorBot.SPECIALIST_VERSIONS,
+        "MACRO_CROSS_ASSET": "macro-cross-asset-specialist-v1",
+    }
+    WEIGHTS = {
+        "TECHNICAL": Decimal("0.34"),
+        "SEC_FORM4_INSIDER": Decimal("0.33"),
+        "MACRO_CROSS_ASSET": Decimal("0.33"),
+    }
