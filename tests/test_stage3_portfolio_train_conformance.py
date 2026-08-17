@@ -26,6 +26,12 @@ from core.research.stage3_portfolio_train_conformance import (
     evaluate_train_portfolio_conformance,
 )
 from core.research.stage4_train_insider_ensemble_evaluation import FORM4_ARTIFACT
+from core.research.fundamental_valuation_specialist import build_fundamental_artifact
+from core.research.stage4_train_fundamental_evaluation import (
+    FUNDAMENTAL_ARTIFACT,
+    STATUS as FUNDAMENTAL_STATUS,
+    evaluate_train_fundamental_ablation,
+)
 
 
 ROOT = "data/research/massive_campaign_v2_revision_2"
@@ -175,3 +181,50 @@ def test_admitted_train_conformance_matches_its_sealed_report_hash():
         and scenario["execution_count"] == 0
         for scenario in report["scenarios"].values()
     )
+
+
+def test_synthetic_fundamental_ablation_runs_both_cost_models_and_stays_research_only(tmp_path):
+    matrix_sha256, form4_sha256, sealed_test = _synthetic_admitted_train(tmp_path)
+    rows = []
+    for symbol, dispersion in (("AAPL", "1"), ("MSFT", "0.5"), ("SPY", "-0.5")):
+        rows.append({
+            "symbol": symbol,
+            "fiscal_period": "2024Q3",
+            "effective_at": "2024-09-28T00:00:00+00:00",
+            "reported_at": "2024-11-01T21:00:00+00:00",
+            "available_at": "2024-11-01T21:00:00+00:00",
+            "revision": 1,
+            "metrics": {
+                "earnings_yield": "0.07",
+                "fcf_yield": "0.06",
+                "roic": "0.18",
+                "estimate_revision": "0.04",
+                "valuation_dispersion": dispersion,
+            },
+            "source_payload_sha256": _sha(f"fundamental:{symbol}".encode()),
+            "source_locator": f"synthetic://fundamental/{symbol}/2024Q3",
+        })
+    fundamental = build_fundamental_artifact(
+        rows, retrieved_at="2025-03-01T00:00:00+00:00"
+    )
+    path = tmp_path / FUNDAMENTAL_ARTIFACT
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(_canonical(fundamental) + b"\n")
+    report = evaluate_train_fundamental_ablation(
+        tmp_path,
+        admitted_train_matrix_sha256=matrix_sha256,
+        expected_form4_artifact_sha256=form4_sha256,
+        expected_fundamental_artifact_sha256=fundamental["artifact_sha256"],
+    )
+    assert report["status"] == FUNDAMENTAL_STATUS
+    assert set(report["policies"]) == {
+        "TECHNICAL_INSIDER_BASELINE",
+        "TECHNICAL_INSIDER_FUNDAMENTAL",
+    }
+    assert all(
+        set(policy["aggregate"]) == {"BASE", "PESSIMISTIC"}
+        for policy in report["policies"].values()
+    )
+    assert report["evaluation_metadata"]["registration_decision"] == "RESEARCH_ONLY"
+    assert report["promotion_allowed"] is False
+    assert sealed_test.read_text() == "sealed TEST must not be read"

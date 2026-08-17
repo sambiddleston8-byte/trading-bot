@@ -955,3 +955,24 @@ class ExecutiveAggregatorBot:
                 + (["INELIGIBLE_SIGNALS_DROPPED"] if dropped_signal_symbols else [])
             ),
         )
+
+
+class FundamentalResearchExecutiveAggregatorBot(ExecutiveAggregatorBot):
+    """Stage-4 three-alpha candidate; research-only until TRAIN evidence admits it."""
+
+    VERSION = "ultimate-executive-portfolio-fundamental-research-v1"
+    REQUIRED_SPECIALISTS = (
+        "TECHNICAL",
+        "SEC_FORM4_INSIDER",
+        "FUNDAMENTAL_VALUATION",
+    )
+    SPECIALIST_VERSIONS = {
+        **ExecutiveAggregatorBot.SPECIALIST_VERSIONS,
+        "FUNDAMENTAL_VALUATION": "fundamental-valuation-dispersion-v1",
+    }
+    WEIGHTS = {
+        # Finite-decimal representation of the preregistered equal scheme.
+        "TECHNICAL": Decimal("0.34"),
+        "SEC_FORM4_INSIDER": Decimal("0.33"),
+        "FUNDAMENTAL_VALUATION": Decimal("0.33"),
+    }
