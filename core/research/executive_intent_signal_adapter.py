@@ -18,8 +18,12 @@ from core.research.sec_form4_insider_specialist import (
     SECForm4InsiderSpecialistBot,
     SPECIALIST_VERSION as INSIDER_SPECIALIST_VERSION,
 )
+from core.research.fundamental_valuation_specialist import (
+    FundamentalValuationSpecialistBot,
+)
 from core.research.specialist_signals import (
     ExecutiveAggregatorBot,
+    FundamentalResearchExecutiveAggregatorBot,
     ExecutivePortfolioIntent,
     RiskEnvelope,
     SpecialistSignal,
@@ -84,6 +88,28 @@ def executive_intent_signal_parameters() -> dict[str, Any]:
     }
 
 
+def fundamental_research_intent_parameters() -> dict[str, Any]:
+    result = executive_intent_signal_parameters()
+    result.update(
+        architecture=(
+            "TECHNICAL + SEC_FORM4_INSIDER + FUNDAMENTAL_VALUATION -> "
+            "ONE EXECUTIVE; RISK separate"
+        ),
+        executive_version=FundamentalResearchExecutiveAggregatorBot.VERSION,
+        fundamental_specialist_version=(
+            FundamentalResearchExecutiveAggregatorBot.SPECIALIST_VERSIONS[
+                "FUNDAMENTAL_VALUATION"
+            ]
+        ),
+        alpha_weights={
+            name: str(weight)
+            for name, weight in FundamentalResearchExecutiveAggregatorBot.WEIGHTS.items()
+        },
+        registration_status="RESEARCH_ONLY_PENDING_STABLE_REAL_TRAIN_ABLATION",
+    )
+    return result
+
+
 class ExecutiveIntentSignalAdapter:
     """Create one complete TRAIN-only Executive intent for the whole portfolio."""
 
@@ -95,11 +121,14 @@ class ExecutiveIntentSignalAdapter:
         *,
         insider_specialist: SECForm4InsiderSpecialistBot,
         liquidation_signal_at: str | datetime,
+        fundamental_specialist: FundamentalValuationSpecialistBot | None = None,
+        executive: ExecutiveAggregatorBot | None = None,
     ) -> None:
         self.consumer = consumer
         self.insider_specialist = insider_specialist
         self.risk_specialist = PITRiskRegimeSpecialistBot()
-        self.executive = ExecutiveAggregatorBot()
+        self.fundamental_specialist = fundamental_specialist
+        self.executive = executive or ExecutiveAggregatorBot()
         self.liquidation_signal_at = _time(
             liquidation_signal_at, "liquidation_signal_at"
         )
@@ -112,9 +141,13 @@ class ExecutiveIntentSignalAdapter:
     def parameters() -> dict[str, Any]:
         return executive_intent_signal_parameters()
 
-    @staticmethod
-    def _validate_parameters(parameters: Mapping[str, Any]) -> None:
-        if dict(parameters) != executive_intent_signal_parameters():
+    def _validate_parameters(self, parameters: Mapping[str, Any]) -> None:
+        expected = (
+            fundamental_research_intent_parameters()
+            if isinstance(self.executive, FundamentalResearchExecutiveAggregatorBot)
+            else executive_intent_signal_parameters()
+        )
+        if dict(parameters) != expected:
             raise ValueError("strategy parameters differ from the Executive policy")
 
     def diagnostics(self) -> dict[str, int]:
@@ -387,6 +420,15 @@ class ExecutiveIntentSignalAdapter:
             }
             for symbol in histories
         }
+        if isinstance(self.executive, FundamentalResearchExecutiveAggregatorBot):
+            if self.fundamental_specialist is None:
+                raise ValueError("fundamental Executive candidate lacks its Specialist")
+            for symbol in histories:
+                signals[symbol]["FUNDAMENTAL_VALUATION"] = (
+                    self.fundamental_specialist.score_tick(
+                        symbol, decision_at=current_by_symbol[symbol].available_at
+                    )
+                )
         stops: dict[str, StandingStopInstruction] = {}
         for symbol, record in records.items():
             if record is None:
@@ -425,3 +467,29 @@ class ExecutiveIntentSignalAdapter:
             for item in intent.symbol_intents
         )
         return intent
+
+
+class FundamentalResearchExecutiveIntentAdapter(ExecutiveIntentSignalAdapter):
+    """Explicit research-only adapter for the three-alpha Stage-4 ablation."""
+
+    version = "train-only-fundamental-executive-adapter-v1"
+
+    def __init__(
+        self,
+        consumer: PITFeatureConsumer,
+        *,
+        insider_specialist: SECForm4InsiderSpecialistBot,
+        fundamental_specialist: FundamentalValuationSpecialistBot,
+        liquidation_signal_at: str | datetime,
+    ) -> None:
+        super().__init__(
+            consumer,
+            insider_specialist=insider_specialist,
+            fundamental_specialist=fundamental_specialist,
+            executive=FundamentalResearchExecutiveAggregatorBot(),
+            liquidation_signal_at=liquidation_signal_at,
+        )
+
+    @staticmethod
+    def parameters() -> dict[str, Any]:
+        return fundamental_research_intent_parameters()
