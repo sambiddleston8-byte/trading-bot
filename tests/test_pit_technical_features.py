@@ -8,6 +8,7 @@ import pytest
 from core.features.pit_feature_contract import PITFeatureRecord, _record, build_revision_matrix, build_technical_feature_matrices, campaign_observation_cutoff, revise_feature_record, validate_revision_chain
 from core.orchestration.stage2_qualification import _at,_bar_available,_bar_close,_sessions
 from core.research.stage3_feature_strategy_evaluation import evaluate, evaluate_momentum_confirmed
+from core.research.stage3_train_rolling_diagnostic import evaluate_train_rolling
 
 def canonical(v):return json.dumps(v,sort_keys=True,separators=(",",":"),allow_nan=False).encode()
 RETRIEVED_AT="2026-08-16T20:00:00+00:00"
@@ -167,3 +168,54 @@ def test_momentum_confirmed_strategy_runs_over_bounded_partitions(tmp_path):
     assert confirmed["partitions"]["VALIDATION"]["scenarios"]["BASE"]["composite"]["evaluated_sessions"]==42
     assert confirmed["one_bar_train_purge"] is confirmed["one_bar_validation_embargo"] is True
     assert confirmed["untouched_test_included"] is False
+
+
+def test_train_rolling_diagnostic_executes_three_folds_without_validation(tmp_path):
+    environment(tmp_path);build(tmp_path)
+    train_matrix=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    pin=json.loads(train_matrix.read_text())["matrix_sha256"]
+    (tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/validation_matrix.json").unlink()
+    (tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/validation.json").unlink()
+    for forbidden in (
+        tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/test_matrix.json",
+        tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/test.json",
+    ):
+        forbidden.parent.mkdir(parents=True,exist_ok=True)
+        forbidden.write_text("must not be read")
+        forbidden.unlink()
+    with pytest.raises(ValueError,match="admitted pin"):
+        evaluate_train_rolling(tmp_path,admitted_train_matrix_sha256="0"*64)
+    report=evaluate_train_rolling(tmp_path,admitted_train_matrix_sha256=pin)
+    assert report["source_partition"]=="TRAIN"
+    assert report["validation_data_read"] is report["untouched_test_included"] is False
+    assert report["parameter_search_allowed"] is report["promotion_allowed"] is False
+    for policy in report["policies"].values():
+        assert len(policy["folds"])==3
+        assert all(fold["source_sessions"]==18 for fold in policy["folds"])
+        assert all(all(value[:10]==fold["evaluation_start"][:10] for value in fold["embargoed_decision_ats"]) for fold in policy["folds"])
+        assert all(all(value[:10]==fold["evaluation_end"][:10] for value in fold["purged_decision_ats"]) for fold in policy["folds"])
+        assert all(left["evaluation_end"]<right["evaluation_start"] for left,right in zip(policy["folds"],policy["folds"][1:]))
+        assert all(fold["scenarios"]["BASE"]["cost_model_bps"]["baseline_slippage"]=="10" for fold in policy["folds"])
+        assert all(fold["scenarios"]["PESSIMISTIC"]["cost_model_bps"]["baseline_slippage"]=="20" for fold in policy["folds"])
+        for scenario in ("BASE","PESSIMISTIC"):
+            aggregate=policy["aggregate"][scenario]
+            assert aggregate["pooled_evaluated_sessions"]==54
+            assert aggregate["pooled_daily_observations"]==54
+            compounded=Decimal("1")
+            benchmark=Decimal("1")
+            for fold in aggregate["fold_returns"]:
+                compounded*=Decimal("1")+Decimal(fold["total_return"])
+                benchmark*=Decimal("1")+Decimal(fold["spy_buy_hold_total_return"])
+            assert compounded-1==Decimal(aggregate["fold_reset_chained_total_return"])
+            assert benchmark-1==Decimal(aggregate["fold_reset_spy_buy_hold_total_return"])
+            assert Decimal(aggregate["fold_reset_excess_return_vs_spy"])==compounded-benchmark
+            assert aggregate["completed_trade_count"]==sum(fold["scenarios"][scenario]["composite"]["completed_trade_count"] for fold in policy["folds"])
+            assert Decimal(aggregate["execution_cost_attribution"]["fees"])==sum(Decimal(fold["scenarios"][scenario]["composite"]["execution_cost_attribution"]["fees"]) for fold in policy["folds"])
+            assert Decimal(aggregate["execution_cost_attribution"]["adverse_execution_cost"])==sum(Decimal(fold["scenarios"][scenario]["composite"]["execution_cost_attribution"]["adverse_execution_cost"]) for fold in policy["folds"])
+            weighted=sum(Decimal(fold["scenarios"][scenario]["composite"]["annual_turnover"])*Decimal(fold["source_sessions"]) for fold in policy["folds"])/Decimal("54")
+            assert weighted==Decimal(aggregate["session_weighted_annual_turnover"])
+            assert Decimal("0")<=Decimal(aggregate["fold_reset_chained_maximum_drawdown"])<Decimal("1")
+            assert aggregate["pooled_daily_sharpe_ratio"] is None or Decimal(aggregate["pooled_daily_sharpe_ratio"]).is_finite()
+            assert all(trade["fold_id"].startswith("TRAIN-FOLD-") for trade in aggregate["trade_log"])
+    repeated=evaluate_train_rolling(tmp_path,admitted_train_matrix_sha256=pin)
+    assert repeated["evaluation_sha256"]==report["evaluation_sha256"]
