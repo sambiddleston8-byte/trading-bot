@@ -38,6 +38,14 @@ from core.research.stage4_train_catalyst_evaluation import (
     STATUS as CATALYST_STATUS,
     evaluate_train_catalyst_ablation,
 )
+from core.research.political_disclosure_specialist import (
+    build_political_disclosure_artifact,
+)
+from core.research.stage4_train_political_evaluation import (
+    POLITICAL_ARTIFACT,
+    STATUS as POLITICAL_STATUS,
+    evaluate_train_political_ablation,
+)
 
 
 ROOT = "data/research/massive_campaign_v2_revision_2"
@@ -269,6 +277,56 @@ def test_synthetic_catalyst_ablation_runs_both_cost_models_and_stays_research_on
     }
     assert all(set(policy["aggregate"]) == {"BASE", "PESSIMISTIC"} for policy in report["policies"].values())
     metadata = report["evaluation_metadata"]
+    assert metadata["registration_decision"] == "RESEARCH_ONLY"
+    assert metadata["fixture_limitation"] == "AAPL/MSFT/SPY is short, narrow, and non-promotable"
+    assert report["promotion_allowed"] is False
+    assert sealed_test.read_text() == "sealed TEST must not be read"
+
+
+def test_synthetic_political_ablation_runs_both_cost_models_and_stays_research_only(tmp_path):
+    matrix_sha256, form4_sha256, sealed_test = _synthetic_admitted_train(tmp_path)
+    rows = []
+    for symbol, transaction_type in (("AAPL", "PURCHASE"), ("MSFT", "PURCHASE"), ("SPY", "SALE")):
+        key = f"{symbol}-SYNTHETIC-DISCLOSURE"
+        rows.append({
+            "symbol": symbol,
+            "transaction_key": key,
+            "disclosure_id": f"DISC-{key}-1",
+            "source": "OFFICIAL_HOUSE",
+            "effective_at": "2024-10-01T00:00:00+00:00",
+            "reported_at": "2024-10-20T14:00:00+00:00",
+            "available_at": "2024-11-01T14:00:00+00:00",
+            "revision": 1,
+            "transaction_type": transaction_type,
+            "amount_min_usd": "10000",
+            "amount_max_usd": "10000",
+            "raw_document_sha256": _sha(f"political:raw:{symbol}".encode()),
+            "availability_evidence_sha256": _sha(f"political:available:{symbol}".encode()),
+            "source_locator": f"synthetic://political/{symbol}/1",
+        })
+    political = build_political_disclosure_artifact(
+        rows, retrieved_at="2025-03-01T00:00:00+00:00"
+    )
+    path = tmp_path / POLITICAL_ARTIFACT
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(_canonical(political) + b"\n")
+    report = evaluate_train_political_ablation(
+        tmp_path,
+        admitted_train_matrix_sha256=matrix_sha256,
+        expected_form4_artifact_sha256=form4_sha256,
+        expected_political_artifact_sha256=political["artifact_sha256"],
+    )
+    assert report["status"] == POLITICAL_STATUS
+    assert set(report["policies"]) == {
+        "TECHNICAL_INSIDER_BASELINE", "TECHNICAL_INSIDER_POLITICAL",
+    }
+    assert all(
+        set(policy["aggregate"]) == {"BASE", "PESSIMISTIC"}
+        for policy in report["policies"].values()
+    )
+    metadata = report["evaluation_metadata"]
+    assert metadata["publication_delay_enforced"] is True
+    assert metadata["copy_trade_allowed"] is False
     assert metadata["registration_decision"] == "RESEARCH_ONLY"
     assert metadata["fixture_limitation"] == "AAPL/MSFT/SPY is short, narrow, and non-promotable"
     assert report["promotion_allowed"] is False

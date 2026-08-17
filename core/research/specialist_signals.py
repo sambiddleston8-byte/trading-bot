@@ -996,3 +996,23 @@ class CatalystResearchExecutiveAggregatorBot(ExecutiveAggregatorBot):
         "SEC_FORM4_INSIDER": Decimal("0.33"),
         "CATALYST_EVENT": Decimal("0.33"),
     }
+
+
+class PoliticalResearchExecutiveAggregatorBot(ExecutiveAggregatorBot):
+    """Stage-4 Political Disclosure candidate; research-only and isolated."""
+
+    VERSION = "ultimate-executive-portfolio-political-research-v1"
+    REQUIRED_SPECIALISTS = (
+        "TECHNICAL",
+        "SEC_FORM4_INSIDER",
+        "POLITICAL_DISCLOSURE",
+    )
+    SPECIALIST_VERSIONS = {
+        **ExecutiveAggregatorBot.SPECIALIST_VERSIONS,
+        "POLITICAL_DISCLOSURE": "political-disclosure-specialist-v1",
+    }
+    WEIGHTS = {
+        "TECHNICAL": Decimal("0.34"),
+        "SEC_FORM4_INSIDER": Decimal("0.33"),
+        "POLITICAL_DISCLOSURE": Decimal("0.33"),
+    }
