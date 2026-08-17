@@ -42,7 +42,7 @@ AUTHENTICATED_REPLAY_ROLES = {
     "TOTAL_RETURN_PRICES",
     "UNIVERSE_MEMBERSHIP",
 }
-ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v3"
+ENGINE_POLICY_VERSION = "causal-portfolio-guardrailed-backtest-v4"
 _ATTESTATION_FACTORY_TOKEN = object()
 _RESEARCH_EXEMPTION_FACTORY_TOKEN = object()
 
@@ -584,6 +584,19 @@ class CausalStrategy(Protocol):
     ) -> str: ...
 
 
+class PortfolioExecutiveStrategy(Protocol):
+    version: str
+
+    def decide_portfolio_batch(
+        self,
+        histories_through_signal_close: Mapping[str, tuple[MarketBar, ...]],
+        parameters: Mapping[str, Any],
+        *,
+        current_weights: Mapping[str, Decimal],
+        eligible_symbols: tuple[str, ...],
+    ) -> Any: ...
+
+
 @dataclass
 class _Position:
     quantity: Decimal
@@ -687,6 +700,22 @@ class ExecutiveIntentTrace:
 
 
 @dataclass(frozen=True)
+class CashReservationTrace:
+    """Shared-cash reservation for one risk-increasing portfolio instruction."""
+
+    batch_sequence: int
+    decision_at: datetime
+    execution_at: datetime
+    intent_sha256: str
+    symbol: str
+    requested_cash: Decimal
+    reserved_cash: Decimal
+    consumed_cash: Decimal
+    released_cash: Decimal
+    status: str
+
+
+@dataclass(frozen=True)
 class BacktestResult:
     strategy_version: str
     parameter_hash: str
@@ -720,6 +749,7 @@ class BacktestResult:
     orders_submitted: bool = False
     live_trading_enabled: bool = False
     executive_intents: tuple[ExecutiveIntentTrace, ...] = ()
+    cash_reservations: tuple[CashReservationTrace, ...] = ()
 
 
 def _atr(history: Sequence[MarketBar], window: int) -> Decimal | None:
@@ -874,10 +904,17 @@ class GuardrailedBacktestEngine:
         by_symbol: dict[str, list[MarketBar]] = {}
         for row in rows:
             by_symbol.setdefault(row.symbol, []).append(row)
-        if len(by_symbol) != 1:
+        portfolio_batch_decider = getattr(
+            strategy_instance, "decide_portfolio_batch", None
+        )
+        if portfolio_batch_decider is not None and not callable(
+            portfolio_batch_decider
+        ):
+            raise ValueError("strategy portfolio batch interface is invalid")
+        if len(by_symbol) != 1 and portfolio_batch_decider is None:
             raise ValueError(
-                "this bounded engine supports one instrument per run; "
-                "portfolio-wide simultaneous order batching is not yet implemented"
+                "legacy strategy runs support one instrument; multiple instruments "
+                "require the Executive portfolio batch interface"
             )
         for symbol, values in by_symbol.items():
             if any(left.close_at >= right.open_at for left, right in zip(values, values[1:])):
@@ -931,6 +968,21 @@ class GuardrailedBacktestEngine:
                 raise ValueError(
                     f"{symbol} history ends without an explicit removal or terminal outcome"
                 )
+
+        if len(by_symbol) > 1:
+            return self._run_portfolio_executive(
+                rows=tuple(rows),
+                by_symbol={name: tuple(values) for name, values in by_symbol.items()},
+                events=tuple(events),
+                outcomes=tuple(outcomes),
+                actions=tuple(actions),
+                strategy_instance=strategy_instance,
+                parameters=parameters,
+                start=start,
+                end=end,
+                strategy_entrypoint=strategy_entrypoint,
+                strategy_source_sha256=strategy_source_sha256,
+            )
 
         def eligible(symbol: str, moment: datetime) -> bool:
             known = [
@@ -2066,6 +2118,892 @@ class GuardrailedBacktestEngine:
             strategy_entrypoint=strategy_entrypoint,
             strategy_source_sha256=strategy_source_sha256,
             executive_intents=tuple(executive_intents),
+        )
+
+    def _run_portfolio_executive(
+        self,
+        *,
+        rows: tuple[MarketBar, ...],
+        by_symbol: Mapping[str, tuple[MarketBar, ...]],
+        events: tuple[UniverseEvent, ...],
+        outcomes: tuple[TerminalOutcome, ...],
+        actions: tuple[CorporateAction, ...],
+        strategy_instance: PortfolioExecutiveStrategy,
+        parameters: Mapping[str, Any],
+        start: datetime,
+        end: datetime,
+        strategy_entrypoint: str,
+        strategy_source_sha256: str,
+    ) -> BacktestResult:
+        """Execute one complete portfolio intent per synchronized session.
+
+        All reductions are executed before risk increases.  Risk-increasing
+        instructions share one pre-batch equity snapshot, one aggregate-risk
+        budget and one settled-cash pool.  Whole-share reservations are scaled
+        pro rata and then executed in canonical symbol order; unused reservation
+        is released rather than reassigned within the batch.
+        """
+        from core.research.specialist_signals import ExecutivePortfolioIntent
+
+        symbols = tuple(sorted(by_symbol))
+        reference_clock = tuple(
+            (bar.open_at, bar.close_at, bar.available_at)
+            for bar in by_symbol[symbols[0]]
+        )
+        if not reference_clock or any(
+            tuple((bar.open_at, bar.close_at, bar.available_at) for bar in by_symbol[symbol])
+            != reference_clock
+            for symbol in symbols[1:]
+        ):
+            raise ValueError(
+                "portfolio bars must be cross-symbol synchronized at open, close and availability"
+            )
+        session_rows = tuple(
+            tuple(by_symbol[symbol][index] for symbol in symbols)
+            for index in range(len(reference_clock))
+        )
+        decider = getattr(strategy_instance, "decide_portfolio_batch", None)
+        if not callable(decider):
+            raise ValueError("portfolio Executive decision interface is required")
+
+        cash = self.config.initial_cash
+        positions: dict[str, _Position] = {}
+        histories: dict[str, list[MarketBar]] = {symbol: [] for symbol in symbols}
+        pending_intent: tuple[ExecutivePortfolioIntent, datetime] | None = None
+        forced_exit_signal: datetime | None = None
+        protective_exit_pending: dict[str, datetime] = {}
+        executions: list[ExecutionRecord] = []
+        completed: list[CompletedTrade] = []
+        equity_curve: list[tuple[datetime, Decimal]] = []
+        sizing_decisions: list[SizingDecisionTrace] = []
+        portfolio_states: list[PortfolioStateTrace] = []
+        executive_intents: list[ExecutiveIntentTrace] = []
+        reservations: list[CashReservationTrace] = []
+        monthly_notional: dict[tuple[int, int], Decimal] = {}
+        unsettled_cash: list[tuple[datetime, Decimal]] = []
+        last_marks: dict[str, Decimal] = {}
+        terminal_by_symbol = {item.symbol: item for item in outcomes}
+        terminated: set[str] = set()
+        applied_actions: set[tuple[str, datetime, str]] = set()
+        dividend_entitlements: dict[tuple[str, datetime, str], Decimal] = {}
+        paid_dividends: set[tuple[str, datetime, str]] = set()
+        batch_sequence = 0
+
+        def eligible(symbol: str, moment: datetime) -> bool:
+            known = [
+                item for item in events
+                if item.symbol == symbol
+                and item.effective_at <= moment
+                and item.available_at <= moment
+            ]
+            return bool(known) and known[-1].action == "ADD" and symbol not in terminated
+
+        def unsettled_total() -> Decimal:
+            return sum((amount for _, amount in unsettled_cash), ZERO)
+
+        def equity() -> Decimal:
+            return cash + unsettled_total() + sum(
+                position.quantity * last_marks.get(symbol, position.average_entry_price)
+                for symbol, position in positions.items()
+            )
+
+        def open_risk() -> Decimal:
+            return sum(
+                (
+                    max(ZERO, position.average_entry_price - position.stop_price)
+                    * position.quantity
+                    for position in positions.values()
+                ),
+                ZERO,
+            )
+
+        def snapshot(event_type: str, moment: datetime, symbol: str) -> None:
+            position = positions.get(symbol)
+            portfolio_states.append(
+                PortfolioStateTrace(
+                    sequence=len(portfolio_states) + 1,
+                    as_of_at=moment,
+                    event_type=event_type,
+                    symbol=symbol,
+                    settled_cash=cash,
+                    unsettled_cash=unsettled_total(),
+                    equity=equity(),
+                    position_quantity=position.quantity if position else ZERO,
+                    average_entry_price=position.average_entry_price if position else None,
+                    position_cost_basis=position.entry_total_cost if position else ZERO,
+                    stop_price=position.stop_price if position else None,
+                    mark_price=last_marks.get(symbol),
+                )
+            )
+
+        def fee_for(notional: Decimal, moment: datetime) -> Decimal:
+            key = (moment.year, moment.month)
+            return self.fee_schedule.fee(notional, monthly_notional.get(key, ZERO))
+
+        def record_notional(notional: Decimal, moment: datetime) -> None:
+            key = (moment.year, moment.month)
+            monthly_notional[key] = monthly_notional.get(key, ZERO) + notional
+
+        def liquidity_for(symbol: str) -> Decimal:
+            return _lagged_liquidity(
+                histories[symbol], self.config.lagged_liquidity_lookback
+            ) or ZERO
+
+        def close_position(
+            *, symbol: str, requested: Decimal, reference: Decimal,
+            moment: datetime, signal_at: datetime, reason: str,
+        ) -> Decimal:
+            position = positions[symbol]
+            liquidity = liquidity_for(symbol)
+            capacity = (
+                liquidity * self.config.maximum_lagged_volume_participation / reference
+            ).to_integral_value(rounding=ROUND_FLOOR)
+            requested = min(position.quantity, requested).to_integral_value(
+                rounding=ROUND_FLOOR
+            )
+            filled = min(requested, capacity).to_integral_value(rounding=ROUND_FLOOR)
+            equity_before = equity()
+            settled_before = cash
+            unsettled_before = unsettled_total()
+            risk_before = open_risk()
+            impact_bps, total_cost_bps = _execution_cost_bps(
+                self.config,
+                reference_price=reference,
+                filled_quantity=filled,
+                lagged_liquidity_notional=liquidity,
+            )
+            price = _adverse_price(reference, "SELL", total_cost_bps)
+            notional = filled * price
+            fee = fee_for(notional, moment) if filled > ZERO else ZERO
+            proceeds = notional - fee
+            if filled > ZERO:
+                unsettled_cash.append((
+                    _release_at_after_sessions(
+                        rows, moment, self.config.cash_settlement_sessions
+                    ),
+                    proceeds,
+                ))
+                record_notional(notional, moment)
+                fraction = filled / position.quantity
+                allocated_cost = position.entry_total_cost * fraction
+                total_exit = position.realized_exit_proceeds + proceeds
+                if filled == position.quantity:
+                    completed.append(
+                        CompletedTrade(
+                            symbol=symbol,
+                            opened_at=position.opened_at,
+                            closed_at=moment,
+                            entry_total_cost=position.original_entry_total_cost,
+                            exit_net_proceeds=total_exit,
+                            return_rate=(
+                                total_exit / position.original_entry_total_cost - ONE
+                            ),
+                            exit_reason=reason,
+                        )
+                    )
+                    del positions[symbol]
+                else:
+                    positions[symbol] = _Position(
+                        quantity=position.quantity - filled,
+                        average_entry_price=position.average_entry_price,
+                        entry_total_cost=position.entry_total_cost - allocated_cost,
+                        original_entry_total_cost=position.original_entry_total_cost,
+                        realized_exit_proceeds=total_exit,
+                        stop_price=position.stop_price,
+                        opened_at=position.opened_at,
+                    )
+            executions.append(
+                ExecutionRecord(
+                    symbol=symbol, action="SELL", reason=reason,
+                    signal_at=signal_at, executed_at=moment,
+                    reference_price=reference, execution_price=price,
+                    requested_quantity=requested, filled_quantity=filled,
+                    fee=fee,
+                    status=(
+                        "FILLED" if filled == requested and filled > ZERO else
+                        "PARTIALLY_FILLED" if filled > ZERO else "REJECTED"
+                    ),
+                    lagged_liquidity_notional=liquidity,
+                    bid_ask_half_spread_bps=self.config.bid_ask_half_spread_bps,
+                    baseline_slippage_bps=self.config.baseline_slippage_bps,
+                    latency_adverse_bps=self.config.latency_adverse_bps,
+                    liquidity_impact_bps=impact_bps,
+                    total_adverse_execution_bps=total_cost_bps,
+                )
+            )
+            sizing_decisions.append(
+                SizingDecisionTrace(
+                    symbol=symbol, action="SELL", reason=reason,
+                    signal_at=signal_at, evaluated_at=moment,
+                    portfolio_equity_before=equity_before,
+                    settled_cash_before=settled_before,
+                    unsettled_cash_before=unsettled_before,
+                    position_quantity_before=position.quantity,
+                    open_risk_before=risk_before,
+                    risk_per_share=None, risk_budget=None,
+                    risk_quantity_limit=None,
+                    liquidity_notional=liquidity,
+                    liquidity_quantity_limit=capacity,
+                    cash_quantity_limit=None,
+                    requested_quantity=requested, filled_quantity=filled,
+                    limiting_constraints=(
+                        ("LIQUIDITY_CAP",) if filled < requested
+                        else ("POSITION_QUANTITY",)
+                    ),
+                    stop_price_after=(
+                        positions[symbol].stop_price if symbol in positions else None
+                    ),
+                )
+            )
+            snapshot("POST_PORTFOLIO_SELL", moment, symbol)
+            return filled
+
+        def execute_batch(
+            intent: ExecutivePortfolioIntent,
+            signal_at: datetime,
+            bars_by_symbol: Mapping[str, MarketBar],
+            *,
+            allow_increases: bool,
+        ) -> None:
+            nonlocal cash, batch_sequence
+            batch_sequence += 1
+            moment = next(iter(bars_by_symbol.values())).open_at
+            order_age_seconds = Decimal(str((moment - signal_at).total_seconds()))
+            if order_age_seconds > self.config.maximum_order_age_minutes * Decimal("60"):
+                raise ValueError("Executive portfolio instruction exceeded maximum age")
+            if any(
+                not any(
+                    trace.intent_sha256 == intent.intent_sha256
+                    and trace.decision_at == signal_at
+                    and trace.symbol == item.symbol
+                    for trace in executive_intents
+                )
+                for item in intent.symbol_intents
+            ):
+                raise ValueError("portfolio instruction lacks its immutable intent traces")
+
+            with localcontext(ENGINE_DECIMAL_CONTEXT):
+                batch_equity = equity()
+                intent_by_symbol = {
+                    item.symbol: item for item in intent.symbol_intents
+                }
+                # Risk reductions always precede risk increases; sale proceeds
+                # remain unsettled and cannot finance same-session buys.
+                for symbol in sorted(intent_by_symbol):
+                    item = intent_by_symbol[symbol]
+                    position = positions.get(symbol)
+                    if position is None or item.action not in {"REDUCE", "EXIT"}:
+                        continue
+                    reference = bars_by_symbol[symbol].open
+                    target_quantity = (
+                        batch_equity * item.target_weight / reference
+                    ).to_integral_value(rounding=ROUND_FLOOR)
+                    requested = max(ZERO, position.quantity - target_quantity)
+                    if requested > ZERO:
+                        close_position(
+                            symbol=symbol, requested=requested,
+                            reference=reference, moment=moment,
+                            signal_at=signal_at, reason="EXECUTIVE_PORTFOLIO_TARGET",
+                        )
+
+                candidates: dict[str, dict[str, Any]] = {}
+                for symbol in sorted(intent_by_symbol):
+                    item = intent_by_symbol[symbol]
+                    if (
+                        item.action != "ENTER_LONG"
+                        or not allow_increases
+                        or symbol in protective_exit_pending
+                    ):
+                        continue
+                    reference = bars_by_symbol[symbol].open
+                    liquidity = liquidity_for(symbol)
+                    position = positions.get(symbol)
+                    current_quantity = position.quantity if position else ZERO
+                    maximum_cost_bps = (
+                        self.config.bid_ask_half_spread_bps
+                        + self.config.baseline_slippage_bps
+                        + self.config.latency_adverse_bps
+                        + self.config.liquidity_impact_bps_at_max_participation
+                    )
+                    maximum_price = _adverse_price(reference, "BUY", maximum_cost_bps)
+                    target_weight = _decimal(item.target_weight, "Executive target weight")
+                    constraints = ["EXECUTIVE_TARGET_WEIGHT"]
+                    if target_weight > self.config.maximum_position_fraction:
+                        constraints.append("HARD_POSITION_FRACTION_MAXIMUM")
+                        hard_position_rejection = True
+                    else:
+                        hard_position_rejection = False
+                    target_quantity = (
+                        batch_equity * target_weight / maximum_price
+                    ).to_integral_value(rounding=ROUND_FLOOR)
+                    requested = max(ZERO, target_quantity - current_quantity)
+                    stop = item.standing_stop
+                    if stop is None:
+                        raise ValueError(
+                            "risk-increasing portfolio intent lacks a standing stop"
+                        )
+                    proposed_stop = _decimal(
+                        stop.trigger_price, "Executive standing-stop trigger", positive=True
+                    )
+                    effective_stop = (
+                        max(position.stop_price, proposed_stop)
+                        if position is not None else proposed_stop
+                    )
+                    risk_per_share = max(ZERO, maximum_price - effective_stop)
+                    if hard_position_rejection:
+                        requested = ZERO
+                    if not eligible(symbol, moment):
+                        requested = ZERO
+                        constraints.append("UNIVERSE_INELIGIBLE_AT_EXECUTION")
+                    if risk_per_share <= ZERO or reference <= effective_stop:
+                        requested = ZERO
+                        constraints.append("STOP_ALREADY_BREACHED_AT_EXECUTION")
+                    existing_risk = (
+                        max(ZERO, position.average_entry_price - effective_stop)
+                        * position.quantity if position else ZERO
+                    )
+                    per_position_budget = max(
+                        ZERO,
+                        batch_equity * self.config.max_equity_risk_per_trade
+                        - existing_risk,
+                    )
+                    risk_limit = (
+                        per_position_budget / risk_per_share
+                    ).to_integral_value(rounding=ROUND_FLOOR) if risk_per_share > ZERO else ZERO
+                    liquidity_limit = (
+                        liquidity * self.config.maximum_lagged_volume_participation
+                        / maximum_price
+                    ).to_integral_value(rounding=ROUND_FLOOR)
+                    provisional = min(requested, risk_limit, liquidity_limit)
+                    if risk_limit < requested:
+                        constraints.append("HARD_POSITION_OPEN_RISK_MAXIMUM")
+                    if liquidity_limit < requested:
+                        constraints.append("LIQUIDITY_CAP")
+                    candidates[symbol] = {
+                        "item": item, "reference": reference,
+                        "liquidity": liquidity, "maximum_price": maximum_price,
+                        "effective_stop": effective_stop,
+                        "risk_per_share": risk_per_share,
+                        "risk_budget": per_position_budget,
+                        "risk_limit": risk_limit,
+                        "liquidity_limit": liquidity_limit,
+                        "requested": requested, "quantity": provisional,
+                        "constraints": constraints,
+                        "position_before": position,
+                    }
+
+                base_risk = open_risk()
+                aggregate_available = max(
+                    ZERO,
+                    batch_equity * self.config.maximum_aggregate_open_risk - base_risk,
+                )
+                desired_incremental_risk = sum(
+                    value["quantity"] * value["risk_per_share"]
+                    for value in candidates.values()
+                )
+                if desired_incremental_risk > aggregate_available and desired_incremental_risk > ZERO:
+                    scale = aggregate_available / desired_incremental_risk
+                    for value in candidates.values():
+                        value["quantity"] = (
+                            value["quantity"] * scale
+                        ).to_integral_value(rounding=ROUND_FLOOR)
+                        value["constraints"].append("HARD_AGGREGATE_OPEN_RISK")
+
+                def reserved_cost(value: Mapping[str, Any], quantity: Decimal) -> Decimal:
+                    if quantity <= ZERO:
+                        return ZERO
+                    notional = quantity * value["maximum_price"]
+                    return notional + fee_for(notional, moment)
+
+                requested_costs = {
+                    symbol: reserved_cost(value, value["quantity"])
+                    for symbol, value in candidates.items()
+                }
+                desired_cash = sum(requested_costs.values(), ZERO)
+                if desired_cash > cash and desired_cash > ZERO:
+                    scale = cash / desired_cash
+                    for value in candidates.values():
+                        value["quantity"] = (
+                            value["quantity"] * scale
+                        ).to_integral_value(rounding=ROUND_FLOOR)
+                        value["constraints"].append("SHARED_CASH_RESERVATION")
+                while sum(
+                    (reserved_cost(value, value["quantity"]) for value in candidates.values()),
+                    ZERO,
+                ) > cash:
+                    reducible = [
+                        symbol for symbol, value in candidates.items()
+                        if value["quantity"] > ZERO
+                    ]
+                    if not reducible:
+                        break
+                    candidates[reducible[-1]]["quantity"] -= ONE
+
+                for symbol in sorted(candidates):
+                    value = candidates[symbol]
+                    quantity = value["quantity"]
+                    reserved = reserved_cost(value, quantity)
+                    reference = value["reference"]
+                    liquidity = value["liquidity"]
+                    position = positions.get(symbol)
+                    settled_before = cash
+                    unsettled_before = unsettled_total()
+                    risk_before = open_risk()
+                    impact_bps, total_cost_bps = _execution_cost_bps(
+                        self.config,
+                        reference_price=reference,
+                        filled_quantity=quantity,
+                        lagged_liquidity_notional=liquidity,
+                    )
+                    fill_price = _adverse_price(reference, "BUY", total_cost_bps)
+                    notional = quantity * fill_price
+                    fee = fee_for(notional, moment) if quantity > ZERO else ZERO
+                    consumed = notional + fee
+                    if consumed > reserved or consumed > cash:
+                        raise ValueError("shared cash reservation was exceeded")
+                    if quantity > ZERO:
+                        cash -= consumed
+                        record_notional(notional, moment)
+                        if position is None:
+                            positions[symbol] = _Position(
+                                quantity, fill_price, consumed, consumed, ZERO,
+                                value["effective_stop"], moment,
+                            )
+                        else:
+                            combined = position.quantity + quantity
+                            positions[symbol] = _Position(
+                                combined,
+                                (
+                                    position.average_entry_price * position.quantity
+                                    + fill_price * quantity
+                                ) / combined,
+                                position.entry_total_cost + consumed,
+                                position.original_entry_total_cost + consumed,
+                                position.realized_exit_proceeds,
+                                value["effective_stop"],
+                                position.opened_at,
+                            )
+                    reservations.append(
+                        CashReservationTrace(
+                            batch_sequence=batch_sequence,
+                            decision_at=signal_at,
+                            execution_at=moment,
+                            intent_sha256=intent.intent_sha256,
+                            symbol=symbol,
+                            requested_cash=requested_costs[symbol],
+                            reserved_cash=reserved,
+                            consumed_cash=consumed,
+                            released_cash=reserved - consumed,
+                            status=(
+                                "FILLED" if quantity == value["requested"] and quantity > ZERO
+                                else "PARTIAL" if quantity > ZERO else "REJECTED"
+                            ),
+                        )
+                    )
+                    executions.append(
+                        ExecutionRecord(
+                            symbol=symbol, action="BUY",
+                            reason="EXECUTIVE_PORTFOLIO_TARGET",
+                            signal_at=signal_at, executed_at=moment,
+                            reference_price=reference, execution_price=fill_price,
+                            requested_quantity=value["requested"],
+                            filled_quantity=quantity, fee=fee,
+                            status=(
+                                "FILLED" if quantity == value["requested"] and quantity > ZERO
+                                else "PARTIALLY_FILLED_CANCELED" if quantity > ZERO
+                                else "REJECTED"
+                            ),
+                            lagged_liquidity_notional=liquidity,
+                            bid_ask_half_spread_bps=self.config.bid_ask_half_spread_bps,
+                            baseline_slippage_bps=self.config.baseline_slippage_bps,
+                            latency_adverse_bps=self.config.latency_adverse_bps,
+                            liquidity_impact_bps=impact_bps,
+                            total_adverse_execution_bps=total_cost_bps,
+                        )
+                    )
+                    sizing_decisions.append(
+                        SizingDecisionTrace(
+                            symbol=symbol, action="BUY",
+                            reason="EXECUTIVE_PORTFOLIO_TARGET",
+                            signal_at=signal_at, evaluated_at=moment,
+                            portfolio_equity_before=batch_equity,
+                            settled_cash_before=settled_before,
+                            unsettled_cash_before=unsettled_before,
+                            position_quantity_before=(
+                                position.quantity if position else ZERO
+                            ),
+                            open_risk_before=risk_before,
+                            risk_per_share=value["risk_per_share"],
+                            risk_budget=value["risk_budget"],
+                            risk_quantity_limit=value["risk_limit"],
+                            liquidity_notional=liquidity,
+                            liquidity_quantity_limit=value["liquidity_limit"],
+                            cash_quantity_limit=quantity,
+                            requested_quantity=value["requested"],
+                            filled_quantity=quantity,
+                            limiting_constraints=tuple(dict.fromkeys(value["constraints"])),
+                            stop_price_after=(
+                                positions[symbol].stop_price if symbol in positions else None
+                            ),
+                        )
+                    )
+                    snapshot("POST_PORTFOLIO_BUY", moment, symbol)
+
+        for bars_for_session in session_rows:
+            bars_by_symbol = {bar.symbol: bar for bar in bars_for_session}
+            first_bar = bars_for_session[0]
+            moment = first_bar.open_at
+            for bar in bars_for_session:
+                last_marks[bar.symbol] = bar.open
+
+            newly_settled = [
+                amount for released_at, amount in unsettled_cash
+                if released_at <= moment
+            ]
+            if newly_settled:
+                cash += sum(newly_settled, ZERO)
+                unsettled_cash[:] = [
+                    item for item in unsettled_cash if item[0] > moment
+                ]
+                snapshot("CASH_SETTLEMENT", moment, symbols[0])
+
+            for action in actions:
+                key = (action.symbol, action.effective_at, action.action_type)
+                if key in applied_actions or action.effective_at > moment:
+                    continue
+                applied_actions.add(key)
+                if action.action_type == "SPLIT":
+                    if pending_intent is not None and any(
+                        item.symbol == action.symbol
+                        and item.action in {"ENTER_LONG", "REDUCE", "EXIT"}
+                        for item in pending_intent[0].symbol_intents
+                    ):
+                        raise ValueError(
+                            "an Executive portfolio target cannot cross a split boundary"
+                        )
+                    held = positions.get(action.symbol)
+                    if held is not None:
+                        quantity = held.quantity * action.split_ratio
+                        if quantity != quantity.to_integral_value():
+                            raise ValueError(
+                                "split creates unsupported fractional simulated shares"
+                            )
+                        positions[action.symbol] = _Position(
+                            quantity,
+                            held.average_entry_price / action.split_ratio,
+                            held.entry_total_cost,
+                            held.original_entry_total_cost,
+                            held.realized_exit_proceeds,
+                            held.stop_price / action.split_ratio,
+                            held.opened_at,
+                        )
+                    histories[action.symbol][:] = [
+                        replace(
+                            prior,
+                            open=prior.open / action.split_ratio,
+                            high=prior.high / action.split_ratio,
+                            low=prior.low / action.split_ratio,
+                            close=prior.close / action.split_ratio,
+                            volume=prior.volume * action.split_ratio,
+                        )
+                        for prior in histories[action.symbol]
+                    ]
+                    snapshot("STOCK_SPLIT", moment, action.symbol)
+                else:
+                    held = positions.get(action.symbol)
+                    dividend_entitlements[key] = held.quantity if held else ZERO
+
+            for action in actions:
+                key = (action.symbol, action.effective_at, action.action_type)
+                if (
+                    action.action_type == "CASH_DIVIDEND"
+                    and key in dividend_entitlements
+                    and key not in paid_dividends
+                    and action.cash_paid_at is not None
+                    and action.cash_paid_at <= moment
+                ):
+                    cash += dividend_entitlements[key] * action.cash_per_share
+                    paid_dividends.add(key)
+                    snapshot("CASH_DIVIDEND", moment, action.symbol)
+
+            for symbol in symbols:
+                outcome = terminal_by_symbol.get(symbol)
+                if outcome is None or outcome.effective_at > moment or symbol in terminated:
+                    continue
+                terminated.add(symbol)
+                protective_exit_pending.pop(symbol, None)
+                held = positions.pop(symbol, None)
+                if held is not None:
+                    equity_before = equity() + held.quantity * last_marks[symbol]
+                    settled_before = cash
+                    unsettled_before = unsettled_total()
+                    risk_before = open_risk() + max(
+                        ZERO, held.average_entry_price - held.stop_price
+                    ) * held.quantity
+                    proceeds = held.quantity * outcome.recovery_per_share
+                    unsettled_cash.append((outcome.cash_settled_at, proceeds))
+                    completed.append(
+                        CompletedTrade(
+                            symbol, held.opened_at, outcome.effective_at,
+                            held.original_entry_total_cost,
+                            held.realized_exit_proceeds + proceeds,
+                            (
+                                held.realized_exit_proceeds + proceeds
+                            ) / held.original_entry_total_cost - ONE,
+                            outcome.terminal_type,
+                        )
+                    )
+                    executions.append(
+                        ExecutionRecord(
+                            symbol, "TERMINAL_SETTLEMENT", outcome.terminal_type,
+                            outcome.available_at, moment,
+                            outcome.recovery_per_share, outcome.recovery_per_share,
+                            held.quantity, held.quantity, ZERO, "FILLED", ZERO,
+                            ZERO, ZERO, ZERO, ZERO, ZERO,
+                        )
+                    )
+                    sizing_decisions.append(
+                        SizingDecisionTrace(
+                            symbol=symbol,
+                            action="TERMINAL_SETTLEMENT",
+                            reason=outcome.terminal_type,
+                            signal_at=outcome.available_at,
+                            evaluated_at=moment,
+                            portfolio_equity_before=equity_before,
+                            settled_cash_before=settled_before,
+                            unsettled_cash_before=unsettled_before,
+                            position_quantity_before=held.quantity,
+                            open_risk_before=risk_before,
+                            risk_per_share=None,
+                            risk_budget=None,
+                            risk_quantity_limit=None,
+                            liquidity_notional=ZERO,
+                            liquidity_quantity_limit=ZERO,
+                            cash_quantity_limit=None,
+                            requested_quantity=held.quantity,
+                            filled_quantity=held.quantity,
+                            limiting_constraints=("MANDATORY_TERMINAL_OUTCOME",),
+                            stop_price_after=None,
+                        )
+                    )
+                    snapshot("TERMINAL_SETTLEMENT", moment, symbol)
+
+            for symbol in sorted(tuple(protective_exit_pending)):
+                if symbol not in positions:
+                    protective_exit_pending.pop(symbol, None)
+                    continue
+                close_position(
+                    symbol=symbol,
+                    requested=positions[symbol].quantity,
+                    reference=bars_by_symbol[symbol].open,
+                    moment=moment,
+                    signal_at=protective_exit_pending[symbol],
+                    reason="HARD_ATR_STOP",
+                )
+                if symbol not in positions:
+                    protective_exit_pending.pop(symbol, None)
+
+            if pending_intent is not None:
+                intent, signal_at = pending_intent
+                pending_intent = None
+                if moment < end or any(
+                    item.action in {"REDUCE", "EXIT"}
+                    for item in intent.symbol_intents
+                ):
+                    execute_batch(
+                        intent,
+                        signal_at,
+                        bars_by_symbol,
+                        allow_increases=moment < end,
+                    )
+
+            if forced_exit_signal is not None and positions:
+                for symbol in sorted(tuple(positions)):
+                    if symbol in protective_exit_pending:
+                        continue
+                    close_position(
+                        symbol=symbol,
+                        requested=positions[symbol].quantity,
+                        reference=bars_by_symbol[symbol].open,
+                        moment=moment,
+                        signal_at=forced_exit_signal,
+                        reason="EVALUATION_END",
+                    )
+            if moment >= end and positions and forced_exit_signal is None:
+                forced_exit_signal = moment
+
+            for bar in bars_for_session:
+                symbol = bar.symbol
+                position = positions.get(symbol)
+                if position is not None:
+                    if bar.open <= position.stop_price:
+                        stop_reference = bar.open
+                        stop_moment = bar.open_at
+                    elif bar.low <= position.stop_price:
+                        stop_reference = position.stop_price - (
+                            (position.stop_price - bar.low)
+                            * self.config.stop_pierce_fill_fraction
+                        )
+                        stop_moment = bar.close_at
+                    else:
+                        stop_reference = None
+                        stop_moment = bar.close_at
+                    if stop_reference is not None:
+                        requested = position.quantity
+                        filled = close_position(
+                            symbol=symbol, requested=position.quantity,
+                            reference=stop_reference, moment=stop_moment,
+                            signal_at=bar.open_at, reason="HARD_ATR_STOP",
+                        )
+                        if filled < requested and symbol in positions:
+                            protective_exit_pending[symbol] = bar.open_at
+                        else:
+                            protective_exit_pending.pop(symbol, None)
+
+            for bar in bars_for_session:
+                last_marks[bar.symbol] = bar.close
+                histories[bar.symbol].append(bar)
+
+            eligible_symbols = tuple(
+                symbol for symbol in symbols
+                if eligible(symbol, first_bar.available_at)
+            )
+            if start <= first_bar.close_at < end and (
+                eligible_symbols or positions
+            ):
+                with localcontext(ENGINE_DECIMAL_CONTEXT):
+                    portfolio_equity = equity()
+                    current_weights = {
+                        symbol: (
+                            positions[symbol].quantity
+                            * bars_by_symbol[symbol].close
+                            / portfolio_equity
+                            if symbol in positions and portfolio_equity > ZERO
+                            else ZERO
+                        )
+                        for symbol in symbols
+                    }
+                intent = decider(
+                    {
+                        symbol: tuple(histories[symbol])
+                        for symbol in symbols
+                    },
+                    parameters,
+                    current_weights=current_weights,
+                    eligible_symbols=eligible_symbols,
+                )
+                if type(intent) is not ExecutivePortfolioIntent:
+                    raise ValueError(
+                        "portfolio Executive interface returned an unsupported intent"
+                    )
+                if _time(
+                    datetime.fromisoformat(intent.decision_at),
+                    "Executive portfolio decision_at",
+                ) != first_bar.available_at:
+                    raise ValueError(
+                        "Executive portfolio intent is not aligned to the session"
+                    )
+                expected_symbols = set(eligible_symbols) | set(positions)
+                actual_symbols = {item.symbol for item in intent.symbol_intents}
+                if actual_symbols != expected_symbols:
+                    raise ValueError(
+                        "Executive portfolio intent does not cover every eligible or held symbol"
+                    )
+                for item in intent.symbol_intents:
+                    if item.current_weight != current_weights[item.symbol]:
+                        raise ValueError(
+                            "Executive portfolio current weight differs from engine state"
+                        )
+                    executive_intents.append(
+                        ExecutiveIntentTrace(
+                            sequence=len(executive_intents) + 1,
+                            decision_at=first_bar.available_at,
+                            symbol=item.symbol,
+                            intent_sha256=intent.intent_sha256,
+                            risk_envelope_sha256=intent.risk_envelope_sha256,
+                            action=item.action,
+                            current_weight=item.current_weight,
+                            target_weight=item.target_weight,
+                            reason_codes=item.reason_codes,
+                        )
+                    )
+                if any(
+                    item.action in {"ENTER_LONG", "REDUCE", "EXIT"}
+                    for item in intent.symbol_intents
+                ):
+                    pending_intent = (intent, first_bar.available_at)
+
+            if start <= first_bar.close_at <= end:
+                equity_curve.append((first_bar.close_at, equity()))
+                for symbol in symbols:
+                    snapshot("SESSION_CLOSE", first_bar.close_at, symbol)
+
+        completion_validator = getattr(
+            strategy_instance, "validate_replay_completion", None
+        )
+        if completion_validator is not None:
+            if not callable(completion_validator):
+                raise ValueError("strategy replay-completion validator is invalid")
+            completion_validator()
+        if positions:
+            raise ValueError(
+                "portfolio evaluation lacks a next-session liquidity-capped exit"
+            )
+        if not equity_curve:
+            raise ValueError("evaluation window contains no completed sessions")
+
+        diagnostics_reader = getattr(strategy_instance, "diagnostics", None)
+        if diagnostics_reader is not None:
+            diagnostics = diagnostics_reader()
+            if not isinstance(diagnostics, Mapping) or any(
+                not isinstance(name, str)
+                or not name.strip()
+                or type(value) is not int
+                or value < 0
+                for name, value in diagnostics.items()
+            ):
+                raise ValueError("strategy diagnostics are invalid")
+            self.last_strategy_diagnostics = dict(sorted(diagnostics.items()))
+
+        ending = cash + unsettled_total()
+        curve_values = [
+            self.config.initial_cash,
+            *[item[1] for item in equity_curve],
+            ending,
+        ]
+        engine_config_canonical_json = canonical_engine_configuration(
+            self.config, self.fee_schedule
+        )
+        engine_config_hash = hashlib.sha256(
+            engine_config_canonical_json.encode("utf-8")
+        ).hexdigest()
+        return BacktestResult(
+            strategy_version=str(strategy_instance.version),
+            parameter_hash=strategy_parameter_hash(parameters),
+            source_id=self.data_attestation.source_id,
+            validation_receipt_sha256=self.data_attestation.validation_receipt_sha256,
+            fee_schedule_id=self.fee_schedule.schedule_id,
+            execution_scenario=self.config.execution_scenario,
+            starting_equity=self.config.initial_cash,
+            ending_equity=ending,
+            total_return=ending / self.config.initial_cash - ONE,
+            maximum_drawdown=_drawdown(curve_values),
+            executions=tuple(executions),
+            completed_trades=tuple(completed),
+            equity_curve=tuple(equity_curve),
+            sizing_decisions=tuple(sizing_decisions),
+            portfolio_states=tuple(portfolio_states),
+            evaluation_start=start,
+            evaluation_end=end,
+            source_content_sha256=self.data_attestation.source_content_sha256,
+            evidence_role_hashes=self.data_attestation.evidence_role_hashes,
+            engine_policy_version=ENGINE_POLICY_VERSION,
+            engine_config_sha256=engine_config_hash,
+            engine_config_canonical_json=engine_config_canonical_json,
+            strategy_entrypoint=strategy_entrypoint,
+            strategy_source_sha256=strategy_source_sha256,
+            executive_intents=tuple(executive_intents),
+            cash_reservations=tuple(reservations),
         )
 
     def run_base_and_pessimistic(self, **inputs: Any) -> Mapping[str, BacktestResult]:

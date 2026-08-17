@@ -32,17 +32,22 @@ from core.orchestration.replay_backtest_inputs import load_authenticated_backtes
 
 _LEGACY_ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v2"
 _POSITION_CAP_ENGINE_POLICY_VERSION = "causal-single-instrument-guardrailed-backtest-v3"
+_PORTFOLIO_ENGINE_POLICY_VERSION = "causal-portfolio-guardrailed-backtest-v4"
 _SUPPORTED_ENGINE_POLICY_VERSIONS = frozenset(
-    {_LEGACY_ENGINE_POLICY_VERSION, _POSITION_CAP_ENGINE_POLICY_VERSION}
+    {
+        _LEGACY_ENGINE_POLICY_VERSION,
+        _POSITION_CAP_ENGINE_POLICY_VERSION,
+        _PORTFOLIO_ENGINE_POLICY_VERSION,
+    }
 )
-if ENGINE_POLICY_VERSION != _POSITION_CAP_ENGINE_POLICY_VERSION:
+if ENGINE_POLICY_VERSION != _PORTFOLIO_ENGINE_POLICY_VERSION:
     raise RuntimeError(
         "replay audit must be updated explicitly for the current engine policy"
     )
 
 
-SCHEMA_VERSION = "1.2"
-POLICY_VERSION = "authenticated-replay-run-audit-v3"
+SCHEMA_VERSION = "1.3"
+POLICY_VERSION = "authenticated-replay-run-audit-v4"
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 GIT_REVISION = re.compile(r"^[0-9a-f]{40}(?:[0-9a-f]{24})?$")
@@ -182,6 +187,8 @@ def _result_payload(result: BacktestResult) -> dict[str, Any]:
         "equity_curve": [list(item) for item in result.equity_curve],
         "sizing_decisions": [asdict(item) for item in result.sizing_decisions],
         "portfolio_states": [asdict(item) for item in result.portfolio_states],
+        "executive_intents": [asdict(item) for item in result.executive_intents],
+        "cash_reservations": [asdict(item) for item in result.cash_reservations],
         "no_lookahead_contract_enforced": True,
         "mechanical_simulation_only": True,
         **{field: False for field in FIXED_FALSE},
@@ -511,6 +518,7 @@ def _result_payload_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
         "evaluation_start", "evaluation_end", "starting_equity", "ending_equity",
         "total_return", "maximum_drawdown", "executions", "completed_trades",
         "equity_curve", "sizing_decisions", "portfolio_states",
+        "executive_intents", "cash_reservations",
         "no_lookahead_contract_enforced", "mechanical_simulation_only", *FIXED_FALSE,
         *STRATEGY_BINDING_FIELDS,
         *EXECUTION_BINDING_FIELDS,
@@ -591,7 +599,14 @@ def _result_payload_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
     states = record["portfolio_states"]
     completed = record["completed_trades"]
     curve = record["equity_curve"]
-    if not all(isinstance(value, list) for value in (executions, sizing, states, completed, curve)):
+    intents = record["executive_intents"]
+    reservations = record["cash_reservations"]
+    if not all(
+        isinstance(value, list)
+        for value in (
+            executions, sizing, states, completed, curve, intents, reservations
+        )
+    ):
         raise ValueError("replay-run trace collections changed type")
     for item in executions:
         _validate_execution(item)
@@ -627,6 +642,83 @@ def _result_payload_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
         prior_state_time = moment
     if _finite_decimal(states[-1]["equity"], "final state equity", non_negative=True) != ending:
         raise ValueError("final portfolio state does not reconcile to ending equity")
+    intent_sequences = [item.get("sequence") for item in intents]
+    if intent_sequences != list(range(1, len(intent_sequences) + 1)):
+        raise ValueError("Executive intent sequence changed")
+    intent_keys: set[tuple[str, str, str]] = set()
+    for item in intents:
+        if set(item) != {
+            "sequence", "decision_at", "symbol", "intent_sha256",
+            "risk_envelope_sha256", "action", "current_weight",
+            "target_weight", "reason_codes",
+        }:
+            raise ValueError("Executive intent trace structure changed")
+        decision_at = _time(item["decision_at"])
+        symbol = _required(item["symbol"], "Executive intent symbol", 32)
+        intent_sha256 = _hash(item["intent_sha256"], "intent_sha256")
+        _hash(item["risk_envelope_sha256"], "risk_envelope_sha256")
+        if item["action"] not in {"CASH", "HOLD", "ENTER_LONG", "REDUCE", "EXIT"}:
+            raise ValueError("Executive intent action changed")
+        current_weight = _finite_decimal(
+            item["current_weight"], "Executive current_weight", non_negative=True
+        )
+        target_weight = _finite_decimal(
+            item["target_weight"], "Executive target_weight", non_negative=True
+        )
+        if current_weight > Decimal("1") or target_weight > Decimal("1"):
+            raise ValueError("Executive intent weight exceeds 100%")
+        if not isinstance(item["reason_codes"], list) or not item["reason_codes"]:
+            raise ValueError("Executive intent reasons changed")
+        key = (decision_at.isoformat(), symbol, intent_sha256)
+        if key in intent_keys:
+            raise ValueError("Executive intent trace is duplicated")
+        intent_keys.add(key)
+    prior_reservation_key: tuple[int, str] | None = None
+    reservation_keys: set[tuple[str, str, str, str]] = set()
+    for item in reservations:
+        if set(item) != {
+            "batch_sequence", "decision_at", "execution_at", "intent_sha256",
+            "symbol", "requested_cash", "reserved_cash", "consumed_cash",
+            "released_cash", "status",
+        }:
+            raise ValueError("cash reservation trace structure changed")
+        batch = item["batch_sequence"]
+        symbol = _required(item["symbol"], "cash reservation symbol", 32)
+        if type(batch) is not int or batch < 1:
+            raise ValueError("cash reservation batch sequence changed")
+        order_key = (batch, symbol)
+        if prior_reservation_key is not None and order_key <= prior_reservation_key:
+            raise ValueError("cash reservations are not canonically ordered")
+        prior_reservation_key = order_key
+        decision_at = _time(item["decision_at"])
+        execution_at = _time(item["execution_at"])
+        if execution_at <= decision_at:
+            raise ValueError("cash reservation does not execute after its decision")
+        intent_sha256 = _hash(item["intent_sha256"], "reservation intent_sha256")
+        requested = _finite_decimal(
+            item["requested_cash"], "requested_cash", non_negative=True
+        )
+        reserved = _finite_decimal(
+            item["reserved_cash"], "reserved_cash", non_negative=True
+        )
+        consumed = _finite_decimal(
+            item["consumed_cash"], "consumed_cash", non_negative=True
+        )
+        released = _finite_decimal(
+            item["released_cash"], "released_cash", non_negative=True
+        )
+        if reserved > requested or consumed + released != reserved:
+            raise ValueError("cash reservation no longer reconciles")
+        if item["status"] not in {"FILLED", "PARTIAL", "REJECTED"}:
+            raise ValueError("cash reservation status changed")
+        if (decision_at.isoformat(), symbol, intent_sha256) not in intent_keys:
+            raise ValueError("cash reservation lacks its Executive intent trace")
+        reservation_key = (
+            decision_at.isoformat(), execution_at.isoformat(), symbol, intent_sha256
+        )
+        if reservation_key in reservation_keys:
+            raise ValueError("cash reservation trace is duplicated")
+        reservation_keys.add(reservation_key)
     return {key: record[key] for key in required}
 
 
@@ -701,7 +793,10 @@ def _validate_engine_execution_economics(
         config.get("maximum_lagged_volume_participation"),
         "maximum_lagged_volume_participation", positive=True,
     )
-    if engine["engine_policy_version"] == _POSITION_CAP_ENGINE_POLICY_VERSION:
+    if engine["engine_policy_version"] in {
+        _POSITION_CAP_ENGINE_POLICY_VERSION,
+        _PORTFOLIO_ENGINE_POLICY_VERSION,
+    }:
         maximum_position_fraction = _finite_decimal(
             config.get("maximum_position_fraction"),
             "maximum_position_fraction",
@@ -840,6 +935,10 @@ def _validate_sizing(value: Any, engine: Mapping[str, Any]) -> None:
         "POSITION_FRACTION_CAP",
         "UNIVERSE_INELIGIBLE_AT_EXECUTION", "NO_POSITIVE_ATR_RISK_DISTANCE",
         "MANDATORY_TERMINAL_OUTCOME",
+        "EXECUTIVE_TARGET_WEIGHT", "HARD_POSITION_FRACTION_MAXIMUM",
+        "STOP_ALREADY_BREACHED_AT_EXECUTION",
+        "HARD_POSITION_OPEN_RISK_MAXIMUM", "HARD_AGGREGATE_OPEN_RISK",
+        "SHARED_CASH_RESERVATION",
     }
     if (
         not isinstance(constraints, list)
@@ -884,24 +983,38 @@ def _validate_sizing(value: Any, engine: Mapping[str, Any]) -> None:
         ):
             raise ValueError("universe-ineligible rejected buy sizing changed")
     elif action == "BUY" and item["risk_budget"] is not None:
-        risk_per_share = _finite_decimal(item["risk_per_share"], "risk_per_share", positive=True)
+        portfolio_buy = (
+            engine.get("engine_policy_version") == _PORTFOLIO_ENGINE_POLICY_VERSION
+            and item["reason"] == "EXECUTIVE_PORTFOLIO_TARGET"
+        )
+        risk_per_share = _finite_decimal(
+            item["risk_per_share"], "risk_per_share",
+            non_negative=portfolio_buy, positive=not portfolio_buy,
+        )
         risk_budget = _finite_decimal(item["risk_budget"], "risk_budget", non_negative=True)
         risk_limit = _finite_decimal(item["risk_quantity_limit"], "risk_quantity_limit")
         cash_limit = _finite_decimal(item["cash_quantity_limit"], "cash_quantity_limit")
-        if risk_limit != (risk_budget / risk_per_share).to_integral_value(rounding=ROUND_FLOOR):
+        if risk_per_share > 0 and risk_limit != (
+            risk_budget / risk_per_share
+        ).to_integral_value(rounding=ROUND_FLOOR):
             raise ValueError("risk quantity no longer reconciles to budget and ATR distance")
-        position_cap_active = (
-            engine.get("engine_policy_version")
-            == _POSITION_CAP_ENGINE_POLICY_VERSION
-        )
-        if position_cap_active:
+        if risk_per_share == 0 and risk_limit != 0:
+            raise ValueError("zero risk distance has a positive risk quantity limit")
+        position_cap_active = engine.get("engine_policy_version") in {
+            _POSITION_CAP_ENGINE_POLICY_VERSION,
+            _PORTFOLIO_ENGINE_POLICY_VERSION,
+        }
+        if portfolio_buy:
+            if filled != min(requested, risk_limit, liquidity_limit, cash_limit):
+                raise ValueError("portfolio buy sizing limits no longer reconcile")
+        elif position_cap_active:
             if requested > risk_limit:
                 raise ValueError("buy request exceeds its risk quantity limit")
             if requested < risk_limit and "POSITION_FRACTION_CAP" not in constraints:
                 raise ValueError("reduced buy request lacks its position-fraction constraint")
         elif requested != risk_limit:
             raise ValueError("legacy buy request no longer matches its risk limit")
-        if filled != min(requested, liquidity_limit, cash_limit):
+        if not portfolio_buy and filled != min(requested, liquidity_limit, cash_limit):
             raise ValueError("buy sizing limits no longer reconcile")
     elif action == "BUY" and requested > 0:
         raise ValueError("positive buy request lacks its complete risk sizing inputs")
@@ -935,9 +1048,16 @@ def _match_executions_and_sizing(
         execution = execution_by_key[key(trace, True)]
         if (
             trace["action"] == "BUY"
-            and engine.get("engine_policy_version")
-            == _POSITION_CAP_ENGINE_POLICY_VERSION
+            and engine.get("engine_policy_version") in {
+                _POSITION_CAP_ENGINE_POLICY_VERSION,
+                _PORTFOLIO_ENGINE_POLICY_VERSION,
+            }
         ):
+            portfolio_buy = (
+                engine.get("engine_policy_version")
+                == _PORTFOLIO_ENGINE_POLICY_VERSION
+                and trace["reason"] == "EXECUTIVE_PORTFOLIO_TARGET"
+            )
             config = engine["config"]
             fraction = _finite_decimal(
                 config.get("maximum_position_fraction"),
@@ -976,7 +1096,10 @@ def _match_executions_and_sizing(
             requested = _finite_decimal(
                 trace["requested_quantity"], "requested_quantity", non_negative=True
             )
-            if requested != min(risk_limit, expected_position_limit):
+            if (
+                not portfolio_buy
+                and requested != min(risk_limit, expected_position_limit)
+            ):
                 raise ValueError("buy request no longer reconciles to its position-fraction cap")
             filled = _finite_decimal(
                 trace["filled_quantity"], "filled_quantity", non_negative=True
@@ -990,9 +1113,34 @@ def _match_executions_and_sizing(
             risk_per_share = _finite_decimal(
                 trace["risk_per_share"], "risk_per_share", positive=True
             )
-            expected_stop = _finite_decimal(
-                execution["execution_price"], "execution_price"
-            ) - risk_per_share
+            if (
+                engine.get("engine_policy_version")
+                == _PORTFOLIO_ENGINE_POLICY_VERSION
+                and trace["reason"] == "EXECUTIVE_PORTFOLIO_TARGET"
+            ):
+                config = engine["config"]
+                reference = _finite_decimal(
+                    execution["reference_price"], "reference_price", positive=True
+                )
+                maximum_cost_bps = sum(
+                    (
+                        _finite_decimal(config.get(name), name, non_negative=True)
+                        for name in (
+                            "bid_ask_half_spread_bps",
+                            "baseline_slippage_bps",
+                            "latency_adverse_bps",
+                            "liquidity_impact_bps_at_max_participation",
+                        )
+                    ),
+                    Decimal("0"),
+                )
+                expected_stop = reference * (
+                    Decimal("1") + maximum_cost_bps / Decimal("10000")
+                ) - risk_per_share
+            else:
+                expected_stop = _finite_decimal(
+                    execution["execution_price"], "execution_price"
+                ) - risk_per_share
             if _finite_decimal(trace["stop_price_after"], "stop_price_after") != expected_stop:
                 raise ValueError("post-fill stop no longer reconciles to execution and ATR risk")
 

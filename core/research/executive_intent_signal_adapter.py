@@ -27,7 +27,7 @@ from core.research.specialist_signals import (
 )
 
 
-POLICY_VERSION = "train-only-executive-intent-adapter-v1"
+POLICY_VERSION = "train-only-executive-portfolio-adapter-v2"
 TECHNICAL_VERSION = ExecutiveAggregatorBot.SPECIALIST_VERSIONS["TECHNICAL"]
 
 
@@ -76,8 +76,8 @@ def executive_intent_signal_parameters() -> dict[str, Any]:
         ),
         "conviction_to_gross": str(ExecutiveAggregatorBot.CONVICTION_TO_GROSS),
         "standing_stop": "current unadjusted close minus 2 * admitted ATR-14",
-        "bounded_single_instrument_engine_bridge": True,
-        "portfolio_wide_batching_complete": False,
+        "bounded_single_instrument_engine_bridge": False,
+        "portfolio_wide_batching_complete": True,
         "research_only": True,
         "promotable": False,
         "parameter_search_allowed": False,
@@ -85,11 +85,7 @@ def executive_intent_signal_parameters() -> dict[str, Any]:
 
 
 class ExecutiveIntentSignalAdapter:
-    """Create one complete Executive intent for the engine's bounded symbol run.
-
-    This bridge deliberately remains TRAIN-only and non-promotable until the
-    authoritative engine supports simultaneous portfolio-wide order batching.
-    """
+    """Create one complete TRAIN-only Executive intent for the whole portfolio."""
 
     version = POLICY_VERSION
 
@@ -317,62 +313,115 @@ class ExecutiveIntentSignalAdapter:
         current_weight: Decimal,
         eligible: bool,
     ) -> ExecutivePortfolioIntent:
-        self._validate_parameters(parameters)
-        if not history_through_signal_close:
-            raise ValueError("strategy history is empty")
-        current = history_through_signal_close[-1]
-        if current.symbol != symbol or symbol not in SYMBOLS:
-            raise ValueError("strategy history differs from the campaign symbol")
-        record = self.consumer.consume_if_available(
-            symbol,
-            effective_at=current.close_at,
-            decision_at=current.available_at,
+        return self.decide_portfolio_batch(
+            {symbol: tuple(history_through_signal_close)},
+            parameters,
+            current_weights={symbol: Decimal(current_weight)},
+            eligible_symbols=(symbol,) if eligible else (),
         )
-        admitted_atr = (
-            Decimal(record.values["atr_14"]) if record is not None else None
+
+    def decide_portfolio_batch(
+        self,
+        histories_through_signal_close: Mapping[
+            str, Sequence[MarketBar]
+        ],
+        parameters: Mapping[str, Any],
+        *,
+        current_weights: Mapping[str, Decimal],
+        eligible_symbols: Sequence[str],
+    ) -> ExecutivePortfolioIntent:
+        self._validate_parameters(parameters)
+        if not histories_through_signal_close:
+            raise ValueError("strategy portfolio history is empty")
+        histories = {
+            symbol.strip().upper(): tuple(history)
+            for symbol, history in histories_through_signal_close.items()
+        }
+        if any(
+            symbol not in SYMBOLS
+            or not history
+            or any(bar.symbol != symbol for bar in history)
+            for symbol, history in histories.items()
+        ):
+            raise ValueError("portfolio history differs from the campaign symbols")
+        clocks = {
+            (history[-1].close_at, history[-1].available_at)
+            for history in histories.values()
+        }
+        if len(clocks) != 1:
+            raise ValueError("portfolio histories are not decision-time aligned")
+        current_by_symbol = {
+            symbol: history[-1] for symbol, history in histories.items()
+        }
+        current = current_by_symbol[sorted(current_by_symbol)[0]]
+        records = {
+            symbol: self.consumer.consume_if_available(
+                symbol,
+                effective_at=bar.close_at,
+                decision_at=bar.available_at,
+            )
+            for symbol, bar in current_by_symbol.items()
+        }
+        risk_symbol = "SPY" if "SPY" in histories else sorted(histories)[0]
+        risk_record = records[risk_symbol]
+        admitted_risk_atr = (
+            Decimal(risk_record.values["atr_14"])
+            if risk_record is not None else None
         )
         force_liquidation = current.close_at >= self.liquidation_signal_at
         risk = self._risk_envelope(
-            symbol,
-            history_through_signal_close,
-            admitted_atr=admitted_atr,
+            risk_symbol,
+            histories[risk_symbol],
+            admitted_atr=admitted_risk_atr,
             parameters=parameters,
             force_liquidation=force_liquidation,
         )
         signals = {
             symbol: {
-                "TECHNICAL": self._technical_signal(symbol, current),
+                "TECHNICAL": self._technical_signal(
+                    symbol, current_by_symbol[symbol]
+                ),
                 "SEC_FORM4_INSIDER": self._insider_signal(
-                    symbol, current.available_at
+                    symbol, current_by_symbol[symbol].available_at
                 ),
             }
+            for symbol in histories
         }
         stops: dict[str, StandingStopInstruction] = {}
-        if admitted_atr is not None:
-            stop_price = current.close - Decimal("2") * admitted_atr
+        for symbol, record in records.items():
+            if record is None:
+                continue
+            admitted_atr = Decimal(record.values["atr_14"])
+            bar = current_by_symbol[symbol]
+            stop_price = bar.close - Decimal("2") * admitted_atr
             if stop_price > 0:
                 stops[symbol] = StandingStopInstruction(
-                    reference_price=current.close,
+                    reference_price=bar.close,
                     trigger_rule=f"LAST_PRICE_LTE_{_decimal_text(stop_price)}",
                     order_type="STOP_MARKET",
                     evidence_sha256=_hash(
-                        [record.record_sha256, current.available_at.isoformat()]
+                        [record.record_sha256, bar.available_at.isoformat()]
                     ),
                 )
         intent = self.executive.decide(
             signals,
             risk=risk,
-            current_weights={symbol: Decimal(current_weight)},
-            eligible_symbols=(symbol,) if eligible else (),
+            current_weights={
+                symbol: Decimal(weight)
+                for symbol, weight in current_weights.items()
+            },
+            eligible_symbols=tuple(sorted(set(eligible_symbols))),
             standing_stops=stops,
             decision_at=current.available_at,
         )
         self._intent_count += 1
-        symbol_intent = intent.symbol_intents[0]
-        if symbol_intent.action == "ENTER_LONG":
-            self._entry_count += 1
+        self._entry_count += sum(
+            item.action == "ENTER_LONG" for item in intent.symbol_intents
+        )
         if risk.regime == "RISK_OFF":
-            self._risk_off_count += 1
-        if "NO_QUORUM" in symbol_intent.reason_codes:
-            self._no_quorum_count += 1
+            self._risk_off_count += len(intent.symbol_intents)
+        self._no_quorum_count += sum(
+            "NO_QUORUM" in item.reason_codes
+            for item in intent.symbol_intents
+        )
         return intent
