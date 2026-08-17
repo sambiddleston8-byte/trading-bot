@@ -48,6 +48,8 @@ def build(
     pending_sell_quantity="3",
     policy_changes=None,
 ):
+    global BASE_NOW
+    BASE_NOW = datetime.now(timezone.utc).replace(microsecond=0)
     account_ledger = PaperBrokerAccountSnapshotLedger(tmp_path / "account.jsonl")
     account = account_ledger.record(
         broker="Alpaca",
