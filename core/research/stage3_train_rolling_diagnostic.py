@@ -287,6 +287,7 @@ def _evaluate_train_rolling(
         [Mapping[str, Any]], Mapping[str, str]
     ]
     | None = None,
+    result_validator: Callable[[str, str, BacktestResult], None] | None = None,
 ) -> dict[str, Any]:
     stage2 = repository_root / ROOT / "stage2"
     qualification_bytes = (stage2 / "qualification_report.json").read_bytes()
@@ -496,6 +497,8 @@ def _evaluate_train_rolling(
                         evaluation_start=evaluation_start,
                         evaluation_end=evaluation_end,
                     )
+                    if result_validator is not None:
+                        result_validator(policy_name, symbol, result)
                     _assert_flat_and_settled(
                         result, evaluation_end=evaluation_end
                     )
