@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 import json
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from core.guardrailed_backtest import (
     BacktestResult,
@@ -278,6 +278,15 @@ def _evaluate_train_rolling(
     observe_policy_divergence: bool,
     artifact_lineage: Mapping[str, Any] | None,
     report_metadata: Mapping[str, Any] | None = None,
+    strategy_factory: Callable[
+        [type[DeterministicSignalAdapter], PITFeatureConsumer, str],
+        DeterministicSignalAdapter,
+    ]
+    | None = None,
+    aggregate_metrics_augmenter: Callable[
+        [Mapping[str, Any]], Mapping[str, str]
+    ]
+    | None = None,
 ) -> dict[str, Any]:
     stage2 = repository_root / ROOT / "stage2"
     qualification_bytes = (stage2 / "qualification_report.json").read_bytes()
@@ -454,10 +463,20 @@ def _evaluate_train_rolling(
                             receipt_sha256=qualification["qualification_sha256"],
                         ),
                     )
-                    strategy = adapter_type(
-                        consumer,
-                        liquidation_signal_at=liquidation_signal_at,
+                    strategy = (
+                        strategy_factory(
+                            adapter_type, consumer, liquidation_signal_at
+                        )
+                        if strategy_factory is not None
+                        else adapter_type(
+                            consumer,
+                            liquidation_signal_at=liquidation_signal_at,
+                        )
                     )
+                    if type(strategy) is not adapter_type:
+                        raise ValueError(
+                            "strategy factory returned a type outside its fixed policy"
+                        )
                     result = engine.run(
                         bars=bars,
                         universe_events=(
@@ -523,10 +542,20 @@ def _evaluate_train_rolling(
                     (fold_id, results, composite)
                 )
             policy_report["folds"].append(fold_report)
-        policy_report["aggregate"] = {
-            scenario: _aggregate_folds(runtime[policy_name][scenario])
-            for scenario in ("BASE", "PESSIMISTIC")
-        }
+        policy_report["aggregate"] = {}
+        for scenario in ("BASE", "PESSIMISTIC"):
+            aggregate = _aggregate_folds(runtime[policy_name][scenario])
+            if aggregate_metrics_augmenter is not None:
+                additions = dict(aggregate_metrics_augmenter(aggregate))
+                if not additions or any(
+                    not isinstance(key, str)
+                    or not isinstance(value, str)
+                    or key in aggregate
+                    for key, value in additions.items()
+                ):
+                    raise ValueError("aggregate metric additions are invalid or conflicting")
+                aggregate.update(additions)
+            policy_report["aggregate"][scenario] = aggregate
         report["policies"][policy_name] = policy_report
 
     if observe_policy_divergence:

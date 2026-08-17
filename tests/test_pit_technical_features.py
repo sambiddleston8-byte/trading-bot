@@ -19,6 +19,12 @@ from scripts.run_stage3_train_market_breadth_evaluation import _summary
 from core.research.stage4_train_volatility_evaluation import (
     evaluate_train_volatility_risk_off,
 )
+from core.research.sec_form4_insider_specialist import SCHEMA_VERSION as FORM4_SCHEMA_VERSION
+from core.research.sec_form4_insider_specialist import OFFICIAL_SOURCE_URLS
+from core.research.stage4_train_insider_ensemble_evaluation import (
+    FORM4_ARTIFACT,
+    evaluate_train_insider_ensemble,
+)
 from core.research.pit_feature_signal_adapter import VolatilityRiskOffSignalAdapter
 from scripts.run_stage4_train_volatility_evaluation import (
     _summary as stage4_summary,
@@ -423,6 +429,105 @@ def test_stage4_volatility_risk_off_evaluation_is_train_only_and_deterministic(t
         "status","evaluation_sha256","artifact_sha256","artifact_path"
     }
     assert "policies" not in public
+
+
+def test_stage4_form4_ensemble_executes_train_only_with_local_cagr(tmp_path):
+    environment(tmp_path);build(tmp_path)
+    matrix_path=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    pin=json.loads(matrix_path.read_text())["matrix_sha256"]
+    form4={
+        "schema_version":FORM4_SCHEMA_VERSION,
+        "partition_role":"TRAIN",
+        "window":{"start":"2024-10-01","end":"2025-02-28"},
+        "symbols":["AAPL","MSFT","SPY"],
+        "source_capture":{
+            name:{"url":url,"sha256":hashlib.sha256(name.encode()).hexdigest()}
+            for name,url in OFFICIAL_SOURCE_URLS.items()
+        },
+        "records":[],
+        "reported_at_equals_available_at":True,
+        "available_at_semantics":"EXACT_SEC_EDGAR_ACCEPTANCE_DATETIME",
+        "validation_data_read":False,
+        "untouched_test_included":False,
+    }
+    accession="0000320193-24-000999"
+    record={
+        "observation_id":"FORM4-"+hashlib.sha256(accession.encode()).hexdigest()[:32].upper(),
+        "accession_number":accession,
+        "symbol":"AAPL",
+        "owner_id_sha256":hashlib.sha256(b"public-owner-cik").hexdigest(),
+        "direction":"SELL",
+        "role_category":"SENIOR_EXECUTIVE",
+        "role_weight":"1.5",
+        "effective_at":"2024-12-01T00:00:00+00:00",
+        "reported_at":"2024-12-02T20:00:00+00:00",
+        "available_at":"2024-12-02T20:00:00+00:00",
+        "retrieved_at":"2026-08-17T08:00:00+00:00",
+        "observation_cutoff_at":"2024-12-02T20:00:00+00:00",
+        "revision":1,
+        "prior_revision_sha256":None,
+        "provenance":{
+            "quarter":"2024Q4",
+            "quarter_source_sha256":form4["source_capture"]["2024Q4"]["sha256"],
+            "issuer_submissions_sha256":form4["source_capture"]["AAPL"]["sha256"],
+            "acceptance_field":"filings.recent.acceptanceDateTime",
+            "transaction_scope":"NONDERIV_TRANS code P/S only",
+            "role_taxonomy_version":"whole-token-executive-role-v2",
+        },
+    }
+    record["record_sha256"]=hashlib.sha256(canonical(record)).hexdigest()
+    form4["records"]=[record]
+    form4["artifact_sha256"]=hashlib.sha256(canonical(form4)).hexdigest()
+    form4_path=tmp_path/FORM4_ARTIFACT
+    form4_path.parent.mkdir(parents=True,exist_ok=True)
+    form4_path.write_bytes(canonical(form4)+b"\n")
+    (tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/validation_matrix.json").unlink()
+    (tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/validation.json").unlink()
+    sealed_test=tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/test.json"
+    sealed_test.write_text("sealed TEST must not be read")
+    report=evaluate_train_insider_ensemble(
+        tmp_path,
+        admitted_train_matrix_sha256=pin,
+        expected_form4_artifact_sha256=form4["artifact_sha256"],
+    )
+    assert report["status"]=="TRAIN_ONLY_FORM4_ENSEMBLE_EVALUATION_COMPLETE"
+    assert report["source_partition"]=="TRAIN"
+    assert report["validation_data_read"] is False
+    assert report["untouched_test_included"] is False
+    assert report["promotion_allowed"] is False
+    assert report["evaluation_metadata"]["form4_role_taxonomy"]==(
+        "whole-token-executive-role-v2"
+    )
+    assert report["evaluation_metadata"]["form4_role_weights_precomputed_in_artifact"] is True
+    assert set(report["policies"])=={
+        "PRIOR_VOLATILITY_RISK_OFF","TECHNICAL_RISK_INSIDER_ENSEMBLE"
+    }
+    for policy in report["policies"].values():
+        for aggregate in policy["aggregate"].values():
+            assert Decimal(aggregate["annualized_session_cagr"]).is_finite()
+            assert len(aggregate["trade_log"])==aggregate["completed_trade_count"]
+    diagnostics=[
+        values
+        for fold in report["policies"]["TECHNICAL_RISK_INSIDER_ENSEMBLE"]["folds"]
+        for values in fold["scenarios"]["BASE"]["strategy_diagnostics"].values()
+    ]
+    assert sum(value["insider_veto_suppressions"] for value in diagnostics)>0
+    prior=report["policies"]["PRIOR_VOLATILITY_RISK_OFF"]["aggregate"]["BASE"]
+    ensemble=report["policies"]["TECHNICAL_RISK_INSIDER_ENSEMBLE"]["aggregate"]["BASE"]
+    assert ensemble["completed_trade_count"]<prior["completed_trade_count"]
+    hashed_material=json.loads(json.dumps(report))
+    evaluation_sha=hashed_material.pop("evaluation_sha256")
+    hashed_material.pop("artifact_sha256")
+    assert hashlib.sha256(canonical(hashed_material)).hexdigest()==evaluation_sha
+    hashed_material["policies"]["TECHNICAL_RISK_INSIDER_ENSEMBLE"]["aggregate"]["BASE"]["annualized_session_cagr"]="0"
+    assert hashlib.sha256(canonical(hashed_material)).hexdigest()!=evaluation_sha
+    assert sealed_test.read_text()=="sealed TEST must not be read"
+    repeated=evaluate_train_insider_ensemble(
+        tmp_path,
+        admitted_train_matrix_sha256=pin,
+        expected_form4_artifact_sha256=form4["artifact_sha256"],
+    )
+    assert repeated["evaluation_sha256"]==report["evaluation_sha256"]
 
 
 @pytest.mark.parametrize("action_type",("SPLIT","STOCK_SPLIT","SPIN_OFF","UNKNOWN"))
