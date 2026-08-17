@@ -26,7 +26,7 @@ from core.research.sec_form4_insider_specialist import (
     normalize_form4_train_sources,
 )
 from core.research.specialist_signals import (
-    ExecutiveAggregatorBot,
+    LegacyResearchWeightedAggregatorBot,
     SpecialistSignal,
 )
 
@@ -288,7 +288,7 @@ def test_legacy_admitted_schema_cannot_claim_v2_role_taxonomy():
 def _signal(name, score):
     return SpecialistSignal(
         specialist_id=name,
-        specialist_version=ExecutiveAggregatorBot.SPECIALIST_VERSIONS[name],
+        specialist_version=LegacyResearchWeightedAggregatorBot.SPECIALIST_VERSIONS[name],
         symbol="AAPL",
         decision_at="2025-01-15T21:01:00+00:00",
         score=Decimal(score),
@@ -299,7 +299,7 @@ def _signal(name, score):
 
 
 def test_executive_aggregator_requires_isolated_aligned_bounded_signals():
-    result = ExecutiveAggregatorBot().aggregate(
+    result = LegacyResearchWeightedAggregatorBot().aggregate(
         {
             "TECHNICAL": _signal("TECHNICAL", "1"),
             "RISK_REGIME": _signal("RISK_REGIME", "1"),
@@ -308,12 +308,16 @@ def test_executive_aggregator_requires_isolated_aligned_bounded_signals():
         decision_at="2025-01-15T21:01:00+00:00",
     )
     assert result.score == Decimal("0.70")
+    assert result.specialist_id == "LEGACY_RESEARCH_THREE_VOTE_BASELINE"
+    assert result.reason == "RESEARCH_ONLY_LEGACY_THREE_VOTE_RISK_AS_ALPHA"
+    assert LegacyResearchWeightedAggregatorBot.RESEARCH_ONLY is True
+    assert LegacyResearchWeightedAggregatorBot.PROMOTABLE is False
     with pytest.raises(ValueError, match="exact specialist set"):
-        ExecutiveAggregatorBot().aggregate(
+        LegacyResearchWeightedAggregatorBot().aggregate(
             {"TECHNICAL": _signal("TECHNICAL", "1")},
             decision_at="2025-01-15T21:01:00+00:00",
         )
-    frame = ExecutiveAggregatorBot().aggregate_frame(
+    frame = LegacyResearchWeightedAggregatorBot().aggregate_frame(
         pd.DataFrame(
             {
                 "symbol": ["AAPL"],
@@ -373,7 +377,7 @@ class _FixedInsider:
     def score_tick(self, symbol, *, decision_at):
         return SpecialistSignal(
             specialist_id="SEC_FORM4_INSIDER",
-            specialist_version=ExecutiveAggregatorBot.SPECIALIST_VERSIONS[
+            specialist_version=LegacyResearchWeightedAggregatorBot.SPECIALIST_VERSIONS[
                 "SEC_FORM4_INSIDER"
             ],
             symbol=symbol,

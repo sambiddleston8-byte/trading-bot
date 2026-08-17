@@ -21,12 +21,12 @@ from core.research.sec_form4_insider_specialist import (
     SPECIALIST_VERSION,
 )
 from core.research.specialist_signals import (
-    ExecutiveAggregatorBot,
+    LegacyResearchWeightedAggregatorBot,
     SpecialistSignal,
 )
 
 
-ENSEMBLE_POLICY_VERSION = "pit-three-specialist-executive-ensemble-v1"
+ENSEMBLE_POLICY_VERSION = "legacy-research-three-vote-baseline-v1"
 
 
 def ensemble_signal_parameters() -> dict[str, Any]:
@@ -37,12 +37,14 @@ def ensemble_signal_parameters() -> dict[str, Any]:
         "risk_regime_specialist": "causal ATR-14/close prior-20 80th percentile",
         "insider_specialist": "SEC Form 4 P/S trailing-60-day cluster role intensity",
         "insider_specialist_version": SPECIALIST_VERSION,
-        "executive_aggregator_version": ExecutiveAggregatorBot.VERSION,
+        "legacy_research_aggregator_version": LegacyResearchWeightedAggregatorBot.VERSION,
+        "research_only": LegacyResearchWeightedAggregatorBot.RESEARCH_ONLY,
+        "promotable": LegacyResearchWeightedAggregatorBot.PROMOTABLE,
         "specialist_weights": {
             name: str(weight)
-            for name, weight in ExecutiveAggregatorBot.WEIGHTS.items()
+            for name, weight in LegacyResearchWeightedAggregatorBot.WEIGHTS.items()
         },
-        "entry_threshold": str(ExecutiveAggregatorBot.ENTRY_THRESHOLD),
+        "entry_threshold": str(LegacyResearchWeightedAggregatorBot.ENTRY_THRESHOLD),
         "entry_gate": "technical > 0 AND risk_regime > 0 AND aggregate >= threshold",
         "parameter_search_allowed": False,
     }
@@ -208,7 +210,7 @@ class EnsembleSignalAdapter(VolatilityRiskOffSignalAdapter):
         self.technical_specialist = PITTechnicalSpecialistBot(consumer)
         self.risk_specialist = PITRiskRegimeSpecialistBot()
         self.insider_specialist = insider_specialist
-        self.executive = ExecutiveAggregatorBot()
+        self.legacy_research_aggregator = LegacyResearchWeightedAggregatorBot()
         self._aggregate_entry_candidates = 0
         self._insider_veto_suppressions = 0
         self._insider_lookback_suppressions = 0
@@ -265,7 +267,7 @@ class EnsembleSignalAdapter(VolatilityRiskOffSignalAdapter):
                 symbol, decision_at=current.available_at
             ),
         }
-        aggregate = self.executive.aggregate(
+        aggregate = self.legacy_research_aggregator.aggregate(
             signals, decision_at=current.available_at
         )
         if signals["SEC_FORM4_INSIDER"].reason == "INSUFFICIENT_TRAILING_LOOKBACK":
@@ -274,7 +276,7 @@ class EnsembleSignalAdapter(VolatilityRiskOffSignalAdapter):
         risk = signals["RISK_REGIME"].score
         if technical > 0 and risk > 0:
             self._aggregate_entry_candidates += 1
-            if aggregate.score >= self.executive.ENTRY_THRESHOLD:
+            if aggregate.score >= self.legacy_research_aggregator.ENTRY_THRESHOLD:
                 self._ensemble_entries_permitted += 1
                 return ACTION_ENTER_LONG
             self._insider_veto_suppressions += 1
