@@ -1,0 +1,177 @@
+from datetime import time
+from decimal import Decimal
+import hashlib
+import json
+from pathlib import Path
+
+import pytest
+
+from core.features.pit_feature_contract import (
+    build_technical_feature_matrices,
+    campaign_observation_cutoff,
+)
+from core.orchestration.stage2_qualification import (
+    _at,
+    _bar_available,
+    _bar_close,
+    _sessions,
+)
+from core.research.sec_form4_insider_specialist import (
+    OFFICIAL_SOURCE_URLS,
+    SCHEMA_VERSION as FORM4_SCHEMA_VERSION,
+)
+
+from core.research.stage3_portfolio_train_conformance import (
+    STATUS,
+    evaluate_train_portfolio_conformance,
+)
+from core.research.stage4_train_insider_ensemble_evaluation import FORM4_ARTIFACT
+
+
+ROOT = "data/research/massive_campaign_v2_revision_2"
+RETRIEVED_AT = "2026-08-16T20:00:00+00:00"
+
+
+def _canonical(value):
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), allow_nan=False
+    ).encode()
+
+
+def _sha(payload):
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _synthetic_admitted_train(repository_root):
+    stage2 = repository_root / ROOT / "stage2"
+    store = stage2 / "clean_feature_store"
+    store.mkdir(parents=True)
+    artifacts = {}
+    cutoffs = {}
+    for role, start, end in (
+        ("TRAIN", "2024-10-01", "2025-02-28"),
+        ("VALIDATION", "2025-03-01", "2025-04-30"),
+    ):
+        bars = []
+        cutoffs[role] = {}
+        for index, day in enumerate(_sessions(start, end)):
+            cutoffs[role][day] = campaign_observation_cutoff(day)
+            for offset, symbol in enumerate(("AAPL", "MSFT", "SPY")):
+                base = Decimal(100 + index + offset)
+                bars.append({
+                    "symbol": symbol,
+                    "session_date": day,
+                    "open_at": _at(day, time(9, 30)),
+                    "close_at": _at(day, _bar_close(day)),
+                    "available_at": _bar_available(day),
+                    "open": str(base),
+                    "high": str(base + Decimal("2")),
+                    "low": str(base - Decimal("1")),
+                    "close": str(base + Decimal("1")),
+                    "volume": "100000",
+                    "source_payload_sha256": _sha(
+                        f"{role}:{day}:{symbol}".encode()
+                    ),
+                })
+        value = {
+            "schema_version": "1.0",
+            "role": role,
+            "bars": bars,
+            "corporate_actions": [],
+            "quarantine_only": False,
+            "clean_feature_store": True,
+        }
+        payload = _canonical(value) + b"\n"
+        (store / f"{role.lower()}.json").write_bytes(payload)
+        artifacts[role] = _sha(payload)
+    qualification = {"artifacts": artifacts}
+    qualification["qualification_sha256"] = _sha(_canonical(qualification))
+    qualification_bytes = _canonical(qualification) + b"\n"
+    (stage2 / "qualification_report.json").write_bytes(qualification_bytes)
+    build_technical_feature_matrices(
+        repository_root,
+        retrieved_at=RETRIEVED_AT,
+        observation_cutoffs=cutoffs,
+        qualification_report_artifact_sha256=_sha(qualification_bytes),
+    )
+    matrix_path = repository_root / ROOT / "stage3/technical_features/train_matrix.json"
+    matrix_sha256 = json.loads(matrix_path.read_text())["matrix_sha256"]
+
+    form4 = {
+        "schema_version": FORM4_SCHEMA_VERSION,
+        "partition_role": "TRAIN",
+        "window": {"start": "2024-10-01", "end": "2025-02-28"},
+        "symbols": ["AAPL", "MSFT", "SPY"],
+        "source_capture": {
+            name: {"url": url, "sha256": _sha(name.encode())}
+            for name, url in OFFICIAL_SOURCE_URLS.items()
+        },
+        "records": [],
+        "reported_at_equals_available_at": True,
+        "available_at_semantics": "EXACT_SEC_EDGAR_ACCEPTANCE_DATETIME",
+        "validation_data_read": False,
+        "untouched_test_included": False,
+    }
+    form4["artifact_sha256"] = _sha(_canonical(form4))
+    form4_path = repository_root / FORM4_ARTIFACT
+    form4_path.parent.mkdir(parents=True, exist_ok=True)
+    form4_path.write_bytes(_canonical(form4) + b"\n")
+
+    (store / "validation.json").unlink()
+    (repository_root / ROOT / "stage3/technical_features/validation_matrix.json").unlink()
+    sealed_test = store / "test.json"
+    sealed_test.write_text("sealed TEST must not be read")
+    return matrix_sha256, form4["artifact_sha256"], sealed_test
+
+
+def test_train_portfolio_conformance_is_bounded_and_deterministic(tmp_path):
+    matrix_sha256, form4_sha256, sealed_test = _synthetic_admitted_train(tmp_path)
+    report = evaluate_train_portfolio_conformance(
+        tmp_path,
+        admitted_train_matrix_sha256=matrix_sha256,
+        expected_form4_artifact_sha256=form4_sha256,
+        write_output=False,
+    )
+    assert report["status"] == STATUS
+    assert report["partition_role"] == "TRAIN"
+    assert report["portfolio_wide_batching_complete"] is True
+    assert report["shared_cash_reservation_complete"] is True
+    assert report["cross_symbol_order_conformance_complete"] is True
+    assert report["validation_data_read"] is False
+    assert report["untouched_test_included"] is False
+    assert report["promotion_allowed"] is False
+    assert all(
+        scenario["input_order_conformance"] is True
+        for scenario in report["scenarios"].values()
+    )
+    repeated = evaluate_train_portfolio_conformance(
+        tmp_path,
+        admitted_train_matrix_sha256=matrix_sha256,
+        expected_form4_artifact_sha256=form4_sha256,
+        write_output=False,
+    )
+    assert repeated["report_sha256"] == report["report_sha256"]
+    assert sealed_test.read_text() == "sealed TEST must not be read"
+
+
+def test_admitted_train_conformance_matches_its_sealed_report_hash():
+    repository_root = Path.cwd()
+    required = (
+        repository_root / ROOT / "stage2/clean_feature_store/train.json",
+        repository_root / ROOT / "stage3/technical_features/train_matrix.json",
+        repository_root / FORM4_ARTIFACT,
+    )
+    if not all(path.exists() for path in required):
+        pytest.skip("private admitted TRAIN artifacts are not present")
+    report = evaluate_train_portfolio_conformance(
+        repository_root, write_output=False
+    )
+    assert report["report_sha256"] == (
+        "84b60115a60691aa1fea0ac938b5f0cb28b27c718632409f2f884e872914b442"
+    )
+    assert set(report["scenarios"]) == {"BASE", "PESSIMISTIC"}
+    assert all(
+        scenario["intent_trace_count"] == 159
+        and scenario["execution_count"] == 0
+        for scenario in report["scenarios"].values()
+    )
