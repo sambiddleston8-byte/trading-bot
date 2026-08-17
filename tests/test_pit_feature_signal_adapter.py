@@ -23,9 +23,11 @@ from core.research.pit_feature_signal_adapter import (
     MarketBreadthSignalAdapter,
     MomentumConfirmedSignalAdapter,
     PITFeatureConsumer,
+    VolatilityRiskOffSignalAdapter,
     deterministic_signal_parameters,
     market_breadth_signal_parameters,
     momentum_confirmed_signal_parameters,
+    volatility_risk_off_signal_parameters,
 )
 from core.research.stage3_feature_strategy_evaluation import _spy_buy_hold_total_return
 
@@ -76,8 +78,10 @@ def feature_row(symbol, effective, *, bullish=True, atr="2", role="VALIDATION"):
 
 def matrix(effective_times, *, suppress=(), atr="2"):
     rows = []
-    for effective, bullish in effective_times:
-        rows.extend(feature_row(symbol, effective, bullish=bullish, atr=atr) for symbol in ("AAPL", "MSFT", "SPY"))
+    for item in effective_times:
+        effective, bullish = item[:2]
+        item_atr = item[2] if len(item) > 2 else atr
+        rows.extend(feature_row(symbol, effective, bullish=bullish, atr=item_atr) for symbol in ("AAPL", "MSFT", "SPY"))
     value = {
         "schema_version": "1.0",
         "feature_family": FAMILY,
@@ -127,9 +131,11 @@ def momentum_matrix(effective_momentums, *, suppress=()):
     )
 
 
-def breadth_matrix(effective, states, *, delayed_symbol=None):
+def breadth_matrix(effective, states, *, delayed_symbol=None, atr="2"):
     rows = [
-        feature_row(symbol, effective, bullish=states[symbol], role="TRAIN")
+        feature_row(
+            symbol, effective, bullish=states[symbol], role="TRAIN", atr=atr
+        )
         for symbol in ("AAPL", "MSFT", "SPY")
     ]
     if delayed_symbol is not None:
@@ -311,6 +317,184 @@ def test_market_breadth_liquidation_precedes_feature_consumption():
         )
         == ACTION_EXIT_LONG
     )
+
+
+def volatility_bars(*, count=40, spike_index=None):
+    market = bars(count)
+    if spike_index is None:
+        return market
+    bar = market[spike_index]
+    market[spike_index] = MarketBar(
+        bar.symbol,
+        bar.open_at,
+        bar.close_at,
+        bar.available_at,
+        bar.open,
+        bar.close + Decimal("40"),
+        bar.close - Decimal("1"),
+        bar.close,
+        bar.volume,
+    )
+    return market
+
+
+def test_volatility_risk_off_gate_uses_only_prior_completed_atr_percentages():
+    parameters = volatility_risk_off_signal_parameters()
+    risk_on_market = volatility_bars()
+    effective = risk_on_market[-1].close_at
+    risk_on = VolatilityRiskOffSignalAdapter(
+        breadth_matrix(
+            effective, {"AAPL": True, "MSFT": True, "SPY": True}
+        ),
+        liquidation_signal_at=effective + timedelta(days=1),
+    )
+    assert risk_on._risk_off_active(risk_on_market, parameters) is False
+    assert risk_on.decide("AAPL", risk_on_market, parameters) == ACTION_ENTER_LONG
+
+    risk_off_market = volatility_bars(spike_index=39)
+    admitted_atr = VolatilityRiskOffSignalAdapter._atr_value(
+        risk_off_market, window=14
+    )
+    risk_off = VolatilityRiskOffSignalAdapter(
+        breadth_matrix(
+            risk_off_market[-1].close_at,
+            {"AAPL": True, "MSFT": True, "SPY": True},
+            atr=str(admitted_atr),
+        ),
+        liquidation_signal_at=risk_off_market[-1].close_at + timedelta(days=1),
+    )
+    assert risk_off._risk_off_active(risk_off_market, parameters) is True
+    assert risk_off.decide("AAPL", risk_off_market, parameters) == ACTION_EXIT_LONG
+    with pytest.raises(ValueError, match="fixed volatility risk-off policy"):
+        risk_off.decide("AAPL", risk_off_market, market_breadth_signal_parameters())
+
+
+def test_volatility_risk_off_nearest_rank_and_equality_are_pinned():
+    prior = tuple(Decimal(index) for index in range(1, 21))
+    threshold = VolatilityRiskOffSignalAdapter._nearest_rank_threshold(
+        prior, percentile=Decimal("0.8")
+    )
+    assert threshold == Decimal("16")
+    assert VolatilityRiskOffSignalAdapter._ratio_is_risk_off(
+        prior, Decimal("16"), percentile=Decimal("0.8")
+    ) is True
+    assert VolatilityRiskOffSignalAdapter._ratio_is_risk_off(
+        prior, Decimal("15.999"), percentile=Decimal("0.8")
+    ) is False
+    with pytest.raises(ValueError, match="rank is outside"):
+        VolatilityRiskOffSignalAdapter._nearest_rank_threshold(
+            prior, percentile=Decimal("0")
+        )
+
+
+def test_volatility_risk_off_reconciles_bar_atr_to_admitted_feature():
+    market = volatility_bars(spike_index=39)
+    recomputed = VolatilityRiskOffSignalAdapter._atr_value(market, window=14)
+    strategy = VolatilityRiskOffSignalAdapter(
+        breadth_matrix(
+            market[-1].close_at,
+            {"AAPL": True, "MSFT": True, "SPY": True},
+            atr=str(recomputed + Decimal("1e-30")),
+        ),
+        liquidation_signal_at=market[-1].close_at + timedelta(days=1),
+    )
+    with pytest.raises(ValueError, match="differs from admitted"):
+        strategy.decide("AAPL", market, volatility_risk_off_signal_parameters())
+
+
+def test_volatility_risk_off_gate_fails_closed_without_causal_history():
+    market = volatility_bars(count=34)
+    parameters = volatility_risk_off_signal_parameters()
+    strategy = VolatilityRiskOffSignalAdapter(
+        breadth_matrix(
+            market[-1].close_at,
+            {"AAPL": True, "MSFT": True, "SPY": True},
+        ),
+        liquidation_signal_at=market[-1].close_at + timedelta(days=1),
+    )
+    assert strategy._risk_off_active(market, parameters) is True
+    assert strategy.decide("AAPL", market, parameters) == ACTION_EXIT_LONG
+
+
+def test_volatility_risk_off_gate_rejects_future_available_bar():
+    market = volatility_bars()
+    first = market[0]
+    market[0] = MarketBar(
+        first.symbol,
+        first.open_at,
+        first.close_at,
+        market[-1].available_at + timedelta(minutes=1),
+        first.open,
+        first.high,
+        first.low,
+        first.close,
+        first.volume,
+    )
+    strategy = VolatilityRiskOffSignalAdapter(
+        breadth_matrix(
+            market[-1].close_at,
+            {"AAPL": True, "MSFT": True, "SPY": True},
+        ),
+        liquidation_signal_at=market[-1].close_at + timedelta(days=1),
+    )
+    with pytest.raises(ValueError, match="point-in-time boundary"):
+        strategy.decide("AAPL", market, volatility_risk_off_signal_parameters())
+
+
+def test_volatility_risk_off_signal_exits_an_open_position_to_cash():
+    market = volatility_bars(spike_index=35)
+    effective_times = tuple(
+        (
+            bar.close_at,
+            True,
+            str(
+                VolatilityRiskOffSignalAdapter._atr_value(
+                    market[: index + 1], window=14
+                )
+            ),
+        )
+        for index, bar in enumerate(market)
+        if index >= 34
+    )
+    _, consumer = matrix(effective_times)
+    strategy = VolatilityRiskOffSignalAdapter(
+        consumer,
+        liquidation_signal_at=market[38].close_at,
+    )
+    parameters = volatility_risk_off_signal_parameters()
+    engine = GuardrailedBacktestEngine(
+        config=BacktestConfig(initial_cash=Decimal("100000")),
+        fee_schedule=ExchangeFeeSchedule(
+            "TEST-FEES", (ExchangeFeeTier(None, Decimal("1")),)
+        ),
+        data_attestation=attestation(),
+    )
+    result = engine.run(
+        bars=market,
+        universe_events=(
+            UniverseEvent(
+                "AAPL", "ADD", market[0].open_at, market[0].open_at, "synthetic"
+            ),
+        ),
+        terminal_outcomes=(),
+        corporate_actions=(),
+        prices_are_unadjusted=True,
+        strategy=strategy,
+        parameters=parameters,
+        evaluation_start=market[33].open_at,
+        evaluation_end=market[39].close_at,
+    )
+    assert len(result.completed_trades) == 1
+    trade = result.completed_trades[0]
+    assert trade.opened_at == market[35].open_at
+    assert trade.closed_at == market[36].open_at
+    assert result.portfolio_states[-1].position_quantity == 0
+    assert engine.last_strategy_diagnostics == {
+        "breadth_entry_candidates": 4,
+        "entries_permitted": 1,
+        "insufficient_history_suppressions": 0,
+        "percentile_risk_off_suppressions": 3,
+    }
 
 
 def test_momentum_confirmation_requires_rising_prior_pit_session_and_trades():

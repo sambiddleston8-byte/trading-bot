@@ -277,6 +277,7 @@ def _evaluate_train_rolling(
     status: str,
     observe_policy_divergence: bool,
     artifact_lineage: Mapping[str, Any] | None,
+    report_metadata: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     stage2 = repository_root / ROOT / "stage2"
     qualification_bytes = (stage2 / "qualification_report.json").read_bytes()
@@ -337,6 +338,8 @@ def _evaluate_train_rolling(
     }
     if artifact_lineage is not None:
         report["artifact_lineage"] = dict(artifact_lineage)
+    if report_metadata is not None:
+        report["evaluation_metadata"] = dict(report_metadata)
     runtime: dict[
         str, dict[str, list[tuple[str, Mapping[str, BacktestResult], Mapping[str, Any]]]]
     ] = {
@@ -424,6 +427,7 @@ def _evaluate_train_rolling(
             for scenario in ("BASE", "PESSIMISTIC"):
                 scenario_config = _configuration(scenario)
                 results: dict[str, BacktestResult] = {}
+                strategy_diagnostics: dict[str, Mapping[str, int]] = {}
                 for symbol in SYMBOLS:
                     source_rows = [
                         row for row in fold_rows if row["symbol"] == symbol
@@ -477,6 +481,10 @@ def _evaluate_train_rolling(
                         result, evaluation_end=evaluation_end
                     )
                     results[symbol] = result
+                    if engine.last_strategy_diagnostics is not None:
+                        strategy_diagnostics[symbol] = dict(
+                            engine.last_strategy_diagnostics
+                        )
                 composite = _composite_metrics(
                     results, benchmark_return=benchmark
                 )
@@ -503,6 +511,14 @@ def _evaluate_train_rolling(
                     },
                     "composite": composite,
                 }
+                if strategy_diagnostics:
+                    if set(strategy_diagnostics) != set(SYMBOLS):
+                        raise ValueError(
+                            "strategy diagnostics are incomplete across the basket"
+                        )
+                    fold_report["scenarios"][scenario]["strategy_diagnostics"] = (
+                        strategy_diagnostics
+                    )
                 runtime[policy_name][scenario].append(
                     (fold_id, results, composite)
                 )
@@ -514,6 +530,13 @@ def _evaluate_train_rolling(
         report["policies"][policy_name] = policy_report
 
     if observe_policy_divergence:
+        if not {
+            "BASELINE_REFERENCE",
+            "MARKET_BREADTH",
+        } <= set(report["policies"]):
+            raise ValueError(
+                "policy divergence observation requires the breadth comparison pair"
+            )
         report["policy_divergence_observed"] = _policy_divergence_observed(report)
         report["policy_divergence_definition"] = (
             "MARKET_BREADTH has completed trades under both cost models and its "

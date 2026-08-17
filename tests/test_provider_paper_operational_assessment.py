@@ -87,6 +87,8 @@ def build(
     proposal_offset=-70,
     stress_offset=-40,
 ):
+    global BASE_NOW
+    BASE_NOW = datetime.now(timezone.utc).replace(microsecond=0)
     account_ledger = PaperBrokerAccountSnapshotLedger(tmp_path / "account.jsonl")
     account = account_ledger.record(
         broker="Alpaca",
