@@ -18,6 +18,7 @@ from core.guardrailed_backtest import (
 
 SYMBOLS = ("AAPL", "MSFT", "SPY")
 POLICY_VERSION = "admitted-pit-technical-signal-v1"
+CONFIRMED_POLICY_VERSION = "admitted-pit-momentum-confirmed-signal-v2"
 
 
 def _canonical(value: Any) -> bytes:
@@ -41,6 +42,21 @@ def deterministic_signal_parameters() -> dict[str, Any]:
         "entry_rule": "sma_20 > sma_50 AND momentum_20 > 0",
         "exit_rule": "sma_20 <= sma_50 OR momentum_20 <= 0",
         "atr_position_sizing": "admitted atr_14 with engine 2x ATR stop and 1% equity risk cap",
+        "parameter_search_allowed": False,
+    }
+
+
+def momentum_confirmed_signal_parameters() -> dict[str, Any]:
+    return {
+        "entry_rule": (
+            "current and prior session sma_20 > sma_50 AND "
+            "current momentum_20 > prior momentum_20 > 0"
+        ),
+        "exit_rule": "sma_20 <= sma_50 OR momentum_20 <= 0",
+        "confirmation_sessions": 2,
+        "atr_position_sizing": (
+            "admitted atr_14 with engine 2x ATR stop and 1% equity risk cap"
+        ),
         "parameter_search_allowed": False,
     }
 
@@ -97,6 +113,36 @@ class PITFeatureConsumer:
         effective_at: datetime,
         decision_at: datetime,
     ) -> PITFeatureRecord | None:
+        return self._consume(
+            symbol,
+            effective_at=effective_at,
+            decision_at=decision_at,
+            unavailable_is_none=False,
+        )
+
+    def consume_if_available(
+        self,
+        symbol: str,
+        *,
+        effective_at: datetime,
+        decision_at: datetime,
+    ) -> PITFeatureRecord | None:
+        """Return no row when this admitted vintage was unavailable as of decision."""
+        return self._consume(
+            symbol,
+            effective_at=effective_at,
+            decision_at=decision_at,
+            unavailable_is_none=True,
+        )
+
+    def _consume(
+        self,
+        symbol: str,
+        *,
+        effective_at: datetime,
+        decision_at: datetime,
+        unavailable_is_none: bool,
+    ) -> PITFeatureRecord | None:
         resolved_symbol = str(symbol).strip().upper()
         effective = _time(effective_at, "effective_at")
         decision = _time(decision_at, "decision_at")
@@ -110,6 +156,8 @@ class PITFeatureConsumer:
                 return None
             raise ValueError("admitted feature row is missing at decision time")
         if _time(record.available_at, "available_at") > decision:
+            if unavailable_is_none:
+                return None
             raise ValueError("feature available_at exceeds decision_at")
         if record.feature_definition_sha256 != DEFINITION_SHA256:
             raise ValueError("feature row definition differs from the fixed contract")
@@ -170,10 +218,15 @@ class DeterministicSignalAdapter:
         history_through_signal_close: Sequence[MarketBar],
         parameters: Mapping[str, Any],
     ) -> str:
-        record = self._record(symbol, history_through_signal_close, parameters)
+        self._validate_parameters(parameters)
+        if not history_through_signal_close:
+            raise ValueError("strategy history is empty")
         current = history_through_signal_close[-1]
+        if current.symbol != symbol:
+            raise ValueError("strategy history symbol differs from the request")
         if current.close_at >= self.liquidation_signal_at:
             return ACTION_EXIT_LONG
+        record = self._record(symbol, history_through_signal_close, parameters)
         if record is None:
             return ACTION_HOLD
         sma_20 = Decimal(record.values["sma_20"])
@@ -196,3 +249,67 @@ class DeterministicSignalAdapter:
         if not atr.is_finite() or atr <= 0:
             raise ValueError("admitted ATR must be finite and positive")
         return atr
+
+
+class MomentumConfirmedSignalAdapter(DeterministicSignalAdapter):
+    """Require a rising two-session PIT trend before entering long."""
+
+    version = CONFIRMED_POLICY_VERSION
+
+    @staticmethod
+    def parameters() -> dict[str, Any]:
+        return momentum_confirmed_signal_parameters()
+
+    @staticmethod
+    def _validate_parameters(parameters: Mapping[str, Any]) -> None:
+        if dict(parameters) != momentum_confirmed_signal_parameters():
+            raise ValueError(
+                "strategy parameters differ from the fixed confirmed signal policy"
+            )
+
+    def decide(
+        self,
+        symbol: str,
+        history_through_signal_close: Sequence[MarketBar],
+        parameters: Mapping[str, Any],
+    ) -> str:
+        self._validate_parameters(parameters)
+        if not history_through_signal_close:
+            raise ValueError("strategy history is empty")
+        current_bar = history_through_signal_close[-1]
+        if current_bar.symbol != symbol:
+            raise ValueError("strategy history symbol differs from the request")
+        if current_bar.close_at >= self.liquidation_signal_at:
+            return ACTION_EXIT_LONG
+        current_record = self._record(
+            symbol, history_through_signal_close, parameters
+        )
+        if current_record is None:
+            return ACTION_HOLD
+
+        current_sma_20 = Decimal(current_record.values["sma_20"])
+        current_sma_50 = Decimal(current_record.values["sma_50"])
+        current_momentum = Decimal(current_record.values["momentum_20"])
+        if current_sma_20 <= current_sma_50 or current_momentum <= 0:
+            return ACTION_EXIT_LONG
+        confirmation_sessions = int(parameters["confirmation_sessions"])
+        if len(history_through_signal_close) < confirmation_sessions:
+            return ACTION_HOLD
+
+        prior_bar = history_through_signal_close[-confirmation_sessions]
+        prior_record = self.consumer.consume_if_available(
+            symbol,
+            effective_at=prior_bar.close_at,
+            decision_at=prior_bar.available_at,
+        )
+        if prior_record is None:
+            return ACTION_HOLD
+        prior_sma_20 = Decimal(prior_record.values["sma_20"])
+        prior_sma_50 = Decimal(prior_record.values["sma_50"])
+        prior_momentum = Decimal(prior_record.values["momentum_20"])
+        if (
+            prior_sma_20 > prior_sma_50
+            and current_momentum > prior_momentum > 0
+        ):
+            return ACTION_ENTER_LONG
+        return ACTION_HOLD
