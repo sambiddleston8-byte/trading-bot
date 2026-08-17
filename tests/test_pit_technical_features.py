@@ -6,6 +6,7 @@ import hashlib,json
 import pytest
 
 from core.features.pit_feature_contract import PITFeatureRecord, _record, build_revision_matrix, build_technical_feature_matrices, campaign_observation_cutoff, revise_feature_record, validate_revision_chain
+from core.guardrailed_backtest import MarketBar
 from core.orchestration.stage2_qualification import _at,_bar_available,_bar_close,_sessions
 from core.research.stage3_feature_strategy_evaluation import evaluate, evaluate_momentum_confirmed
 from core.research.stage3_train_rolling_diagnostic import (
@@ -15,6 +16,13 @@ from core.research.stage3_train_rolling_diagnostic import (
 )
 from core.research import stage3_train_rolling_diagnostic as rolling_diagnostic
 from scripts.run_stage3_train_market_breadth_evaluation import _summary
+from core.research.stage4_train_volatility_evaluation import (
+    evaluate_train_volatility_risk_off,
+)
+from core.research.pit_feature_signal_adapter import VolatilityRiskOffSignalAdapter
+from scripts.run_stage4_train_volatility_evaluation import (
+    _summary as stage4_summary,
+)
 
 def canonical(v):return json.dumps(v,sort_keys=True,separators=(",",":"),allow_nan=False).encode()
 RETRIEVED_AT="2026-08-16T20:00:00+00:00"
@@ -22,7 +30,9 @@ def cutoffs():return {role:{day:campaign_observation_cutoff(day) for day in _ses
 def qualification_pin(root):return hashlib.sha256((root/"data/research/massive_campaign_v2_revision_2/stage2/qualification_report.json").read_bytes()).hexdigest()
 def build(root):return build_technical_feature_matrices(root,retrieved_at=RETRIEVED_AT,observation_cutoffs=cutoffs(),qualification_report_artifact_sha256=qualification_pin(root))
 
-def environment(tmp_path,drop=None):
+def environment(
+    tmp_path,drop=None,volatility_spike_days=(),train_corporate_actions=()
+):
     root=tmp_path/"data/research/massive_campaign_v2_revision_2/stage2"; store=root/"clean_feature_store";store.mkdir(parents=True)
     artifacts={}
     for role,start,end in (("TRAIN","2024-10-01","2025-02-28"),("VALIDATION","2025-03-01","2025-04-30")):
@@ -31,8 +41,10 @@ def environment(tmp_path,drop=None):
             for offset,symbol in enumerate(("AAPL","MSFT","SPY")):
                 if drop==(role,day,symbol):continue
                 base=Decimal(f"{100+index+offset}.123456789123")
-                bars.append({"symbol":symbol,"session_date":day,"open_at":_at(day,__import__("datetime").time(9,30)),"close_at":_at(day,_bar_close(day)),"available_at":_bar_available(day),"open":str(base),"high":str(base+2),"low":str(base-1),"close":str(base+1),"volume":"100000","source_payload_sha256":hashlib.sha256(f"{role}:{day}:{symbol}".encode()).hexdigest()})
-        value={"schema_version":"1.0","role":role,"bars":bars,"corporate_actions":[],"quarantine_only":False,"clean_feature_store":True}
+                high_spread=Decimal("30") if day in volatility_spike_days else Decimal("2")
+                low_spread=Decimal("30") if day in volatility_spike_days else Decimal("1")
+                bars.append({"symbol":symbol,"session_date":day,"open_at":_at(day,__import__("datetime").time(9,30)),"close_at":_at(day,_bar_close(day)),"available_at":_bar_available(day),"open":str(base),"high":str(base+high_spread),"low":str(base-low_spread),"close":str(base+1),"volume":"100000","source_payload_sha256":hashlib.sha256(f"{role}:{day}:{symbol}".encode()).hexdigest()})
+        value={"schema_version":"1.0","role":role,"bars":bars,"corporate_actions":list(train_corporate_actions) if role=="TRAIN" else [],"quarantine_only":False,"clean_feature_store":True}
         payload=canonical(value)+b"\n";(store/f"{role.lower()}.json").write_bytes(payload);artifacts[role]=hashlib.sha256(payload).hexdigest()
     report={"artifacts":artifacts};report["qualification_sha256"]=hashlib.sha256(canonical(report)).hexdigest()
     (root/"qualification_report.json").write_bytes(canonical(report)+b"\n")
@@ -59,6 +71,23 @@ def test_non_monotonic_technical_vector_matches_golden_values():
         rows.append({"session_date":day,"close_at":f"{day}T21:00:00+00:00","available_at":f"{day}T21:01:00+00:00","close":str(close),"high":str(close+1+Decimal(index%3)/10),"low":str(close-1-Decimal(index%5)/10),"source_payload_sha256":hashlib.sha256(day.encode()).hexdigest()})
     record=_record(symbol="AAPL",role="TRAIN",rows=rows,retrieved_at=RETRIEVED_AT,observation_cutoff_at="2025-02-19T21:05:00+00:00",artifact_hashes={"TRAIN":"1"*64})
     assert record.values=={"sma_20":"110.05","sma_50":"108.33","momentum_20":"-0.0090171325518485121731289449954914","atr_14":"7.578571428571428571428571428571429"}
+    bars=tuple(
+        MarketBar(
+            "AAPL",
+            datetime.fromisoformat(row["close_at"])-timedelta(hours=6,minutes=30),
+            datetime.fromisoformat(row["close_at"]),
+            datetime.fromisoformat(row["available_at"]),
+            Decimal(row["close"]),
+            Decimal(row["high"]),
+            Decimal(row["low"]),
+            Decimal(row["close"]),
+            Decimal("100000"),
+        )
+        for row in rows
+    )
+    assert VolatilityRiskOffSignalAdapter._atr_value(
+        bars,window=14
+    )==Decimal(record.values["atr_14"])
 
 def test_hash_valid_leakage_tamper_and_revision_forgery_fail_closed(tmp_path):
     environment(tmp_path);build(tmp_path)
@@ -309,3 +338,143 @@ def test_train_market_breadth_evaluation_is_separate_and_train_only(tmp_path):
         "status","evaluation_sha256","artifact_sha256","artifact_path"
     }
     assert "policies" not in public
+
+
+def test_stage4_volatility_risk_off_evaluation_is_train_only_and_deterministic(tmp_path):
+    environment(tmp_path,volatility_spike_days={"2024-12-12"});build(tmp_path)
+    matrix_path=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    pin=json.loads(matrix_path.read_text())["matrix_sha256"]
+    (tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/validation_matrix.json").unlink()
+    (tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/validation.json").unlink()
+    test_matrix=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/test_matrix.json"
+    test_store=tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/test.json"
+    test_matrix.write_text("sealed TEST matrix must not be read")
+    test_store.write_text("sealed TEST store must not be read")
+
+    report=evaluate_train_volatility_risk_off(
+        tmp_path,admitted_train_matrix_sha256=pin
+    )
+    assert report["status"]=="TRAIN_ONLY_VOLATILITY_RISK_OFF_EVALUATION_COMPLETE"
+    assert report["source_partition"]=="TRAIN"
+    assert report["validation_data_read"] is False
+    assert report["untouched_test_included"] is False
+    assert report["parameter_search_allowed"] is False
+    assert report["promotion_allowed"] is False
+    assert report["artifact_lineage"]["revision"]==2
+    assert report["artifact_lineage"]["predecessor_paths"]==[
+        "data/research/massive_campaign_v2_revision_2/stage4/"
+        "train_volatility_risk_off_evaluation_committed_v1.json"
+    ]
+    warmup=report["evaluation_metadata"]["volatility_warmup_and_lineage"]
+    assert warmup["minimum_history_bars"]==35
+    assert warmup["insufficient_history_suppressions_expected"]==0
+    assert len(warmup["available_history_bars_at_fold_start"])==3
+    assert all(
+        count>=35
+        for symbols in warmup["available_history_bars_at_fold_start"].values()
+        for count in symbols.values()
+    )
+    assert set(report["policies"])=={
+        "PRIOR_MARKET_BREADTH","VOLATILITY_RISK_OFF"
+    }
+    assert report["policies"]["VOLATILITY_RISK_OFF"]["policy_version"]=="admitted-pit-volatility-risk-off-signal-v4"
+    for policy in report["policies"].values():
+        assert len(policy["folds"])==3
+        for scenario in ("BASE","PESSIMISTIC"):
+            aggregate=policy["aggregate"][scenario]
+            assert aggregate["pooled_evaluated_sessions"]==54
+            assert aggregate["pooled_daily_observations"]==54
+            assert aggregate["completed_trade_count"]==len(aggregate["trade_log"])
+            assert all(
+                trade["fold_id"].startswith("TRAIN-FOLD-")
+                for trade in aggregate["trade_log"]
+            )
+    for scenario in ("BASE","PESSIMISTIC"):
+        prior=report["policies"]["PRIOR_MARKET_BREADTH"]["aggregate"][scenario]
+        risk_off=report["policies"]["VOLATILITY_RISK_OFF"]["aggregate"][scenario]
+        assert risk_off["fold_reset_chained_total_return"]!=prior["fold_reset_chained_total_return"]
+    risk_folds=report["policies"]["VOLATILITY_RISK_OFF"]["folds"]
+    diagnostics=[
+        values
+        for fold in risk_folds
+        for values in fold["scenarios"]["BASE"]["strategy_diagnostics"].values()
+    ]
+    assert all(
+        "strategy_diagnostics" not in fold["scenarios"]["BASE"]
+        for fold in report["policies"]["PRIOR_MARKET_BREADTH"]["folds"]
+    )
+    assert sum(x["insufficient_history_suppressions"] for x in diagnostics)==0
+    assert sum(x["percentile_risk_off_suppressions"] for x in diagnostics)>0
+    assert sum(x["breadth_entry_candidates"] for x in diagnostics)==sum(
+        x["percentile_risk_off_suppressions"]+x["entries_permitted"]
+        for x in diagnostics
+    )
+    assert test_matrix.read_text()=="sealed TEST matrix must not be read"
+    assert test_store.read_text()=="sealed TEST store must not be read"
+    output=tmp_path/"data/research/massive_campaign_v2_revision_2/stage4/train_volatility_risk_off_evaluation_committed_v2.json"
+    assert output.exists()
+    repeated=evaluate_train_volatility_risk_off(
+        tmp_path,admitted_train_matrix_sha256=pin
+    )
+    assert repeated["evaluation_sha256"]==report["evaluation_sha256"]
+    assert repeated["artifact_sha256"]==report["artifact_sha256"]
+    public=stage4_summary(report)
+    assert set(public)=={
+        "status","evaluation_sha256","artifact_sha256","artifact_path"
+    }
+    assert "policies" not in public
+
+
+@pytest.mark.parametrize("action_type",("SPLIT","STOCK_SPLIT","SPIN_OFF","UNKNOWN"))
+def test_stage4_volatility_evaluation_rejects_non_dividend_actions(
+    tmp_path,action_type
+):
+    environment(
+        tmp_path,
+        train_corporate_actions=({"action_type":action_type},),
+    );build(tmp_path)
+    matrix_path=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    pin=json.loads(matrix_path.read_text())["matrix_sha256"]
+    with pytest.raises(ValueError,match="permits CASH_DIVIDEND only"):
+        evaluate_train_volatility_risk_off(
+            tmp_path,admitted_train_matrix_sha256=pin
+        )
+
+
+def test_stage4_volatility_evaluation_rejects_unqualified_train_change(tmp_path):
+    root=environment(tmp_path);build(tmp_path)
+    matrix_path=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    pin=json.loads(matrix_path.read_text())["matrix_sha256"]
+    train=root/"clean_feature_store/train.json"
+    value=json.loads(train.read_text());value["bars"][0]["close"]="999"
+    train.write_bytes(canonical(value)+b"\n")
+    with pytest.raises(ValueError,match="differs from qualification"):
+        evaluate_train_volatility_risk_off(
+            tmp_path,admitted_train_matrix_sha256=pin
+        )
+
+
+def test_stage4_volatility_evaluation_rejects_incomplete_fold_warmup(tmp_path):
+    root=environment(tmp_path);build(tmp_path)
+    matrix_path=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    pin=json.loads(matrix_path.read_text())["matrix_sha256"]
+    train=root/"clean_feature_store/train.json"
+    value=json.loads(train.read_text())
+    aapl_days=sorted(
+        row["session_date"] for row in value["bars"] if row["symbol"]=="AAPL"
+    )[:16]
+    value["bars"]=[
+        row for row in value["bars"]
+        if not (row["symbol"]=="AAPL" and row["session_date"] in aapl_days)
+    ]
+    payload=canonical(value)+b"\n";train.write_bytes(payload)
+    qualification=root/"qualification_report.json"
+    report=json.loads(qualification.read_text())
+    report["artifacts"]["TRAIN"]=hashlib.sha256(payload).hexdigest()
+    material={key:value for key,value in report.items() if key!="qualification_sha256"}
+    report["qualification_sha256"]=hashlib.sha256(canonical(material)).hexdigest()
+    qualification.write_bytes(canonical(report)+b"\n")
+    with pytest.raises(ValueError,match="warm-up completes"):
+        evaluate_train_volatility_risk_off(
+            tmp_path,admitted_train_matrix_sha256=pin
+        )

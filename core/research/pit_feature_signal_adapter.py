@@ -2,12 +2,18 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from decimal import Decimal
+from decimal import Decimal, ROUND_CEILING, localcontext
 import hashlib
 import json
 from typing import Any, Mapping, Sequence
 
-from core.features.pit_feature_contract import DEFINITION_SHA256, FAMILY, PITFeatureRecord
+from core.features.pit_feature_contract import (
+    DECIMAL_CONTEXT,
+    DEFINITION,
+    DEFINITION_SHA256,
+    FAMILY,
+    PITFeatureRecord,
+)
 from core.guardrailed_backtest import (
     ACTION_ENTER_LONG,
     ACTION_EXIT_LONG,
@@ -20,6 +26,7 @@ SYMBOLS = ("AAPL", "MSFT", "SPY")
 POLICY_VERSION = "admitted-pit-technical-signal-v1"
 CONFIRMED_POLICY_VERSION = "admitted-pit-momentum-confirmed-signal-v2"
 BREADTH_POLICY_VERSION = "admitted-pit-majority-breadth-signal-v3"
+RISK_OFF_POLICY_VERSION = "admitted-pit-volatility-risk-off-signal-v4"
 
 
 def _canonical(value: Any) -> bytes:
@@ -74,6 +81,38 @@ def market_breadth_signal_parameters() -> dict[str, Any]:
         ),
         "breadth_universe": list(SYMBOLS),
         "breadth_minimum_symbols": 2,
+        "atr_position_sizing": (
+            "admitted atr_14 with engine 2x ATR stop and 1% equity risk cap"
+        ),
+        "parameter_search_allowed": False,
+    }
+
+
+def volatility_risk_off_signal_parameters() -> dict[str, Any]:
+    return {
+        "entry_rule": (
+            "market-breadth entry AND current symbol ATR-14/close is below the "
+            "nearest-rank 80th percentile of its prior 20 completed values"
+        ),
+        "exit_rule": (
+            "market-breadth exit OR current symbol ATR-14/close is at or above "
+            "the prior-20 80th percentile OR causal volatility history is incomplete"
+        ),
+        "breadth_universe": list(SYMBOLS),
+        "breadth_minimum_symbols": 2,
+        "volatility_measure": "ATR-14 divided by same-session close",
+        "volatility_atr_sessions": 14,
+        "volatility_percentile_lookback": 20,
+        "risk_off_percentile": "0.8",
+        "percentile_method": "nearest-rank over prior completed values only",
+        "volatility_decimal_precision": DEFINITION["decimal_context"]["precision"],
+        "volatility_decimal_rounding": DEFINITION["decimal_context"]["rounding"],
+        "current_atr_reconciliation": "must equal admitted same-session atr_14",
+        "corporate_action_policy": (
+            "evaluation permits declared CASH_DIVIDEND records and rejects every "
+            "other corporate-action type before execution"
+        ),
+        "risk_off_action": "exit long and remain in cash",
         "atr_position_sizing": (
             "admitted atr_14 with engine 2x ATR stop and 1% equity risk cap"
         ),
@@ -387,3 +426,201 @@ class MarketBreadthSignalAdapter(DeterministicSignalAdapter):
         ):
             return ACTION_ENTER_LONG
         return ACTION_EXIT_LONG
+
+
+class VolatilityRiskOffSignalAdapter(MarketBreadthSignalAdapter):
+    """Gate breadth entries with a causal own-symbol ATR-percentile regime."""
+
+    version = RISK_OFF_POLICY_VERSION
+
+    def __init__(
+        self,
+        consumer: PITFeatureConsumer,
+        *,
+        liquidation_signal_at: str | datetime,
+    ) -> None:
+        super().__init__(consumer, liquidation_signal_at=liquidation_signal_at)
+        self._breadth_entry_candidates = 0
+        self._insufficient_history_suppressions = 0
+        self._percentile_risk_off_suppressions = 0
+        self._entries_permitted = 0
+
+    @staticmethod
+    def parameters() -> dict[str, Any]:
+        return volatility_risk_off_signal_parameters()
+
+    @staticmethod
+    def _validate_parameters(parameters: Mapping[str, Any]) -> None:
+        if dict(parameters) != volatility_risk_off_signal_parameters():
+            raise ValueError(
+                "strategy parameters differ from the fixed volatility risk-off policy"
+            )
+
+    @staticmethod
+    def _atr_value(
+        history_through_signal_close: Sequence[MarketBar], *, window: int
+    ) -> Decimal:
+        if len(history_through_signal_close) < window + 1:
+            raise ValueError("causal ATR history is incomplete")
+        with localcontext(DECIMAL_CONTEXT):
+            true_ranges = [
+                max(
+                    bar.high - bar.low,
+                    abs(bar.high - prior.close),
+                    abs(bar.low - prior.close),
+                )
+                for prior, bar in zip(
+                    history_through_signal_close[-window - 1 : -1],
+                    history_through_signal_close[-window:],
+                )
+            ]
+            return sum(true_ranges, Decimal("0")) / Decimal(window)
+
+    @classmethod
+    def _atr_percentage(
+        cls, history_through_signal_close: Sequence[MarketBar], *, window: int
+    ) -> Decimal:
+        with localcontext(DECIMAL_CONTEXT):
+            return cls._atr_value(
+                history_through_signal_close, window=window
+            ) / history_through_signal_close[-1].close
+
+    @staticmethod
+    def _nearest_rank_threshold(
+        prior_ratios: Sequence[Decimal], *, percentile: Decimal
+    ) -> Decimal:
+        rank = int(
+            (Decimal(len(prior_ratios)) * percentile).to_integral_value(
+                rounding=ROUND_CEILING
+            )
+        )
+        if not 1 <= rank <= len(prior_ratios):
+            raise ValueError("risk-off percentile rank is outside its causal sample")
+        return sorted(prior_ratios)[rank - 1]
+
+    @classmethod
+    def _ratio_is_risk_off(
+        cls,
+        prior_ratios: Sequence[Decimal],
+        current_ratio: Decimal,
+        *,
+        percentile: Decimal,
+    ) -> bool:
+        return current_ratio >= cls._nearest_rank_threshold(
+            prior_ratios, percentile=percentile
+        )
+
+    @classmethod
+    def _risk_off_reason(
+        cls,
+        history_through_signal_close: Sequence[MarketBar],
+        parameters: Mapping[str, Any],
+        *,
+        admitted_current_atr: Decimal | None = None,
+    ) -> str | None:
+        atr_window = int(parameters["volatility_atr_sessions"])
+        percentile_lookback = int(parameters["volatility_percentile_lookback"])
+        required_bars = atr_window + percentile_lookback + 1
+        if len(history_through_signal_close) < required_bars:
+            return "INSUFFICIENT_HISTORY"
+        current = history_through_signal_close[-1]
+        if any(
+            bar.symbol != current.symbol
+            or bar.close_at > current.close_at
+            or bar.available_at > current.available_at
+            for bar in history_through_signal_close
+        ):
+            raise ValueError("volatility history violates the point-in-time boundary")
+        if (
+            int(parameters["volatility_decimal_precision"])
+            != DEFINITION["decimal_context"]["precision"]
+            or parameters["volatility_decimal_rounding"]
+            != DEFINITION["decimal_context"]["rounding"]
+        ):
+            raise ValueError("volatility Decimal context differs from the feature contract")
+        recomputed_current_atr = cls._atr_value(
+            history_through_signal_close, window=atr_window
+        )
+        if (
+            admitted_current_atr is not None
+            and recomputed_current_atr != admitted_current_atr
+        ):
+            raise ValueError("bar-derived ATR differs from admitted same-session atr_14")
+
+        first_end = len(history_through_signal_close) - percentile_lookback - 1
+        ratios = [
+            cls._atr_percentage(
+                history_through_signal_close[: end + 1], window=atr_window
+            )
+            for end in range(first_end, len(history_through_signal_close))
+        ]
+        prior_ratios, current_ratio = ratios[:-1], ratios[-1]
+        percentile = Decimal(str(parameters["risk_off_percentile"]))
+        return (
+            "PERCENTILE_RISK_OFF"
+            if cls._ratio_is_risk_off(
+                prior_ratios, current_ratio, percentile=percentile
+            )
+            else None
+        )
+
+    @classmethod
+    def _risk_off_active(
+        cls,
+        history_through_signal_close: Sequence[MarketBar],
+        parameters: Mapping[str, Any],
+        *,
+        admitted_current_atr: Decimal | None = None,
+    ) -> bool:
+        return cls._risk_off_reason(
+            history_through_signal_close,
+            parameters,
+            admitted_current_atr=admitted_current_atr,
+        ) is not None
+
+    def diagnostics(self) -> dict[str, int]:
+        return {
+            "breadth_entry_candidates": self._breadth_entry_candidates,
+            "insufficient_history_suppressions": (
+                self._insufficient_history_suppressions
+            ),
+            "percentile_risk_off_suppressions": (
+                self._percentile_risk_off_suppressions
+            ),
+            "entries_permitted": self._entries_permitted,
+        }
+
+    def decide(
+        self,
+        symbol: str,
+        history_through_signal_close: Sequence[MarketBar],
+        parameters: Mapping[str, Any],
+    ) -> str:
+        self._validate_parameters(parameters)
+        breadth_action = super().decide(
+            symbol, history_through_signal_close, parameters
+        )
+        if breadth_action != ACTION_ENTER_LONG:
+            return breadth_action
+        self._breadth_entry_candidates += 1
+        current = history_through_signal_close[-1]
+        record = self.consumer.consume_if_available(
+            symbol,
+            effective_at=current.close_at,
+            decision_at=current.available_at,
+        )
+        if record is None:
+            raise ValueError("breadth entry lacks its admitted own-symbol ATR")
+        reason = self._risk_off_reason(
+            history_through_signal_close,
+            parameters,
+            admitted_current_atr=Decimal(record.values["atr_14"]),
+        )
+        if reason == "INSUFFICIENT_HISTORY":
+            self._insufficient_history_suppressions += 1
+            return ACTION_EXIT_LONG
+        if reason == "PERCENTILE_RISK_OFF":
+            self._percentile_risk_off_suppressions += 1
+            return ACTION_EXIT_LONG
+        self._entries_permitted += 1
+        return ACTION_ENTER_LONG

@@ -810,6 +810,7 @@ class GuardrailedBacktestEngine:
         self.config = config
         self.fee_schedule = fee_schedule
         self.data_attestation = data_attestation
+        self.last_strategy_diagnostics: dict[str, int] | None = None
 
     def run(
         self,
@@ -824,6 +825,7 @@ class GuardrailedBacktestEngine:
         evaluation_start: datetime,
         evaluation_end: datetime,
     ) -> BacktestResult:
+        self.last_strategy_diagnostics = None
         start = _time(evaluation_start, "evaluation_start")
         end = _time(evaluation_end, "evaluation_end")
         if start >= end:
@@ -1618,6 +1620,21 @@ class GuardrailedBacktestEngine:
             raise ValueError("evaluation lacks a next-bar, liquidity-capped exit for open positions")
         if not equity_curve:
             raise ValueError("evaluation window contains no completed bars")
+
+        diagnostics_reader = getattr(strategy_instance, "diagnostics", None)
+        if diagnostics_reader is not None:
+            if not callable(diagnostics_reader):
+                raise ValueError("strategy diagnostics reader is invalid")
+            diagnostics = diagnostics_reader()
+            if not isinstance(diagnostics, Mapping) or any(
+                not isinstance(name, str)
+                or not name.strip()
+                or type(value) is not int
+                or value < 0
+                for name, value in diagnostics.items()
+            ):
+                raise ValueError("strategy diagnostics are invalid")
+            self.last_strategy_diagnostics = dict(sorted(diagnostics.items()))
 
         ending = cash + sum(amount for _, amount in unsettled_cash)
         curve_values = [self.config.initial_cash, *[item[1] for item in equity_curve], ending]
