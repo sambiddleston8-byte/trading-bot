@@ -164,6 +164,8 @@ Implementation checkpoint: Stage 3 mechanics are complete on TRAIN. The Executiv
 
 Run purged/embargoed walk-forward evaluation, specialist ablations, and fixed-weight comparisons under both cost models. Exit: one frozen candidate or explicit no-promotion.
 
+Implementation checkpoint: Stage 4 exits with explicit no-promotion. Fundamental/Valuation, Catalyst/Event, Political Disclosure, and Macro/Cross-Asset are isolated research-only Specialists; their deterministic synthetic AAPL/MSFT/SPY ablations prove mechanics and PIT conformance but cannot establish incremental alpha or support registration. The production Executive remains Technical plus SEC Form 4, and Risk/Regime remains a separate constraint source. The legacy AAPL/MSFT/SPY VALIDATION window from 2025-03-03 through 2025-04-30 was evaluated at least four times by pre-budget Stage 3 feature-strategy paths and is therefore selection-contaminated and permanently ineligible for Stage 5. Those legacy evaluators are now TRAIN-only and reject any attempted VALIDATION pass identifier. The next candidate must return to Stage 1, qualify a fresh production-scale PIT dataset and previously unevaluated VALIDATION window, then re-enter TRAIN ensemble development. VALIDATION and TEST otherwise remain sealed.
+
 ### Stage 5 — Budgeted single-pass VALIDATION
 
 With explicit human authorization, evaluate the frozen candidate once and consume one lifetime pass. Apply the 30% degradation, pass-adjusted Sharpe floor, interval, sample-size, and all absolute risk gates. Exit: rejected candidate or immutable paper candidate. TEST remains sealed.
