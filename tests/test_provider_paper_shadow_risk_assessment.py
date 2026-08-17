@@ -86,7 +86,10 @@ def build(
         "max_gross_exposure_usd": "3000",
         "max_daily_loss_usd": "200",
         "max_account_snapshot_age_seconds": 120,
-        "max_risk_snapshot_age_seconds": 120,
+        # The full CI suite can spend several minutes between module collection
+        # and this test. Keep the ordinary synthetic snapshot fresh while the
+        # dedicated 10-second and 3600-second cases below exercise staleness.
+        "max_risk_snapshot_age_seconds": 600,
         "kill_switch_identifier": "paper-stop-v1",
         "decided_by": "Sam",
         "decision_reference": "synthetic-shadow-policy",
