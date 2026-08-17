@@ -20,9 +20,11 @@ from core.guardrailed_backtest import (
 )
 from core.research.pit_feature_signal_adapter import (
     DeterministicSignalAdapter,
+    MarketBreadthSignalAdapter,
     MomentumConfirmedSignalAdapter,
     PITFeatureConsumer,
     deterministic_signal_parameters,
+    market_breadth_signal_parameters,
     momentum_confirmed_signal_parameters,
 )
 from core.research.stage3_feature_strategy_evaluation import _spy_buy_hold_total_return
@@ -36,14 +38,14 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
 
 
-def feature_row(symbol, effective, *, bullish=True, atr="2"):
+def feature_row(symbol, effective, *, bullish=True, atr="2", role="VALIDATION"):
     available = effective + timedelta(minutes=1)
     material = {
         "feature_id": "PITF-" + hashlib.sha256(f"{FAMILY}:{symbol}:{effective.isoformat()}".encode()).hexdigest()[:32].upper(),
         "feature_family": FAMILY,
         "feature_definition_sha256": DEFINITION_SHA256,
         "entity_id": symbol,
-        "partition_role": "VALIDATION",
+        "partition_role": role,
         "effective_at": effective.isoformat(),
         "reported_at": effective.isoformat(),
         "available_at": available.isoformat(),
@@ -58,7 +60,7 @@ def feature_row(symbol, effective, *, bullish=True, atr="2"):
             "atr_14": atr,
         },
         "provenance": {
-            "source_artifact_sha256": {"VALIDATION": "a" * 64},
+            "source_artifact_sha256": {role: "a" * 64},
             "input_rows": [{
                 "row_id": f"{symbol}:{effective.date().isoformat()}",
                 "session_date": effective.date().isoformat(),
@@ -125,6 +127,37 @@ def momentum_matrix(effective_momentums, *, suppress=()):
     )
 
 
+def breadth_matrix(effective, states, *, delayed_symbol=None):
+    rows = [
+        feature_row(symbol, effective, bullish=states[symbol], role="TRAIN")
+        for symbol in ("AAPL", "MSFT", "SPY")
+    ]
+    if delayed_symbol is not None:
+        delayed = next(row for row in rows if row["entity_id"] == delayed_symbol)
+        delayed_at = (effective + timedelta(minutes=2)).isoformat()
+        delayed["available_at"] = delayed_at
+        delayed["provenance"]["input_rows"][0]["available_at"] = delayed_at
+        material = {
+            key: value for key, value in delayed.items() if key != "record_sha256"
+        }
+        delayed["record_sha256"] = hashlib.sha256(canonical(material)).hexdigest()
+    value = {
+        "schema_version": "1.0",
+        "feature_family": FAMILY,
+        "feature_definition_sha256": DEFINITION_SHA256,
+        "partition_role": "TRAIN",
+        "qualification_report_artifact_sha256": "d" * 64,
+        "source_artifact_sha256": "e" * 64,
+        "rows": rows,
+        "admitted": True,
+        "untouched_test_included": False,
+    }
+    value["matrix_sha256"] = hashlib.sha256(canonical(value)).hexdigest()
+    return PITFeatureConsumer(
+        value, expected_matrix_sha256=value["matrix_sha256"]
+    )
+
+
 def bars(count=23):
     rows = []
     for index in range(count):
@@ -182,6 +215,102 @@ def test_adapter_drives_engine_signal_and_uses_admitted_atr_for_sizing():
     buy = next(trace for trace in result.sizing_decisions if trace.action == "BUY")
     assert buy.risk_per_share == Decimal("4")
     assert len(result.completed_trades) == 1
+
+
+@pytest.mark.parametrize(
+    "states,expected",
+    (
+        (
+            {"AAPL": True, "MSFT": False, "SPY": True},
+            ACTION_ENTER_LONG,
+        ),
+        (
+            {"AAPL": True, "MSFT": True, "SPY": True},
+            ACTION_ENTER_LONG,
+        ),
+        (
+            {"AAPL": True, "MSFT": False, "SPY": False},
+            ACTION_EXIT_LONG,
+        ),
+        (
+            {"AAPL": False, "MSFT": True, "SPY": True},
+            ACTION_EXIT_LONG,
+        ),
+    ),
+)
+def test_market_breadth_requires_own_signal_and_exact_pit_majority(states, expected):
+    market = bars(22)
+    effective = market[19].close_at
+    strategy = MarketBreadthSignalAdapter(
+        breadth_matrix(effective, states),
+        liquidation_signal_at=market[20].close_at,
+    )
+    parameters = market_breadth_signal_parameters()
+    assert strategy.decide("AAPL", market[:20], parameters) == expected
+    with pytest.raises(ValueError, match="fixed market breadth policy"):
+        strategy.decide("AAPL", market[:20], deterministic_signal_parameters())
+
+
+def test_market_breadth_fails_closed_when_peer_vintage_is_delayed():
+    market = bars(22)
+    effective = market[19].close_at
+    strategy = MarketBreadthSignalAdapter(
+        breadth_matrix(
+            effective,
+            {"AAPL": True, "MSFT": True, "SPY": True},
+            delayed_symbol="MSFT",
+        ),
+        liquidation_signal_at=market[20].close_at,
+    )
+    assert (
+        strategy.decide(
+            "AAPL", market[:20], market_breadth_signal_parameters()
+        )
+        == ACTION_EXIT_LONG
+    )
+
+
+def test_market_breadth_rejects_symbols_outside_fixed_basket():
+    market = bars(22)
+    market[-1] = MarketBar(
+        "QQQ",
+        market[-1].open_at,
+        market[-1].close_at,
+        market[-1].available_at,
+        market[-1].open,
+        market[-1].high,
+        market[-1].low,
+        market[-1].close,
+        market[-1].volume,
+    )
+    effective = market[19].close_at
+    strategy = MarketBreadthSignalAdapter(
+        breadth_matrix(
+            effective, {"AAPL": True, "MSFT": True, "SPY": True}
+        ),
+        liquidation_signal_at=market[20].close_at,
+    )
+    with pytest.raises(ValueError, match="outside the fixed breadth basket"):
+        strategy.decide(
+            "QQQ", market, market_breadth_signal_parameters()
+        )
+
+
+def test_market_breadth_liquidation_precedes_feature_consumption():
+    market = bars(22)
+    effective = market[20].close_at
+    strategy = MarketBreadthSignalAdapter(
+        breadth_matrix(
+            effective, {"AAPL": True, "MSFT": True, "SPY": True}
+        ),
+        liquidation_signal_at=market[20].close_at,
+    )
+    assert (
+        strategy.decide(
+            "AAPL", market[:21], market_breadth_signal_parameters()
+        )
+        == ACTION_EXIT_LONG
+    )
 
 
 def test_momentum_confirmation_requires_rising_prior_pit_session_and_trades():

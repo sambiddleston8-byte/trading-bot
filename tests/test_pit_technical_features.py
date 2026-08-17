@@ -8,7 +8,13 @@ import pytest
 from core.features.pit_feature_contract import PITFeatureRecord, _record, build_revision_matrix, build_technical_feature_matrices, campaign_observation_cutoff, revise_feature_record, validate_revision_chain
 from core.orchestration.stage2_qualification import _at,_bar_available,_bar_close,_sessions
 from core.research.stage3_feature_strategy_evaluation import evaluate, evaluate_momentum_confirmed
-from core.research.stage3_train_rolling_diagnostic import evaluate_train_rolling
+from core.research.stage3_train_rolling_diagnostic import (
+    _policy_divergence_observed,
+    evaluate_train_market_breadth,
+    evaluate_train_rolling,
+)
+from core.research import stage3_train_rolling_diagnostic as rolling_diagnostic
+from scripts.run_stage3_train_market_breadth_evaluation import _summary
 
 def canonical(v):return json.dumps(v,sort_keys=True,separators=(",",":"),allow_nan=False).encode()
 RETRIEVED_AT="2026-08-16T20:00:00+00:00"
@@ -219,3 +225,87 @@ def test_train_rolling_diagnostic_executes_three_folds_without_validation(tmp_pa
             assert all(trade["fold_id"].startswith("TRAIN-FOLD-") for trade in aggregate["trade_log"])
     repeated=evaluate_train_rolling(tmp_path,admitted_train_matrix_sha256=pin)
     assert repeated["evaluation_sha256"]==report["evaluation_sha256"]
+    # Golden values reproduced directly from parent commit cc6b512aa70339a9975fcf1d310f50d2a7cd91c4.
+    assert report["evaluation_sha256"]=="71d2b3513de382be9642ae0f653fc4280df50d5867f55d8a67be1b26d42eaff3"
+    assert report["artifact_sha256"]=="10614257c087cf5eaf20c474d9d0e6fef51d9a2250938b9ddfe6dce81e33729f"
+
+
+def test_train_market_breadth_evaluation_is_separate_and_train_only(tmp_path):
+    environment(tmp_path);build(tmp_path)
+    assert rolling_diagnostic.FOLD_COUNT==3
+    matrix_path=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/train_matrix.json"
+    matrix=json.loads(matrix_path.read_text())
+    identical={scenario:{"completed_trade_count":1} for scenario in ("BASE","PESSIMISTIC")}
+    assert _policy_divergence_observed({"policies":{
+        "BASELINE_REFERENCE":{"aggregate":identical},
+        "MARKET_BREADTH":{"aggregate":identical},
+    }}) is False
+    zero_trade={
+        "BASE":{"completed_trade_count":0,"result":"different"},
+        "PESSIMISTIC":{"completed_trade_count":1,"result":"different"},
+    }
+    assert _policy_divergence_observed({"policies":{
+        "BASELINE_REFERENCE":{"aggregate":identical},
+        "MARKET_BREADTH":{"aggregate":zero_trade},
+    }}) is False
+    sessions=sorted({row["effective_at"] for row in matrix["rows"]})
+    assert len(sessions)==54
+    bearish_sessions=set(sessions[20:30])
+    for row in matrix["rows"]:
+        if row["entity_id"] in {"MSFT","SPY"} and row["effective_at"] in bearish_sessions:
+            row["values"]={**row["values"],"sma_20":"90","sma_50":"100","momentum_20":"-0.1"}
+            material={key:value for key,value in row.items() if key!="record_sha256"}
+            row["record_sha256"]=hashlib.sha256(canonical(material)).hexdigest()
+    material={key:value for key,value in matrix.items() if key!="matrix_sha256"}
+    matrix["matrix_sha256"]=hashlib.sha256(canonical(material)).hexdigest()
+    matrix_path.write_bytes(canonical(matrix)+b"\n")
+    pin=matrix["matrix_sha256"]
+    (tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/validation_matrix.json").unlink()
+    (tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/validation.json").unlink()
+    test_matrix=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/technical_features/test_matrix.json"
+    test_store=tmp_path/"data/research/massive_campaign_v2_revision_2/stage2/clean_feature_store/test.json"
+    test_matrix.write_text("sealed TEST matrix must not be read")
+    test_store.write_text("sealed TEST store must not be read")
+    report=evaluate_train_market_breadth(
+        tmp_path,admitted_train_matrix_sha256=pin
+    )
+    assert report["status"]=="TRAIN_ONLY_MARKET_BREADTH_POLICY_EVALUATION_COMPLETE"
+    assert report["source_partition"]=="TRAIN"
+    assert report["validation_data_read"] is False
+    assert report["untouched_test_included"] is False
+    assert report["promotion_allowed"] is False
+    assert report["policy_divergence_observed"] is True
+    assert report["artifact_lineage"]["revision"]==1
+    assert report["artifact_lineage"]["predecessor_paths"]==[]
+    assert set(report["policies"])=={"BASELINE_REFERENCE","MARKET_BREADTH"}
+    assert report["policies"]["MARKET_BREADTH"]["policy_version"]=="admitted-pit-majority-breadth-signal-v3"
+    for policy in report["policies"].values():
+        assert len(policy["folds"])==3
+        for scenario in ("BASE","PESSIMISTIC"):
+            aggregate=policy["aggregate"][scenario]
+            assert aggregate["pooled_evaluated_sessions"]==54
+            assert aggregate["pooled_daily_observations"]==54
+            assert aggregate["completed_trade_count"]==len(aggregate["trade_log"])
+            assert all(
+                trade["fold_id"].startswith("TRAIN-FOLD-")
+                for trade in aggregate["trade_log"]
+            )
+    for scenario in ("BASE","PESSIMISTIC"):
+        baseline=report["policies"]["BASELINE_REFERENCE"]["aggregate"][scenario]
+        breadth=report["policies"]["MARKET_BREADTH"]["aggregate"][scenario]
+        assert breadth["completed_trade_count"]>0
+        assert breadth["fold_reset_chained_total_return"]!=baseline["fold_reset_chained_total_return"]
+    assert test_matrix.read_text()=="sealed TEST matrix must not be read"
+    assert test_store.read_text()=="sealed TEST store must not be read"
+    output=tmp_path/"data/research/massive_campaign_v2_revision_2/stage3/train_market_breadth_policy_evaluation_committed_v1.json"
+    assert output.exists()
+    repeated=evaluate_train_market_breadth(
+        tmp_path,admitted_train_matrix_sha256=pin
+    )
+    assert repeated["evaluation_sha256"]==report["evaluation_sha256"]
+    assert repeated["artifact_sha256"]==report["artifact_sha256"]
+    public=_summary(report)
+    assert set(public)=={
+        "status","evaluation_sha256","artifact_sha256","artifact_path"
+    }
+    assert "policies" not in public
