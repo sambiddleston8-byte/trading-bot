@@ -19,6 +19,7 @@ from core.guardrailed_backtest import (
 SYMBOLS = ("AAPL", "MSFT", "SPY")
 POLICY_VERSION = "admitted-pit-technical-signal-v1"
 CONFIRMED_POLICY_VERSION = "admitted-pit-momentum-confirmed-signal-v2"
+BREADTH_POLICY_VERSION = "admitted-pit-majority-breadth-signal-v3"
 
 
 def _canonical(value: Any) -> bytes:
@@ -54,6 +55,25 @@ def momentum_confirmed_signal_parameters() -> dict[str, Any]:
         ),
         "exit_rule": "sma_20 <= sma_50 OR momentum_20 <= 0",
         "confirmation_sessions": 2,
+        "atr_position_sizing": (
+            "admitted atr_14 with engine 2x ATR stop and 1% equity risk cap"
+        ),
+        "parameter_search_allowed": False,
+    }
+
+
+def market_breadth_signal_parameters() -> dict[str, Any]:
+    return {
+        "entry_rule": (
+            "own sma_20 > sma_50 AND own momentum_20 > 0 AND at least "
+            "2 of AAPL/MSFT/SPY satisfy the same bullish rule"
+        ),
+        "exit_rule": (
+            "own bullish rule fails OR fewer than 2 of AAPL/MSFT/SPY are bullish "
+            "OR any same-session basket feature is unavailable"
+        ),
+        "breadth_universe": list(SYMBOLS),
+        "breadth_minimum_symbols": 2,
         "atr_position_sizing": (
             "admitted atr_14 with engine 2x ATR stop and 1% equity risk cap"
         ),
@@ -313,3 +333,57 @@ class MomentumConfirmedSignalAdapter(DeterministicSignalAdapter):
         ):
             return ACTION_ENTER_LONG
         return ACTION_HOLD
+
+
+class MarketBreadthSignalAdapter(DeterministicSignalAdapter):
+    """Require an exact-PIT bullish majority across the fixed campaign basket."""
+
+    version = BREADTH_POLICY_VERSION
+
+    @staticmethod
+    def parameters() -> dict[str, Any]:
+        return market_breadth_signal_parameters()
+
+    @staticmethod
+    def _validate_parameters(parameters: Mapping[str, Any]) -> None:
+        if dict(parameters) != market_breadth_signal_parameters():
+            raise ValueError(
+                "strategy parameters differ from the fixed market breadth policy"
+            )
+
+    def decide(
+        self,
+        symbol: str,
+        history_through_signal_close: Sequence[MarketBar],
+        parameters: Mapping[str, Any],
+    ) -> str:
+        self._validate_parameters(parameters)
+        if not history_through_signal_close:
+            raise ValueError("strategy history is empty")
+        current_bar = history_through_signal_close[-1]
+        if current_bar.symbol != symbol:
+            raise ValueError("strategy history symbol differs from the request")
+        if symbol not in SYMBOLS:
+            raise ValueError("strategy symbol is outside the fixed breadth basket")
+        if current_bar.close_at >= self.liquidation_signal_at:
+            return ACTION_EXIT_LONG
+
+        bullish: dict[str, bool] = {}
+        for basket_symbol in SYMBOLS:
+            record = self.consumer.consume_if_available(
+                basket_symbol,
+                effective_at=current_bar.close_at,
+                decision_at=current_bar.available_at,
+            )
+            if record is None:
+                return ACTION_EXIT_LONG
+            bullish[basket_symbol] = (
+                Decimal(record.values["sma_20"])
+                > Decimal(record.values["sma_50"])
+                and Decimal(record.values["momentum_20"]) > 0
+            )
+        if bullish[symbol] and sum(bullish.values()) >= int(
+            parameters["breadth_minimum_symbols"]
+        ):
+            return ACTION_ENTER_LONG
+        return ACTION_EXIT_LONG

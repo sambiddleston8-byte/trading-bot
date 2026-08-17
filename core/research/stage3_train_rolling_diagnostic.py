@@ -17,9 +17,11 @@ from core.guardrailed_backtest import (
 from core.research.pit_feature_signal_adapter import (
     SYMBOLS,
     DeterministicSignalAdapter,
+    MarketBreadthSignalAdapter,
     MomentumConfirmedSignalAdapter,
     PITFeatureConsumer,
     deterministic_signal_parameters,
+    market_breadth_signal_parameters,
     momentum_confirmed_signal_parameters,
 )
 from core.research.stage3_feature_strategy_evaluation import (
@@ -42,6 +44,9 @@ from core.research.stage3_feature_strategy_evaluation import (
 
 
 OUTPUT = ROOT / "stage3/train_rolling_policy_diagnostic.json"
+BREADTH_OUTPUT = (
+    ROOT / "stage3/train_market_breadth_policy_evaluation_committed_v1.json"
+)
 FOLD_COUNT = 3
 FOLD_SIZE = 18
 POLICIES: Mapping[str, tuple[type[DeterministicSignalAdapter], Mapping[str, Any]]] = {
@@ -49,6 +54,18 @@ POLICIES: Mapping[str, tuple[type[DeterministicSignalAdapter], Mapping[str, Any]
     "MOMENTUM_CONFIRMED": (
         MomentumConfirmedSignalAdapter,
         momentum_confirmed_signal_parameters(),
+    ),
+}
+BREADTH_POLICIES: Mapping[
+    str, tuple[type[DeterministicSignalAdapter], Mapping[str, Any]]
+] = {
+    "BASELINE_REFERENCE": (
+        DeterministicSignalAdapter,
+        deterministic_signal_parameters(),
+    ),
+    "MARKET_BREADTH": (
+        MarketBreadthSignalAdapter,
+        market_breadth_signal_parameters(),
     ),
 }
 
@@ -110,6 +127,21 @@ def _assert_flat_and_settled(
         raise ValueError("rolling fold retains unsettled cash")
     if result.ending_equity != final.settled_cash:
         raise ValueError("rolling fold ending equity is not fully settled cash")
+
+
+def _policy_divergence_observed(report: Mapping[str, Any]) -> bool:
+    """Return whether breadth traded under both models and differs under either."""
+    baseline = report["policies"]["BASELINE_REFERENCE"]
+    breadth = report["policies"]["MARKET_BREADTH"]
+    if any(
+        breadth["aggregate"][scenario]["completed_trade_count"] <= 0
+        for scenario in ("BASE", "PESSIMISTIC")
+    ):
+        return False
+    return any(
+        breadth["aggregate"][scenario] != baseline["aggregate"][scenario]
+        for scenario in ("BASE", "PESSIMISTIC")
+    )
 
 
 def _aggregate_folds(
@@ -234,10 +266,17 @@ def _aggregate_folds(
     }
 
 
-def evaluate_train_rolling(
+def _evaluate_train_rolling(
     repository_root: Path,
     *,
-    admitted_train_matrix_sha256: str = ADMITTED_MATRIX_SHA256["TRAIN"],
+    admitted_train_matrix_sha256: str,
+    policies: Mapping[
+        str, tuple[type[DeterministicSignalAdapter], Mapping[str, Any]]
+    ],
+    output: Path,
+    status: str,
+    observe_policy_divergence: bool,
+    artifact_lineage: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
     stage2 = repository_root / ROOT / "stage2"
     qualification_bytes = (stage2 / "qualification_report.json").read_bytes()
@@ -280,7 +319,7 @@ def evaluate_train_rolling(
         (ExchangeFeeTier(None, Decimal("1"), Decimal("0")),),
     )
     report: dict[str, Any] = {
-        "status": "TRAIN_ONLY_FIXED_POLICY_ROLLING_DIAGNOSTIC_COMPLETE",
+        "status": status,
         "source_partition": "TRAIN",
         "fold_count": FOLD_COUNT,
         "sessions_per_fold": FOLD_SIZE,
@@ -296,14 +335,16 @@ def evaluate_train_rolling(
         "qualification_report_artifact_sha256": qualification_sha256,
         "policies": {},
     }
+    if artifact_lineage is not None:
+        report["artifact_lineage"] = dict(artifact_lineage)
     runtime: dict[
         str, dict[str, list[tuple[str, Mapping[str, BacktestResult], Mapping[str, Any]]]]
     ] = {
         policy: {scenario: [] for scenario in ("BASE", "PESSIMISTIC")}
-        for policy in POLICIES
+        for policy in policies
     }
 
-    for policy_name, (adapter_type, parameters) in POLICIES.items():
+    for policy_name, (adapter_type, parameters) in policies.items():
         policy_report: dict[str, Any] = {
             "policy_version": adapter_type.version,
             "parameters": dict(parameters),
@@ -472,6 +513,50 @@ def evaluate_train_rolling(
         }
         report["policies"][policy_name] = policy_report
 
+    if observe_policy_divergence:
+        report["policy_divergence_observed"] = _policy_divergence_observed(report)
+        report["policy_divergence_definition"] = (
+            "MARKET_BREADTH has completed trades under both cost models and its "
+            "aggregate differs from BASELINE_REFERENCE under at least one model"
+        )
+
     report["evaluation_sha256"] = _hash(_canonical(report))
-    report["artifact_sha256"] = _write_private(repository_root / OUTPUT, report)
+    report["artifact_sha256"] = _write_private(repository_root / output, report)
     return report
+
+
+def evaluate_train_rolling(
+    repository_root: Path,
+    *,
+    admitted_train_matrix_sha256: str = ADMITTED_MATRIX_SHA256["TRAIN"],
+) -> dict[str, Any]:
+    return _evaluate_train_rolling(
+        repository_root,
+        admitted_train_matrix_sha256=admitted_train_matrix_sha256,
+        policies=POLICIES,
+        output=OUTPUT,
+        status="TRAIN_ONLY_FIXED_POLICY_ROLLING_DIAGNOSTIC_COMPLETE",
+        observe_policy_divergence=False,
+        artifact_lineage=None,
+    )
+
+
+def evaluate_train_market_breadth(
+    repository_root: Path,
+    *,
+    admitted_train_matrix_sha256: str = ADMITTED_MATRIX_SHA256["TRAIN"],
+) -> dict[str, Any]:
+    return _evaluate_train_rolling(
+        repository_root,
+        admitted_train_matrix_sha256=admitted_train_matrix_sha256,
+        policies=BREADTH_POLICIES,
+        output=BREADTH_OUTPUT,
+        status="TRAIN_ONLY_MARKET_BREADTH_POLICY_EVALUATION_COMPLETE",
+        observe_policy_divergence=True,
+        artifact_lineage={
+            "revision": 1,
+            "path": BREADTH_OUTPUT.as_posix(),
+            "predecessor_paths": [],
+            "reason": "first committed market-breadth evaluation implementation",
+        },
+    )
