@@ -25,10 +25,12 @@ from core.research.catalyst_event_specialist import CatalystEventSpecialistBot
 from core.research.political_disclosure_specialist import (
     PoliticalDisclosureSpecialistBot,
 )
+from core.research.macro_cross_asset_specialist import MacroCrossAssetSpecialistBot
 from core.research.specialist_signals import (
     CatalystResearchExecutiveAggregatorBot,
     ExecutiveAggregatorBot,
     FundamentalResearchExecutiveAggregatorBot,
+    MacroResearchExecutiveAggregatorBot,
     PoliticalResearchExecutiveAggregatorBot,
     ExecutivePortfolioIntent,
     RiskEnvelope,
@@ -160,6 +162,29 @@ def political_research_intent_parameters() -> dict[str, Any]:
     return result
 
 
+def macro_research_intent_parameters() -> dict[str, Any]:
+    result = executive_intent_signal_parameters()
+    result.update(
+        architecture=(
+            "TECHNICAL + SEC_FORM4_INSIDER + MACRO_CROSS_ASSET -> "
+            "ONE EXECUTIVE; RISK separate"
+        ),
+        executive_version=MacroResearchExecutiveAggregatorBot.VERSION,
+        macro_specialist_version=(
+            MacroResearchExecutiveAggregatorBot.SPECIALIST_VERSIONS[
+                "MACRO_CROSS_ASSET"
+            ]
+        ),
+        alpha_weights={
+            name: str(weight)
+            for name, weight in MacroResearchExecutiveAggregatorBot.WEIGHTS.items()
+        },
+        macro_risk_authority=False,
+        registration_status="RESEARCH_ONLY_PENDING_GENUINE_QUALIFIED_TRAIN_ABLATION",
+    )
+    return result
+
+
 class ExecutiveIntentSignalAdapter:
     """Create one complete TRAIN-only Executive intent for the whole portfolio."""
 
@@ -174,6 +199,7 @@ class ExecutiveIntentSignalAdapter:
         fundamental_specialist: FundamentalValuationSpecialistBot | None = None,
         catalyst_specialist: CatalystEventSpecialistBot | None = None,
         political_specialist: PoliticalDisclosureSpecialistBot | None = None,
+        macro_specialist: MacroCrossAssetSpecialistBot | None = None,
         executive: ExecutiveAggregatorBot | None = None,
     ) -> None:
         self.consumer = consumer
@@ -182,6 +208,7 @@ class ExecutiveIntentSignalAdapter:
         self.fundamental_specialist = fundamental_specialist
         self.catalyst_specialist = catalyst_specialist
         self.political_specialist = political_specialist
+        self.macro_specialist = macro_specialist
         self.executive = executive or ExecutiveAggregatorBot()
         self.liquidation_signal_at = _time(
             liquidation_signal_at, "liquidation_signal_at"
@@ -205,7 +232,11 @@ class ExecutiveIntentSignalAdapter:
                 else (
                     political_research_intent_parameters()
                     if isinstance(self.executive, PoliticalResearchExecutiveAggregatorBot)
-                    else executive_intent_signal_parameters()
+                    else (
+                        macro_research_intent_parameters()
+                        if isinstance(self.executive, MacroResearchExecutiveAggregatorBot)
+                        else executive_intent_signal_parameters()
+                    )
                 )
             )
         )
@@ -509,6 +540,15 @@ class ExecutiveIntentSignalAdapter:
                         symbol, decision_at=current_by_symbol[symbol].available_at
                     )
                 )
+        if isinstance(self.executive, MacroResearchExecutiveAggregatorBot):
+            if self.macro_specialist is None:
+                raise ValueError("Macro Executive candidate lacks its Specialist")
+            for symbol in histories:
+                signals[symbol]["MACRO_CROSS_ASSET"] = (
+                    self.macro_specialist.score_tick(
+                        symbol, decision_at=current_by_symbol[symbol].available_at
+                    )
+                )
         stops: dict[str, StandingStopInstruction] = {}
         for symbol, record in records.items():
             if record is None:
@@ -625,3 +665,29 @@ class PoliticalResearchExecutiveIntentAdapter(ExecutiveIntentSignalAdapter):
     @staticmethod
     def parameters() -> dict[str, Any]:
         return political_research_intent_parameters()
+
+
+class MacroResearchExecutiveIntentAdapter(ExecutiveIntentSignalAdapter):
+    """Explicit research-only adapter for the Macro/Cross-Asset ablation."""
+
+    version = "train-only-macro-executive-adapter-v1"
+
+    def __init__(
+        self,
+        consumer: PITFeatureConsumer,
+        *,
+        insider_specialist: SECForm4InsiderSpecialistBot,
+        macro_specialist: MacroCrossAssetSpecialistBot,
+        liquidation_signal_at: str | datetime,
+    ) -> None:
+        super().__init__(
+            consumer,
+            insider_specialist=insider_specialist,
+            macro_specialist=macro_specialist,
+            executive=MacroResearchExecutiveAggregatorBot(),
+            liquidation_signal_at=liquidation_signal_at,
+        )
+
+    @staticmethod
+    def parameters() -> dict[str, Any]:
+        return macro_research_intent_parameters()

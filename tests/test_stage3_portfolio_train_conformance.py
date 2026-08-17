@@ -46,6 +46,15 @@ from core.research.stage4_train_political_evaluation import (
     STATUS as POLITICAL_STATUS,
     evaluate_train_political_ablation,
 )
+from core.research.macro_cross_asset_specialist import (
+    FACTOR_NAMES,
+    build_macro_cross_asset_artifact,
+)
+from core.research.stage4_train_macro_evaluation import (
+    MACRO_ARTIFACT,
+    STATUS as MACRO_STATUS,
+    evaluate_train_macro_ablation,
+)
 
 
 ROOT = "data/research/massive_campaign_v2_revision_2"
@@ -327,6 +336,55 @@ def test_synthetic_political_ablation_runs_both_cost_models_and_stays_research_o
     metadata = report["evaluation_metadata"]
     assert metadata["publication_delay_enforced"] is True
     assert metadata["copy_trade_allowed"] is False
+    assert metadata["registration_decision"] == "RESEARCH_ONLY"
+    assert metadata["fixture_limitation"] == "AAPL/MSFT/SPY is short, narrow, and non-promotable"
+    assert report["promotion_allowed"] is False
+    assert sealed_test.read_text() == "sealed TEST must not be read"
+
+
+def test_synthetic_macro_ablation_runs_both_cost_models_and_stays_research_only(tmp_path):
+    matrix_sha256, form4_sha256, sealed_test = _synthetic_admitted_train(tmp_path)
+    rows = []
+    for symbol, sensitivity in (("AAPL", "1"), ("MSFT", "0.5"), ("SPY", "-0.5")):
+        snapshot_id = f"{symbol}-SYNTHETIC-MACRO"
+        rows.append({
+            "symbol": symbol,
+            "snapshot_id": snapshot_id,
+            "effective_at": "2024-10-01T00:00:00+00:00",
+            "reported_at": "2024-11-01T14:00:00+00:00",
+            "available_at": "2024-11-01T14:00:00+00:00",
+            "revision": 1,
+            "factors": {name: "0.8" for name in FACTOR_NAMES},
+            "symbol_sensitivities": {name: sensitivity for name in FACTOR_NAMES},
+            "series_payload_sha256": {
+                name: _sha(f"macro:{symbol}:{name}".encode())
+                for name in FACTOR_NAMES
+            },
+            "source_locator": f"synthetic://macro/{symbol}/2024-10",
+        })
+    macro = build_macro_cross_asset_artifact(
+        rows, retrieved_at="2025-03-01T00:00:00+00:00"
+    )
+    path = tmp_path / MACRO_ARTIFACT
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(_canonical(macro) + b"\n")
+    report = evaluate_train_macro_ablation(
+        tmp_path,
+        admitted_train_matrix_sha256=matrix_sha256,
+        expected_form4_artifact_sha256=form4_sha256,
+        expected_macro_artifact_sha256=macro["artifact_sha256"],
+    )
+    assert report["status"] == MACRO_STATUS
+    assert set(report["policies"]) == {
+        "TECHNICAL_INSIDER_BASELINE", "TECHNICAL_INSIDER_MACRO",
+    }
+    assert all(
+        set(policy["aggregate"]) == {"BASE", "PESSIMISTIC"}
+        for policy in report["policies"].values()
+    )
+    metadata = report["evaluation_metadata"]
+    assert metadata["macro_alpha_only"] is True
+    assert metadata["macro_risk_authority"] is False
     assert metadata["registration_decision"] == "RESEARCH_ONLY"
     assert metadata["fixture_limitation"] == "AAPL/MSFT/SPY is short, narrow, and non-promotable"
     assert report["promotion_allowed"] is False
