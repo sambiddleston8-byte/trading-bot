@@ -7,7 +7,7 @@ import pytest
 
 from core.features.pit_feature_contract import PITFeatureRecord, _record, build_revision_matrix, build_technical_feature_matrices, campaign_observation_cutoff, revise_feature_record, validate_revision_chain
 from core.orchestration.stage2_qualification import _at,_bar_available,_bar_close,_sessions
-from core.research.stage3_feature_strategy_evaluation import evaluate
+from core.research.stage3_feature_strategy_evaluation import evaluate, evaluate_momentum_confirmed
 
 def canonical(v):return json.dumps(v,sort_keys=True,separators=(",",":"),allow_nan=False).encode()
 RETRIEVED_AT="2026-08-16T20:00:00+00:00"
@@ -147,3 +147,23 @@ def test_stage3_feature_strategy_evaluation_uses_bounded_partitions(tmp_path):
     attribution=composite["execution_cost_attribution"]
     assert abs(Decimal(attribution["cash_pnl_reconciliation_residual"]))<=Decimal(attribution["cash_reconciliation_tolerance"])
     assert report["untouched_test_included"] is False
+
+
+def test_momentum_confirmed_strategy_runs_over_bounded_partitions(tmp_path):
+    environment(tmp_path);build(tmp_path)
+    pins={role:json.loads((tmp_path/f"data/research/massive_campaign_v2_revision_2/stage3/technical_features/{role.lower()}_matrix.json").read_text())["matrix_sha256"] for role in ("TRAIN","VALIDATION")}
+    baseline=evaluate(tmp_path,admitted_matrix_sha256=pins)
+    confirmed=evaluate_momentum_confirmed(tmp_path,admitted_matrix_sha256=pins)
+    assert confirmed["status"]=="TRAIN_VALIDATION_MOMENTUM_CONFIRMED_STRATEGY_EVALUATED"
+    assert confirmed["evaluation_sha256"]!=baseline["evaluation_sha256"]
+    assert confirmed["strategy_variant_lineage"]=={
+        "policy_version":"admitted-pit-momentum-confirmed-signal-v2",
+        "parent_policy_version":"admitted-pit-technical-signal-v1",
+        "validation_evaluation_ordinal":2,
+        "validation_reused":True,
+        "parameter_selection_partition":"TRAIN_ONLY",
+    }
+    assert confirmed["partitions"]["TRAIN"]["scenarios"]["BASE"]["composite"]["evaluated_sessions"]==103
+    assert confirmed["partitions"]["VALIDATION"]["scenarios"]["BASE"]["composite"]["evaluated_sessions"]==42
+    assert confirmed["one_bar_train_purge"] is confirmed["one_bar_validation_embargo"] is True
+    assert confirmed["untouched_test_included"] is False

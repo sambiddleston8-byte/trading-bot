@@ -28,16 +28,21 @@ from core.research.conservative_baseline_campaign_v2_proposal import (
     PARENT_RESEARCH_EXEMPTION_RECORD_HASH,
 )
 from core.research.pit_feature_signal_adapter import (
+    CONFIRMED_POLICY_VERSION,
+    POLICY_VERSION,
     SYMBOLS,
     DeterministicSignalAdapter,
+    MomentumConfirmedSignalAdapter,
     PITFeatureConsumer,
     deterministic_signal_parameters,
+    momentum_confirmed_signal_parameters,
 )
 
 
 NY = ZoneInfo("America/New_York")
 ROOT = Path("data/research/massive_campaign_v2_revision_2")
 OUTPUT = ROOT / "stage3/feature_strategy_evaluation.json"
+CONFIRMED_TREND_OUTPUT = ROOT / "stage3/momentum_confirmed_strategy_evaluation.json"
 INITIAL_CASH_PER_SYMBOL = Decimal("100000")
 ANNUALIZATION_SESSIONS = Decimal("252")
 ADMITTED_MATRIX_SHA256 = {
@@ -526,10 +531,16 @@ def _spy_buy_hold_total_return(
     return ending / initial - Decimal("1")
 
 
-def evaluate(
+def _evaluate_strategy(
     repository_root: Path,
     *,
-    admitted_matrix_sha256: Mapping[str, str] = ADMITTED_MATRIX_SHA256,
+    admitted_matrix_sha256: Mapping[str, str],
+    strategy_adapter: type[DeterministicSignalAdapter],
+    strategy_parameters: Mapping[str, Any],
+    strategy_name: str,
+    status: str,
+    output: Path,
+    variant_lineage: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     stage2 = repository_root / ROOT / "stage2"
     qualification_bytes = (stage2 / "qualification_report.json").read_bytes()
@@ -577,8 +588,8 @@ def evaluate(
         (ExchangeFeeTier(None, Decimal("1"), Decimal("0")),),
     )
     report: dict[str, Any] = {
-        "status": "TRAIN_VALIDATION_FEATURE_STRATEGY_EVALUATED",
-        "strategy": "SMA20_GT_SMA50_AND_MOMENTUM20_GT_ZERO_WITH_ADMITTED_ATR14_SIZING",
+        "status": status,
+        "strategy": strategy_name,
         "symbols": list(SYMBOLS),
         "initial_cash_per_symbol": _decimal(INITIAL_CASH_PER_SYMBOL),
         "one_bar_train_purge": bool(train_purged_at),
@@ -594,6 +605,8 @@ def evaluate(
         "qualification_report_artifact_sha256": qualification_sha256,
         "partitions": {},
     }
+    if variant_lineage is not None:
+        report["strategy_variant_lineage"] = dict(variant_lineage)
     all_actions = partitions["TRAIN"]["corporate_actions"] + partitions["VALIDATION"]["corporate_actions"]
     if any(action["action_type"] == "SPLIT" for action in all_actions):
         raise ValueError(
@@ -674,7 +687,7 @@ def evaluate(
                         receipt_sha256=qualification["qualification_sha256"],
                     ),
                 )
-                strategy = DeterministicSignalAdapter(
+                strategy = strategy_adapter(
                     consumers[role], liquidation_signal_at=liquidation_signal_at
                 )
                 result = engine.run(
@@ -692,7 +705,7 @@ def evaluate(
                     corporate_actions=applicable_actions,
                     prices_are_unadjusted=True,
                     strategy=strategy,
-                    parameters=deterministic_signal_parameters(),
+                    parameters=strategy_parameters,
                     evaluation_start=evaluation_start,
                     evaluation_end=evaluation_end,
                 )
@@ -721,5 +734,49 @@ def evaluate(
             }
         report["partitions"][role] = role_report
     report["evaluation_sha256"] = _hash(_canonical(report))
-    report["artifact_sha256"] = _write_private(repository_root / OUTPUT, report)
+    report["artifact_sha256"] = _write_private(repository_root / output, report)
     return report
+
+
+def evaluate(
+    repository_root: Path,
+    *,
+    admitted_matrix_sha256: Mapping[str, str] = ADMITTED_MATRIX_SHA256,
+) -> dict[str, Any]:
+    return _evaluate_strategy(
+        repository_root,
+        admitted_matrix_sha256=admitted_matrix_sha256,
+        strategy_adapter=DeterministicSignalAdapter,
+        strategy_parameters=deterministic_signal_parameters(),
+        strategy_name=(
+            "SMA20_GT_SMA50_AND_MOMENTUM20_GT_ZERO_WITH_ADMITTED_ATR14_SIZING"
+        ),
+        status="TRAIN_VALIDATION_FEATURE_STRATEGY_EVALUATED",
+        output=OUTPUT,
+    )
+
+
+def evaluate_momentum_confirmed(
+    repository_root: Path,
+    *,
+    admitted_matrix_sha256: Mapping[str, str] = ADMITTED_MATRIX_SHA256,
+) -> dict[str, Any]:
+    return _evaluate_strategy(
+        repository_root,
+        admitted_matrix_sha256=admitted_matrix_sha256,
+        strategy_adapter=MomentumConfirmedSignalAdapter,
+        strategy_parameters=momentum_confirmed_signal_parameters(),
+        strategy_name=(
+            "TWO_SESSION_RISING_MOMENTUM_CONFIRMATION_WITH_"
+            "SMA20_GT_SMA50_AND_ADMITTED_ATR14_SIZING"
+        ),
+        status="TRAIN_VALIDATION_MOMENTUM_CONFIRMED_STRATEGY_EVALUATED",
+        output=CONFIRMED_TREND_OUTPUT,
+        variant_lineage={
+            "policy_version": CONFIRMED_POLICY_VERSION,
+            "parent_policy_version": POLICY_VERSION,
+            "validation_evaluation_ordinal": 2,
+            "validation_reused": True,
+            "parameter_selection_partition": "TRAIN_ONLY",
+        },
+    )
