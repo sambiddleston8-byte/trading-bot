@@ -280,9 +280,24 @@ class StandingStopInstruction:
         object.__setattr__(self, "reference_price", price)
         if not self.trigger_rule or self.order_type != "STOP_MARKET":
             raise ValueError("standing-stop trigger and STOP_MARKET order type are required")
+        prefix = "LAST_PRICE_LTE_"
+        if not self.trigger_rule.startswith(prefix):
+            raise ValueError("standing-stop trigger rule is unsupported")
+        try:
+            trigger = Decimal(self.trigger_rule[len(prefix) :])
+        except Exception as error:
+            raise ValueError("standing-stop trigger price must be decimal-compatible") from error
+        if not trigger.is_finite() or trigger <= 0 or trigger >= price:
+            raise ValueError(
+                "standing-stop trigger price must be positive and below reference price"
+            )
         object.__setattr__(
             self, "evidence_sha256", _sha256(self.evidence_sha256, "evidence_sha256")
         )
+
+    @property
+    def trigger_price(self) -> Decimal:
+        return Decimal(self.trigger_rule.removeprefix("LAST_PRICE_LTE_"))
 
     def as_dict(self) -> dict[str, str]:
         return {

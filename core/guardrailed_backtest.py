@@ -26,9 +26,10 @@ from typing import Any, Iterable, Mapping, Protocol, Sequence
 ZERO = Decimal("0")
 ONE = Decimal("1")
 BPS = Decimal("10000")
-ATR_DECIMAL_CONTEXT = Context(
+ENGINE_DECIMAL_CONTEXT = Context(
     prec=34, rounding=ROUND_HALF_EVEN, Emin=-999999, Emax=999999
 )
+ATR_DECIMAL_CONTEXT = ENGINE_DECIMAL_CONTEXT
 ACTION_HOLD = "HOLD"
 ACTION_ENTER_LONG = "ENTER_LONG"
 ACTION_EXIT_LONG = "EXIT_LONG"
@@ -671,6 +672,21 @@ class PortfolioStateTrace:
 
 
 @dataclass(frozen=True)
+class ExecutiveIntentTrace:
+    """One immutable bridge from an Executive intent to engine mechanics."""
+
+    sequence: int
+    decision_at: datetime
+    symbol: str
+    intent_sha256: str
+    risk_envelope_sha256: str
+    action: str
+    current_weight: Decimal
+    target_weight: Decimal
+    reason_codes: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class BacktestResult:
     strategy_version: str
     parameter_hash: str
@@ -703,6 +719,7 @@ class BacktestResult:
     broker_connection_allowed: bool = False
     orders_submitted: bool = False
     live_trading_enabled: bool = False
+    executive_intents: tuple[ExecutiveIntentTrace, ...] = ()
 
 
 def _atr(history: Sequence[MarketBar], window: int) -> Decimal | None:
@@ -884,11 +901,13 @@ class GuardrailedBacktestEngine:
         positions: dict[str, _Position] = {}
         histories: dict[str, list[MarketBar]] = {symbol: [] for symbol in by_symbol}
         pending: dict[str, tuple[str, str, datetime, Decimal | None]] = {}
+        pending_executive: dict[str, tuple[Any, str, datetime]] = {}
         executions: list[ExecutionRecord] = []
         completed: list[CompletedTrade] = []
         equity_curve: list[tuple[datetime, Decimal]] = []
         sizing_decisions: list[SizingDecisionTrace] = []
         portfolio_states: list[PortfolioStateTrace] = []
+        executive_intents: list[ExecutiveIntentTrace] = []
         monthly_notional: dict[tuple[int, int], Decimal] = {}
         unsettled_cash: list[tuple[datetime, Decimal]] = []
         last_marks: dict[str, Decimal] = {}
@@ -1159,6 +1178,257 @@ class GuardrailedBacktestEngine:
             snapshot("POST_SIMULATED_SELL", moment, symbol)
             return filled
 
+        def execute_executive_target(
+            *,
+            symbol: str,
+            symbol_intent: Any,
+            reference: Decimal,
+            moment: datetime,
+            signal_at: datetime,
+            liquidity: Decimal,
+        ) -> None:
+            with localcontext(ENGINE_DECIMAL_CONTEXT):
+                _execute_executive_target_fixed_context(
+                    symbol=symbol,
+                    symbol_intent=symbol_intent,
+                    reference=reference,
+                    moment=moment,
+                    signal_at=signal_at,
+                    liquidity=liquidity,
+                )
+
+        def _execute_executive_target_fixed_context(
+            *,
+            symbol: str,
+            symbol_intent: Any,
+            reference: Decimal,
+            moment: datetime,
+            signal_at: datetime,
+            liquidity: Decimal,
+        ) -> None:
+            """Mechanically move one bounded instrument toward an Executive target."""
+            nonlocal cash
+            position = positions.get(symbol)
+            current_quantity = position.quantity if position else ZERO
+            portfolio_equity = equity()
+            settled_before = cash
+            unsettled_before = unsettled_total()
+            open_risk_before = sum(
+                max(ZERO, held.average_entry_price - held.stop_price) * held.quantity
+                for held in positions.values()
+            )
+            target_weight = _decimal(
+                symbol_intent.target_weight, "executive target weight"
+            )
+            if not ZERO <= target_weight <= ONE:
+                raise ValueError("executive target weight is outside [0, 1]")
+            if target_weight > self.config.maximum_position_fraction:
+                if target_weight > symbol_intent.current_weight:
+                    executions.append(
+                        ExecutionRecord(
+                            symbol, "BUY", "EXECUTIVE_TARGET", signal_at, moment,
+                            reference, reference, ZERO, ZERO, ZERO, "REJECTED",
+                            liquidity, self.config.bid_ask_half_spread_bps,
+                            self.config.baseline_slippage_bps,
+                            self.config.latency_adverse_bps, ZERO, ZERO,
+                        )
+                    )
+                    sizing_decisions.append(
+                        SizingDecisionTrace(
+                            symbol=symbol, action="BUY", reason="EXECUTIVE_TARGET",
+                            signal_at=signal_at, evaluated_at=moment,
+                            portfolio_equity_before=portfolio_equity,
+                            settled_cash_before=settled_before,
+                            unsettled_cash_before=unsettled_before,
+                            position_quantity_before=current_quantity,
+                            open_risk_before=open_risk_before,
+                            risk_per_share=None, risk_budget=None,
+                            risk_quantity_limit=ZERO, liquidity_notional=liquidity,
+                            liquidity_quantity_limit=ZERO, cash_quantity_limit=ZERO,
+                            requested_quantity=ZERO, filled_quantity=ZERO,
+                            limiting_constraints=("HARD_POSITION_FRACTION_MAXIMUM",),
+                            stop_price_after=position.stop_price if position else None,
+                        )
+                    )
+                    return
+                target_weight = self.config.maximum_position_fraction
+
+            maximum_cost_bps = (
+                self.config.bid_ask_half_spread_bps
+                + self.config.baseline_slippage_bps
+                + self.config.latency_adverse_bps
+                + self.config.liquidity_impact_bps_at_max_participation
+            )
+            maximum_buy_price = _adverse_price(reference, "BUY", maximum_cost_bps)
+            buy_target_quantity = (
+                portfolio_equity * target_weight / maximum_buy_price
+            ).to_integral_value(rounding=ROUND_FLOOR)
+            sell_target_quantity = (
+                portfolio_equity * target_weight / reference
+            ).to_integral_value(rounding=ROUND_FLOOR)
+            capacity_notional = (
+                liquidity * self.config.maximum_lagged_volume_participation
+            )
+
+            if buy_target_quantity > current_quantity:
+                stop = symbol_intent.standing_stop
+                if stop is None:
+                    raise ValueError("risk-increasing Executive intent lacks a standing stop")
+                proposed_stop = _decimal(
+                    stop.trigger_price, "executive standing-stop trigger", positive=True
+                )
+                effective_stop = (
+                    max(position.stop_price, proposed_stop)
+                    if position is not None
+                    else proposed_stop
+                )
+                if reference <= effective_stop:
+                    constraint = "STOP_ALREADY_BREACHED_AT_EXECUTION"
+                    risk_per_share = ZERO
+                    requested = buy_target_quantity - current_quantity
+                    risk_budget = ZERO
+                    risk_total_limit = current_quantity
+                else:
+                    risk_per_share = maximum_buy_price - effective_stop
+                    other_open_risk = sum(
+                        max(ZERO, held.average_entry_price - held.stop_price)
+                        * held.quantity
+                        for held_symbol, held in positions.items()
+                        if held_symbol != symbol
+                    )
+                    per_position_budget = (
+                        portfolio_equity * self.config.max_equity_risk_per_trade
+                    )
+                    existing_symbol_risk = (
+                        max(ZERO, position.average_entry_price - effective_stop)
+                        * position.quantity
+                        if position is not None
+                        else ZERO
+                    )
+                    aggregate_budget = max(
+                        ZERO,
+                        portfolio_equity * self.config.maximum_aggregate_open_risk
+                        - other_open_risk
+                        - existing_symbol_risk,
+                    )
+                    risk_budget = min(
+                        max(ZERO, per_position_budget - existing_symbol_risk),
+                        aggregate_budget,
+                    )
+                    risk_increment_limit = (
+                        risk_budget / risk_per_share
+                    ).to_integral_value(rounding=ROUND_FLOOR)
+                    requested = buy_target_quantity - current_quantity
+                    constraint = "EXECUTIVE_TARGET_WEIGHT"
+                if reference <= effective_stop:
+                    risk_increment_limit = ZERO
+                liquidity_limit = (
+                    capacity_notional / maximum_buy_price
+                ).to_integral_value(rounding=ROUND_FLOOR)
+                cash_limit = affordable_quantity(maximum_buy_price, requested, moment)
+                filled = min(
+                    requested, risk_increment_limit, liquidity_limit, cash_limit
+                )
+                impact_bps, total_cost_bps = _execution_cost_bps(
+                    self.config,
+                    reference_price=reference,
+                    filled_quantity=filled,
+                    lagged_liquidity_notional=liquidity,
+                )
+                fill_price = _adverse_price(reference, "BUY", total_cost_bps)
+                notional = filled * fill_price
+                fee = fee_for(notional, moment) if filled > ZERO else ZERO
+                if filled > ZERO:
+                    cash -= notional + fee
+                    record_notional(notional, moment)
+                    if position is None:
+                        positions[symbol] = _Position(
+                            filled, fill_price, notional + fee, notional + fee,
+                            ZERO, effective_stop, moment,
+                        )
+                    else:
+                        combined = position.quantity + filled
+                        weighted_price = (
+                            position.average_entry_price * position.quantity
+                            + fill_price * filled
+                        ) / combined
+                        positions[symbol] = _Position(
+                            combined,
+                            weighted_price,
+                            position.entry_total_cost + notional + fee,
+                            position.original_entry_total_cost + notional + fee,
+                            position.realized_exit_proceeds,
+                            effective_stop,
+                            position.opened_at,
+                        )
+                constraints = [constraint]
+                if risk_increment_limit < requested:
+                    constraints.append("HARD_OPEN_RISK_MAXIMUM")
+                if liquidity_limit < requested:
+                    constraints.append("LIQUIDITY_CAP")
+                if cash_limit < requested:
+                    constraints.append("CASH_AND_FEES")
+                executions.append(
+                    ExecutionRecord(
+                        symbol, "BUY", "EXECUTIVE_TARGET", signal_at, moment,
+                        reference, fill_price, requested, filled, fee,
+                        "FILLED" if filled == requested and filled > ZERO else (
+                            "PARTIALLY_FILLED_CANCELED" if filled > ZERO else "REJECTED"
+                        ),
+                        liquidity, self.config.bid_ask_half_spread_bps,
+                        self.config.baseline_slippage_bps,
+                        self.config.latency_adverse_bps, impact_bps, total_cost_bps,
+                    )
+                )
+                sizing_decisions.append(
+                    SizingDecisionTrace(
+                        symbol=symbol, action="BUY", reason="EXECUTIVE_TARGET",
+                        signal_at=signal_at, evaluated_at=moment,
+                        portfolio_equity_before=portfolio_equity,
+                        settled_cash_before=settled_before,
+                        unsettled_cash_before=unsettled_before,
+                        position_quantity_before=current_quantity,
+                        open_risk_before=open_risk_before,
+                        risk_per_share=risk_per_share, risk_budget=risk_budget,
+                        risk_quantity_limit=risk_increment_limit,
+                        liquidity_notional=liquidity,
+                        liquidity_quantity_limit=liquidity_limit,
+                        cash_quantity_limit=cash_limit,
+                        requested_quantity=requested, filled_quantity=filled,
+                        limiting_constraints=tuple(dict.fromkeys(constraints)),
+                        stop_price_after=(
+                            positions[symbol].stop_price if symbol in positions else None
+                        ),
+                    )
+                )
+                snapshot("POST_EXECUTIVE_BUY", moment, symbol)
+                return
+
+            desired_quantity = min(current_quantity, sell_target_quantity)
+            if desired_quantity < current_quantity:
+                requested = current_quantity - desired_quantity
+                capacity = (
+                    capacity_notional / reference
+                ).to_integral_value(rounding=ROUND_FLOOR)
+                if capacity > ZERO:
+                    close_quantity(
+                        symbol=symbol,
+                        requested_quantity=requested,
+                        maximum_fill_quantity=capacity,
+                        reference=reference,
+                        moment=moment,
+                        signal_at=signal_at,
+                        reason="EXECUTIVE_TARGET",
+                        liquidity=liquidity,
+                    )
+                else:
+                    record_unfilled_exit(
+                        symbol=symbol, requested=requested, reference=reference,
+                        moment=moment, signal_at=signal_at,
+                        reason="EXECUTIVE_TARGET", liquidity=liquidity,
+                        constraint="LIQUIDITY_CAP",
+                    )
+
         # Each bar is processed at its open and then its close.  Only the
         # history ending at the current close is ever passed to the strategy.
         for bar in rows:
@@ -1218,6 +1488,10 @@ class GuardrailedBacktestEngine:
                             pending_at,
                             pending_atr / action.split_ratio,
                         )
+                    if symbol in pending_executive:
+                        raise ValueError(
+                            "an Executive target cannot cross a split boundary"
+                        )
                 elif action.action_type == "CASH_DIVIDEND":
                     if key not in applied_actions and action.effective_at <= bar.open_at:
                         applied_actions.add(key)
@@ -1238,6 +1512,7 @@ class GuardrailedBacktestEngine:
                 processed_at = bar.open_at
                 terminated.add(symbol)
                 pending.pop(symbol, None)
+                pending_executive.pop(symbol, None)
                 if symbol in positions:
                     portfolio_equity_before = equity()
                     settled_before = cash
@@ -1293,15 +1568,53 @@ class GuardrailedBacktestEngine:
                     )
                     snapshot("TERMINAL_SETTLEMENT", processed_at, symbol)
 
-            if bar.open_at >= end and symbol in positions:
+            executive_decider = getattr(strategy_instance, "decide_portfolio", None)
+            if executive_decider is not None and not callable(executive_decider):
+                raise ValueError("strategy Executive decision interface is invalid")
+            if (
+                bar.open_at >= end
+                and symbol in positions
+                and executive_decider is None
+            ):
                 pending[symbol] = ("EXIT_LONG", "EVALUATION_END", end, None)
             if bar.open_at >= end:
-                pending.pop(symbol, None) if symbol not in positions else None
+                if symbol not in positions:
+                    pending.pop(symbol, None)
+                    pending_executive.pop(symbol, None)
 
-            order = pending.pop(symbol, None)
             lagged = _lagged_liquidity(history, self.config.lagged_liquidity_lookback)
             liquidity = lagged or ZERO
             capacity_notional = liquidity * self.config.maximum_lagged_volume_participation
+            executive_order = pending_executive.pop(symbol, None)
+            if executive_order is not None:
+                symbol_intent, intent_sha256, signal_at = executive_order
+                if not any(
+                    trace.intent_sha256 == intent_sha256
+                    and trace.decision_at == signal_at
+                    and trace.symbol == symbol
+                    for trace in executive_intents
+                ):
+                    raise ValueError(
+                        "pending Executive instruction lacks its immutable trace"
+                    )
+                order_age_seconds = Decimal(
+                    str((bar.open_at - signal_at).total_seconds())
+                )
+                if order_age_seconds > self.config.maximum_order_age_minutes * Decimal("60"):
+                    raise ValueError(
+                        "Executive instruction exceeded the configured maximum age"
+                    )
+                if bar.open_at < end or symbol_intent.action in {"REDUCE", "EXIT"}:
+                    execute_executive_target(
+                        symbol=symbol,
+                        symbol_intent=symbol_intent,
+                        reference=bar.open,
+                        moment=bar.open_at,
+                        signal_at=signal_at,
+                        liquidity=liquidity,
+                    )
+
+            order = pending.pop(symbol, None)
             if order and (bar.open_at < end or order[0] == "EXIT_LONG"):
                 action, reason, signal_at, stored_atr = order
                 order_age_seconds = Decimal(
@@ -1510,43 +1823,125 @@ class GuardrailedBacktestEngine:
                             "EXIT_LONG", "HARD_ATR_STOP", bar.open_at, None
                         )
 
+            if (
+                bar.open_at >= end
+                and symbol in positions
+                and executive_decider is not None
+                and symbol not in pending
+            ):
+                pending[symbol] = (
+                    "EXIT_LONG", "EVALUATION_END", end, None
+                )
+
             last_marks[symbol] = bar.close
             history.append(bar)
-            if start <= bar.close_at < end and eligible(symbol, bar.available_at):
-                action = strategy_instance.decide(symbol, tuple(history), parameters)
-                if action not in {ACTION_HOLD, ACTION_ENTER_LONG, ACTION_EXIT_LONG}:
-                    raise ValueError("strategy returned an unsupported action")
-                if action == ACTION_ENTER_LONG and symbol not in positions and symbol not in pending:
-                    feature_atr = getattr(strategy_instance, "atr_for_signal", None)
-                    if feature_atr is not None and not callable(feature_atr):
-                        raise ValueError("strategy ATR provider is invalid")
-                    historical_atr = _atr(history, self.config.atr_window)
-                    atr = (
-                        _decimal(
-                            feature_atr(symbol, tuple(history), parameters),
-                            "strategy feature ATR",
-                            positive=True,
+            eligible_now = eligible(symbol, bar.available_at)
+            if (
+                start <= bar.close_at < end
+                and (
+                    eligible_now
+                    or (executive_decider is not None and symbol in positions)
+                )
+            ):
+                if executive_decider is not None:
+                    from core.research.specialist_signals import ExecutivePortfolioIntent
+
+                    with localcontext(ENGINE_DECIMAL_CONTEXT):
+                        portfolio_equity = equity()
+                        current_weight = (
+                            positions[symbol].quantity
+                            * bar.close
+                            / portfolio_equity
+                            if symbol in positions and portfolio_equity > ZERO
+                            else ZERO
                         )
-                        if feature_atr is not None
-                        else historical_atr
+                    intent = executive_decider(
+                        symbol,
+                        tuple(history),
+                        parameters,
+                        current_weight=current_weight,
+                        eligible=eligible_now,
                     )
-                    if feature_atr is not None:
-                        if historical_atr is None:
-                            raise ValueError(
-                                "strategy feature ATR lacks causal bar history"
-                            )
-                        tolerance = max(
-                            Decimal("1e-24"), abs(historical_atr) * Decimal("1e-24")
+                    if type(intent) is not ExecutivePortfolioIntent:
+                        raise ValueError(
+                            "strategy Executive interface returned an unsupported intent"
                         )
-                        if abs(atr - historical_atr) > tolerance:
-                            raise ValueError(
-                                "strategy feature ATR differs from causal bar-derived ATR"
+                    try:
+                        intent_decision_at = datetime.fromisoformat(intent.decision_at)
+                    except (TypeError, ValueError) as error:
+                        raise ValueError(
+                            "Executive decision_at must be an ISO-8601 timestamp"
+                        ) from error
+                    if _time(intent_decision_at, "Executive decision_at") != bar.available_at:
+                        raise ValueError("Executive intent is not aligned to the signal time")
+                    if len(intent.symbol_intents) != 1 or intent.symbol_intents[0].symbol != symbol:
+                        raise ValueError(
+                            "bounded engine requires exactly one matching SymbolIntent"
+                        )
+                    symbol_intent = intent.symbol_intents[0]
+                    if symbol_intent.current_weight != current_weight:
+                        raise ValueError(
+                            "Executive intent current weight differs from engine state"
+                        )
+                    executive_intents.append(
+                        ExecutiveIntentTrace(
+                            sequence=len(executive_intents) + 1,
+                            decision_at=bar.available_at,
+                            symbol=symbol,
+                            intent_sha256=intent.intent_sha256,
+                            risk_envelope_sha256=intent.risk_envelope_sha256,
+                            action=symbol_intent.action,
+                            current_weight=symbol_intent.current_weight,
+                            target_weight=symbol_intent.target_weight,
+                            reason_codes=symbol_intent.reason_codes,
+                        )
+                    )
+                    if symbol_intent.action in {"ENTER_LONG", "REDUCE", "EXIT"}:
+                        pending_executive[symbol] = (
+                            symbol_intent,
+                            intent.intent_sha256,
+                            bar.available_at,
+                        )
+                else:
+                    action = strategy_instance.decide(symbol, tuple(history), parameters)
+                    if action not in {ACTION_HOLD, ACTION_ENTER_LONG, ACTION_EXIT_LONG}:
+                        raise ValueError("strategy returned an unsupported action")
+                    if action == ACTION_ENTER_LONG and symbol not in positions and symbol not in pending:
+                        feature_atr = getattr(strategy_instance, "atr_for_signal", None)
+                        if feature_atr is not None and not callable(feature_atr):
+                            raise ValueError("strategy ATR provider is invalid")
+                        historical_atr = _atr(history, self.config.atr_window)
+                        atr = (
+                            _decimal(
+                                feature_atr(symbol, tuple(history), parameters),
+                                "strategy feature ATR",
+                                positive=True,
                             )
-                    if atr is not None:
-                        pending[symbol] = (action, "STRATEGY_SIGNAL", bar.available_at, atr)
-                elif action == ACTION_EXIT_LONG and symbol in positions:
-                    pending[symbol] = (action, "STRATEGY_SIGNAL", bar.available_at, None)
-            elif start <= bar.close_at < end and symbol in positions and not eligible(symbol, bar.available_at):
+                            if feature_atr is not None
+                            else historical_atr
+                        )
+                        if feature_atr is not None:
+                            if historical_atr is None:
+                                raise ValueError(
+                                    "strategy feature ATR lacks causal bar history"
+                                )
+                            tolerance = max(
+                                Decimal("1e-24"), abs(historical_atr) * Decimal("1e-24")
+                            )
+                            if abs(atr - historical_atr) > tolerance:
+                                raise ValueError(
+                                    "strategy feature ATR differs from causal bar-derived ATR"
+                                )
+                        if atr is not None:
+                            pending[symbol] = (action, "STRATEGY_SIGNAL", bar.available_at, atr)
+                    elif action == ACTION_EXIT_LONG and symbol in positions:
+                        pending[symbol] = (action, "STRATEGY_SIGNAL", bar.available_at, None)
+            elif (
+                executive_decider is None
+                and start <= bar.close_at < end
+                and symbol in positions
+                and not eligible_now
+            ):
                 pending[symbol] = ("EXIT_LONG", "UNIVERSE_REMOVAL", bar.available_at, None)
             if start <= bar.close_at <= end:
                 equity_curve.append((bar.close_at, equity()))
@@ -1670,6 +2065,7 @@ class GuardrailedBacktestEngine:
             engine_config_canonical_json=engine_config_canonical_json,
             strategy_entrypoint=strategy_entrypoint,
             strategy_source_sha256=strategy_source_sha256,
+            executive_intents=tuple(executive_intents),
         )
 
     def run_base_and_pessimistic(self, **inputs: Any) -> Mapping[str, BacktestResult]:

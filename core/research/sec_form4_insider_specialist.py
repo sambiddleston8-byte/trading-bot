@@ -519,6 +519,11 @@ class SECForm4InsiderSpecialistBot:
             symbol=resolved_symbol,
             decision_at=decision.isoformat(),
             score=score,
+            maximum_input_available_at=(
+                max(row.available_at for row in evidence)
+                if evidence
+                else decision.isoformat()
+            ),
             evidence_count=len(evidence),
             evidence_sha256=evidence_hash,
             reason="TRAILING_60_DAY_P_S_CLUSTER_ROLE_INTENSITY" if evidence else "NO_QUALIFYING_FORM4_EVIDENCE",
