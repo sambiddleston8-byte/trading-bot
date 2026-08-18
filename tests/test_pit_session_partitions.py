@@ -8,8 +8,12 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
+import core.orchestration.pit_session_partitions as module
 from core.decision_ledger import LedgerIntegrityError
-from core.orchestration.pit_session_partitions import PITSessionPartitionLedger
+from core.orchestration.pit_session_partitions import (
+    PITCalendarReconciliation,
+    PITSessionPartitionLedger,
+)
 
 
 NY = ZoneInfo("America/New_York")
@@ -99,6 +103,147 @@ def test_calendar_snapshot_is_deterministic_provider_neutral_and_research_only(t
     assert first["test_admitted"] is False
     assert first["performance_claim_allowed"] is False
     assert first["promotion_allowed"] is False
+    reconciliation = first_ledger.reconcile_calendar_snapshot(
+        first["calendar_snapshot_id"]
+    )
+    assert reconciliation.status == "CURRENT"
+    assert reconciliation.superseded_by_calendar_snapshot_id is None
+    assert reconciliation.reason_code is None
+    assert reconciliation.synthetic_fixture is True
+    assert reconciliation.dataset_admitted is False
+    assert reconciliation.performance_claim_allowed is False
+    assert reconciliation.promotion_allowed is False
+
+
+def test_calendar_correction_preserves_history_and_invalidates_old_partition_consumption(
+    tmp_path,
+):
+    days = weekdays("2025-11-03", 35)
+    ledger = PITSessionPartitionLedger(tmp_path / "ledger.jsonl", clock=lambda: CLOCK)
+    original = calendar(ledger, days)
+    old_manifest = manifest(ledger, original, days)
+    corrected_sessions = [
+        session(day, kind="EARLY_CLOSE" if day == date(2025, 11, 28) else "REGULAR")
+        for day in days
+    ]
+    replacement = calendar(
+        ledger,
+        days,
+        sessions=corrected_sessions,
+        source_locator="synthetic-fixture-corrected-early-close",
+        source_payload_sha256="b" * 64,
+        supersedes_calendar_snapshot_id=original["calendar_snapshot_id"],
+        supersession_reason="SOURCE_CORRECTION",
+    )
+
+    records = ledger.verify()
+    assert records[0]["record_hash"] == original["record_hash"]
+    assert replacement["sessions"][19]["session_type"] == "EARLY_CLOSE"
+    old_status = ledger.reconcile_calendar_snapshot(original["calendar_snapshot_id"])
+    assert old_status.status == "SUPERSEDED"
+    assert old_status.superseded_by_calendar_snapshot_id == replacement["calendar_snapshot_id"]
+    assert old_status.reason_code == "SOURCE_CORRECTION"
+    assert ledger.reconcile_calendar_snapshot(replacement["calendar_snapshot_id"]).status == "CURRENT"
+
+    with pytest.raises(ValueError, match="pins a superseded"):
+        ledger.partition_role(old_manifest["partition_manifest_id"], days[0].isoformat())
+    with pytest.raises(ValueError, match="cannot derive"):
+        manifest(ledger, original, days)
+    new_manifest = manifest(ledger, replacement, days)
+    assert ledger.partition_role(new_manifest["partition_manifest_id"], days[0].isoformat()) == "TRAIN"
+
+
+def test_calendar_supersession_rejects_ambiguous_unknown_mismatched_or_forked_chains(
+    tmp_path,
+):
+    days = weekdays("2025-01-02", 35)
+    ledger = PITSessionPartitionLedger(tmp_path / "ledger.jsonl", clock=lambda: CLOCK)
+    original = calendar(ledger, days)
+
+    with pytest.raises(LedgerIntegrityError, match="overlapping.*ambiguous"):
+        calendar(ledger, days, source_payload_sha256="b" * 64)
+    with pytest.raises(ValueError, match="id and reason.*together"):
+        calendar(
+            ledger,
+            days,
+            source_payload_sha256="b" * 64,
+            supersedes_calendar_snapshot_id=original["calendar_snapshot_id"],
+        )
+    with pytest.raises(ValueError, match="unsupported"):
+        calendar(
+            ledger,
+            days,
+            source_payload_sha256="b" * 64,
+            supersedes_calendar_snapshot_id=original["calendar_snapshot_id"],
+            supersession_reason="OPTIMIZE_RESULT",
+        )
+    with pytest.raises(LedgerIntegrityError, match="target does not exist"):
+        calendar(
+            ledger,
+            days,
+            source_payload_sha256="b" * 64,
+            supersedes_calendar_snapshot_id="XCAL-UNKNOWN",
+            supersession_reason="SOURCE_CORRECTION",
+        )
+    with pytest.raises(LedgerIntegrityError, match="exact exchange and coverage"):
+        calendar(
+            ledger,
+            days[:-1],
+            source_payload_sha256="b" * 64,
+            supersedes_calendar_snapshot_id=original["calendar_snapshot_id"],
+            supersession_reason="COVERAGE_RECAPTURE",
+        )
+
+    replacement = calendar(
+        ledger,
+        days,
+        source_payload_sha256="b" * 64,
+        supersedes_calendar_snapshot_id=original["calendar_snapshot_id"],
+        supersession_reason="COVERAGE_RECAPTURE",
+    )
+    with pytest.raises(LedgerIntegrityError, match="cannot fork"):
+        calendar(
+            ledger,
+            days,
+            source_payload_sha256="c" * 64,
+            supersedes_calendar_snapshot_id=original["calendar_snapshot_id"],
+            supersession_reason="SOURCE_CORRECTION",
+        )
+    leaf = calendar(
+        ledger,
+        days,
+        source_payload_sha256="d" * 64,
+        supersedes_calendar_snapshot_id=replacement["calendar_snapshot_id"],
+        supersession_reason="SOURCE_CORRECTION",
+    )
+    assert ledger.reconcile_calendar_snapshot(replacement["calendar_snapshot_id"]).status == "SUPERSEDED"
+    assert ledger.reconcile_calendar_snapshot(leaf["calendar_snapshot_id"]).status == "CURRENT"
+    with pytest.raises(ValueError, match="not present"):
+        ledger.reconcile_calendar_snapshot("XCAL-UNKNOWN")
+
+
+def test_calendar_boundary_correction_can_remove_an_erroneous_endpoint(tmp_path):
+    days = weekdays("2025-01-02", 35)
+    ledger = PITSessionPartitionLedger(tmp_path / "ledger.jsonl", clock=lambda: CLOCK)
+    original = calendar(ledger, days)
+    corrected = calendar(
+        ledger,
+        days[:-1],
+        source_locator="synthetic-fixture-boundary-correction",
+        source_payload_sha256="b" * 64,
+        supersedes_calendar_snapshot_id=original["calendar_snapshot_id"],
+        supersession_reason="COVERAGE_BOUNDARY_CORRECTION",
+    )
+
+    assert corrected["coverage_start"] == original["coverage_start"]
+    assert corrected["coverage_end"] == days[-2].isoformat()
+    status = ledger.reconcile_calendar_snapshot(original["calendar_snapshot_id"])
+    assert status.status == "SUPERSEDED"
+    assert status.reason_code == "COVERAGE_BOUNDARY_CORRECTION"
+    current_manifest = manifest(ledger, corrected, days[:-1])
+    assert ledger.partition_role(
+        current_manifest["partition_manifest_id"], days[0].isoformat()
+    ) == "TRAIN"
 
 
 def test_calendar_enforces_dst_early_close_and_five_timestamp_order(tmp_path):
@@ -225,6 +370,75 @@ def test_manifest_pins_calendar_hash_and_is_idempotent(tmp_path):
             longest_label_horizon_decision_periods=2, embargo_decision_periods=1,
             allow_existing=False,
         )
+
+
+def test_each_calendar_has_one_immutable_partition_manifest(tmp_path):
+    days = weekdays("2025-01-02", 35)
+    ledger = PITSessionPartitionLedger(tmp_path / "ledger.jsonl", clock=lambda: CLOCK)
+    snapshot = calendar(ledger, days)
+    manifest(ledger, snapshot, days)
+    with pytest.raises(LedgerIntegrityError, match="already has a partition manifest"):
+        manifest(
+            ledger,
+            snapshot,
+            days,
+            train_end=days[6].isoformat(),
+            validation_start=days[10].isoformat(),
+            validation_end=days[19].isoformat(),
+            test_start=days[23].isoformat(),
+        )
+
+
+def test_manifest_rechecks_active_calendar_under_append_lock(tmp_path, monkeypatch):
+    days = weekdays("2025-01-02", 35)
+    ledger = PITSessionPartitionLedger(tmp_path / "ledger.jsonl", clock=lambda: CLOCK)
+    original = calendar(ledger, days)
+
+    race_ledger = PITSessionPartitionLedger(
+        tmp_path / "race-evidence.jsonl",
+        clock=lambda: CLOCK,
+    )
+    race_original = calendar(race_ledger, days)
+    replacement = calendar(
+        race_ledger,
+        days,
+        source_payload_sha256="b" * 64,
+        supersedes_calendar_snapshot_id=race_original["calendar_snapshot_id"],
+        supersession_reason="SOURCE_CORRECTION",
+    )
+    observed = iter(([original], [original, replacement]))
+    monkeypatch.setattr(ledger, "verify", lambda: next(observed))
+
+    with pytest.raises(LedgerIntegrityError, match="superseded.*cannot derive"):
+        manifest(ledger, original, days)
+    monkeypatch.undo()
+    assert ledger.verify() == [original]
+
+
+def test_calendar_reconciliation_carrier_cannot_assert_authority():
+    arguments = {
+        "calendar_snapshot_id": "XCAL-TEST",
+        "calendar_snapshot_record_hash": "a" * 64,
+        "status": "CURRENT",
+    }
+    with pytest.raises(ValueError, match="cannot assert admission"):
+        PITCalendarReconciliation(**arguments, promotion_allowed=True)
+    with pytest.raises(ValueError, match="cannot assert supersession"):
+        PITCalendarReconciliation(**arguments, reason_code="SOURCE_CORRECTION")
+    with pytest.raises(ValueError, match="allowed reason"):
+        PITCalendarReconciliation(
+            **{**arguments, "status": "SUPERSEDED"},
+            superseded_by_calendar_snapshot_id="XCAL-CHILD",
+            reason_code="MASTER_BACKFILL",
+        )
+
+
+def test_projected_calendar_append_size_fails_before_write(tmp_path, monkeypatch):
+    ledger = PITSessionPartitionLedger(tmp_path / "ledger.jsonl", clock=lambda: CLOCK)
+    monkeypatch.setattr(module, "MAX_LEDGER_BYTES", 100)
+    with pytest.raises(LedgerIntegrityError, match="target is unsafe"):
+        calendar(ledger, weekdays("2025-01-02", 3))
+    assert ledger.records() == []
 
 
 def test_synthetic_history_flags_can_describe_span_but_never_authorize_production(tmp_path):

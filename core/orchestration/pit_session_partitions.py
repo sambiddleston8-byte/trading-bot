@@ -9,6 +9,7 @@ partition policy.
 from __future__ import annotations
 
 from calendar import monthrange
+from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone
 import fcntl
 import hashlib
@@ -23,8 +24,8 @@ from zoneinfo import ZoneInfo
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
 
 
-SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "pit-xnys-session-partitions-v1"
+SCHEMA_VERSION = "1.1"
+POLICY_VERSION = "pit-xnys-session-partitions-v2"
 EXCHANGE = "XNYS"
 EXCHANGE_TIMEZONE = "America/New_York"
 DECISION_PERIOD_UNIT = "XNYS_DAILY_SESSION"
@@ -32,6 +33,9 @@ MAX_SESSIONS = 5000
 MAX_LEDGER_BYTES = 32 * 1024 * 1024
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 _NY = ZoneInfo(EXCHANGE_TIMEZONE)
+CALENDAR_SUPERSESSION_REASONS = frozenset(
+    {"SOURCE_CORRECTION", "COVERAGE_RECAPTURE", "COVERAGE_BOUNDARY_CORRECTION"}
+)
 _FALSE_AUTHORITIES = (
     "coverage_completeness_proven",
     "qualified",
@@ -214,6 +218,119 @@ def _write_all(descriptor: int, payload: bytes) -> None:
         written += count
 
 
+@dataclass(frozen=True)
+class PITCalendarReconciliation:
+    calendar_snapshot_id: str
+    calendar_snapshot_record_hash: str
+    status: str
+    superseded_by_calendar_snapshot_id: str | None = None
+    reason_code: str | None = None
+    synthetic_fixture: bool = True
+    dataset_admitted: bool = False
+    performance_claim_allowed: bool = False
+    promotion_allowed: bool = False
+
+    def __post_init__(self) -> None:
+        _text(self.calendar_snapshot_id, "calendar_snapshot_id", 80)
+        _sha256(self.calendar_snapshot_record_hash, "calendar_snapshot_record_hash")
+        if self.status not in {"CURRENT", "SUPERSEDED"}:
+            raise ValueError("calendar reconciliation status is unsupported")
+        if self.status == "SUPERSEDED":
+            _text(
+                self.superseded_by_calendar_snapshot_id,
+                "superseded_by_calendar_snapshot_id",
+                80,
+            )
+            if self.reason_code not in CALENDAR_SUPERSESSION_REASONS:
+                raise ValueError("superseded calendar requires an allowed reason")
+        elif self.superseded_by_calendar_snapshot_id is not None or self.reason_code is not None:
+            raise ValueError("current calendar cannot assert supersession")
+        if self.synthetic_fixture is not True or any(
+            getattr(self, name) is not False
+            for name in (
+                "dataset_admitted",
+                "performance_claim_allowed",
+                "promotion_allowed",
+            )
+        ):
+            raise ValueError("calendar reconciliation cannot assert admission or authority")
+
+
+def _validate_calendar_supersession(
+    body: Mapping[str, Any],
+    prior_calendars: Sequence[Mapping[str, Any]],
+) -> None:
+    new_start = _date(body["coverage_start"], "coverage_start")
+    new_end = _date(body["coverage_end"], "coverage_end")
+    overlapping = [
+        item
+        for item in prior_calendars
+        if new_start <= _date(item["coverage_end"], "coverage_end")
+        and _date(item["coverage_start"], "coverage_start") <= new_end
+    ]
+    target_id = body["supersedes_calendar_snapshot_id"]
+    reason = body["supersession_reason"]
+    if target_id is None:
+        if reason is not None:
+            raise ValueError("calendar supersession id and reason must be provided together")
+        if overlapping:
+            raise LedgerIntegrityError("overlapping PIT calendar coverage is ambiguous")
+        return
+    if reason not in CALENDAR_SUPERSESSION_REASONS:
+        raise ValueError("calendar supersession_reason is unsupported")
+    target = next(
+        (item for item in prior_calendars if item["calendar_snapshot_id"] == target_id),
+        None,
+    )
+    if target is None:
+        raise LedgerIntegrityError("calendar supersession target does not exist")
+    if any(
+        item["supersedes_calendar_snapshot_id"] == target_id
+        for item in prior_calendars
+    ):
+        raise LedgerIntegrityError("calendar supersession chain cannot fork")
+    identity_fields = [
+        "exchange",
+        "exchange_timezone",
+        "decision_period_unit",
+    ]
+    if reason != "COVERAGE_BOUNDARY_CORRECTION":
+        identity_fields.extend(("coverage_start", "coverage_end"))
+    if any(body[field] != target[field] for field in identity_fields):
+        raise LedgerIntegrityError(
+            "calendar supersession must preserve the exact exchange and coverage interval"
+        )
+    if not any(item["calendar_snapshot_id"] == target_id for item in overlapping):
+        raise LedgerIntegrityError(
+            "calendar boundary correction must overlap its supersession target"
+        )
+    ancestry: set[str] = set()
+    cursor: Mapping[str, Any] | None = target
+    while cursor is not None:
+        cursor_id = cursor["calendar_snapshot_id"]
+        if cursor_id in ancestry:
+            raise LedgerIntegrityError("calendar supersession chain contains a cycle")
+        ancestry.add(cursor_id)
+        parent_id = cursor["supersedes_calendar_snapshot_id"]
+        if parent_id is None:
+            cursor = None
+        else:
+            cursor = next(
+                (
+                    item
+                    for item in prior_calendars
+                    if item["calendar_snapshot_id"] == parent_id
+                ),
+                None,
+            )
+            if cursor is None:
+                raise LedgerIntegrityError("calendar supersession ancestry is incomplete")
+    if any(item["calendar_snapshot_id"] not in ancestry for item in overlapping):
+        raise LedgerIntegrityError(
+            "calendar supersession overlaps evidence outside its replacement chain"
+        )
+
+
 class PITSessionPartitionLedger:
     """Append and verify synthetic XNYS snapshots and their sealed partitions."""
 
@@ -263,11 +380,31 @@ class PITSessionPartitionLedger:
         source_locator: str,
         source_payload_sha256: str,
         synthetic_fixture: bool,
+        supersedes_calendar_snapshot_id: str | None = None,
+        supersession_reason: str | None = None,
         allow_existing: bool = True,
     ) -> dict[str, Any]:
         if synthetic_fixture is not True:
             raise ValueError("this research-only path accepts deterministic synthetic fixtures only")
         normalized = _normalize_sessions(sessions)
+        supersedes = (
+            None
+            if supersedes_calendar_snapshot_id is None
+            else _text(
+                supersedes_calendar_snapshot_id,
+                "supersedes_calendar_snapshot_id",
+                80,
+            )
+        )
+        reason = (
+            None
+            if supersession_reason is None
+            else _text(supersession_reason, "supersession_reason", 40).upper()
+        )
+        if (supersedes is None) != (reason is None):
+            raise ValueError("calendar supersession id and reason must be provided together")
+        if reason is not None and reason not in CALENDAR_SUPERSESSION_REASONS:
+            raise ValueError("calendar supersession_reason is unsupported")
         body: dict[str, Any] = {
             "schema_version": SCHEMA_VERSION,
             "policy_version": POLICY_VERSION,
@@ -278,6 +415,8 @@ class PITSessionPartitionLedger:
             "decision_period_unit": DECISION_PERIOD_UNIT,
             "coverage_start": normalized[0]["session_date"],
             "coverage_end": normalized[-1]["session_date"],
+            "supersedes_calendar_snapshot_id": supersedes,
+            "supersession_reason": reason,
             "session_count": len(normalized),
             "sessions": normalized,
             "source_uri": _source_uri(source_uri),
@@ -316,6 +455,12 @@ class PITSessionPartitionLedger:
         )
         if snapshot is None:
             raise ValueError("calendar_snapshot_id is not present in the verified ledger")
+        if any(
+            item.get("record_type") == "PIT_SESSION_CALENDAR_SNAPSHOT"
+            and item["supersedes_calendar_snapshot_id"] == calendar_snapshot_id
+            for item in records
+        ):
+            raise ValueError("superseded PIT calendar cannot derive a partition manifest")
         horizon = _positive_integer(
             longest_label_horizon_decision_periods,
             "longest_label_horizon_decision_periods",
@@ -433,6 +578,12 @@ class PITSessionPartitionLedger:
             if item["record_type"] == "PIT_SESSION_CALENDAR_SNAPSHOT"
             and item["calendar_snapshot_id"] == manifest["calendar_snapshot_id"]
         )
+        if any(
+            item.get("record_type") == "PIT_SESSION_CALENDAR_SNAPSHOT"
+            and item["supersedes_calendar_snapshot_id"] == snapshot["calendar_snapshot_id"]
+            for item in records
+        ):
+            raise ValueError("partition manifest pins a superseded PIT calendar")
         observed_ids = {item["session_id"] for item in snapshot["sessions"]}
         resolved_id = _session_id(resolved)
         if resolved_id not in observed_ids:
@@ -444,6 +595,41 @@ class PITSessionPartitionLedger:
             if partition["start_session_id"] <= resolved_id <= partition["end_session_id"]:
                 return partition["role"]
         return "OUTSIDE"
+
+    def reconcile_calendar_snapshot(
+        self,
+        calendar_snapshot_id: str,
+    ) -> PITCalendarReconciliation:
+        records = self.verify()
+        snapshot = next(
+            (
+                item
+                for item in records
+                if item["record_type"] == "PIT_SESSION_CALENDAR_SNAPSHOT"
+                and item["calendar_snapshot_id"] == calendar_snapshot_id
+            ),
+            None,
+        )
+        if snapshot is None:
+            raise ValueError("calendar_snapshot_id is not present in the verified ledger")
+        child = next(
+            (
+                item
+                for item in records
+                if item["record_type"] == "PIT_SESSION_CALENDAR_SNAPSHOT"
+                and item["supersedes_calendar_snapshot_id"] == calendar_snapshot_id
+            ),
+            None,
+        )
+        return PITCalendarReconciliation(
+            calendar_snapshot_id=calendar_snapshot_id,
+            calendar_snapshot_record_hash=snapshot["record_hash"],
+            status="SUPERSEDED" if child is not None else "CURRENT",
+            superseded_by_calendar_snapshot_id=(
+                child["calendar_snapshot_id"] if child is not None else None
+            ),
+            reason_code=child["supersession_reason"] if child is not None else None,
+        )
 
     def verify(self) -> list[dict[str, Any]]:
         records = self.records()
@@ -474,9 +660,22 @@ class PITSessionPartitionLedger:
                     raise ValueError("common append-only boundary failed")
                 if record_type == "PIT_SESSION_CALENDAR_SNAPSHOT":
                     self._verify_calendar(record)
+                    _validate_calendar_supersession(record, list(calendars.values()))
                     calendars[record["calendar_snapshot_id"]] = record
                 elif record_type == "PIT_CHRONOLOGICAL_PARTITION_MANIFEST":
+                    if any(
+                        item["supersedes_calendar_snapshot_id"]
+                        == record["calendar_snapshot_id"]
+                        for item in calendars.values()
+                    ):
+                        raise ValueError("superseded calendar cannot derive a partition manifest")
                     self._verify_partition(record, calendars)
+                    if any(
+                        item.get("record_type") == "PIT_CHRONOLOGICAL_PARTITION_MANIFEST"
+                        and item["calendar_snapshot_id"] == record["calendar_snapshot_id"]
+                        for item in records[: index - 1]
+                    ):
+                        raise ValueError("calendar already has a partition manifest")
                 else:
                     raise ValueError("unsupported record_type")
             except (IndexError, KeyError, TypeError, ValueError) as error:
@@ -491,7 +690,8 @@ class PITSessionPartitionLedger:
         expected_keys = {
             "schema_version", "policy_version", "record_type", "status",
             "calendar_snapshot_id", "exchange", "exchange_timezone",
-            "decision_period_unit", "coverage_start", "coverage_end", "session_count",
+            "decision_period_unit", "coverage_start", "coverage_end",
+            "supersedes_calendar_snapshot_id", "supersession_reason", "session_count",
             "sessions", "source_uri", "source_locator", "source_payload_sha256",
             "point_in_time_contract", "synthetic_fixture", *_FALSE_AUTHORITIES,
             "appended_at", "previous_hash", "record_hash",
@@ -619,6 +819,31 @@ class PITSessionPartitionLedger:
                 if allow_existing:
                     return existing
                 raise ValueError(f"{identity_field} is already recorded")
+            if body["record_type"] == "PIT_SESSION_CALENDAR_SNAPSHOT":
+                _validate_calendar_supersession(
+                    body,
+                    [
+                        item
+                        for item in records
+                        if item["record_type"] == "PIT_SESSION_CALENDAR_SNAPSHOT"
+                    ],
+                )
+            else:
+                if any(
+                    item["record_type"] == "PIT_SESSION_CALENDAR_SNAPSHOT"
+                    and item["supersedes_calendar_snapshot_id"]
+                    == body["calendar_snapshot_id"]
+                    for item in records
+                ):
+                    raise LedgerIntegrityError(
+                        "superseded PIT calendar cannot derive a partition manifest"
+                    )
+                if any(
+                    item["record_type"] == "PIT_CHRONOLOGICAL_PARTITION_MANIFEST"
+                    and item["calendar_snapshot_id"] == body["calendar_snapshot_id"]
+                    for item in records
+                ):
+                    raise LedgerIntegrityError("calendar already has a partition manifest")
             appended = _timestamp(self._clock(), "append clock")
             if appended > datetime.now(timezone.utc) + MAX_CLOCK_SKEW:
                 raise ValueError("append clock cannot be materially in the future")
@@ -635,12 +860,18 @@ class PITSessionPartitionLedger:
                 "previous_hash": records[-1]["record_hash"] if records else GENESIS_HASH,
             }
             record = {**material, "record_hash": _record_hash(material)}
+            payload = (_canonical_json(record) + "\n").encode("utf-8")
             descriptor = os.open(self.path, os.O_WRONLY | os.O_CREAT | os.O_APPEND | _no_follow(), 0o600)
             try:
                 details = os.fstat(descriptor)
-                if not stat.S_ISREG(details.st_mode) or stat.S_IMODE(details.st_mode) != 0o600 or details.st_nlink != 1:
+                if (
+                    not stat.S_ISREG(details.st_mode)
+                    or stat.S_IMODE(details.st_mode) != 0o600
+                    or details.st_nlink != 1
+                    or details.st_size + len(payload) > MAX_LEDGER_BYTES
+                ):
                     raise LedgerIntegrityError("PIT session/partition ledger target is unsafe")
-                _write_all(descriptor, (_canonical_json(record) + "\n").encode("utf-8"))
+                _write_all(descriptor, payload)
                 os.fsync(descriptor)
             finally:
                 os.close(descriptor)
