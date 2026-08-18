@@ -24,13 +24,16 @@ from core.guardrailed_backtest import CorporateAction, TerminalOutcome
 from core.portfolio.pit_security_master import PointInTimeSecurityMasterLedger
 
 
-SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "pit-corporate-action-research-v1"
+SCHEMA_VERSION = "1.1"
+POLICY_VERSION = "pit-corporate-action-research-v2"
 MAX_EVENTS = 10_000
 MAX_LEDGER_BYTES = 32 * 1024 * 1024
 MAX_CLOCK_SKEW = timedelta(minutes=5)
 EVENT_TYPES = frozenset({"SPLIT", "CASH_DIVIDEND", "TERMINAL_OUTCOME"})
 TERMINAL_TYPES = frozenset({"DELISTED", "BANKRUPT", "ACQUIRED", "MERGED"})
+SUPERSESSION_REASONS = frozenset(
+    {"MASTER_BACKFILL", "SOURCE_CORRECTION", "COVERAGE_RECAPTURE"}
+)
 _FALSE_AUTHORITIES = (
     "coverage_completeness_proven",
     "qualified",
@@ -65,6 +68,8 @@ _RECORD_FIELDS = {
     "ticker",
     "covers_from_at",
     "through_at",
+    "supersedes_snapshot_id",
+    "supersession_reason",
     "security_master_record_count",
     "security_master_record_hash",
     "point_in_time_contract",
@@ -333,6 +338,122 @@ class PITCorporateActionResearchInputs:
             raise ValueError("research inputs cannot assert qualification or authority")
 
 
+@dataclass(frozen=True)
+class PITCorporateActionReconciliation:
+    snapshot_id: str
+    snapshot_record_hash: str
+    status: str
+    current_security_master_record_count: int
+    current_security_master_record_hash: str
+    superseded_by_snapshot_id: str | None = None
+    reason_code: str | None = None
+    synthetic_fixture: bool = True
+    dataset_admitted: bool = False
+    performance_claim_allowed: bool = False
+    promotion_allowed: bool = False
+
+    def __post_init__(self) -> None:
+        _text(self.snapshot_id, "snapshot_id", 80)
+        _sha256(self.snapshot_record_hash, "snapshot_record_hash")
+        if self.status not in {"CURRENT", "STALE_MASTER_EVIDENCE", "SUPERSEDED"}:
+            raise ValueError("reconciliation status is unsupported")
+        if (
+            not isinstance(self.current_security_master_record_count, int)
+            or isinstance(self.current_security_master_record_count, bool)
+            or self.current_security_master_record_count <= 0
+        ):
+            raise ValueError("reconciliation requires current security-master evidence")
+        _sha256(
+            self.current_security_master_record_hash,
+            "current_security_master_record_hash",
+        )
+        if self.status == "SUPERSEDED":
+            _text(self.superseded_by_snapshot_id, "superseded_by_snapshot_id", 80)
+            if self.reason_code not in SUPERSESSION_REASONS:
+                raise ValueError("superseded reconciliation requires an allowed reason")
+        elif self.superseded_by_snapshot_id is not None:
+            raise ValueError("active reconciliation cannot name a superseding snapshot")
+        if self.status == "CURRENT" and self.reason_code is not None:
+            raise ValueError("current reconciliation cannot assert a reason")
+        if (
+            self.status == "STALE_MASTER_EVIDENCE"
+            and self.reason_code != "SECURITY_MASTER_EVOLVED"
+        ):
+            raise ValueError("stale reconciliation requires its deterministic reason")
+        if self.synthetic_fixture is not True or any(
+            getattr(self, name) is not False
+            for name in (
+                "dataset_admitted",
+                "performance_claim_allowed",
+                "promotion_allowed",
+            )
+        ):
+            raise ValueError("reconciliation cannot assert admission or authority")
+
+
+def _validate_supersession(
+    body: Mapping[str, Any],
+    prior_records: Sequence[Mapping[str, Any]],
+) -> None:
+    """Require non-overlapping roots and one exact, linear replacement chain."""
+
+    new_start = _timestamp(body["covers_from_at"], "covers_from_at")
+    new_end = _timestamp(body["through_at"], "through_at")
+    overlapping = [
+        item
+        for item in prior_records
+        if item["security_id"] == body["security_id"]
+        and new_start <= _timestamp(item["through_at"], "through_at")
+        and _timestamp(item["covers_from_at"], "covers_from_at") <= new_end
+    ]
+    target_id = body["supersedes_snapshot_id"]
+    reason = body["supersession_reason"]
+    if target_id is None:
+        if reason is not None:
+            raise ValueError("supersession id and reason must be provided together")
+        if overlapping:
+            raise LedgerIntegrityError(
+                "overlapping PIT corporate-action snapshot coverage is ambiguous"
+            )
+        return
+    if reason not in SUPERSESSION_REASONS:
+        raise ValueError("supersession_reason is unsupported")
+    target = next(
+        (item for item in prior_records if item["snapshot_id"] == target_id),
+        None,
+    )
+    if target is None:
+        raise LedgerIntegrityError("supersession target does not exist")
+    if any(item["supersedes_snapshot_id"] == target_id for item in prior_records):
+        raise LedgerIntegrityError("supersession chain cannot fork")
+    identity_fields = ("security_id", "ticker", "covers_from_at", "through_at")
+    if any(body[field] != target[field] for field in identity_fields):
+        raise LedgerIntegrityError(
+            "supersession must preserve the exact identity and coverage interval"
+        )
+    ancestry: set[str] = set()
+    cursor: Mapping[str, Any] | None = target
+    while cursor is not None:
+        cursor_id = cursor["snapshot_id"]
+        if cursor_id in ancestry:
+            raise LedgerIntegrityError("supersession chain contains a cycle")
+        ancestry.add(cursor_id)
+        parent_id = cursor["supersedes_snapshot_id"]
+        if parent_id is None:
+            cursor = None
+        else:
+            cursor = next(
+                (item for item in prior_records if item["snapshot_id"] == parent_id),
+                None,
+            )
+            if cursor is None:
+                raise LedgerIntegrityError("supersession ancestry is incomplete")
+    if any(item["snapshot_id"] not in ancestry for item in overlapping):
+        raise LedgerIntegrityError(
+            "supersession overlaps evidence outside its replacement chain"
+        )
+
+
 class PITCorporateActionLedger:
     """Append-only synthetic snapshots linked to the PIT security master."""
 
@@ -395,6 +516,8 @@ class PITCorporateActionLedger:
         source_locator: str,
         source_payload_sha256: str,
         synthetic_fixture: bool,
+        supersedes_snapshot_id: str | None = None,
+        supersession_reason: str | None = None,
         allow_existing: bool = True,
     ) -> dict[str, Any]:
         if synthetic_fixture is not True:
@@ -405,6 +528,20 @@ class PITCorporateActionLedger:
         through = _timestamp(through_at, "through_at")
         if covers_from > through:
             raise ValueError("snapshot coverage interval is invalid")
+        supersedes = (
+            None
+            if supersedes_snapshot_id is None
+            else _text(supersedes_snapshot_id, "supersedes_snapshot_id", 80)
+        )
+        reason = (
+            None
+            if supersession_reason is None
+            else _text(supersession_reason, "supersession_reason", 40).upper()
+        )
+        if (supersedes is None) != (reason is None):
+            raise ValueError("supersession id and reason must be provided together")
+        if reason is not None and reason not in SUPERSESSION_REASONS:
+            raise ValueError("supersession_reason is unsupported")
         if isinstance(events, (str, bytes)) or not isinstance(events, Sequence):
             raise ValueError("events must be a bounded sequence")
         if len(events) > MAX_EVENTS:
@@ -459,6 +596,8 @@ class PITCorporateActionLedger:
             "ticker": symbol,
             "covers_from_at": covers_from.isoformat(timespec="microseconds"),
             "through_at": through.isoformat(timespec="microseconds"),
+            "supersedes_snapshot_id": supersedes,
+            "supersession_reason": reason,
             "security_master_record_count": len(security_records),
             "security_master_record_hash": security_records[-1]["record_hash"],
             "point_in_time_contract": "effective_at/reported_at/available_at/retrieved_at/recorded_at",
@@ -513,6 +652,7 @@ class PITCorporateActionLedger:
                 raise LedgerIntegrityError(f"PIT corporate-action record {index} violates its boundary")
             try:
                 rebuilt = self._rebuild_body(record)
+                _validate_supersession(rebuilt, records[: index - 1])
             except (TypeError, ValueError) as error:
                 raise LedgerIntegrityError(
                     f"PIT corporate-action record {index} is invalid"
@@ -528,12 +668,12 @@ class PITCorporateActionLedger:
         return records
 
     def materialize_research_inputs(self, snapshot_id: str) -> PITCorporateActionResearchInputs:
-        snapshot = next(
-            (item for item in self.verify() if item["snapshot_id"] == snapshot_id),
-            None,
-        )
+        records = self.verify()
+        snapshot = next((item for item in records if item["snapshot_id"] == snapshot_id), None)
         if snapshot is None:
             raise ValueError("unknown PIT corporate-action snapshot")
+        if any(item["supersedes_snapshot_id"] == snapshot_id for item in records):
+            raise ValueError("superseded PIT corporate-action snapshot cannot be materialized")
         late = [
             item["source_event_id"]
             for item in snapshot["events"]
@@ -583,13 +723,67 @@ class PITCorporateActionLedger:
             terminal_outcomes=tuple(outcomes),
         )
 
-    def _rebuild_body(self, record: Mapping[str, Any]) -> dict[str, Any]:
+    def reconcile_snapshot(self, snapshot_id: str) -> PITCorporateActionReconciliation:
+        """Compare one immutable snapshot with the current security-master view."""
+
+        records = self.verify()
+        snapshot = next((item for item in records if item["snapshot_id"] == snapshot_id), None)
+        if snapshot is None:
+            raise ValueError("unknown PIT corporate-action snapshot")
+        master_records = self.security_master.verify()
+        if not master_records:  # pragma: no cover - verified snapshot pins a nonempty prefix
+            raise LedgerIntegrityError("security-master evidence disappeared")
+        child = next(
+            (item for item in records if item["supersedes_snapshot_id"] == snapshot_id),
+            None,
+        )
+        if child is not None:
+            return PITCorporateActionReconciliation(
+                snapshot_id=snapshot_id,
+                snapshot_record_hash=snapshot["record_hash"],
+                status="SUPERSEDED",
+                current_security_master_record_count=len(master_records),
+                current_security_master_record_hash=master_records[-1]["record_hash"],
+                superseded_by_snapshot_id=child["snapshot_id"],
+                reason_code=child["supersession_reason"],
+            )
+        try:
+            rebuilt = self._rebuild_body(snapshot, use_current_master=True)
+            stored = {key: snapshot[key] for key in rebuilt}
+            current = rebuilt == stored
+        except (TypeError, ValueError):
+            current = False
+        return PITCorporateActionReconciliation(
+            snapshot_id=snapshot_id,
+            snapshot_record_hash=snapshot["record_hash"],
+            status="CURRENT" if current else "STALE_MASTER_EVIDENCE",
+            current_security_master_record_count=len(master_records),
+            current_security_master_record_hash=master_records[-1]["record_hash"],
+            reason_code=None if current else "SECURITY_MASTER_EVOLVED",
+        )
+
+    def _rebuild_body(
+        self,
+        record: Mapping[str, Any],
+        *,
+        use_current_master: bool = False,
+    ) -> dict[str, Any]:
         covers_from = _timestamp(record.get("covers_from_at"), "covers_from_at")
         through = _timestamp(record.get("through_at"), "through_at")
         if covers_from > through:
             raise ValueError("snapshot coverage interval is invalid")
         identifier = _text(record.get("security_id"), "security_id", 64).upper()
         symbol = _text(record.get("ticker"), "ticker", 15).upper()
+        supersedes = record.get("supersedes_snapshot_id")
+        reason = record.get("supersession_reason")
+        if supersedes is not None:
+            supersedes = _text(supersedes, "supersedes_snapshot_id", 80)
+        if reason is not None:
+            reason = _text(reason, "supersession_reason", 40).upper()
+        if (supersedes is None) != (reason is None):
+            raise ValueError("supersession id and reason must be provided together")
+        if reason is not None and reason not in SUPERSESSION_REASONS:
+            raise ValueError("supersession_reason is unsupported")
         master_records = self.security_master.verify()
         master_count = record.get("security_master_record_count")
         if (
@@ -605,7 +799,9 @@ class PITCorporateActionLedger:
         )
         if master_records[master_count - 1]["record_hash"] != master_hash:
             raise ValueError("security-master evidence prefix does not match its pinned hash")
-        security_records = master_records[:master_count]
+        security_records = (
+            master_records if use_current_master else master_records[:master_count]
+        )
         listed_at_start, ticker_at_start, _ = _identity_at(
             security_records,
             security_id=identifier,
@@ -655,6 +851,8 @@ class PITCorporateActionLedger:
         body["ticker"] = symbol
         body["covers_from_at"] = covers_from.isoformat(timespec="microseconds")
         body["through_at"] = through.isoformat(timespec="microseconds")
+        body["supersedes_snapshot_id"] = supersedes
+        body["supersession_reason"] = reason
         body["event_count"] = len(events)
         body["all_events_available_by_effective_at"] = all(
             item["available_by_effective_at"] for item in events
@@ -697,17 +895,7 @@ class PITCorporateActionLedger:
                 } == body:
                     return existing
                 raise LedgerIntegrityError("PIT corporate-action snapshot already exists")
-            new_start = _timestamp(body["covers_from_at"], "covers_from_at")
-            new_end = _timestamp(body["through_at"], "through_at")
-            if any(
-                item["security_id"] == body["security_id"]
-                and new_start <= _timestamp(item["through_at"], "through_at")
-                and _timestamp(item["covers_from_at"], "covers_from_at") <= new_end
-                for item in records
-            ):
-                raise LedgerIntegrityError(
-                    "overlapping PIT corporate-action snapshot coverage is ambiguous"
-                )
+            _validate_supersession(body, records)
             if records and appended < _timestamp(records[-1]["appended_at"], "prior appended_at"):
                 raise ValueError("append clock cannot precede the prior immutable record")
             material = {
