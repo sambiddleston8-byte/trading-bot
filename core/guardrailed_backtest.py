@@ -384,8 +384,9 @@ class UniverseEvent:
             raise ValueError("universe action must be ADD or REMOVE")
         object.__setattr__(self, "effective_at", _time(self.effective_at, "effective_at"))
         object.__setattr__(self, "available_at", _time(self.available_at, "available_at"))
-        if self.available_at > self.effective_at:
-            raise ValueError("universe event must be public no later than it becomes effective")
+        # INVARIANT: late membership evidence is permitted, but eligibility()
+        # must gate every use on both effective_at and available_at.  This is
+        # pinned by the mirrored late-ADD and late-REMOVE portfolio tests.
         if not self.symbol or not self.source_locator.strip():
             raise ValueError("universe event identity and source are required")
 
@@ -916,7 +917,7 @@ class GuardrailedBacktestEngine:
                 "legacy strategy runs support one instrument; multiple instruments "
                 "require the Executive portfolio batch interface"
             )
-        for symbol, values in by_symbol.items():
+        for symbol, values in sorted(by_symbol.items()):
             if any(left.close_at >= right.open_at for left, right in zip(values, values[1:])):
                 raise ValueError(f"{symbol} bars overlap or are out of order")
             if any(left.available_at >= right.open_at for left, right in zip(values, values[1:])):
@@ -2146,21 +2147,38 @@ class GuardrailedBacktestEngine:
         from core.research.specialist_signals import ExecutivePortfolioIntent
 
         symbols = tuple(sorted(by_symbol))
-        reference_clock = tuple(
-            (bar.open_at, bar.close_at, bar.available_at)
-            for bar in by_symbol[symbols[0]]
-        )
-        if not reference_clock or any(
-            tuple((bar.open_at, bar.close_at, bar.available_at) for bar in by_symbol[symbol])
-            != reference_clock
-            for symbol in symbols[1:]
+        sessions: dict[
+            tuple[datetime, datetime, datetime],
+            dict[str, MarketBar],
+        ] = {}
+        for bar in rows:
+            clock = (bar.open_at, bar.close_at, bar.available_at)
+            session = sessions.setdefault(clock, {})
+            if bar.symbol in session:
+                raise ValueError("portfolio session repeats a symbol bar")
+            session[bar.symbol] = bar
+        ordered_clocks = tuple(sorted(sessions))
+        if not ordered_clocks or any(
+            left[1] >= right[0] or left[2] >= right[0]
+            for left, right in zip(ordered_clocks, ordered_clocks[1:])
         ):
             raise ValueError(
-                "portfolio bars must be cross-symbol synchronized at open, close and availability"
+                "portfolio bars must use non-overlapping cross-symbol synchronized "
+                "session clocks"
             )
+        clock_index = {clock: index for index, clock in enumerate(ordered_clocks)}
+        for symbol, values in sorted(by_symbol.items()):
+            indices = [
+                clock_index[(bar.open_at, bar.close_at, bar.available_at)]
+                for bar in values
+            ]
+            if indices != list(range(indices[0], indices[-1] + 1)):
+                raise ValueError(
+                    f"{symbol} portfolio bars contain an internal session gap"
+                )
         session_rows = tuple(
-            tuple(by_symbol[symbol][index] for symbol in symbols)
-            for index in range(len(reference_clock))
+            tuple(sessions[clock][symbol] for symbol in sorted(sessions[clock]))
+            for clock in ordered_clocks
         )
         decider = getattr(strategy_instance, "decide_portfolio_batch", None)
         if not callable(decider):
@@ -2187,16 +2205,28 @@ class GuardrailedBacktestEngine:
         applied_actions: set[tuple[str, datetime, str]] = set()
         dividend_entitlements: dict[tuple[str, datetime, str], Decimal] = {}
         paid_dividends: set[tuple[str, datetime, str]] = set()
+        constraint_exit_attempted: set[str] = set()
         batch_sequence = 0
 
-        def eligible(symbol: str, moment: datetime) -> bool:
+        def latest_membership_event(
+            symbol: str,
+            moment: datetime,
+        ) -> UniverseEvent | None:
             known = [
                 item for item in events
                 if item.symbol == symbol
                 and item.effective_at <= moment
                 and item.available_at <= moment
             ]
-            return bool(known) and known[-1].action == "ADD" and symbol not in terminated
+            return known[-1] if known else None
+
+        def eligible(symbol: str, moment: datetime) -> bool:
+            latest = latest_membership_event(symbol, moment)
+            return (
+                latest is not None
+                and latest.action == "ADD"
+                and symbol not in terminated
+            )
 
         def unsettled_total() -> Decimal:
             return sum((amount for _, amount in unsettled_cash), ZERO)
@@ -2392,7 +2422,11 @@ class GuardrailedBacktestEngine:
                 for symbol in sorted(intent_by_symbol):
                     item = intent_by_symbol[symbol]
                     position = positions.get(symbol)
-                    if position is None or item.action not in {"REDUCE", "EXIT"}:
+                    if (
+                        position is None
+                        or item.action not in {"REDUCE", "EXIT"}
+                        or symbol in constraint_exit_attempted
+                    ):
                         continue
                     reference = bars_by_symbol[symbol].open
                     target_quantity = (
@@ -2403,7 +2437,13 @@ class GuardrailedBacktestEngine:
                         close_position(
                             symbol=symbol, requested=requested,
                             reference=reference, moment=moment,
-                            signal_at=signal_at, reason="EXECUTIVE_PORTFOLIO_TARGET",
+                            signal_at=signal_at,
+                            reason=(
+                                "UNIVERSE_REMOVAL"
+                                if "UNIVERSE_REMOVAL_FORCED_EXIT"
+                                in item.reason_codes
+                                else "EXECUTIVE_PORTFOLIO_TARGET"
+                            ),
                         )
 
                 candidates: dict[str, dict[str, Any]] = {}
@@ -2413,6 +2453,7 @@ class GuardrailedBacktestEngine:
                         item.action != "ENTER_LONG"
                         or not allow_increases
                         or symbol in protective_exit_pending
+                        or symbol in constraint_exit_attempted
                     ):
                         continue
                     reference = bars_by_symbol[symbol].open
@@ -2650,9 +2691,51 @@ class GuardrailedBacktestEngine:
                     snapshot("POST_PORTFOLIO_BUY", moment, symbol)
 
         for bars_for_session in session_rows:
+            constraint_exit_attempted.clear()
             bars_by_symbol = {bar.symbol: bar for bar in bars_for_session}
             first_bar = bars_for_session[0]
             moment = first_bar.open_at
+            terminal_due = {
+                symbol
+                for symbol, outcome in terminal_by_symbol.items()
+                if outcome.effective_at <= moment
+            }
+            required_symbols = {
+                symbol
+                for symbol in symbols
+                # Session coverage is membership-at-open.  The later decision
+                # cutoff intentionally uses bar availability so an announced
+                # close-effective change can constrain the next instruction.
+                if eligible(symbol, moment) and symbol not in terminal_due
+            } | (set(positions) - terminal_due)
+            if pending_intent is not None:
+                pending_symbols = {
+                    item.symbol for item in pending_intent[0].symbol_intents
+                }
+                if pending_symbols.intersection(terminal_due):
+                    raise ValueError(
+                        "an Executive portfolio target cannot cross a terminal boundary"
+                    )
+                required_symbols.update(pending_symbols)
+            # Terminal settlement supersedes an unfilled protective order;
+            # terminal-due names deliberately require no fabricated next bar.
+            required_symbols.update(set(protective_exit_pending) - terminal_due)
+            if not required_symbols.issubset(bars_by_symbol):
+                missing = required_symbols - set(bars_by_symbol)
+                if any(
+                    symbol in positions
+                    and (latest := latest_membership_event(symbol, moment)) is not None
+                    and latest.action == "REMOVE"
+                    for symbol in missing
+                ):
+                    raise ValueError(
+                        "universe-removal exit was not completed within its "
+                        "covered liquidity"
+                    )
+                raise ValueError(
+                    "portfolio bars must be cross-symbol synchronized for every "
+                    "active, held or pending-intent symbol"
+                )
             for bar in bars_for_session:
                 last_marks[bar.symbol] = bar.open
 
@@ -2665,7 +2748,7 @@ class GuardrailedBacktestEngine:
                 unsettled_cash[:] = [
                     item for item in unsettled_cash if item[0] > moment
                 ]
-                snapshot("CASH_SETTLEMENT", moment, symbols[0])
+                snapshot("CASH_SETTLEMENT", moment, "__PORTFOLIO__")
 
             for action in actions:
                 key = (action.symbol, action.effective_at, action.action_type)
@@ -2788,6 +2871,34 @@ class GuardrailedBacktestEngine:
                     )
                     snapshot("TERMINAL_SETTLEMENT", moment, symbol)
 
+            pending_forced_removals = (
+                {
+                    item.symbol
+                    for item in pending_intent[0].symbol_intents
+                    if "UNIVERSE_REMOVAL_FORCED_EXIT" in item.reason_codes
+                }
+                if pending_intent is not None
+                else set()
+            )
+            for symbol in sorted(
+                set(positions) - pending_forced_removals - terminal_due
+            ):
+                latest = latest_membership_event(symbol, moment)
+                if latest is None or latest.action != "REMOVE":
+                    continue
+                # A membership removal known before the open supersedes a
+                # protective stop: it is the earlier binding constraint.
+                protective_exit_pending.pop(symbol, None)
+                close_position(
+                    symbol=symbol,
+                    requested=positions[symbol].quantity,
+                    reference=bars_by_symbol[symbol].open,
+                    moment=moment,
+                    signal_at=latest.available_at,
+                    reason="UNIVERSE_REMOVAL",
+                )
+                constraint_exit_attempted.add(symbol)
+
             for symbol in sorted(tuple(protective_exit_pending)):
                 if symbol not in positions:
                     protective_exit_pending.pop(symbol, None)
@@ -2871,6 +2982,12 @@ class GuardrailedBacktestEngine:
             if start <= first_bar.close_at < end and (
                 eligible_symbols or positions
             ):
+                decision_symbols = tuple(sorted(set(eligible_symbols) | set(positions)))
+                if not set(decision_symbols).issubset(bars_by_symbol):
+                    raise ValueError(
+                        "portfolio bars must be cross-symbol synchronized for every "
+                        "decision symbol"
+                    )
                 with localcontext(ENGINE_DECIMAL_CONTEXT):
                     portfolio_equity = equity()
                     current_weights = {
@@ -2881,12 +2998,12 @@ class GuardrailedBacktestEngine:
                             if symbol in positions and portfolio_equity > ZERO
                             else ZERO
                         )
-                        for symbol in symbols
+                        for symbol in decision_symbols
                     }
                 intent = decider(
                     {
                         symbol: tuple(histories[symbol])
-                        for symbol in symbols
+                        for symbol in decision_symbols
                     },
                     parameters,
                     current_weights=current_weights,
@@ -2905,6 +3022,8 @@ class GuardrailedBacktestEngine:
                     )
                 expected_symbols = set(eligible_symbols) | set(positions)
                 actual_symbols = {item.symbol for item in intent.symbol_intents}
+                # Exact coverage prevents a strategy from omitting a held
+                # removal instead of returning the required exit target.
                 if actual_symbols != expected_symbols:
                     raise ValueError(
                         "Executive portfolio intent does not cover every eligible or held symbol"
@@ -2914,6 +3033,47 @@ class GuardrailedBacktestEngine:
                         raise ValueError(
                             "Executive portfolio current weight differs from engine state"
                         )
+                terminal_at_decision = {
+                    symbol
+                    for symbol, outcome in terminal_by_symbol.items()
+                    if outcome.effective_at <= first_bar.available_at
+                }
+                forced_removals = (
+                    set(positions)
+                    - set(eligible_symbols)
+                    - terminal_at_decision
+                )
+                if forced_removals:
+                    # Universe membership is an engine constraint, not an
+                    # alpha-strategy preference.  Rebuild and re-hash the
+                    # immutable Executive intent so every held removal becomes
+                    # an auditable next-session EXIT even if the strategy asks
+                    # to retain it.
+                    intent = ExecutivePortfolioIntent(
+                        version=intent.version,
+                        decision_at=intent.decision_at,
+                        risk_envelope_sha256=intent.risk_envelope_sha256,
+                        gross_exposure_cap=intent.gross_exposure_cap,
+                        symbol_intents=tuple(
+                            replace(
+                                item,
+                                action="EXIT",
+                                target_weight=ZERO,
+                                reason_codes=tuple(dict.fromkeys((
+                                    *item.reason_codes,
+                                    "UNIVERSE_REMOVAL_FORCED_EXIT",
+                                ))),
+                            )
+                            if item.symbol in forced_removals
+                            else item
+                            for item in intent.symbol_intents
+                        ),
+                        reason_codes=tuple(dict.fromkeys((
+                            *intent.reason_codes,
+                            "UNIVERSE_REMOVAL_CONSTRAINT_APPLIED",
+                        ))),
+                    )
+                for item in intent.symbol_intents:
                     executive_intents.append(
                         ExecutiveIntentTrace(
                             sequence=len(executive_intents) + 1,

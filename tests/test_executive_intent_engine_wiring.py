@@ -15,6 +15,7 @@ from core.guardrailed_backtest import (
     GuardrailedBacktestEngine,
     MarketBar,
     ReplayDataAttestation,
+    TerminalOutcome,
     UniverseEvent,
 )
 from core.research.executive_intent_signal_adapter import (
@@ -453,7 +454,9 @@ class _FixedPortfolioStrategy:
             target = (
                 Decimal("0.5") if count == parameters["enter_at"]
                 else (
-                    Decimal("0") if symbol == "AAPL" else Decimal("0.5")
+                    Decimal("0")
+                    if symbol == "AAPL" or symbol.endswith("AAPL-001")
+                    else Decimal("0.5")
                 ) if count == parameters.get("mixed_at")
                 else Decimal("0") if count == parameters["exit_at"]
                 else current_weight
@@ -511,6 +514,8 @@ def _run_fixed_portfolio(
     parameters=None,
     evaluation_end=None,
     initial_cash=Decimal("100000"),
+    universe_events=None,
+    terminal_outcomes=None,
 ):
     market = _portfolio_bars() if market is None else market
     parameters = (
@@ -532,14 +537,20 @@ def _run_fixed_portfolio(
     )
     result = engine.run(
         bars=supplied,
-        universe_events=tuple(
-            UniverseEvent(
-                symbol, "ADD", market[0].open_at, market[0].open_at,
-                "synthetic-portfolio-membership",
+        universe_events=(
+            tuple(universe_events)
+            if universe_events is not None
+            else tuple(
+                UniverseEvent(
+                    symbol, "ADD", market[0].open_at, market[0].open_at,
+                    "synthetic-portfolio-membership",
+                )
+                for symbol in (("MSFT", "AAPL") if reverse else ("AAPL", "MSFT"))
             )
-            for symbol in (("MSFT", "AAPL") if reverse else ("AAPL", "MSFT"))
         ),
-        terminal_outcomes=(),
+        terminal_outcomes=(
+            tuple(terminal_outcomes) if terminal_outcomes is not None else ()
+        ),
         corporate_actions=(),
         prices_are_unadjusted=True,
         strategy=_FixedPortfolioStrategy(),
@@ -700,3 +711,377 @@ def test_portfolio_batch_rejects_cross_symbol_clock_misalignment():
             evaluation_start=market[0].close_at,
             evaluation_end=market[-6].open_at,
         )
+
+
+def _dynamic_portfolio_fixture():
+    market = [
+        replace(row, symbol=f"SEC-{row.symbol}-001")
+        for row in _portfolio_bars(14)
+        if row.symbol == "AAPL"
+        or 2 <= (row.open_at - START).days <= 10
+    ]
+    events = (
+        UniverseEvent(
+            "SEC-AAPL-001", "ADD", START, START,
+            "synthetic-dynamic-membership:AAPL:add",
+        ),
+        UniverseEvent(
+            "SEC-MSFT-001", "ADD", START + timedelta(days=2),
+            START + timedelta(days=2),
+            "synthetic-dynamic-membership:MSFT:add",
+        ),
+        UniverseEvent(
+            "SEC-MSFT-001", "REMOVE",
+            START + timedelta(days=10, hours=6, minutes=30),
+            START + timedelta(days=10, hours=6, minutes=30),
+            "synthetic-dynamic-membership:MSFT:remove",
+        ),
+    )
+    return market, events
+
+
+def test_portfolio_batch_supports_dynamic_permanent_id_session_sets():
+    market, events = _dynamic_portfolio_fixture()
+    _, first = _run_fixed_portfolio(
+        market=market,
+        universe_events=events,
+        parameters={"enter_at": 999, "exit_at": 999},
+        evaluation_end=START + timedelta(days=13),
+    )
+    _, second = _run_fixed_portfolio(
+        reverse=True,
+        market=market,
+        universe_events=tuple(reversed(events)),
+        parameters={"enter_at": 999, "exit_at": 999},
+        evaluation_end=START + timedelta(days=13),
+    )
+    counts = {
+        symbol: sum(row.symbol == symbol for row in first.executive_intents)
+        for symbol in ("SEC-AAPL-001", "SEC-MSFT-001")
+    }
+    assert counts == {"SEC-AAPL-001": 13, "SEC-MSFT-001": 8}
+    assert first.executive_intents == second.executive_intents
+    assert first.cash_reservations == second.cash_reservations == ()
+    assert first.executions == second.executions == ()
+
+
+def test_portfolio_batch_rejects_missing_bar_for_active_dynamic_symbol():
+    market, events = _dynamic_portfolio_fixture()
+    broken = [
+        row
+        for row in market
+        if not (
+            row.symbol == "SEC-MSFT-001"
+            and (row.open_at - START).days == 2
+        )
+    ]
+    with pytest.raises(ValueError, match="active, held or pending-intent symbol"):
+        _run_fixed_portfolio(
+            market=broken,
+            universe_events=events,
+            parameters={"enter_at": 999, "exit_at": 999},
+            evaluation_end=START + timedelta(days=13),
+        )
+
+
+def test_portfolio_batch_rejects_inactive_gap_that_would_splice_reentry_history():
+    market = [
+        replace(row, symbol=f"SEC-{row.symbol}-001")
+        for row in _portfolio_bars(10)
+        if row.symbol == "AAPL"
+        or (row.open_at - START).days not in {3, 4}
+    ]
+    events = (
+        UniverseEvent("SEC-AAPL-001", "ADD", START, START, "gap:AAPL"),
+        UniverseEvent("SEC-MSFT-001", "ADD", START, START, "gap:MSFT:add-1"),
+        UniverseEvent(
+            "SEC-MSFT-001", "REMOVE", START + timedelta(days=3),
+            START + timedelta(days=3), "gap:MSFT:remove",
+        ),
+        UniverseEvent(
+            "SEC-MSFT-001", "ADD", START + timedelta(days=5),
+            START + timedelta(days=5), "gap:MSFT:add-2",
+        ),
+    )
+    with pytest.raises(ValueError, match="internal session gap"):
+        _run_fixed_portfolio(
+            market=market,
+            universe_events=events,
+            parameters={"enter_at": 999, "exit_at": 999},
+            evaluation_end=START + timedelta(days=8),
+        )
+
+
+def test_dynamic_removal_executes_held_exit_on_next_tradable_bar():
+    market = [
+        replace(row, symbol=f"SEC-{row.symbol}-001")
+        for row in _portfolio_bars(14)
+        if row.symbol == "AAPL" or (row.open_at - START).days <= 11
+    ]
+    events = (
+        UniverseEvent(
+            "SEC-AAPL-001", "ADD", START, START,
+            "synthetic-dynamic-exit:AAPL:add",
+        ),
+        UniverseEvent(
+            "SEC-MSFT-001", "ADD", START, START,
+            "synthetic-dynamic-exit:MSFT:add",
+        ),
+        UniverseEvent(
+            "SEC-MSFT-001", "REMOVE",
+            START + timedelta(days=10, hours=6, minutes=30),
+            START + timedelta(days=10, hours=6, minutes=30),
+            "synthetic-dynamic-exit:MSFT:remove",
+        ),
+    )
+    _, result = _run_fixed_portfolio(
+        market=market,
+        universe_events=events,
+        parameters={"enter_at": 4, "exit_at": 11},
+        evaluation_end=START + timedelta(days=12),
+    )
+    exits = [
+        row
+        for row in result.executions
+        if row.symbol == "SEC-MSFT-001" and row.action == "SELL"
+    ]
+    assert len(exits) == 1
+    assert exits[0].reason == "UNIVERSE_REMOVAL"
+    assert exits[0].signal_at == START + timedelta(days=10, hours=6, minutes=31)
+    assert exits[0].executed_at == START + timedelta(days=11)
+    assert any(
+        trade.symbol == "SEC-MSFT-001"
+        and trade.exit_reason == "UNIVERSE_REMOVAL"
+        for trade in result.completed_trades
+    )
+
+
+def test_partial_universe_removal_exit_has_specific_coverage_failure():
+    market = []
+    for row in _portfolio_bars(14):
+        session = (row.open_at - START).days
+        if row.symbol == "MSFT" and session > 11:
+            continue
+        market.append(replace(
+            row,
+            symbol=f"SEC-{row.symbol}-001",
+            volume=(
+                Decimal("2500")
+                if row.symbol == "MSFT" and session >= 7
+                else row.volume
+            ),
+        ))
+    events = (
+        UniverseEvent("SEC-AAPL-001", "ADD", START, START, "partial:AAPL"),
+        UniverseEvent("SEC-MSFT-001", "ADD", START, START, "partial:MSFT"),
+        UniverseEvent(
+            "SEC-MSFT-001",
+            "REMOVE",
+            START + timedelta(days=10, hours=6, minutes=30),
+            START + timedelta(days=10, hours=6, minutes=30),
+            "partial:MSFT:remove",
+        ),
+    )
+    with pytest.raises(
+        ValueError,
+        match="universe-removal exit was not completed within its covered liquidity",
+    ):
+        _run_fixed_portfolio(
+            market=market,
+            universe_events=events,
+            parameters={"enter_at": 4, "exit_at": 999},
+            evaluation_end=START + timedelta(days=13),
+        )
+
+
+def test_late_membership_evidence_delays_eligibility_without_lookahead():
+    market = _portfolio_bars(8)
+    events = (
+        UniverseEvent("AAPL", "ADD", START, START, "late-evidence:AAPL"),
+        UniverseEvent(
+            "MSFT",
+            "ADD",
+            START,
+            START + timedelta(days=2),
+            "late-evidence:MSFT",
+        ),
+    )
+    _, result = _run_fixed_portfolio(
+        market=market,
+        universe_events=events,
+        parameters={"enter_at": 999, "exit_at": 999},
+        evaluation_end=START + timedelta(days=5),
+    )
+    counts = {
+        symbol: sum(row.symbol == symbol for row in result.executive_intents)
+        for symbol in ("AAPL", "MSFT")
+    }
+    assert counts == {"AAPL": 5, "MSFT": 3}
+
+
+def test_late_removal_evidence_exits_only_after_it_is_available():
+    market = [
+        replace(row, symbol=f"SEC-{row.symbol}-001")
+        for row in _portfolio_bars(14)
+    ]
+    msft_remove_effective = next(
+        row.close_at
+        for row in market
+        if row.symbol == "SEC-MSFT-001" and (row.open_at - START).days == 4
+    )
+    msft_remove_available = next(
+        row.open_at
+        for row in market
+        if row.symbol == "SEC-MSFT-001" and (row.open_at - START).days == 7
+    )
+    events = (
+        UniverseEvent("SEC-AAPL-001", "ADD", START, START, "late-remove:AAPL"),
+        UniverseEvent("SEC-MSFT-001", "ADD", START, START, "late-remove:MSFT"),
+        UniverseEvent(
+            "SEC-MSFT-001",
+            "REMOVE",
+            msft_remove_effective,
+            msft_remove_available,
+            "late-remove:MSFT:remove",
+        ),
+    )
+    _, result = _run_fixed_portfolio(
+        market=market,
+        universe_events=events,
+        parameters={"enter_at": 4, "exit_at": 10},
+        evaluation_end=START + timedelta(days=12),
+    )
+    exits = [
+        row
+        for row in result.executions
+        if row.symbol == "SEC-MSFT-001" and row.action == "SELL"
+    ]
+    assert len(exits) == 1
+    assert exits[0].reason == "UNIVERSE_REMOVAL"
+    assert exits[0].signal_at == msft_remove_available
+    assert exits[0].executed_at == START + timedelta(days=7)
+    assert not any(row.executed_at < START + timedelta(days=7) for row in exits)
+
+
+def test_dynamic_membership_change_reduces_before_contested_cash_increase():
+    market = []
+    for row in _portfolio_bars(14):
+        symbol = f"SEC-{row.symbol}-001"
+        if row.symbol == "AAPL" and (row.open_at - START).days >= 5:
+            market.append(replace(
+                row,
+                symbol=symbol,
+                open=row.open + Decimal("50"),
+                high=row.high + Decimal("50"),
+                low=row.low + Decimal("50"),
+                close=row.close + Decimal("50"),
+            ))
+        else:
+            market.append(replace(row, symbol=symbol))
+    msft_add = next(
+        row.available_at
+        for row in market
+        if row.symbol == "SEC-MSFT-001" and (row.open_at - START).days == 5
+    )
+    events = (
+        UniverseEvent("SEC-AAPL-001", "ADD", START, START, "dynamic-cash:AAPL"),
+        UniverseEvent(
+            "SEC-MSFT-001", "ADD", msft_add, msft_add, "dynamic-cash:MSFT"
+        ),
+    )
+    parameters = {"enter_at": 4, "mixed_at": 6, "exit_at": 10}
+    _, first = _run_fixed_portfolio(
+        market=market,
+        universe_events=events,
+        parameters=parameters,
+        evaluation_end=START + timedelta(days=12),
+    )
+    _, second = _run_fixed_portfolio(
+        reverse=True,
+        market=market,
+        universe_events=tuple(reversed(events)),
+        parameters=parameters,
+        evaluation_end=START + timedelta(days=12),
+    )
+    change_execution_at = START + timedelta(days=6)
+    change_actions = [
+        (row.symbol, row.action)
+        for row in first.executions
+        if row.executed_at == change_execution_at and row.filled_quantity > 0
+    ]
+    assert change_actions == [
+        ("SEC-AAPL-001", "SELL"),
+        ("SEC-MSFT-001", "BUY"),
+    ]
+    msft_sizing = next(
+        row
+        for row in first.sizing_decisions
+        if row.symbol == "SEC-MSFT-001"
+        and row.action == "BUY"
+        and row.evaluated_at == change_execution_at
+    )
+    assert "SHARED_CASH_RESERVATION" in msft_sizing.limiting_constraints
+    assert first.executions == second.executions
+    assert first.cash_reservations == second.cash_reservations
+
+
+def test_terminal_settlement_supersedes_pending_partial_portfolio_stop():
+    market = []
+    for row in _portfolio_bars(16):
+        session = (row.open_at - START).days
+        if row.symbol == "AAPL" and session > 8:
+            continue
+        changed = replace(
+            row,
+            volume=(Decimal("2500") if session >= 5 else row.volume),
+        )
+        if row.symbol == "AAPL" and session == 8:
+            changed = replace(changed, low=Decimal("90"))
+        market.append(changed)
+    terminal_at = START + timedelta(days=8, hours=6, minutes=30)
+    outcome = TerminalOutcome(
+        symbol="AAPL",
+        terminal_type="DELISTED",
+        effective_at=terminal_at,
+        available_at=terminal_at,
+        recovery_per_share=Decimal("0"),
+        cash_settled_at=START + timedelta(days=10),
+        source_locator="synthetic-terminal-after-partial-stop",
+    )
+    _, result = _run_fixed_portfolio(
+        market=market,
+        universe_events=(
+            UniverseEvent("AAPL", "ADD", START, START, "terminal:AAPL:add"),
+            UniverseEvent("MSFT", "ADD", START, START, "terminal:MSFT:add"),
+            UniverseEvent(
+                "AAPL", "REMOVE", terminal_at, terminal_at,
+                "terminal:AAPL:remove",
+            ),
+        ),
+        terminal_outcomes=(outcome,),
+        parameters={"enter_at": 4, "exit_at": 12},
+        evaluation_end=START + timedelta(days=13),
+        initial_cash=Decimal("20000"),
+    )
+    stops = [
+        row
+        for row in result.executions
+        if row.symbol == "AAPL" and row.reason == "HARD_ATR_STOP"
+    ]
+    assert stops and stops[-1].status == "PARTIALLY_FILLED"
+    assert any(
+        row.symbol == "AAPL"
+        and row.action == "TERMINAL_SETTLEMENT"
+        and row.executed_at == START + timedelta(days=9)
+        for row in result.executions
+    )
+    assert any(
+        trade.symbol == "AAPL" and trade.exit_reason == "DELISTED"
+        for trade in result.completed_trades
+    )
+    assert any(
+        state.event_type == "CASH_SETTLEMENT"
+        and state.as_of_at == START + timedelta(days=10)
+        and state.symbol == "__PORTFOLIO__"
+        for state in result.portfolio_states
+    )

@@ -22,18 +22,23 @@ from typing import Any, Callable, Iterator, Mapping, Sequence
 from urllib.parse import urlsplit
 
 from core.decision_ledger import GENESIS_HASH, LedgerIntegrityError, canonical_timestamp
-from core.guardrailed_backtest import MarketBar
+from core.guardrailed_backtest import MarketBar, UniverseEvent
 from core.orchestration.pit_session_partitions import PITSessionPartitionLedger
 from core.portfolio.pit_security_master import (
     PointInTimeSecurityMasterLedger,
+    SECURITY_ID_PATTERN,
     _apply_event,
     _new_state,
 )
 
 
-SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "pit-daily-bar-snapshots-v1"
+SCHEMA_VERSION = "1.1"
+POLICY_VERSION = "pit-daily-bar-snapshots-v2"
+LEGACY_SCHEMA_VERSION = "1.0"
+LEGACY_POLICY_VERSION = "pit-daily-bar-snapshots-v1"
 MAX_ROWS = 100_000
+MAX_SECURITIES = 1_000
+MAX_MASTER_SECURITIES = 50_000
 # A production-shaped 90,720-row JSON snapshot is projected at about 45 MiB.
 # Bound each record independently while retaining room for several immutable
 # correction generations in the append-only ledger.
@@ -43,6 +48,9 @@ MAX_CLOCK_SKEW = timedelta(minutes=5)
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 BAR_SUPERSESSION_REASONS = frozenset(
     {"SOURCE_CORRECTION", "COVERAGE_RECAPTURE", "CALENDAR_CORRECTION"}
+)
+COVERAGE_SHAPES = frozenset(
+    {"STRICT_RECTANGLE_CONSTANT_MEMBERSHIP", "PER_SECURITY_PIT_INTERVALS"}
 )
 _RAW_BAR_FIELDS = frozenset(
     {
@@ -104,12 +112,17 @@ _SNAPSHOT_FIELDS = frozenset(
         "permanent_identity_used",
         "cross_sectionally_aligned",
         "coverage_shape",
+        "coverage_intervals",
+        "engine_symbol_policy",
         "synthetic_fixture",
         *_FALSE_AUTHORITIES,
         "appended_at",
         "previous_hash",
         "record_hash",
     }
+)
+_LEGACY_SNAPSHOT_FIELDS = _SNAPSHOT_FIELDS - frozenset(
+    {"coverage_intervals", "engine_symbol_policy"}
 )
 
 
@@ -135,6 +148,13 @@ def _text(value: Any, name: str, maximum: int = 500) -> str:
         raise ValueError(f"{name} must be nonempty canonical text")
     if any(ord(character) < 32 for character in resolved):
         raise ValueError(f"{name} must not contain control characters")
+    return resolved
+
+
+def _security_id(value: Any) -> str:
+    resolved = _text(value, "security_id", 64)
+    if resolved != resolved.upper() or SECURITY_ID_PATTERN.fullmatch(resolved) is None:
+        raise ValueError("security_id must be a canonical permanent identifier")
     return resolved
 
 
@@ -265,6 +285,10 @@ class PITDailyBarResearchInputs:
     partition_role: str
     bars: tuple[MarketBar, ...]
     security_ids: tuple[str, ...]
+    tickers: tuple[str, ...]
+    coverage_shape: str
+    engine_symbol_policy: str
+    universe_events: tuple[UniverseEvent, ...] = ()
     synthetic_fixture: bool = True
     dataset_admitted: bool = False
     performance_claim_allowed: bool = False
@@ -279,11 +303,36 @@ class PITDailyBarResearchInputs:
             self.partition_role != "TRAIN"
             or not self.bars
             or len(self.security_ids) != len(self.bars)
+            or len(self.tickers) != len(self.bars)
             or any(not isinstance(bar, MarketBar) for bar in self.bars)
+            or any(not isinstance(event, UniverseEvent) for event in self.universe_events)
         ):
             raise ValueError("daily-bar research inputs must contain TRAIN bars")
-        for security_id in self.security_ids:
-            _text(security_id, "security_id", 80)
+        for security_id, ticker, bar in zip(
+            self.security_ids,
+            self.tickers,
+            self.bars,
+        ):
+            _security_id(security_id)
+            _text(ticker, "ticker", 20)
+            expected_symbol = (
+                security_id
+                if self.engine_symbol_policy == "PERMANENT_SECURITY_ID"
+                else ticker
+            )
+            if bar.symbol != expected_symbol:
+                raise ValueError("daily-bar engine symbol policy is inconsistent")
+        if self.coverage_shape not in COVERAGE_SHAPES or (
+            self.coverage_shape == "PER_SECURITY_PIT_INTERVALS"
+            and (
+                self.engine_symbol_policy != "PERMANENT_SECURITY_ID"
+                or not self.universe_events
+            )
+        ) or (
+            self.coverage_shape == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP"
+            and self.engine_symbol_policy != "TICKER"
+        ):
+            raise ValueError("daily-bar coverage or engine symbol policy is unsupported")
         if self.synthetic_fixture is not True or any(
             getattr(self, name) is not False
             for name in (
@@ -455,6 +504,7 @@ class PITDailyBarLedger:
         calendar_snapshot_id: str,
         partition_manifest_id: str,
         bars: Sequence[Mapping[str, Any]],
+        coverage_shape: str = "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP",
         source_uri: str,
         source_locator: str,
         source_payload_sha256: str,
@@ -469,6 +519,9 @@ class PITDailyBarLedger:
             raise ValueError("bars must be a bounded sequence")
         if not 1 <= len(bars) <= MAX_ROWS:
             raise ValueError(f"bars must contain between 1 and {MAX_ROWS} records")
+        shape = _text(coverage_shape, "coverage_shape", 50).upper()
+        if shape not in COVERAGE_SHAPES:
+            raise ValueError("daily-bar coverage_shape is unsupported")
         supersedes = (
             None
             if supersedes_bar_snapshot_id is None
@@ -506,8 +559,15 @@ class PITDailyBarLedger:
                 calendar=calendar,
                 manifest=manifest,
                 master_records=master_records,
+                coverage_shape=shape,
             )
             security_ids = sorted({item["security_id"] for item in normalized})
+            coverage_intervals = self._coverage_intervals(normalized)
+            engine_symbol_policy = (
+                "PERMANENT_SECURITY_ID"
+                if shape == "PER_SECURITY_PIT_INTERVALS"
+                else "TICKER"
+            )
             body: dict[str, Any] = {
                 "schema_version": SCHEMA_VERSION,
                 "policy_version": POLICY_VERSION,
@@ -539,8 +599,12 @@ class PITDailyBarLedger:
                     "effective_at/reported_at/available_at/retrieved_at/recorded_at"
                 ),
                 "permanent_identity_used": True,
-                "cross_sectionally_aligned": True,
-                "coverage_shape": "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP",
+                "cross_sectionally_aligned": (
+                    shape == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP"
+                ),
+                "coverage_shape": shape,
+                "coverage_intervals": coverage_intervals,
+                "engine_symbol_policy": engine_symbol_policy,
                 "synthetic_fixture": True,
                 **{name: False for name in _FALSE_AUTHORITIES},
                 "appended_at": appended.isoformat(timespec="microseconds"),
@@ -601,9 +665,11 @@ class PITDailyBarLedger:
             snapshot["partition_manifest_id"],
             require_current=True,
         )
+        engine_symbol_policy = snapshot.get("engine_symbol_policy", "TICKER")
+        permanent_symbols = engine_symbol_policy == "PERMANENT_SECURITY_ID"
         bars = tuple(
             MarketBar(
-                symbol=item["ticker"],
+                symbol=(item["security_id"] if permanent_symbols else item["ticker"]),
                 open_at=_timestamp(item["open_at"], "open_at"),
                 close_at=_timestamp(item["close_at"], "close_at"),
                 available_at=_timestamp(item["available_at"], "available_at"),
@@ -615,6 +681,16 @@ class PITDailyBarLedger:
             )
             for item in snapshot["bars"]
         )
+        universe_events: tuple[UniverseEvent, ...] = ()
+        if permanent_symbols:
+            prefix = self._master_prefix(
+                snapshot,
+                self.security_master_ledger.verify(),
+            )
+            universe_events = self._materialize_universe_events(
+                prefix,
+                set(snapshot["security_ids"]),
+            )
         return PITDailyBarResearchInputs(
             bar_snapshot_id=snapshot["bar_snapshot_id"],
             bar_snapshot_record_hash=snapshot["record_hash"],
@@ -623,6 +699,10 @@ class PITDailyBarLedger:
             partition_role="TRAIN",
             bars=bars,
             security_ids=tuple(item["security_id"] for item in snapshot["bars"]),
+            tickers=tuple(item["ticker"] for item in snapshot["bars"]),
+            coverage_shape=snapshot["coverage_shape"],
+            engine_symbol_policy=engine_symbol_policy,
+            universe_events=universe_events,
         )
 
     def reconcile_snapshot(self, bar_snapshot_id: str) -> PITDailyBarReconciliation:
@@ -664,10 +744,22 @@ class PITDailyBarLedger:
                     key: value for key, value in record.items() if key != "record_hash"
                 }
                 appended = _timestamp(record["appended_at"], "appended_at")
-                common = (
+                legacy = (
+                    set(record) == _LEGACY_SNAPSHOT_FIELDS
+                    and record.get("schema_version") == LEGACY_SCHEMA_VERSION
+                    and record.get("policy_version") == LEGACY_POLICY_VERSION
+                    and record.get("coverage_shape")
+                    == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP"
+                )
+                current = (
                     set(record) == _SNAPSHOT_FIELDS
-                    and record["schema_version"] == SCHEMA_VERSION
-                    and record["policy_version"] == POLICY_VERSION
+                    and record.get("schema_version") == SCHEMA_VERSION
+                    and record.get("policy_version") == POLICY_VERSION
+                )
+                coverage_shape = record.get("coverage_shape", "")
+                engine_symbol_policy = record.get("engine_symbol_policy", "TICKER")
+                common = (
+                    (legacy or current)
                     and record["record_type"] == "PIT_DAILY_BAR_SNAPSHOT"
                     and record["status"] == "SYNTHETIC_TRAIN_BARS_NOT_QUALIFIED"
                     and record["previous_hash"] == previous
@@ -680,9 +772,18 @@ class PITDailyBarLedger:
                     and record["point_in_time_contract"]
                     == "effective_at/reported_at/available_at/retrieved_at/recorded_at"
                     and record["permanent_identity_used"] is True
-                    and record["cross_sectionally_aligned"] is True
-                    and record["coverage_shape"]
-                    == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP"
+                    and record["cross_sectionally_aligned"]
+                    is (
+                        coverage_shape
+                        == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP"
+                    )
+                    and coverage_shape in COVERAGE_SHAPES
+                    and engine_symbol_policy
+                    == (
+                        "PERMANENT_SECURITY_ID"
+                        if coverage_shape == "PER_SECURITY_PIT_INTERVALS"
+                        else "TICKER"
+                    )
                     and record["synthetic_fixture"] is True
                     and all(record[name] is False for name in _FALSE_AUTHORITIES)
                 )
@@ -702,7 +803,9 @@ class PITDailyBarLedger:
                     calendar=calendar,
                     manifest=manifest,
                     master_records=prefix,
+                    coverage_shape=coverage_shape,
                 )
+                coverage_intervals = self._coverage_intervals(normalized)
                 identity = (
                     normalized == record["bars"]
                     and record["coverage_start"] == normalized[0]["session_date"]
@@ -712,6 +815,10 @@ class PITDailyBarLedger:
                     and record["security_ids"]
                     == sorted({item["security_id"] for item in normalized})
                     and record["row_count"] == len(normalized)
+                    and (
+                        legacy
+                        or record["coverage_intervals"] == coverage_intervals
+                    )
                     and record["security_master_event_count"] == len(prefix)
                 )
                 if not identity:
@@ -822,7 +929,10 @@ class PITDailyBarLedger:
         calendar: Mapping[str, Any],
         manifest: Mapping[str, Any],
         master_records: Sequence[Mapping[str, Any]],
+        coverage_shape: str = "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP",
     ) -> list[dict[str, Any]]:
+        if coverage_shape not in COVERAGE_SHAPES:
+            raise ValueError("daily-bar coverage_shape is unsupported")
         sessions = {item["session_date"]: item for item in calendar["sessions"]}
         master_index = _master_event_index(master_records)
         master_state_cache: dict[tuple[str, datetime], Mapping[str, Any]] = {}
@@ -850,17 +960,324 @@ class PITDailyBarLedger:
         if dates != expected_dates:
             raise ValueError("daily-bar coverage has a missing calendar session")
         securities = sorted({item["security_id"] for item in normalized})
-        if set(keys) != {(day, security_id) for day in dates for security_id in securities}:
-            raise ValueError("daily bars are not cross-sectionally aligned")
-        identity_tickers = {
-            (item["security_id"], item["ticker"]) for item in normalized
-        }
-        tickers = {item["ticker"] for item in normalized}
-        if len(identity_tickers) != len(securities) or len(tickers) != len(securities):
-            raise ValueError(
-                "daily-bar snapshot ticker/permanent-identity mapping is not bijective"
+        if len(securities) > MAX_SECURITIES:
+            raise ValueError("daily-bar snapshot exceeds its security-count limit")
+        if coverage_shape == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP":
+            if set(keys) != {
+                (day, security_id) for day in dates for security_id in securities
+            }:
+                raise ValueError("daily bars are not cross-sectionally aligned")
+            identity_tickers = {
+                (item["security_id"], item["ticker"]) for item in normalized
+            }
+            tickers = {item["ticker"] for item in normalized}
+            if (
+                len(identity_tickers) != len(securities)
+                or len(tickers) != len(securities)
+            ):
+                raise ValueError(
+                    "daily-bar snapshot ticker/permanent-identity mapping is not bijective"
+                )
+            first_open = min(_timestamp(item["open_at"], "open_at") for item in normalized)
+            last_close = max(
+                _timestamp(item["close_at"], "close_at") for item in normalized
+            )
+            if any(
+                record["event_type"]
+                in {
+                    "LISTED",
+                    "TICKER_CHANGED",
+                    "INDEX_ADDED",
+                    "INDEX_REMOVED",
+                    "DELISTED",
+                }
+                and first_open <= effective_at <= last_close
+                for security_id in securities
+                for effective_at, _, record in master_index.get(security_id, ())
+            ):
+                raise ValueError(
+                    "constant-membership daily bars span a security-master transition"
+                )
+        else:
+            calendar_dates = [item["session_date"] for item in calendar["sessions"]]
+            calendar_index = {
+                session_date: index
+                for index, session_date in enumerate(calendar_dates)
+            }
+            rows_by_security: dict[str, list[Mapping[str, Any]]] = {
+                security_id: [] for security_id in securities
+            }
+            tickers_by_day: dict[str, set[str]] = {}
+            for item in normalized:
+                rows_by_security[item["security_id"]].append(item)
+                day_tickers = tickers_by_day.setdefault(item["session_date"], set())
+                if item["ticker"] in day_tickers:
+                    raise ValueError(
+                        "daily-bar session ticker/permanent-identity mapping is not bijective"
+                    )
+                day_tickers.add(item["ticker"])
+            for rows_for_security in rows_by_security.values():
+                indices = [
+                    calendar_index[item["session_date"]]
+                    for item in rows_for_security
+                ]
+                if indices != list(range(indices[0], indices[-1] + 1)):
+                    raise ValueError(
+                        "daily-bar per-security coverage interval contains an internal gap"
+                    )
+            self._validate_membership_coverage(
+                normalized=normalized,
+                calendar=calendar,
+                master_index=master_index,
             )
         return normalized
+
+    @staticmethod
+    def _coverage_intervals(
+        normalized: Sequence[Mapping[str, Any]],
+    ) -> list[dict[str, Any]]:
+        rows_by_security: dict[str, list[Mapping[str, Any]]] = {}
+        for item in normalized:
+            rows_by_security.setdefault(item["security_id"], []).append(item)
+        intervals: list[dict[str, Any]] = []
+        for security_id, rows in sorted(rows_by_security.items()):
+            segments: list[dict[str, Any]] = []
+            for row in rows:
+                if not segments or segments[-1]["ticker"] != row["ticker"]:
+                    segments.append(
+                        {
+                            "ticker": row["ticker"],
+                            "coverage_start": row["session_date"],
+                            "coverage_end": row["session_date"],
+                        }
+                    )
+                else:
+                    segments[-1]["coverage_end"] = row["session_date"]
+            intervals.append(
+                {
+                    "security_id": security_id,
+                    "coverage_start": rows[0]["session_date"],
+                    "coverage_end": rows[-1]["session_date"],
+                    "session_count": len(rows),
+                    "ticker_segments": segments,
+                }
+            )
+        return intervals
+
+    @staticmethod
+    def _validate_membership_coverage(
+        *,
+        normalized: Sequence[Mapping[str, Any]],
+        calendar: Mapping[str, Any],
+        master_index: Mapping[
+            str,
+            Sequence[tuple[datetime, datetime, Mapping[str, Any]]],
+        ],
+    ) -> None:
+        """Require every PIT member at a session boundary to have that bar.
+
+        Membership-at-open preserves the day's economic return; membership at
+        bar availability preserves the decision-time universe.  The first
+        listed session after an ordinary removal is also required so any held
+        name can execute its engine-mandated exit.  A delisted identity is
+        excluded from that next-bar rule and must use terminal settlement.
+        """
+        coverage_start = normalized[0]["session_date"]
+        coverage_end = normalized[-1]["session_date"]
+        covered_security_ids = {
+            item["security_id"] for item in normalized
+        }
+        added_security_ids = {
+            security_id
+            for security_id, records in master_index.items()
+            if any(
+                record["event_type"] == "INDEX_ADDED"
+                and record.get("universe") == "SP500"
+                for _, _, record in records
+            )
+        }
+        if not covered_security_ids.issubset(added_security_ids):
+            raise ValueError(
+                "every interval-covered security requires PIT SP500 entry evidence"
+            )
+        sessions = [
+            item
+            for item in calendar["sessions"]
+            if coverage_start <= item["session_date"] <= coverage_end
+        ]
+        rows_by_day = {
+            item["session_date"]: set() for item in sessions
+        }
+        available_by_day: dict[str, datetime] = {}
+        for item in normalized:
+            rows_by_day[item["session_date"]].add(item["security_id"])
+            available = _timestamp(item["available_at"], "bar available_at")
+            prior = available_by_day.get(item["session_date"])
+            if prior is not None and prior != available:
+                raise ValueError(
+                    "daily-bar session availability must be cross-sectionally aligned"
+                )
+            available_by_day[item["session_date"]] = available
+        if len(master_index) > MAX_MASTER_SECURITIES:
+            raise ValueError("security-master prefix exceeds the research identity limit")
+        activations: list[
+            tuple[datetime, str, int, datetime, Mapping[str, Any]]
+        ] = []
+        for security_id, records in master_index.items():
+            for ordinal, (effective_at, available_at, record) in enumerate(records):
+                activations.append((
+                    max(effective_at, available_at),
+                    security_id,
+                    ordinal,
+                    effective_at,
+                    record,
+                ))
+        activations.sort(key=lambda item: (item[0], item[1], item[2]))
+        known_by_security: dict[
+            str,
+            list[tuple[datetime, int, Mapping[str, Any]]],
+        ] = {}
+        states: dict[str, Mapping[str, Any]] = {}
+        active_sp500: set[str] = set()
+        listed: set[str] = set()
+        activation_index = 0
+
+        def advance(cutoff: datetime) -> None:
+            nonlocal activation_index
+            affected: set[str] = set()
+            while (
+                activation_index < len(activations)
+                and activations[activation_index][0] <= cutoff
+            ):
+                _, security_id, ordinal, effective_at, record = activations[
+                    activation_index
+                ]
+                known_by_security.setdefault(security_id, []).append(
+                    (effective_at, ordinal, record)
+                )
+                affected.add(security_id)
+                activation_index += 1
+            for security_id in affected:
+                prior = states.get(security_id)
+                if prior is not None:
+                    listed.discard(security_id)
+                    active_sp500.discard(security_id)
+                state = _new_state()
+                for _, _, record in sorted(
+                    known_by_security[security_id],
+                    key=lambda item: (item[0], item[1]),
+                ):
+                    _apply_event(state, record)
+                states[security_id] = state
+                if state.get("listed") is True:
+                    listed.add(security_id)
+                if "SP500" in state.get("memberships", {}):
+                    active_sp500.add(security_id)
+
+        previously_active: set[str] = set()
+        pending_removal_exit: set[str] = set()
+        previous_available_at: datetime | None = None
+        for session in sessions:
+            open_at = _timestamp(session["open_at"], "session open_at")
+            available_at = available_by_day[session["session_date"]]
+            if (
+                available_at < open_at
+                or (
+                    previous_available_at is not None
+                    and previous_available_at >= open_at
+                )
+            ):
+                raise ValueError(
+                    "daily-bar session cutoffs must be strictly chronological"
+                )
+            advance(open_at)
+            active_at_open = set(active_sp500)
+            listed_at_open = set(listed)
+            advance(available_at)
+            active_at_decision = set(active_sp500)
+            removed_but_tradable = (
+                pending_removal_exit | (previously_active - active_at_open)
+            ) & listed_at_open
+            required = (
+                active_at_open
+                | active_at_decision
+                | removed_but_tradable
+            )
+            missing = required - rows_by_day[session["session_date"]]
+            if missing:
+                raise ValueError(
+                    "daily-bar interval lacks PIT membership coverage for "
+                    + ",".join(sorted(missing))
+                )
+            # A removal learned after today's open cannot execute until the
+            # following session.  A removal already effective at today's open
+            # is covered by ``previously_active - active_at_open`` above and
+            # must not manufacture a second exit-bar obligation tomorrow.
+            pending_removal_exit = active_at_open - active_at_decision
+            previously_active = active_at_decision
+            previous_available_at = available_at
+
+    @staticmethod
+    def _materialize_universe_events(
+        master_records: Sequence[Mapping[str, Any]],
+        security_ids: set[str],
+    ) -> tuple[UniverseEvent, ...]:
+        active_sp500: set[str] = set()
+        events: list[UniverseEvent] = []
+        ordered_records = sorted(
+            enumerate(master_records),
+            key=lambda value: (
+                _timestamp(value[1]["effective_at"], "universe effective_at"),
+                value[0],
+            ),
+        )
+        for _, record in ordered_records:
+            security_id = record["security_id"]
+            if security_id not in security_ids:
+                continue
+            event_type = record["event_type"]
+            universe = record.get("universe")
+            action: str | None = None
+            if event_type == "INDEX_ADDED" and universe == "SP500":
+                active_sp500.add(security_id)
+                action = "ADD"
+            elif event_type == "INDEX_REMOVED" and universe == "SP500":
+                active_sp500.discard(security_id)
+                action = "REMOVE"
+            elif event_type == "DELISTED" and security_id in active_sp500:
+                active_sp500.remove(security_id)
+                action = "REMOVE"
+            if action is not None:
+                events.append(
+                    UniverseEvent(
+                        symbol=security_id,
+                        action=action,
+                        effective_at=_timestamp(
+                            record["effective_at"],
+                            "universe effective_at",
+                        ),
+                        available_at=_timestamp(
+                            record["available_at"],
+                            "universe available_at",
+                        ),
+                        source_locator=f"security-master:{record['event_id']}",
+                    )
+                )
+        added = {event.symbol for event in events if event.action == "ADD"}
+        if added != security_ids:
+            raise ValueError(
+                "every interval-covered security requires PIT SP500 entry evidence"
+            )
+        deduplicated: dict[tuple[str, str, datetime], UniverseEvent] = {}
+        for event in events:
+            deduplicated.setdefault(
+                (event.symbol, event.action, event.effective_at),
+                event,
+            )
+        return tuple(sorted(
+            deduplicated.values(),
+            key=lambda item: (item.effective_at, item.symbol, item.action),
+        ))
 
     @staticmethod
     def _normalize_bar(
@@ -877,7 +1294,7 @@ class PITDailyBarLedger:
     ) -> dict[str, Any]:
         if not isinstance(value, Mapping) or set(value) != _RAW_BAR_FIELDS:
             raise ValueError("each daily bar must contain exactly the PIT daily-bar fields")
-        security_id = _text(value["security_id"], "security_id", 80)
+        security_id = _security_id(value["security_id"])
         ticker = _text(value["ticker"], "ticker", 20).upper()
         if ticker != value["ticker"]:
             raise ValueError("ticker must be canonical uppercase text")
@@ -904,7 +1321,7 @@ class PITDailyBarLedger:
         state = _master_state_at(
             master_index,
             security_id,
-            close_at,
+            open_at,
             master_state_cache,
         )
         if state.get("listed") is not True or state.get("ticker") != ticker:
@@ -995,6 +1412,24 @@ class PITDailyBarLedger:
             raise LedgerIntegrityError("daily-bar supersession chain cannot fork")
         if body["security_ids"] != target["security_ids"]:
             raise LedgerIntegrityError("daily-bar supersession must preserve permanent identities")
+        if (
+            body["coverage_shape"] != target.get(
+                "coverage_shape",
+                "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP",
+            )
+            or body["engine_symbol_policy"] != target.get(
+                "engine_symbol_policy",
+                "TICKER",
+            )
+        ):
+            raise LedgerIntegrityError(
+                "daily-bar supersession must preserve coverage and engine symbol policy"
+            )
+        target_intervals = (
+            target["coverage_intervals"]
+            if "coverage_intervals" in target
+            else PITDailyBarLedger._coverage_intervals(target["bars"])
+        )
         if reason == "CALENDAR_CORRECTION":
             if not PITDailyBarLedger._calendar_descends_from(
                 body["calendar_snapshot_id"],
@@ -1015,7 +1450,13 @@ class PITDailyBarLedger:
                 "partition_manifest_id",
                 "coverage_start",
                 "coverage_end",
+                "coverage_shape",
             )
+        ) or body["coverage_intervals"] != target_intervals or body[
+            "engine_symbol_policy"
+        ] != target.get(
+            "engine_symbol_policy",
+            "TICKER",
         ):
             raise LedgerIntegrityError(
                 "daily-bar source correction must preserve calendar and coverage"
