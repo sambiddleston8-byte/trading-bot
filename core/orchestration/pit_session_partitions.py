@@ -810,8 +810,20 @@ class PITSessionPartitionLedger:
 
     def _append(self, body: dict[str, Any], *, identity_field: str, allow_existing: bool) -> dict[str, Any]:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        lock_descriptor = os.open(self.path.parent, os.O_RDONLY)
+        lock_path = self.path.with_suffix(self.path.suffix + ".lock")
+        lock_descriptor = os.open(
+            lock_path,
+            os.O_CREAT | os.O_RDWR | _no_follow(),
+            0o600,
+        )
         try:
+            lock_details = os.fstat(lock_descriptor)
+            if (
+                not stat.S_ISREG(lock_details.st_mode)
+                or stat.S_IMODE(lock_details.st_mode) != 0o600
+                or lock_details.st_nlink != 1
+            ):
+                raise LedgerIntegrityError("PIT session/partition lock is unsafe")
             fcntl.flock(lock_descriptor, fcntl.LOCK_EX)
             records = self.verify()
             existing = next((item for item in records if item.get(identity_field) == body[identity_field]), None)
