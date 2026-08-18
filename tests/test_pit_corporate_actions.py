@@ -22,6 +22,7 @@ from core.guardrailed_backtest import (
 )
 from core.orchestration.pit_corporate_actions import (
     PITCorporateActionLedger,
+    PITCorporateActionReconciliation,
     PITCorporateActionResearchInputs,
 )
 from core.portfolio.pit_security_master import PointInTimeSecurityMasterLedger
@@ -344,6 +345,132 @@ def test_later_master_backfill_cannot_rewrite_or_brick_immutable_snapshot(tmp_pa
     assert ledger.verify()[0]["security_master_record_hash"] == pinned_hash
     inputs = ledger.materialize_research_inputs(stored["snapshot_id"])
     assert [item.action_type for item in inputs.corporate_actions] == ["SPLIT"]
+    reconciliation = ledger.reconcile_snapshot(stored["snapshot_id"])
+    assert reconciliation.status == "STALE_MASTER_EVIDENCE"
+    assert reconciliation.reason_code == "SECURITY_MASTER_EVOLVED"
+    assert reconciliation.current_security_master_record_count == len(master.verify())
+    assert reconciliation.current_security_master_record_hash == master.verify()[-1]["record_hash"]
+    assert reconciliation.dataset_admitted is False
+    assert reconciliation.performance_claim_allowed is False
+    assert reconciliation.promotion_allowed is False
+
+
+def test_explicit_supersession_preserves_history_and_only_leaf_materializes(tmp_path):
+    master = PointInTimeSecurityMasterLedger(tmp_path / "security.jsonl")
+    record_security(master, event_type="LISTED", effective_at="2019-01-02T14:30:00+00:00")
+    ledger = PITCorporateActionLedger(tmp_path / "actions.jsonl", master, clock=lambda: CLOCK)
+    original = snapshot(ledger, None, events=[split()])
+
+    record_security(
+        master,
+        event_type="DELISTED",
+        effective_at="2020-01-02T14:30:00+00:00",
+        reported_at="2020-01-02T12:00:00+00:00",
+        available_at="2020-01-03T12:00:00+00:00",
+        retrieved_at="2020-01-03T13:00:00+00:00",
+        recorded_at="2020-01-03T14:00:00+00:00",
+        terminal_outcome_treatment="BANKRUPTCY_OR_LIQUIDATION_OUTCOME_REQUIRED",
+    )
+    replacement = snapshot(
+        ledger,
+        None,
+        events=[],
+        source_locator="fixture:synthetic-aaa-master-backfill",
+        source_payload_sha256="b" * 64,
+        supersedes_snapshot_id=original["snapshot_id"],
+        supersession_reason="MASTER_BACKFILL",
+    )
+
+    records = ledger.verify()
+    assert [item["snapshot_id"] for item in records] == [
+        original["snapshot_id"],
+        replacement["snapshot_id"],
+    ]
+    assert records[0]["record_hash"] == original["record_hash"]
+    with pytest.raises(ValueError, match="superseded.*cannot be materialized"):
+        ledger.materialize_research_inputs(original["snapshot_id"])
+    assert ledger.materialize_research_inputs(replacement["snapshot_id"]).corporate_actions == ()
+
+    original_status = ledger.reconcile_snapshot(original["snapshot_id"])
+    assert original_status.status == "SUPERSEDED"
+    assert original_status.superseded_by_snapshot_id == replacement["snapshot_id"]
+    assert original_status.reason_code == "MASTER_BACKFILL"
+    replacement_status = ledger.reconcile_snapshot(replacement["snapshot_id"])
+    assert replacement_status.status == "CURRENT"
+    assert replacement_status.superseded_by_snapshot_id is None
+    assert replacement_status.reason_code is None
+
+
+def test_supersession_contract_rejects_missing_unknown_forked_or_mismatched_targets(tmp_path):
+    _, ledger, delisting = ledgers(tmp_path)
+    original = snapshot(ledger, delisting)
+
+    with pytest.raises(ValueError, match="id and reason.*together"):
+        snapshot(
+            ledger,
+            delisting,
+            events=[],
+            source_payload_sha256="b" * 64,
+            supersedes_snapshot_id=original["snapshot_id"],
+        )
+    with pytest.raises(ValueError, match="unsupported"):
+        snapshot(
+            ledger,
+            delisting,
+            events=[],
+            source_payload_sha256="b" * 64,
+            supersedes_snapshot_id=original["snapshot_id"],
+            supersession_reason="OPTIMIZE_RESULT",
+        )
+    with pytest.raises(LedgerIntegrityError, match="target does not exist"):
+        snapshot(
+            ledger,
+            delisting,
+            events=[],
+            source_payload_sha256="b" * 64,
+            supersedes_snapshot_id="PCAS-UNKNOWN",
+            supersession_reason="SOURCE_CORRECTION",
+        )
+    with pytest.raises(LedgerIntegrityError, match="exact identity and coverage"):
+        snapshot(
+            ledger,
+            delisting,
+            events=[],
+            through_at="2020-01-10T00:00:00+00:00",
+            source_payload_sha256="b" * 64,
+            supersedes_snapshot_id=original["snapshot_id"],
+            supersession_reason="COVERAGE_RECAPTURE",
+        )
+
+    replacement = snapshot(
+        ledger,
+        delisting,
+        events=[],
+        source_payload_sha256="b" * 64,
+        supersedes_snapshot_id=original["snapshot_id"],
+        supersession_reason="SOURCE_CORRECTION",
+    )
+    with pytest.raises(LedgerIntegrityError, match="cannot fork"):
+        snapshot(
+            ledger,
+            delisting,
+            events=[],
+            source_payload_sha256="c" * 64,
+            supersedes_snapshot_id=original["snapshot_id"],
+            supersession_reason="SOURCE_CORRECTION",
+        )
+
+    leaf = snapshot(
+        ledger,
+        delisting,
+        events=[split()],
+        source_payload_sha256="d" * 64,
+        supersedes_snapshot_id=replacement["snapshot_id"],
+        supersession_reason="COVERAGE_RECAPTURE",
+    )
+    assert ledger.materialize_research_inputs(leaf["snapshot_id"]).corporate_actions
+    with pytest.raises(ValueError, match="superseded.*cannot be materialized"):
+        ledger.materialize_research_inputs(replacement["snapshot_id"])
 
 
 def test_coverage_event_and_append_boundaries_fail_closed(tmp_path):
@@ -389,6 +516,26 @@ def test_research_input_carrier_cannot_assert_authority():
             corporate_actions=(),
             terminal_outcomes=(),
             promotion_allowed=True,
+        )
+
+
+def test_reconciliation_carrier_cannot_assert_authority_or_invalid_state():
+    arguments = {
+        "snapshot_id": "PCAS-TEST",
+        "snapshot_record_hash": "a" * 64,
+        "status": "CURRENT",
+        "current_security_master_record_count": 1,
+        "current_security_master_record_hash": "b" * 64,
+    }
+    with pytest.raises(ValueError, match="cannot assert"):
+        PITCorporateActionReconciliation(**arguments, promotion_allowed=True)
+    with pytest.raises(ValueError, match="cannot assert a reason"):
+        PITCorporateActionReconciliation(**arguments, reason_code="SOURCE_CORRECTION")
+    with pytest.raises(ValueError, match="requires an allowed reason"):
+        PITCorporateActionReconciliation(
+            **{**arguments, "status": "SUPERSEDED"},
+            superseded_by_snapshot_id="PCAS-CHILD",
+            reason_code="SECURITY_MASTER_EVOLVED",
         )
 
 
@@ -441,7 +588,7 @@ def engine():
         source_id="RESEARCH_EXEMPTION:SYNTHETIC:PIT_CORPORATE_ACTIONS",
         source_content_sha256="1" * 64,
         validation_receipt_sha256="2" * 64,
-        derivation_policy_version="pit-corporate-action-research-v1",
+        derivation_policy_version="pit-corporate-action-research-v2",
         evidence_role_hashes=(("ASSUMED_SYNTHETIC_CORPORATE_ACTIONS", "3" * 64),),
         exemption_id="SYNTHETIC-PIT-CORPORATE-ACTIONS",
         exemption_record_sha256="4" * 64,
