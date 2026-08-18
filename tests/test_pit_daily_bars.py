@@ -200,6 +200,7 @@ def append_bars(
 def test_snapshot_is_deterministic_pit_aligned_and_research_only(tmp_path):
     first = environment(tmp_path / "first")
     second = environment(tmp_path / "second")
+    days = first[0]
     first_rows = raw_bars(first[2], first[0][:8])
     second_rows = list(reversed(raw_bars(second[2], second[0][:8])))
     left = append_bars(first[5], first[2], first[3], first_rows)
@@ -216,6 +217,31 @@ def test_snapshot_is_deterministic_pit_aligned_and_research_only(tmp_path):
     assert left["permanent_identity_used"] is True
     assert left["cross_sectionally_aligned"] is True
     assert left["coverage_shape"] == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP"
+    assert left["engine_symbol_policy"] == "TICKER"
+    assert left["coverage_intervals"] == [
+        {
+            "security_id": "SEC-AAPL-001",
+            "coverage_start": days[0].isoformat(),
+            "coverage_end": days[7].isoformat(),
+            "session_count": 8,
+            "ticker_segments": [{
+                "ticker": "AAPL",
+                "coverage_start": days[0].isoformat(),
+                "coverage_end": days[7].isoformat(),
+            }],
+        },
+        {
+            "security_id": "SEC-MSFT-001",
+            "coverage_start": days[0].isoformat(),
+            "coverage_end": days[7].isoformat(),
+            "session_count": 8,
+            "ticker_segments": [{
+                "ticker": "MSFT",
+                "coverage_start": days[0].isoformat(),
+                "coverage_end": days[7].isoformat(),
+            }],
+        },
+    ]
     assert left["point_in_time_contract"] == (
         "effective_at/reported_at/available_at/retrieved_at/recorded_at"
     )
@@ -239,6 +265,10 @@ def test_snapshot_is_deterministic_pit_aligned_and_research_only(tmp_path):
     assert len(materialized.bars) == 16
     assert [item.symbol for item in materialized.bars[:2]] == ["AAPL", "MSFT"]
     assert materialized.security_ids[:2] == ("SEC-AAPL-001", "SEC-MSFT-001")
+    assert materialized.tickers[:2] == ("AAPL", "MSFT")
+    assert materialized.coverage_shape == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP"
+    assert materialized.engine_symbol_policy == "TICKER"
+    assert materialized.universe_events == ()
     assert materialized.partition_role == "TRAIN"
     assert materialized.dataset_admitted is False
     assert materialized.performance_claim_allowed is False
@@ -472,7 +502,7 @@ def test_ticker_change_inside_snapshot_cannot_splice_engine_symbols(tmp_path):
     days, _, calendar, manifest, master, ledger = environment(tmp_path)
     change_day = days[4]
     change_at = next(
-        item["close_at"]
+        item["open_at"]
         for item in calendar["sessions"]
         if item["session_date"] == change_day.isoformat()
     )
@@ -499,7 +529,7 @@ def test_simultaneous_ticker_swap_shape_is_rejected_at_bar_boundary(tmp_path):
     days, _, calendar, manifest, master, ledger = environment(tmp_path)
     change_day = days[4]
     change_at = next(
-        item["close_at"]
+        item["open_at"]
         for item in calendar["sessions"]
         if item["session_date"] == change_day.isoformat()
     )
@@ -605,6 +635,388 @@ def test_timestamp_rejects_naive_canonical_value_before_host_timezone_conversion
     monkeypatch.setattr(module, "canonical_timestamp", lambda value: "2025-01-02T16:00:00")
     with pytest.raises(ValueError, match="timezone-aware"):
         module._timestamp("ignored", "sample")
+
+
+def test_per_security_intervals_materialize_permanent_ids_and_membership_events(tmp_path):
+    days, _, calendar, manifest, master, ledger = environment(tmp_path)
+    master_event(
+        master,
+        security_id="SEC-AAPL-001",
+        ticker="AAPL",
+        marker="d",
+        event_type="INDEX_ADDED",
+        effective_at="2020-01-03T14:30:00+00:00",
+        universe="SP500",
+        issuer_name="AAPL synthetic issuer",
+    )
+    master_event(
+        master,
+        security_id="SEC-MSFT-001",
+        ticker="MSFT",
+        marker="e",
+        event_type="INDEX_ADDED",
+        effective_at="2020-01-03T14:30:00+00:00",
+        universe="SP500",
+        issuer_name="MSFT synthetic issuer",
+    )
+    change_day = days[4]
+    change_open = next(
+        item["open_at"]
+        for item in calendar["sessions"]
+        if item["session_date"] == change_day.isoformat()
+    )
+    master_event(
+        master,
+        security_id="SEC-AAPL-001",
+        ticker="APPL",
+        marker="f",
+        event_type="TICKER_CHANGED",
+        effective_at=change_open,
+        prior_ticker="AAPL",
+        issuer_name="AAPL synthetic issuer",
+    )
+    delist_day = days[5]
+    delist_close = next(
+        item["close_at"]
+        for item in calendar["sessions"]
+        if item["session_date"] == delist_day.isoformat()
+    )
+    master_event(
+        master,
+        security_id="SEC-MSFT-001",
+        ticker="MSFT",
+        marker="0",
+        event_type="DELISTED",
+        effective_at=delist_close,
+        issuer_name="MSFT synthetic issuer",
+        terminal_outcome_treatment="LAST_TRADABLE_TOTAL_RETURN_REQUIRED",
+    )
+    rows = raw_bars(calendar, days[:8])
+    rows = [
+        row
+        for row in rows
+        if row["security_id"] != "SEC-MSFT-001"
+        or row["session_date"] <= delist_day.isoformat()
+    ]
+    for row in rows:
+        if (
+            row["security_id"] == "SEC-AAPL-001"
+            and row["session_date"] >= change_day.isoformat()
+        ):
+            row["ticker"] = "APPL"
+
+    snapshot = append_bars(
+        ledger,
+        calendar,
+        manifest,
+        rows,
+        coverage_shape="PER_SECURITY_PIT_INTERVALS",
+    )
+    assert snapshot["engine_symbol_policy"] == "PERMANENT_SECURITY_ID"
+    assert snapshot["cross_sectionally_aligned"] is False
+    assert snapshot["row_count"] == 14
+    assert snapshot["coverage_intervals"] == [
+        {
+            "security_id": "SEC-AAPL-001",
+            "coverage_start": days[0].isoformat(),
+            "coverage_end": days[7].isoformat(),
+            "session_count": 8,
+            "ticker_segments": [
+                {
+                    "ticker": "AAPL",
+                    "coverage_start": days[0].isoformat(),
+                    "coverage_end": days[3].isoformat(),
+                },
+                {
+                    "ticker": "APPL",
+                    "coverage_start": days[4].isoformat(),
+                    "coverage_end": days[7].isoformat(),
+                },
+            ],
+        },
+        {
+            "security_id": "SEC-MSFT-001",
+            "coverage_start": days[0].isoformat(),
+            "coverage_end": days[5].isoformat(),
+            "session_count": 6,
+            "ticker_segments": [{
+                "ticker": "MSFT",
+                "coverage_start": days[0].isoformat(),
+                "coverage_end": days[5].isoformat(),
+            }],
+        },
+    ]
+    materialized = ledger.materialize_research_inputs(snapshot["bar_snapshot_id"])
+    assert len(materialized.bars) == len(rows)
+    assert {
+        bar.symbol for bar in materialized.bars
+    } == {"SEC-AAPL-001", "SEC-MSFT-001"}
+    assert materialized.security_ids == tuple(bar.symbol for bar in materialized.bars)
+    assert [
+        (event.symbol, event.action)
+        for event in materialized.universe_events
+    ] == [
+        ("SEC-AAPL-001", "ADD"),
+        ("SEC-MSFT-001", "ADD"),
+        ("SEC-MSFT-001", "REMOVE"),
+    ]
+    assert materialized.dataset_admitted is False
+    assert materialized.performance_claim_allowed is False
+
+
+def test_per_security_interval_internal_gap_and_missing_session_fail_closed(tmp_path):
+    days, _, calendar, manifest, master, ledger = environment(tmp_path)
+    for security_id, ticker, marker in (
+        ("SEC-AAPL-001", "AAPL", "d"),
+        ("SEC-MSFT-001", "MSFT", "e"),
+    ):
+        master_event(
+            master,
+            security_id=security_id,
+            ticker=ticker,
+            marker=marker,
+            event_type="INDEX_ADDED",
+            effective_at="2020-01-03T14:30:00+00:00",
+            universe="SP500",
+            issuer_name=f"{ticker} synthetic issuer",
+        )
+    rows = raw_bars(calendar, days[:8])
+    rows = [
+        row
+        for row in rows
+        if not (
+            row["security_id"] == "SEC-MSFT-001"
+            and row["session_date"] == days[3].isoformat()
+        )
+    ]
+    with pytest.raises(ValueError, match="interval contains an internal gap"):
+        append_bars(
+            ledger,
+            calendar,
+            manifest,
+            rows,
+            coverage_shape="PER_SECURITY_PIT_INTERVALS",
+        )
+
+    without_day = [
+        row for row in rows if row["session_date"] != days[3].isoformat()
+    ]
+    with pytest.raises(ValueError, match="missing calendar session"):
+        append_bars(
+            ledger,
+            calendar,
+            manifest,
+            without_day,
+            coverage_shape="PER_SECURITY_PIT_INTERVALS",
+        )
+
+
+def test_per_security_intervals_require_every_pit_member_and_removal_exit_bar(tmp_path):
+    days, _, calendar, manifest, master, ledger = environment(tmp_path)
+    for security_id, ticker, marker in (
+        ("SEC-AAPL-001", "AAPL", "d"),
+        ("SEC-MSFT-001", "MSFT", "e"),
+    ):
+        master_event(
+            master,
+            security_id=security_id,
+            ticker=ticker,
+            marker=marker,
+            event_type="INDEX_ADDED",
+            effective_at="2020-01-03T14:30:00+00:00",
+            universe="SP500",
+            issuer_name=f"{ticker} synthetic issuer",
+        )
+    aapl_only = raw_bars(
+        calendar,
+        days[:8],
+        security_ids=(("SEC-AAPL-001", "AAPL"),),
+    )
+    with pytest.raises(ValueError, match="lacks PIT membership coverage.*SEC-MSFT"):
+        append_bars(
+            ledger,
+            calendar,
+            manifest,
+            aapl_only,
+            coverage_shape="PER_SECURITY_PIT_INTERVALS",
+        )
+
+    remove_day = days[4]
+    remove_close = next(
+        item["close_at"]
+        for item in calendar["sessions"]
+        if item["session_date"] == remove_day.isoformat()
+    )
+    master_event(
+        master,
+        security_id="SEC-MSFT-001",
+        ticker="MSFT",
+        marker="f",
+        event_type="INDEX_REMOVED",
+        effective_at=remove_close,
+        universe="SP500",
+        issuer_name="MSFT synthetic issuer",
+    )
+    rows = [
+        row
+        for row in raw_bars(calendar, days[:8])
+        if row["security_id"] != "SEC-MSFT-001"
+        or row["session_date"] <= remove_day.isoformat()
+    ]
+    with pytest.raises(ValueError, match="lacks PIT membership coverage.*SEC-MSFT"):
+        append_bars(
+            ledger,
+            calendar,
+            manifest,
+            rows,
+            coverage_shape="PER_SECURITY_PIT_INTERVALS",
+        )
+
+
+def test_open_effective_removal_requires_that_immediate_exit_session_bar(tmp_path):
+    days, _, calendar, manifest, master, ledger = environment(tmp_path)
+    for security_id, ticker, marker in (
+        ("SEC-AAPL-001", "AAPL", "d"),
+        ("SEC-MSFT-001", "MSFT", "e"),
+    ):
+        master_event(
+            master,
+            security_id=security_id,
+            ticker=ticker,
+            marker=marker,
+            event_type="INDEX_ADDED",
+            effective_at="2020-01-03T14:30:00+00:00",
+            universe="SP500",
+            issuer_name=f"{ticker} synthetic issuer",
+        )
+    remove_day = days[5]
+    remove_open = next(
+        item["open_at"]
+        for item in calendar["sessions"]
+        if item["session_date"] == remove_day.isoformat()
+    )
+    master_event(
+        master,
+        security_id="SEC-MSFT-001",
+        ticker="MSFT",
+        marker="f",
+        event_type="INDEX_REMOVED",
+        effective_at=remove_open,
+        universe="SP500",
+        issuer_name="MSFT synthetic issuer",
+    )
+    missing_exit_session = [
+        row
+        for row in raw_bars(calendar, days[:8])
+        if row["security_id"] != "SEC-MSFT-001"
+        or row["session_date"] < remove_day.isoformat()
+    ]
+    with pytest.raises(ValueError, match="lacks PIT membership coverage.*SEC-MSFT"):
+        append_bars(
+            ledger,
+            calendar,
+            manifest,
+            missing_exit_session,
+            coverage_shape="PER_SECURITY_PIT_INTERVALS",
+        )
+
+    overlapping_cutoff = [dict(row) for row in missing_exit_session]
+    previous_day = days[4].isoformat()
+    for row in overlapping_cutoff:
+        if row["session_date"] == previous_day:
+            row["available_at"] = remove_open
+    with pytest.raises(ValueError, match="session cutoffs must be strictly chronological"):
+        append_bars(
+            ledger,
+            calendar,
+            manifest,
+            overlapping_cutoff,
+            coverage_shape="PER_SECURITY_PIT_INTERVALS",
+        )
+
+    with_exit_session = [
+        row
+        for row in raw_bars(calendar, days[:8])
+        if row["security_id"] != "SEC-MSFT-001"
+        or row["session_date"] <= remove_day.isoformat()
+    ]
+    snapshot = append_bars(
+        ledger,
+        calendar,
+        manifest,
+        with_exit_session,
+        coverage_shape="PER_SECURITY_PIT_INTERVALS",
+    )
+    assert snapshot["coverage_intervals"][1]["coverage_end"] == remove_day.isoformat()
+
+
+def test_interval_security_count_is_bounded_before_group_scans(tmp_path, monkeypatch):
+    days, _, calendar, manifest, master, ledger = environment(tmp_path)
+    for security_id, ticker, marker in (
+        ("SEC-AAPL-001", "AAPL", "d"),
+        ("SEC-MSFT-001", "MSFT", "e"),
+    ):
+        master_event(
+            master,
+            security_id=security_id,
+            ticker=ticker,
+            marker=marker,
+            event_type="INDEX_ADDED",
+            effective_at="2020-01-03T14:30:00+00:00",
+            universe="SP500",
+            issuer_name=f"{ticker} synthetic issuer",
+        )
+    monkeypatch.setattr(module, "MAX_SECURITIES", 1)
+    with pytest.raises(ValueError, match="security-count limit"):
+        append_bars(
+            ledger,
+            calendar,
+            manifest,
+            raw_bars(calendar, days[:2]),
+            coverage_shape="PER_SECURITY_PIT_INTERVALS",
+        )
+
+
+def test_schema_v1_strict_snapshot_remains_verifiable_and_materializable(tmp_path):
+    days, _, calendar, manifest, _, ledger = environment(tmp_path)
+    current = append_bars(
+        ledger,
+        calendar,
+        manifest,
+        raw_bars(calendar, days[:8]),
+    )
+    legacy = dict(current)
+    legacy.pop("coverage_intervals")
+    legacy.pop("engine_symbol_policy")
+    legacy["schema_version"] = module.LEGACY_SCHEMA_VERSION
+    legacy["policy_version"] = module.LEGACY_POLICY_VERSION
+    legacy["bar_snapshot_id"] = ""
+    legacy["bar_snapshot_id"] = module._bar_snapshot_id(legacy)
+    material = {key: value for key, value in legacy.items() if key != "record_hash"}
+    legacy["record_hash"] = module._record_hash(material)
+    ledger.path.write_text(
+        json.dumps(legacy, sort_keys=True, separators=(",", ":")) + "\n"
+    )
+
+    assert ledger.verify() == [legacy]
+    inputs = ledger.materialize_research_inputs(legacy["bar_snapshot_id"])
+    assert inputs.coverage_shape == "STRICT_RECTANGLE_CONSTANT_MEMBERSHIP"
+    assert inputs.engine_symbol_policy == "TICKER"
+    assert {bar.symbol for bar in inputs.bars} == {"AAPL", "MSFT"}
+
+    malformed = dict(legacy)
+    malformed.pop("coverage_shape")
+    malformed["bar_snapshot_id"] = ""
+    malformed["bar_snapshot_id"] = module._bar_snapshot_id(malformed)
+    malformed_material = {
+        key: value for key, value in malformed.items() if key != "record_hash"
+    }
+    malformed["record_hash"] = module._record_hash(malformed_material)
+    ledger.path.write_text(
+        json.dumps(malformed, sort_keys=True, separators=(",", ":")) + "\n"
+    )
+    with pytest.raises(LedgerIntegrityError):
+        ledger.verify()
 
 
 def test_dead_zone_validation_and_test_rows_never_enter_snapshot(tmp_path):

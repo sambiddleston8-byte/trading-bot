@@ -64,7 +64,7 @@ def _sha256(value: str, name: str) -> str:
 
 def _symbol(value: str) -> str:
     resolved = str(value).strip().upper()
-    if not resolved or len(resolved) > 32:
+    if not resolved or len(resolved) > 64:
         raise ValueError("symbol must be a non-empty normalized identifier")
     return resolved
 
