@@ -31,3 +31,5 @@ data/research/massive_research_exempt_admitted/
 data/research/massive_campaign_v2/
 data/research/massive_campaign_v2_revision_1/
 data/research/massive_campaign_v2_revision_2/
+# Norgate exports contain license-restricted provider data and stay owner-local.
+data/research/norgate_exports/
