@@ -54,6 +54,9 @@ def main() -> int:
                     "structural_identity_missing_count": profile[
                         "structural_identity_missing_count"
                     ],
+                    "structural_identity_missing_disposition_counts": profile[
+                        "structural_identity_missing_disposition_counts"
+                    ],
                     "structural_identity_ambiguous_count": profile[
                         "structural_identity_ambiguous_count"
                     ],

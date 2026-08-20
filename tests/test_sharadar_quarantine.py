@@ -39,6 +39,8 @@ from core.orchestration.sharadar_foundation import (
     IDENTITY_AMBIGUOUS,
     IDENTITY_MISSING,
     IDENTITY_UNIQUE,
+    MISSING_ABSENT_FROM_MASTER,
+    MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES,
     STATUS as FOUNDATION_PROFILE_STATUS,
     _identity_state,
     build_foundation_profile,
@@ -911,8 +913,8 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
     profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
 
     assert profile["status"] == FOUNDATION_PROFILE_STATUS
-    assert profile["schema_version"] == "1.1"
-    assert profile["policy_version"] == "sharadar-foundation-structural-profile-v2"
+    assert profile["schema_version"] == "1.2"
+    assert profile["policy_version"] == "sharadar-foundation-structural-profile-v3"
     assert profile["synthetic_fixture"] is True
     assert profile["archive_integrity_verified"] is True
     assert profile["every_row_stream_parsed"] is True
@@ -942,6 +944,15 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
     ]
     assert profile["observed_stock_date_span_days"] == 0
     assert profile["structural_identity_missing_count"] == 1
+    assert profile["structural_identity_missing_disposition_counts"] == {
+        MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES: 1
+    }
+    assert profile["tables"]["fundamentals"][
+        "missing_identity_disposition_counts"
+    ] == {MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES: 1}
+    assert profile["tables"]["fundamentals"][
+        "rows_by_missing_identity_disposition"
+    ] == {MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES: 1}
     assert profile["structural_identity_ambiguous_count"] == 0
     assert profile["structural_identity_gap_count"] == 1
     assert profile["structural_identity_gap_count_basis"] == (
@@ -1092,8 +1103,18 @@ def test_foundation_profile_classifies_unmapped_action_counterparty_without_mapp
     assert actions["unresolved_primary_counterparty_state_counts"] == {
         "UNIQUE": 1
     }
+    assert actions["missing_primary_disposition_counts"] == {
+        MISSING_ABSENT_FROM_MASTER: 1
+    }
+    assert actions["missing_primary_rows_by_disposition"] == {
+        MISSING_ABSENT_FROM_MASTER: 1
+    }
     assert actions["structural_identity_join_ready"] is False
     assert profile["structural_identity_missing_count"] == 2
+    assert profile["structural_identity_missing_disposition_counts"] == {
+        MISSING_ABSENT_FROM_MASTER: 1,
+        MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES: 1,
+    }
     assert profile["cross_table_identity_complete"] is False
 
 

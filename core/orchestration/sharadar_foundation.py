@@ -30,8 +30,8 @@ from core.orchestration.sharadar_quarantine import (
 )
 
 
-SCHEMA_VERSION = "1.1"
-POLICY_VERSION = "sharadar-foundation-structural-profile-v2"
+SCHEMA_VERSION = "1.2"
+POLICY_VERSION = "sharadar-foundation-structural-profile-v3"
 STATUS = "STRUCTURE_VERIFIED_SEMANTICS_AND_AVAILABILITY_UNQUALIFIED"
 MAX_ROWS_PER_TABLE = 100_000_000
 MAX_CELL_CHARACTERS = 1_000_000
@@ -44,6 +44,8 @@ IDENTITY_MISSING = "MISSING"
 IDENTITY_UNIQUE = "UNIQUE"
 IDENTITY_AMBIGUOUS = "AMBIGUOUS"
 COUNTERPARTY_NOT_PROVIDED = "NOT_PROVIDED"
+MISSING_ABSENT_FROM_MASTER = "ABSENT_FROM_MASTER"
+MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES = "PRESENT_OUTSIDE_REQUIRED_TABLES"
 FALSE_AUTHORITIES = (
     "primary_key_uniqueness_proven",
     "cross_table_identity_complete",
@@ -130,6 +132,19 @@ def _identity_state(
     return IDENTITY_AMBIGUOUS
 
 
+def _missing_disposition(
+    ticker_tables: Mapping[str, set[str]],
+    ticker: str,
+    required_tables: Iterable[str],
+) -> str:
+    observed_tables = ticker_tables.get(ticker, set())
+    if observed_tables.intersection(required_tables):
+        raise ValueError("Sharadar missing identity disposition is inconsistent")
+    if observed_tables:
+        return MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES
+    return MISSING_ABSENT_FROM_MASTER
+
+
 def _archive_rows(
     root: Path,
     record: Mapping[str, Any],
@@ -158,10 +173,15 @@ def _archive_rows(
 def _profile_tickers(
     root: Path,
     record: Mapping[str, Any],
-) -> tuple[dict[str, Any], Mapping[tuple[str, str], set[str]]]:
+) -> tuple[
+    dict[str, Any],
+    Mapping[tuple[str, str], set[str]],
+    Mapping[str, set[str]],
+]:
     profile: dict[str, Any] = {"row_count": 0}
     table_counts: Counter[str] = Counter()
     master: dict[tuple[str, str], set[str]] = defaultdict(set)
+    ticker_tables: dict[str, set[str]] = defaultdict(set)
     permaticker_tickers: dict[tuple[str, str], set[str]] = defaultdict(set)
     identities: set[tuple[str, str, str]] = set()
     delisted = 0
@@ -176,6 +196,7 @@ def _profile_tickers(
         identities.add(identity)
         table_counts[table] += 1
         master[(table, ticker)].add(permaticker)
+        ticker_tables[ticker].add(table)
         permaticker_tickers[(table, permaticker)].add(ticker)
         isdelisted = row.get("isdelisted")
         if table in {"SEP", "SF1", "SFP"} and isdelisted not in {"Y", "N"}:
@@ -239,18 +260,21 @@ def _profile_tickers(
             ),
         }
     )
-    return profile, master
+    return profile, master, ticker_tables
 
 
 def _profile_stocks(
     root: Path,
     record: Mapping[str, Any],
     master: Mapping[tuple[str, str], set[str]],
+    ticker_tables: Mapping[str, set[str]],
 ) -> dict[str, Any]:
     profile: dict[str, Any] = {"row_count": 0}
     tickers: set[str] = set()
     ticker_identity_states: dict[str, str] = {}
     rows_by_identity_state: Counter[str] = Counter()
+    missing_dispositions: dict[str, str] = {}
+    rows_by_missing_disposition: Counter[str] = Counter()
     for row in _archive_rows(root, record):
         profile["row_count"] += 1
         ticker = _text(row.get("ticker"), "stock ticker")
@@ -260,6 +284,14 @@ def _profile_stocks(
             identity_state = _identity_state(master, ticker, ("SEP",))
             ticker_identity_states[ticker] = identity_state
         rows_by_identity_state[identity_state] += 1
+        if identity_state == IDENTITY_MISSING:
+            disposition = missing_dispositions.get(ticker)
+            if disposition is None:
+                disposition = _missing_disposition(
+                    ticker_tables, ticker, ("SEP",)
+                )
+                missing_dispositions[ticker] = disposition
+            rows_by_missing_disposition[disposition] += 1
         _update_range(profile, "date", row.get("date"))
         _update_range(profile, "lastupdated", row.get("lastupdated"))
         try:
@@ -289,6 +321,12 @@ def _profile_stocks(
             "unique_tickers": len(tickers),
             "identity_state_counts": dict(sorted(identity_state_counts.items())),
             "rows_by_identity_state": dict(sorted(rows_by_identity_state.items())),
+            "missing_identity_disposition_counts": dict(
+                sorted(Counter(missing_dispositions.values()).items())
+            ),
+            "rows_by_missing_identity_disposition": dict(
+                sorted(rows_by_missing_disposition.items())
+            ),
             "tickers_missing_sep_identity": identity_state_counts[IDENTITY_MISSING],
             "tickers_ambiguous_sep_identity": identity_state_counts[
                 IDENTITY_AMBIGUOUS
@@ -306,6 +344,7 @@ def _profile_event_table(
     root: Path,
     record: Mapping[str, Any],
     master: Mapping[tuple[str, str], set[str]],
+    ticker_tables: Mapping[str, set[str]],
 ) -> dict[str, Any]:
     profile: dict[str, Any] = {"row_count": 0}
     actions: Counter[str] = Counter()
@@ -314,6 +353,8 @@ def _profile_event_table(
     rows_by_primary_identity_state: Counter[str] = Counter()
     unresolved_primary_actions: Counter[str] = Counter()
     unresolved_primary_counterparty_states: Counter[str] = Counter()
+    missing_primary_dispositions: dict[str, str] = {}
+    missing_primary_rows_by_disposition: Counter[str] = Counter()
     capture_day = datetime.fromisoformat(str(record["retrieved_at"])).date().isoformat()
     future_effective_rows = 0
     for row in _archive_rows(root, record):
@@ -338,6 +379,14 @@ def _profile_event_table(
                 else COUNTERPARTY_NOT_PROVIDED
             )
             unresolved_primary_counterparty_states[counterparty_state] += 1
+        if primary_state == IDENTITY_MISSING:
+            disposition = missing_primary_dispositions.get(ticker)
+            if disposition is None:
+                disposition = _missing_disposition(
+                    ticker_tables, ticker, TRADABLE_MASTER_TABLES
+                )
+                missing_primary_dispositions[ticker] = disposition
+            missing_primary_rows_by_disposition[disposition] += 1
         _update_range(profile, "date", event_day)
         future_effective_rows += event_day > capture_day
     identity_state_counts = Counter(ticker_identity_states.values())
@@ -355,6 +404,12 @@ def _profile_event_table(
             ),
             "unresolved_primary_counterparty_state_counts": dict(
                 sorted(unresolved_primary_counterparty_states.items())
+            ),
+            "missing_primary_disposition_counts": dict(
+                sorted(Counter(missing_primary_dispositions.values()).items())
+            ),
+            "missing_primary_rows_by_disposition": dict(
+                sorted(missing_primary_rows_by_disposition.items())
             ),
             "tickers_missing_any_tradable_identity": identity_state_counts[
                 IDENTITY_MISSING
@@ -375,12 +430,15 @@ def _profile_fundamentals(
     root: Path,
     record: Mapping[str, Any],
     master: Mapping[tuple[str, str], set[str]],
+    ticker_tables: Mapping[str, set[str]],
 ) -> dict[str, Any]:
     profile: dict[str, Any] = {"row_count": 0}
     dimensions: Counter[str] = Counter()
     tickers: set[str] = set()
     ticker_identity_states: dict[str, str] = {}
     rows_by_identity_state: Counter[str] = Counter()
+    missing_dispositions: dict[str, str] = {}
+    rows_by_missing_disposition: Counter[str] = Counter()
     as_reported_rows = 0
     for row in _archive_rows(root, record):
         profile["row_count"] += 1
@@ -394,6 +452,14 @@ def _profile_fundamentals(
             identity_state = _identity_state(master, ticker, ("SF1",))
             ticker_identity_states[ticker] = identity_state
         rows_by_identity_state[identity_state] += 1
+        if identity_state == IDENTITY_MISSING:
+            disposition = missing_dispositions.get(ticker)
+            if disposition is None:
+                disposition = _missing_disposition(
+                    ticker_tables, ticker, ("SF1",)
+                )
+                missing_dispositions[ticker] = disposition
+            rows_by_missing_disposition[disposition] += 1
         dimensions[dimension] += 1
         for field in ("datekey", "calendardate", "reportperiod", "lastupdated"):
             _update_range(profile, field, row.get(field))
@@ -409,6 +475,12 @@ def _profile_fundamentals(
             "as_reported_rows": as_reported_rows,
             "identity_state_counts": dict(sorted(identity_state_counts.items())),
             "rows_by_identity_state": dict(sorted(rows_by_identity_state.items())),
+            "missing_identity_disposition_counts": dict(
+                sorted(Counter(missing_dispositions.values()).items())
+            ),
+            "rows_by_missing_identity_disposition": dict(
+                sorted(rows_by_missing_disposition.items())
+            ),
             "tickers_missing_sf1_identity": identity_state_counts[IDENTITY_MISSING],
             "tickers_ambiguous_sf1_identity": identity_state_counts[
                 IDENTITY_AMBIGUOUS
@@ -434,13 +506,21 @@ def build_foundation_profile(
     records = load_verified_bulk_captures(repository_root)
     by_table = {str(record["table"]): record for record in records}
     root = repository_root / QUARANTINE_RELATIVE_PATH
-    tickers, master = _profile_tickers(root, by_table["tickers"])
+    tickers, master, ticker_tables = _profile_tickers(root, by_table["tickers"])
     tables = {
         "tickers": tickers,
-        "stocks": _profile_stocks(root, by_table["stocks"], master),
-        "actions": _profile_event_table(root, by_table["actions"], master),
-        "sp500": _profile_event_table(root, by_table["sp500"], master),
-        "fundamentals": _profile_fundamentals(root, by_table["fundamentals"], master),
+        "stocks": _profile_stocks(
+            root, by_table["stocks"], master, ticker_tables
+        ),
+        "actions": _profile_event_table(
+            root, by_table["actions"], master, ticker_tables
+        ),
+        "sp500": _profile_event_table(
+            root, by_table["sp500"], master, ticker_tables
+        ),
+        "fundamentals": _profile_fundamentals(
+            root, by_table["fundamentals"], master, ticker_tables
+        ),
     }
     stocks = tables["stocks"]
     structural_identity_missing = (
@@ -458,6 +538,16 @@ def build_foundation_profile(
     structural_identity_gaps = (
         structural_identity_missing + structural_identity_ambiguous
     )
+    structural_missing_dispositions: Counter[str] = Counter()
+    for table, field in (
+        ("stocks", "missing_identity_disposition_counts"),
+        ("actions", "missing_primary_disposition_counts"),
+        ("sp500", "missing_primary_disposition_counts"),
+        ("fundamentals", "missing_identity_disposition_counts"),
+    ):
+        structural_missing_dispositions.update(tables[table][field])
+    if sum(structural_missing_dispositions.values()) != structural_identity_missing:
+        raise ValueError("Sharadar structural identity disposition count is inconsistent")
     material: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "policy_version": POLICY_VERSION,
@@ -476,6 +566,9 @@ def build_foundation_profile(
         "lexical_date_validity_verified": True,
         "basic_ohlcv_invariants_verified": True,
         "structural_identity_missing_count": structural_identity_missing,
+        "structural_identity_missing_disposition_counts": dict(
+            sorted(structural_missing_dispositions.items())
+        ),
         "structural_identity_ambiguous_count": structural_identity_ambiguous,
         "structural_identity_gap_count": structural_identity_gaps,
         "structural_identity_gap_count_basis": (
