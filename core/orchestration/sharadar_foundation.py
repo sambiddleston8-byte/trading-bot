@@ -175,10 +175,12 @@ def _lag_screen(observations: Mapping[str, Any]) -> dict[str, Any]:
     minimum = observations.get("min_lag_days")
     maximum = observations.get("max_lag_days")
     counts = observations.get("lag_bucket_counts")
+    if not isinstance(row_count, int) or isinstance(row_count, bool):
+        raise ValueError("Sharadar lag screen is incomplete")
+    if row_count == 0:
+        raise ValueError("Sharadar lag screen requires a nonempty table")
     if (
-        not isinstance(row_count, int)
-        or isinstance(row_count, bool)
-        or row_count <= 0
+        row_count < 0
         or not isinstance(minimum, int)
         or isinstance(minimum, bool)
         or not isinstance(maximum, int)
@@ -203,6 +205,39 @@ def _lag_screen(observations: Mapping[str, Any]) -> dict[str, Any]:
         "revision_or_restatement_proven": False,
         "point_in_time_semantics_qualified": False,
         "historical_availability_qualified": False,
+    }
+
+
+def _dimensioned_lag_screen(
+    observations: Mapping[str, Any],
+    by_dimension: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    aggregate = _lag_screen(observations)
+    dimensions = {
+        dimension: _lag_screen(by_dimension[dimension])
+        for dimension in sorted(by_dimension)
+    }
+    if (
+        sum(item["row_count"] for item in dimensions.values())
+        != aggregate["row_count"]
+        or any(
+            sum(
+                item["lag_bucket_counts"][bucket]
+                for item in dimensions.values()
+            )
+            != aggregate["lag_bucket_counts"][bucket]
+            for bucket in LAG_BUCKETS
+        )
+        or min(item["min_lag_days"] for item in dimensions.values())
+        != aggregate["min_lag_days"]
+        or max(item["max_lag_days"] for item in dimensions.values())
+        != aggregate["max_lag_days"]
+    ):
+        raise ValueError("Sharadar dimension lag screen does not reconcile")
+    return {
+        **aggregate,
+        "by_dimension": dimensions,
+        "by_dimension_reconciled": True,
     }
 
 
@@ -627,20 +662,14 @@ def _profile_fundamentals(
                 identity_state_counts[IDENTITY_MISSING] == 0
                 and identity_state_counts[IDENTITY_AMBIGUOUS] == 0
             ),
-            "lastupdated_vs_datekey_screen": {
-                **_lag_screen(lastupdated_vs_datekey),
-                "by_dimension": {
-                    dimension: _lag_screen(lastupdated_by_dimension[dimension])
-                    for dimension in sorted(lastupdated_by_dimension)
-                },
-            },
-            "datekey_vs_reportperiod_screen": {
-                **_lag_screen(datekey_vs_reportperiod),
-                "by_dimension": {
-                    dimension: _lag_screen(datekey_by_dimension[dimension])
-                    for dimension in sorted(datekey_by_dimension)
-                },
-            },
+            "lastupdated_vs_datekey_screen": _dimensioned_lag_screen(
+                lastupdated_vs_datekey,
+                lastupdated_by_dimension,
+            ),
+            "datekey_vs_reportperiod_screen": _dimensioned_lag_screen(
+                datekey_vs_reportperiod,
+                datekey_by_dimension,
+            ),
         }
     )
     return profile

@@ -45,6 +45,7 @@ from core.orchestration.sharadar_foundation import (
     MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES,
     STATUS as FOUNDATION_PROFILE_STATUS,
     _identity_state,
+    _lag_bucket,
     build_foundation_profile,
     persist_foundation_profile,
 )
@@ -1154,6 +1155,9 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
     assert fundamentals["lastupdated_vs_datekey_screen"]["by_dimension"]["ARQ"][
         "max_lag_days"
     ] == 24
+    assert fundamentals["lastupdated_vs_datekey_screen"][
+        "by_dimension_reconciled"
+    ] is True
     assert fundamentals["datekey_vs_reportperiod_screen"]["lag_bucket_counts"][
         "8_TO_30_DAYS"
     ] == 1
@@ -1279,6 +1283,44 @@ def test_foundation_profile_revision_timing_screen_is_bounded_and_dimensioned(
     assert availability["lag_bucket_counts"]["8_TO_30_DAYS"] == 2
     assert lastupdated["revision_or_restatement_proven"] is False
     assert availability["point_in_time_semantics_qualified"] is False
+    assert lastupdated["by_dimension_reconciled"] is True
+    assert availability["by_dimension_reconciled"] is True
+
+
+@pytest.mark.parametrize(
+    ("days", "bucket"),
+    [
+        (-1, "NEGATIVE"),
+        (0, "SAME_DAY"),
+        (1, "1_TO_7_DAYS"),
+        (7, "1_TO_7_DAYS"),
+        (8, "8_TO_30_DAYS"),
+        (30, "8_TO_30_DAYS"),
+        (31, "31_TO_90_DAYS"),
+        (90, "31_TO_90_DAYS"),
+        (91, "91_TO_365_DAYS"),
+        (365, "91_TO_365_DAYS"),
+        (366, "366_TO_1825_DAYS"),
+        (1825, "366_TO_1825_DAYS"),
+        (1826, "OVER_1825_DAYS"),
+    ],
+)
+def test_revision_timing_lag_bucket_boundaries(days, bucket):
+    assert _lag_bucket(days) == bucket
+
+
+def test_foundation_profile_rejects_empty_timing_table_explicitly(tmp_path):
+    _, session, access = bulk_stack(empty_tables=("stocks",))
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    with pytest.raises(ValueError, match="lag screen requires a nonempty table"):
+        build_foundation_profile(tmp_path, synthetic_fixture=True)
 
 
 def test_identity_classifier_never_guesses_across_permatickers():
