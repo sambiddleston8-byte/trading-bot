@@ -38,6 +38,7 @@ INDEX_NAME = "S&P 500"
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_RECORDS = 200_000
 _STAGING_AUTHORITY = object()
+_DETERMINISM_AUTHORITY = object()
 _SYMBOL_PATTERN = re.compile(r"[A-Z0-9][A-Z0-9.\-/]{0,31}")
 _VERSION_PATTERN = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 _TOP_LEVEL_FIELDS = frozenset(
@@ -334,6 +335,140 @@ def parse_norgate_local_export(payload: bytes) -> tuple[Mapping[str, Any], ...]:
 
     _, rows = _parse_export(payload)
     return rows
+
+
+@dataclass(frozen=True, slots=True)
+class NorgateSameVintageDeterminismCheck:
+    baseline_source_payload_sha256: str
+    repeat_source_payload_sha256: str
+    invariant_payload_sha256: str
+    baseline_exported_at: str
+    repeat_exported_at: str
+    database_update_at: str
+    requested_start: str
+    requested_end: str
+    requested_symbols: tuple[str, ...]
+    same_vintage_invariant_match: bool = True
+    quarantine_capture_bound: bool = False
+    provider_payload_semantics_qualified: bool = False
+    source_bytes_authenticated: bool = False
+    historical_ticker_history_qualified: bool = False
+    historical_availability_qualified: bool = False
+    coverage_completeness_proven: bool = False
+    observation_selection_validated: bool = False
+    role_coverage_validated: bool = False
+    engine_input_ready: bool = False
+    performance_use_allowed: bool = False
+    replay_executed: bool = False
+    validation_accessed: bool = False
+    test_accessed: bool = False
+    broker_connection_allowed: bool = False
+    orders_submitted: bool = False
+    live_trading_enabled: bool = False
+    _authority: object = field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self._authority is not _DETERMINISM_AUTHORITY:
+            raise PermissionError(
+                "NorgateSameVintageDeterminismCheck must be issued by the comparator"
+            )
+        object.__setattr__(self, "_authority", None)
+        if self.same_vintage_invariant_match is not True:
+            raise ValueError("same-vintage invariant content must match")
+        if any(getattr(self, name) is not False for name in SAFETY_FLAG_NAMES):
+            raise ValueError("Norgate determinism safety flags were altered")
+
+    def __reduce__(self) -> Any:
+        raise TypeError("Norgate determinism checks are deliberately not pickleable")
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "provider_id": PROVIDER_ID,
+            "provider_dataset_id": DATASET_ID,
+            "comparison_scope": (
+                "SAME_DATABASE_VINTAGE_EXCLUDING_EXPORTED_AT_ONLY"
+            ),
+            "baseline_source_payload_sha256": self.baseline_source_payload_sha256,
+            "repeat_source_payload_sha256": self.repeat_source_payload_sha256,
+            "invariant_payload_sha256": self.invariant_payload_sha256,
+            "baseline_exported_at": self.baseline_exported_at,
+            "repeat_exported_at": self.repeat_exported_at,
+            "database_update_at": self.database_update_at,
+            "requested_start": self.requested_start,
+            "requested_end": self.requested_end,
+            "requested_symbols": list(self.requested_symbols),
+            "same_vintage_invariant_match": self.same_vintage_invariant_match,
+            **{name: getattr(self, name) for name in SAFETY_FLAG_NAMES},
+        }
+
+
+def compare_norgate_same_vintage_exports(
+    baseline_payload: bytes,
+    repeat_payload: bytes,
+) -> NorgateSameVintageDeterminismCheck:
+    """Require two independently exported payloads to match at one DB vintage."""
+
+    for name, payload in (
+        ("baseline_payload", baseline_payload),
+        ("repeat_payload", repeat_payload),
+    ):
+        if (
+            not isinstance(payload, bytes)
+            or not payload
+            or len(payload) > MAX_SOURCE_BYTES
+        ):
+            raise ValueError(f"{name} must contain bounded nonempty bytes")
+    baseline_root, _ = _parse_export(baseline_payload)
+    repeat_root, _ = _parse_export(repeat_payload)
+    for name, root in (("baseline", baseline_root), ("repeat", repeat_root)):
+        if set(root) != _TOP_LEVEL_FIELDS:
+            raise ValueError(f"{name} export root fields are not exactly pinned")
+    baseline_exported_at = _canonical_timestamp(
+        baseline_root["exported_at"], "baseline exported_at"
+    )
+    repeat_exported_at = _canonical_timestamp(
+        repeat_root["exported_at"], "repeat exported_at"
+    )
+    if repeat_exported_at <= baseline_exported_at:
+        raise ValueError("repeat export must be a later independent observation")
+    invariant_bytes_by_label: dict[str, bytes] = {}
+    for label, root in (("baseline", baseline_root), ("repeat", repeat_root)):
+        invariant = dict(root)
+        invariant.pop("exported_at")
+        invariant_bytes_by_label[label] = (
+            json.dumps(
+                invariant,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            )
+            + "\n"
+        ).encode("utf-8")
+    if invariant_bytes_by_label["baseline"] != invariant_bytes_by_label["repeat"]:
+        changed = sorted(
+            name
+            for name in _TOP_LEVEL_FIELDS - {"exported_at"}
+            if baseline_root[name] != repeat_root[name]
+        )
+        detail = ", ".join(changed) if changed else "canonical invariant bytes"
+        raise ValueError("same-vintage Norgate invariant content changed: " + detail)
+    return NorgateSameVintageDeterminismCheck(
+        baseline_source_payload_sha256=hashlib.sha256(baseline_payload).hexdigest(),
+        repeat_source_payload_sha256=hashlib.sha256(repeat_payload).hexdigest(),
+        invariant_payload_sha256=hashlib.sha256(
+            invariant_bytes_by_label["baseline"]
+        ).hexdigest(),
+        baseline_exported_at=baseline_exported_at,
+        repeat_exported_at=repeat_exported_at,
+        database_update_at=_canonical_timestamp(
+            baseline_root["database_update_at"], "database_update_at"
+        ),
+        requested_start=str(baseline_root["requested_start"]),
+        requested_end=str(baseline_root["requested_end"]),
+        requested_symbols=tuple(baseline_root["requested_symbols"]),
+        _authority=_DETERMINISM_AUTHORITY,
+    )
 
 
 @dataclass(frozen=True, slots=True)
