@@ -49,7 +49,7 @@ def _bounded_file(path: Path, name: str, maximum: int) -> bytes:
     if not 0 < size <= maximum:
         raise ValueError(f"{name} is outside the byte boundary")
     payload = resolved.read_bytes()
-    if len(payload) != size:
+    if len(payload) != size or not 0 < len(payload) <= maximum:
         raise OSError(f"{name} changed while being read")
     return payload
 
@@ -73,6 +73,7 @@ def main() -> int:
             or len(export_paths) != len(set(export_paths))
         ):
             raise ValueError("export files must be 2-100 distinct paths")
+        catalog_retrieved_at = datetime.now(timezone.utc)
         catalog_payload = _bounded_file(
             arguments.catalog_file,
             "catalog file",
@@ -86,13 +87,18 @@ def main() -> int:
             expected_catalog_sha256,
         ):
             raise ValueError("catalog file does not match expected source SHA-256")
-        catalog_evidence = stage_norgate_local_universe_catalog(
-            NorgateLocalExportSource(
-                retrieved_at=datetime.now(timezone.utc),
-                payload_bytes=catalog_payload,
-                receipt_timestamp_basis="SYSTEM_CLOCK_AT_FILE_READ_UNQUALIFIED",
+        try:
+            catalog_evidence = stage_norgate_local_universe_catalog(
+                NorgateLocalExportSource(
+                    retrieved_at=catalog_retrieved_at,
+                    payload_bytes=catalog_payload,
+                    receipt_timestamp_basis=(
+                        "SYSTEM_CLOCK_AT_FILE_READ_UNQUALIFIED"
+                    ),
+                )
             )
-        )
+        except (UnicodeError, TypeError, ValueError, RuntimeError) as error:
+            raise RuntimeError("catalog staging failed") from error
         payloads: list[bytes] = []
         total_bytes = 0
         for ordinal, path in enumerate(export_paths):

@@ -716,8 +716,32 @@ def test_local_universe_builder_and_stager_preserve_stable_identity_without_auth
         assert summary[flag] is False
     with pytest.raises(TypeError):
         evidence.entries[0]["symbol"] = "CHANGED"
+    assert "AAPL" not in repr(evidence)
+    assert "Apple Inc" not in repr(evidence)
     with pytest.raises(TypeError, match="not pickleable"):
         pickle.dumps(evidence)
+
+
+def test_local_universe_receipt_basis_is_already_bound_into_evidence_hash():
+    payload = universe_catalog_payload()
+    caller_supplied = stage_norgate_local_universe_catalog(
+        NorgateLocalExportSource(
+            retrieved_at=RETRIEVED_AT,
+            payload_bytes=payload,
+            receipt_timestamp_basis="CALLER_SUPPLIED_UNQUALIFIED",
+        )
+    )
+    system_clock = stage_norgate_local_universe_catalog(
+        NorgateLocalExportSource(
+            retrieved_at=RETRIEVED_AT,
+            payload_bytes=payload,
+            receipt_timestamp_basis="SYSTEM_CLOCK_AT_FILE_READ_UNQUALIFIED",
+        )
+    )
+
+    assert caller_supplied.catalog_evidence_sha256 != (
+        system_clock.catalog_evidence_sha256
+    )
 
 
 @pytest.mark.parametrize(
@@ -1136,7 +1160,6 @@ def test_sharded_capture_binds_exact_same_vintage_symbol_partition():
     assert "requested_symbols" not in summary
     assert "aggregate_reused_symbols" not in summary
     assert summary["requested_symbol_count"] == 2
-    assert summary["aggregate_reused_symbol_count"] == 0
     assert summary["requested_symbols_sha256"] == hashlib.sha256(
         b'["AAPL","MSFT"]'
     ).hexdigest()
@@ -1201,6 +1224,29 @@ def test_sharded_capture_binds_exact_same_vintage_symbol_partition():
     assert expanded.manifest_sha256 != result.manifest_sha256
     with pytest.raises(TypeError, match="not pickleable"):
         pickle.dumps(result)
+
+
+def test_sharded_capture_partition_is_stable_asset_id_order_not_symbol_order():
+    entries = [
+        {"asset_id": 101, "symbol": "MSFT", "security_name": "Microsoft Corp"},
+        {"asset_id": 202, "symbol": "AAPL", "security_name": "Apple Inc"},
+    ]
+    catalog = universe_catalog_evidence(entries=entries)
+    msft = shard_payload("MSFT", asset_id=101)
+    aapl = shard_payload(
+        "AAPL",
+        asset_id=202,
+        exported_at="2026-08-19T10:01:00.000000+00:00",
+    )
+
+    result = assemble_norgate_sharded_capture_manifest(
+        [msft, aapl], catalog_evidence=catalog
+    )
+    assert result.requested_symbols == ("MSFT", "AAPL")
+    with pytest.raises(ValueError, match="catalog symbol partition"):
+        assemble_norgate_sharded_capture_manifest(
+            [aapl, msft], catalog_evidence=catalog
+        )
 
 
 @pytest.mark.parametrize(
@@ -1333,6 +1379,46 @@ def test_sharded_capture_rejects_cross_shard_row_and_asset_identity_drift():
         )
 
 
+def test_sharded_capture_rejects_empty_asset_shard_at_parser_boundary():
+    empty_msft = export_payload(
+        rows=[],
+        requested_symbols=["MSFT"],
+        exported_at="2026-08-19T10:01:00.000000+00:00",
+    )
+    with pytest.raises(ValueError, match="rows must be a bounded nonempty list"):
+        assemble_norgate_sharded_capture_manifest(
+            [shard_payload("AAPL", asset_id=101), empty_msft],
+            catalog_evidence=universe_catalog_evidence(),
+        )
+
+
+def test_sharded_capture_rejects_row_alias_at_parser_boundary():
+    aliased_root = json.loads(
+        shard_payload(
+            "FB",
+            asset_id=101,
+            resolved_symbol="AAPL",
+            security_name="Apple Inc",
+        )
+    )
+    aliased = export_payload(
+        rows=aliased_root["rows"],
+        requested_symbols=["AAPL"],
+    )
+    with pytest.raises(ValueError, match="does not cover every requested symbol"):
+        assemble_norgate_sharded_capture_manifest(
+            [
+                aliased,
+                shard_payload(
+                    "MSFT",
+                    asset_id=202,
+                    exported_at="2026-08-19T10:01:00.000000+00:00",
+                ),
+            ],
+            catalog_evidence=universe_catalog_evidence(),
+        )
+
+
 def test_sharded_capture_rejects_ambiguous_reused_catalog_symbols():
     catalog = universe_catalog_evidence(
         entries=[
@@ -1431,6 +1517,21 @@ def test_sharded_capture_manifest_authority_and_flags_cannot_be_forged():
             **inconsistent,
             _authority=module._CAPTURE_MANIFEST_AUTHORITY,
         )
+    with pytest.raises(ValueError, match="hashes are not canonical"):
+        NorgateShardedCaptureManifest(
+            **dict(required, catalog_source_payload_sha256="A" * 64),
+            _authority=module._CAPTURE_MANIFEST_AUTHORITY,
+        )
+    with pytest.raises(ValueError, match="timestamps are not canonical"):
+        NorgateShardedCaptureManifest(
+            **dict(required, catalog_exported_at="2026-08-19T10:00:00+00:00"),
+            _authority=module._CAPTURE_MANIFEST_AUTHORITY,
+        )
+    with pytest.raises(ValueError, match="receipt basis is unsupported"):
+        NorgateShardedCaptureManifest(
+            **dict(required, catalog_receipt_timestamp_basis="UNSUPPORTED"),
+            _authority=module._CAPTURE_MANIFEST_AUTHORITY,
+        )
 
 
 def test_sharded_capture_cli_is_read_only_and_fail_closed(tmp_path: Path):
@@ -1464,6 +1565,7 @@ def test_sharded_capture_cli_is_read_only_and_fail_closed(tmp_path: Path):
         env={},
     )
     assert completed.returncode == 0, completed.stderr
+    assert completed.stderr == ""
     summary = json.loads(completed.stdout)
     assert summary["requested_symbol_partition_match"] is True
     assert summary["catalog_vintage_match"] is True
@@ -1471,6 +1573,7 @@ def test_sharded_capture_cli_is_read_only_and_fail_closed(tmp_path: Path):
     assert summary["catalog_entry_count"] == 2
     assert "requested_symbols" not in summary
     assert "aggregate_reused_symbols" not in summary
+    assert "aggregate_reused_symbol_count" not in summary
     assert summary["performance_use_allowed"] is False
     assert summary["validation_accessed"] is False
     assert summary["test_accessed"] is False
@@ -1523,6 +1626,100 @@ def test_sharded_capture_cli_is_read_only_and_fail_closed(tmp_path: Path):
     assert substituted.returncode == 1
     assert substituted.stdout == ""
     assert "does not match expected source SHA-256" in substituted.stderr
+
+    sensitive_catalog = tmp_path / "sensitive-catalog.json"
+    sensitive_catalog.write_bytes(
+        universe_catalog_payload(
+            entries=[
+                {
+                    "asset_id": 101,
+                    "symbol": "SECRET1",
+                    "security_name": "Restricted First Name",
+                },
+                {
+                    "asset_id": 101,
+                    "symbol": "SECRET2",
+                    "security_name": "Restricted Second Name",
+                },
+            ]
+        )
+    )
+    sensitive_sha256 = hashlib.sha256(sensitive_catalog.read_bytes()).hexdigest()
+    staging_failed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/assemble_norgate_local_capture.py",
+            "--export-file",
+            str(first),
+            "--export-file",
+            str(second),
+            "--catalog-file",
+            str(sensitive_catalog),
+            "--expected-catalog-source-sha256",
+            sensitive_sha256,
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={},
+    )
+    assert staging_failed.returncode == 1
+    assert staging_failed.stdout == ""
+    assert staging_failed.stderr.strip() == (
+        "Norgate sharded capture failed: catalog staging failed"
+    )
+    for provider_value in (
+        "SECRET1",
+        "SECRET2",
+        "Restricted First Name",
+        "Restricted Second Name",
+    ):
+        assert provider_value not in staging_failed.stderr
+
+
+@pytest.mark.parametrize("provider_argument", ["--catalog-file", "--export-file"])
+def test_sharded_capture_cli_rejects_repository_provider_paths_end_to_end(
+    tmp_path: Path, provider_argument: str
+):
+    first = tmp_path / "aapl.json"
+    second = tmp_path / "msft.json"
+    catalog = tmp_path / "catalog.json"
+    first.write_bytes(shard_payload("AAPL", asset_id=101))
+    second.write_bytes(shard_payload("MSFT", asset_id=202))
+    catalog.write_bytes(universe_catalog_payload())
+    repository_file = Path(__file__).resolve()
+    export_files = [first, second]
+    catalog_file = catalog
+    if provider_argument == "--catalog-file":
+        catalog_file = repository_file
+    else:
+        export_files[0] = repository_file
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/assemble_norgate_local_capture.py",
+            "--export-file",
+            str(export_files[0]),
+            "--export-file",
+            str(export_files[1]),
+            "--catalog-file",
+            str(catalog_file),
+            "--expected-catalog-source-sha256",
+            hashlib.sha256(catalog_file.read_bytes()).hexdigest(),
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={},
+    )
+
+    assert completed.returncode == 1
+    assert completed.stdout == ""
+    assert "must remain outside the repository" in completed.stderr
 
 
 def test_modules_have_no_network_broker_execution_or_order_surface():
