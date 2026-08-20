@@ -807,6 +807,8 @@ def test_sharded_capture_binds_exact_same_vintage_symbol_partition():
     assert [item["ordinal"] for item in summary["shards"]] == [0, 1]
     assert summary["asset_count"] == 2
     assert summary["row_count"] == 2
+    assert summary["license_restricted_provider_data"] is True
+    assert summary["source_code_repository_storage_allowed"] is False
     assert summary["same_vintage_shard_contract_match"] is True
     assert summary["requested_symbol_partition_match"] is True
     assert summary["cross_shard_row_identity_unique"] is True
@@ -816,7 +818,28 @@ def test_sharded_capture_binds_exact_same_vintage_symbol_partition():
         [aapl, msft],
         expected_symbols=["AAPL", "MSFT"],
     )
+    assert result.manifest_sha256 == (
+        "5b1cffc3859cb136177190f1ad59aa937899d8a45b919bbe925d1d500c318689"
+    )
     assert repeated.manifest_sha256 == result.manifest_sha256
+    reordered = assemble_norgate_sharded_capture_manifest(
+        [msft, aapl],
+        expected_symbols=["MSFT", "AAPL"],
+    )
+    assert reordered.manifest_sha256 != result.manifest_sha256
+
+    msft_root = json.loads(msft)
+    second_row = dict(msft_root["rows"][0], session_date="2026-08-18")
+    more_rows = export_payload(
+        rows=[msft_root["rows"][0], second_row],
+        requested_symbols=["MSFT"],
+        exported_at="2026-08-19T10:01:00.000000+00:00",
+    )
+    expanded = assemble_norgate_sharded_capture_manifest(
+        [aapl, more_rows],
+        expected_symbols=["AAPL", "MSFT"],
+    )
+    assert expanded.manifest_sha256 != result.manifest_sha256
     with pytest.raises(TypeError, match="not pickleable"):
         pickle.dumps(result)
 
@@ -930,6 +953,18 @@ def test_sharded_capture_surfaces_resolved_symbol_reuse_across_shards():
     assert result.historical_ticker_history_qualified is False
 
 
+def test_sharded_capture_enforces_aggregate_record_boundary(monkeypatch):
+    monkeypatch.setattr(module, "MAX_CAPTURE_RECORDS", 1)
+    with pytest.raises(ValueError, match="aggregate record boundary"):
+        assemble_norgate_sharded_capture_manifest(
+            [
+                shard_payload("AAPL", asset_id=101),
+                shard_payload("MSFT", asset_id=202),
+            ],
+            expected_symbols=["AAPL", "MSFT"],
+        )
+
+
 def test_sharded_capture_manifest_authority_and_flags_cannot_be_forged():
     required = {
         "manifest_sha256": "0" * 64,
@@ -961,6 +996,12 @@ def test_sharded_capture_manifest_authority_and_flags_cannot_be_forged():
         NorgateShardedCaptureManifest(
             **required,
             same_vintage_shard_contract_match=False,
+            _authority=module._CAPTURE_MANIFEST_AUTHORITY,
+        )
+    with pytest.raises(ValueError, match="license markings were altered"):
+        NorgateShardedCaptureManifest(
+            **required,
+            license_restricted_provider_data=False,
             _authority=module._CAPTURE_MANIFEST_AUTHORITY,
         )
 

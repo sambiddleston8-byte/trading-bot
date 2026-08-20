@@ -39,7 +39,8 @@ MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_RECORDS = 200_000
 MAX_CAPTURE_SHARDS = 100
 MAX_CAPTURE_SYMBOLS = 10_000
-MAX_CAPTURE_BYTES = 512 * 1024 * 1024
+MAX_CAPTURE_BYTES = 256 * 1024 * 1024
+MAX_CAPTURE_RECORDS = 500_000
 _STAGING_AUTHORITY = object()
 _DETERMINISM_AUTHORITY = object()
 _CAPTURE_MANIFEST_AUTHORITY = object()
@@ -450,6 +451,8 @@ class NorgateShardedCaptureManifest:
     aggregate_reused_symbols: tuple[str, ...]
     asset_count: int
     row_count: int
+    license_restricted_provider_data: bool = True
+    source_code_repository_storage_allowed: bool = False
     same_vintage_shard_contract_match: bool = True
     requested_symbol_partition_match: bool = True
     cross_shard_row_identity_unique: bool = True
@@ -484,6 +487,11 @@ class NorgateShardedCaptureManifest:
         )
         if any(value is not True for value in assertions):
             raise ValueError("Norgate sharded-capture assertions were altered")
+        if (
+            self.license_restricted_provider_data is not True
+            or self.source_code_repository_storage_allowed is not False
+        ):
+            raise ValueError("Norgate sharded-capture license markings were altered")
         shard_count = len(self.shard_source_payload_sha256)
         if not 2 <= shard_count <= MAX_CAPTURE_SHARDS or any(
             len(values) != shard_count
@@ -534,6 +542,12 @@ class NorgateShardedCaptureManifest:
             "aggregate_reused_symbols": list(self.aggregate_reused_symbols),
             "asset_count": self.asset_count,
             "row_count": self.row_count,
+            "license_restricted_provider_data": (
+                self.license_restricted_provider_data
+            ),
+            "source_code_repository_storage_allowed": (
+                self.source_code_repository_storage_allowed
+            ),
             "same_vintage_shard_contract_match": (
                 self.same_vintage_shard_contract_match
             ),
@@ -579,11 +593,27 @@ def assemble_norgate_sharded_capture_manifest(
     ):
         raise ValueError("expected_symbols must be a bounded unique canonical sequence")
 
+    shard_variant_fields = {
+        "exported_at",
+        "requested_symbols",
+        "requested_symbols_sha256",
+        "reused_symbols",
+        "rows",
+    }
+    invariant_fields = _TOP_LEVEL_FIELDS - shard_variant_fields
     total_bytes = 0
-    roots_and_rows: list[
-        tuple[Mapping[str, Any], tuple[Mapping[str, Any], ...]]
-    ] = []
+    total_records = 0
+    baseline_root: dict[str, Any] | None = None
     source_hashes: list[str] = []
+    seen_source_hashes: set[str] = set()
+    flattened_symbols: list[str] = []
+    shard_requested_hashes: list[str] = []
+    shard_exported_at: list[str] = []
+    shard_symbol_counts: list[int] = []
+    shard_row_counts: list[int] = []
+    row_identities: set[tuple[int, str]] = set()
+    identity_by_asset: dict[int, tuple[str, str, str]] = {}
+    assets_by_resolved_symbol: dict[str, set[int]] = {}
     for ordinal, payload in enumerate(shards):
         if (
             not isinstance(payload, bytes)
@@ -595,59 +625,47 @@ def assemble_norgate_sharded_capture_manifest(
         if total_bytes > MAX_CAPTURE_BYTES:
             raise ValueError("sharded capture exceeds the aggregate byte boundary")
         source_hash = hashlib.sha256(payload).hexdigest()
-        if source_hash in source_hashes:
+        if source_hash in seen_source_hashes:
             raise ValueError("sharded capture repeats exact source payload bytes")
+        seen_source_hashes.add(source_hash)
         source_hashes.append(source_hash)
         root, rows = _parse_export(payload)
         if set(root) != _TOP_LEVEL_FIELDS:
             raise ValueError(f"payloads[{ordinal}] root fields are not exactly pinned")
-        roots_and_rows.append((root, rows))
-
-    invariant_fields = (
-        "schema_version",
-        "export_contract",
-        "provider_id",
-        "provider_dataset_id",
-        "norgatedata_package_version",
-        "database_name",
-        "database_update_at",
-        "universe_selection_basis",
-        "license_restricted_provider_data",
-        "source_code_repository_storage_allowed",
-        "requested_start",
-        "requested_end",
-        "frequency",
-        "stock_price_adjustment",
-        "padding",
-        "membership_dataset",
-    )
-    baseline_root = roots_and_rows[0][0]
-    for ordinal, (root, _) in enumerate(roots_and_rows[1:], start=1):
-        changed = [
-            name for name in invariant_fields if root[name] != baseline_root[name]
-        ]
-        if changed:
-            raise ValueError(
-                f"payloads[{ordinal}] does not share the capture contract: "
-                + ", ".join(changed)
+        lightweight_root = {
+            name: root[name] for name in _TOP_LEVEL_FIELDS - {"rows"}
+        }
+        if baseline_root is None:
+            baseline_root = lightweight_root
+        else:
+            changed = sorted(
+                name
+                for name in invariant_fields
+                if root[name] != baseline_root[name]
             )
-
-    flattened_symbols = tuple(
-        symbol
-        for root, _ in roots_and_rows
-        for symbol in root["requested_symbols"]
-    )
-    if len(flattened_symbols) != len(set(flattened_symbols)):
-        raise ValueError("sharded capture repeats a requested symbol across shards")
-    if flattened_symbols != expected:
-        raise ValueError(
-            "sharded capture does not exactly match the expected symbol partition"
+            if changed:
+                raise ValueError(
+                    f"payloads[{ordinal}] does not share the capture contract: "
+                    + ", ".join(changed)
+                )
+        requested = tuple(root["requested_symbols"])
+        requested_hash = hashlib.sha256(
+            json.dumps(requested, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        if requested_hash != root["requested_symbols_sha256"]:
+            raise ValueError(
+                f"payloads[{ordinal}] requested symbol hash is not self-consistent"
+            )
+        flattened_symbols.extend(requested)
+        shard_requested_hashes.append(requested_hash)
+        shard_exported_at.append(
+            _canonical_timestamp(root["exported_at"], "exported_at")
         )
-
-    row_identities: set[tuple[int, str]] = set()
-    identity_by_asset: dict[int, tuple[str, str, str]] = {}
-    assets_by_resolved_symbol: dict[str, set[int]] = {}
-    for ordinal, (_, rows) in enumerate(roots_and_rows):
+        shard_symbol_counts.append(len(requested))
+        shard_row_counts.append(len(rows))
+        total_records += len(rows)
+        if total_records > MAX_CAPTURE_RECORDS:
+            raise ValueError("sharded capture exceeds the aggregate record boundary")
         for row in rows:
             row_identity = (row["asset_id"], row["session_date"])
             if row_identity in row_identities:
@@ -668,6 +686,18 @@ def assemble_norgate_sharded_capture_manifest(
             assets_by_resolved_symbol.setdefault(row["symbol"], set()).add(
                 row["asset_id"]
             )
+        del root, rows
+
+    if baseline_root is None:
+        raise ValueError("sharded capture did not produce a baseline contract")
+    flattened = tuple(flattened_symbols)
+    if len(flattened) != len(set(flattened)):
+        raise ValueError("sharded capture repeats a requested symbol across shards")
+    if flattened != expected:
+        raise ValueError(
+            "sharded capture does not exactly match the expected symbol partition"
+        )
+
     aggregate_reused_symbols = tuple(
         sorted(
             symbol
@@ -678,17 +708,6 @@ def assemble_norgate_sharded_capture_manifest(
     requested_symbols_sha256 = hashlib.sha256(
         json.dumps(expected, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
-    shard_requested_hashes = tuple(
-        str(root["requested_symbols_sha256"]) for root, _ in roots_and_rows
-    )
-    shard_exported_at = tuple(
-        _canonical_timestamp(root["exported_at"], "exported_at")
-        for root, _ in roots_and_rows
-    )
-    shard_symbol_counts = tuple(
-        len(root["requested_symbols"]) for root, _ in roots_and_rows
-    )
-    shard_row_counts = tuple(len(rows) for _, rows in roots_and_rows)
     manifest_material = {
         "provider_id": PROVIDER_ID,
         "provider_dataset_id": DATASET_ID,
@@ -712,6 +731,12 @@ def assemble_norgate_sharded_capture_manifest(
         "aggregate_reused_symbols": list(aggregate_reused_symbols),
         "asset_count": len(identity_by_asset),
         "row_count": len(row_identities),
+        "license_restricted_provider_data": baseline_root[
+            "license_restricted_provider_data"
+        ],
+        "source_code_repository_storage_allowed": baseline_root[
+            "source_code_repository_storage_allowed"
+        ],
         "same_vintage_shard_contract_match": True,
         "requested_symbol_partition_match": True,
         "cross_shard_row_identity_unique": True,
@@ -738,13 +763,19 @@ def assemble_norgate_sharded_capture_manifest(
         requested_symbols=expected,
         requested_symbols_sha256=requested_symbols_sha256,
         shard_source_payload_sha256=tuple(source_hashes),
-        shard_requested_symbols_sha256=shard_requested_hashes,
-        shard_exported_at=shard_exported_at,
-        shard_symbol_counts=shard_symbol_counts,
-        shard_row_counts=shard_row_counts,
+        shard_requested_symbols_sha256=tuple(shard_requested_hashes),
+        shard_exported_at=tuple(shard_exported_at),
+        shard_symbol_counts=tuple(shard_symbol_counts),
+        shard_row_counts=tuple(shard_row_counts),
         aggregate_reused_symbols=aggregate_reused_symbols,
         asset_count=len(identity_by_asset),
         row_count=len(row_identities),
+        license_restricted_provider_data=baseline_root[
+            "license_restricted_provider_data"
+        ],
+        source_code_repository_storage_allowed=baseline_root[
+            "source_code_repository_storage_allowed"
+        ],
         _authority=_CAPTURE_MANIFEST_AUTHORITY,
     )
 
