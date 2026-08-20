@@ -35,3 +35,6 @@ data/research/massive_campaign_v2_revision_2/
 data/research/norgate_exports/
 # Defence in depth for operator-named local Norgate quarantine captures.
 norgate-quarantine-*.json
+# Sharadar responses are licensed, owner-local quarantine data.
+data/research/sharadar_quarantine/
+sharadar-quarantine-*
