@@ -17,7 +17,32 @@ import os
 from pathlib import Path
 import platform
 import sys
+from types import ModuleType
 from typing import Any, Iterable
+
+
+def _install_windows_fcntl_guard(system_name: str | None = None) -> None:
+    """Permit read-only imports on Windows while keeping file locking fail-closed."""
+
+    if (system_name or platform.system()) != "Windows" or "fcntl" in sys.modules:
+        return
+    guard = ModuleType("fcntl")
+    for name, value in {
+        "LOCK_SH": 1,
+        "LOCK_EX": 2,
+        "LOCK_NB": 4,
+        "LOCK_UN": 8,
+    }.items():
+        setattr(guard, name, value)
+
+    def unavailable(*_args: Any, **_kwargs: Any) -> None:
+        raise OSError("POSIX file locking is unavailable in the Windows extraction VM")
+
+    guard.flock = unavailable  # type: ignore[attr-defined]
+    sys.modules["fcntl"] = guard
+
+
+_install_windows_fcntl_guard()
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:

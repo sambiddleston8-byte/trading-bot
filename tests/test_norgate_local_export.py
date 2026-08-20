@@ -15,6 +15,7 @@ import pandas as pd
 import pytest
 
 import core.orchestration.norgate_local_export as module
+import scripts.export_norgate_local_sample as export_module
 import scripts.ingest_norgate_local_export as ingest_module
 from core.orchestration.norgate_local_export import (
     NorgateLocalExportAdapter,
@@ -393,6 +394,24 @@ def test_windows_export_builder_uses_stable_id_unadjusted_unpadded_local_calls()
         "Unadjusted Close",
         "Dividend",
     ]
+
+
+def test_windows_import_guard_is_available_but_file_locking_fails_closed():
+    missing = object()
+    saved = sys.modules.pop("fcntl", missing)
+    try:
+        export_module._install_windows_fcntl_guard("Windows")
+        guard = sys.modules["fcntl"]
+        assert guard.LOCK_SH == 1
+        assert guard.LOCK_EX == 2
+        assert guard.LOCK_NB == 4
+        assert guard.LOCK_UN == 8
+        with pytest.raises(OSError, match="unavailable in the Windows extraction VM"):
+            guard.flock(None, guard.LOCK_EX)
+    finally:
+        sys.modules.pop("fcntl", None)
+        if saved is not missing:
+            sys.modules["fcntl"] = saved
 
 
 def test_export_records_requested_to_resolved_symbol_drift_and_missing_membership():
