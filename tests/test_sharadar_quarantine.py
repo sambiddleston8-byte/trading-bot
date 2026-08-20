@@ -837,7 +837,13 @@ def test_end_to_end_bulk_capture_is_five_table_quarantine_only(tmp_path):
         "10",
     ]
     assert records[0]["status_history"] == "full"
-    assert all(record["years"] == 10 for record in records)
+    assert [record["history"] for record in records] == [
+        "full",
+        "10y",
+        "10y",
+        "10y",
+        "10y",
+    ]
 
 
 def test_status_size_is_advisory_and_actual_download_length_is_authoritative(tmp_path):

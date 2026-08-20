@@ -350,7 +350,7 @@ class SharadarBulkStatus:
 @dataclass(frozen=True, slots=True)
 class SharadarBulkCapture:
     table: str
-    years: int
+    history: str
     requested_at: str
     retrieved_at: str
     payload_sha256: str
@@ -366,7 +366,10 @@ class SharadarBulkCapture:
     def __post_init__(self) -> None:
         if self._authority is not _CAPTURE_AUTHORITY:
             raise PermissionError("SharadarBulkCapture must be issued by the client")
-        if self.table not in TEN_YEAR_TABLES or self.years != 10:
+        if (
+            self.table not in TEN_YEAR_TABLES
+            or self.history != FOUNDATION_HISTORY[self.table]
+        ):
             raise ValueError("Sharadar bulk capture scope is invalid")
         if (
             self.status.table != self.table
@@ -389,9 +392,9 @@ class SharadarBulkCapture:
         return {
             "policy_version": POLICY_VERSION,
             "provider_id": PROVIDER_ID,
-            "capture_type": "TEN_YEAR_FOUNDATION_BULK_COMPRESSED_CSV",
+            "capture_type": "FOUNDATION_BULK_COMPRESSED_CSV",
             "table": self.table,
-            "years": self.years,
+            "history": self.history,
             "requested_at": self.requested_at,
             "retrieved_at": self.retrieved_at,
             "payload_sha256": self.payload_sha256,
@@ -1019,7 +1022,7 @@ class SharadarSampleClient:
                 raise SharadarCaptureError("Sharadar bulk download clock moved backwards")
             return SharadarBulkCapture(
                 table=status.table,
-                years=10,
+                history=status.history,
                 requested_at=requested_at,
                 retrieved_at=retrieved_at,
                 payload_sha256=payload_sha256,
