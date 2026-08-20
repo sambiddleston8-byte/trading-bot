@@ -486,7 +486,7 @@ class BulkAccess:
         self,
         archives,
         *,
-        redirect_host="downloads.s3.amazonaws.com",
+        redirect_host=module.OBSERVED_BULK_HOST,
         status_delta=0,
         status_extra=None,
     ):
@@ -500,13 +500,49 @@ class BulkAccess:
         self.calls.append((session, url, kwargs))
         table = url.rsplit("/", 1)[-1]
         if kwargs["params"].get("status") == "True":
+            history = module.FOUNDATION_HISTORY[table]
+            name = (
+                f"{table}.csv.zip"
+                if history == "full"
+                else f"{table}-10Y.csv.zip"
+            )
+            selected_file = {
+                "available": True,
+                "history": history,
+                "historyLabel": (
+                    "Full History" if history == "full" else "10 Years"
+                ),
+                "key": f"bulk-sharadar/{name}",
+                "name": name,
+                "size": len(self.archives[table]) + self.status_delta,
+                "sizeLabel": f"{len(self.archives[table])} B",
+                "modified": "2026-08-20T10:00:00.000Z",
+            }
+            files = [selected_file]
+            if history == "10y":
+                files = [
+                    {
+                        **selected_file,
+                        "history": "5y",
+                        "historyLabel": "5 Years",
+                        "name": f"{table}-5Y.csv.zip",
+                        "key": f"bulk-sharadar/{table}-5Y.csv.zip",
+                        "size": max(1, len(self.archives[table]) // 2),
+                    },
+                    selected_file,
+                    {
+                        **selected_file,
+                        "history": "full",
+                        "historyLabel": "Full History",
+                        "name": f"{table}.csv.zip",
+                        "key": f"bulk-sharadar/{table}.csv.zip",
+                        "size": len(self.archives[table]) * 2,
+                    },
+                ]
             payload = json.dumps(
                 {
                     "table": table,
-                    "name": f"SHARADAR_{table}_10y.csv.zip",
-                    "size": len(self.archives[table]) + self.status_delta,
-                    "sizeLabel": f"{len(self.archives[table])} B",
-                    "modified": "Wed, 20 Aug 2026 10:00:00 GMT",
+                    "files": files,
                     **self.status_extra,
                 },
                 separators=(",", ":"),
@@ -552,7 +588,7 @@ class BulkSession:
 def bulk_stack(
     *,
     extra_member=False,
-    redirect_host="downloads.s3.amazonaws.com",
+    redirect_host=module.OBSERVED_BULK_HOST,
     length_delta=0,
     status_delta=0,
     status_extra=None,
@@ -599,8 +635,15 @@ def test_bulk_status_is_exact_bounded_and_credential_free():
     )
     assert [item.table for item in statuses] == list(module.TEN_YEAR_TABLES)
     assert all(item.size == len(archives[item.table]) for item in statuses)
-    assert all(item.name.startswith("SHARADAR_") for item in statuses)
-    assert all(item.modified.endswith("GMT") for item in statuses)
+    assert [item.history for item in statuses] == [
+        "full",
+        "10y",
+        "10y",
+        "10y",
+        "10y",
+    ]
+    assert statuses[0].name == "tickers.csv.zip"
+    assert all(item.modified.endswith("Z") for item in statuses)
     assert API_KEY not in json.dumps([item.as_dict() for item in statuses])
     assert all(call[2]["params"]["api_key"] == API_KEY for call in access.calls)
 
@@ -624,6 +667,56 @@ def test_bulk_status_size_is_advisory_even_above_ten_year_download_ceiling():
     assert status.as_dict()["status_modified_is_opaque"] is True
 
 
+@pytest.mark.parametrize(
+    ("files", "message"),
+    [
+        ([], "files are unsupported"),
+        (
+            [
+                {
+                    "available": False,
+                    "history": "full",
+                    "name": "tickers.csv.zip",
+                    "size": 100,
+                    "modified": "2026-08-20T03:12:24.321Z",
+                }
+            ],
+            "foundation file is unavailable",
+        ),
+        (
+            [
+                {
+                    "available": True,
+                    "history": "full",
+                    "name": "tickers.csv.zip",
+                    "size": 100,
+                    "modified": "2026-08-20T03:12:24.321Z",
+                },
+                {
+                    "available": True,
+                    "history": "full",
+                    "name": "tickers-copy.csv.zip",
+                    "size": 100,
+                    "modified": "2026-08-20T03:12:24.321Z",
+                },
+            ],
+            "foundation file is unavailable",
+        ),
+    ],
+)
+def test_bulk_status_envelope_requires_one_available_foundation_file(files, message):
+    _, session, access = bulk_stack(status_extra={"files": files})
+    client = SharadarSampleClient(
+        API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    with pytest.raises(ValueError, match=message):
+        client.fetch_bulk_status("tickers")
+
+
 def test_bulk_download_validates_redirect_size_zip_schema_and_persists_hash_chain(
     tmp_path: Path,
 ):
@@ -641,7 +734,7 @@ def test_bulk_download_validates_redirect_size_zip_schema_and_persists_hash_chai
 
     assert capture.byte_length == len(archives["stocks"])
     assert capture.archive_member == "stocks.csv"
-    assert capture.redirect_host == "downloads.s3.amazonaws.com"
+    assert capture.redirect_host == module.OBSERVED_BULK_HOST
     assert "Signature" not in json.dumps(dict(record))
     assert API_KEY not in json.dumps(dict(record))
     assert record["dataset_admitted"] is False
@@ -659,8 +752,8 @@ def test_bulk_download_validates_redirect_size_zip_schema_and_persists_hash_chai
     ("redirect_host", "length_delta", "extra_member", "message"),
     [
         ("127.0.0.1", 0, False, "redirect target"),
-        ("downloads.s3.amazonaws.com", 1, False, "declaration"),
-        ("downloads.s3.amazonaws.com", 0, True, "exactly one"),
+        (module.OBSERVED_BULK_HOST, 1, False, "declaration"),
+        (module.OBSERVED_BULK_HOST, 0, True, "exactly one"),
     ],
 )
 def test_bulk_download_rejects_unsafe_redirect_changed_size_and_archive_shape(
@@ -731,6 +824,20 @@ def test_end_to_end_bulk_capture_is_five_table_quarantine_only(tmp_path):
     root = tmp_path / QUARANTINE_RELATIVE_PATH
     assert len((root / "bulk_captures.jsonl").read_text().splitlines()) == 5
     assert API_KEY not in (root / "bulk_captures.jsonl").read_text()
+    download_queries = [
+        call[2]["params"]
+        for call in access.calls
+        if call[2]["params"].get("status") != "True"
+    ]
+    assert [query["years"] for query in download_queries] == [
+        "full",
+        "10",
+        "10",
+        "10",
+        "10",
+    ]
+    assert records[0]["status_history"] == "full"
+    assert all(record["years"] == 10 for record in records)
 
 
 def test_status_size_is_advisory_and_actual_download_length_is_authoritative(tmp_path):
@@ -787,11 +894,13 @@ def test_bulk_stream_errors_are_sanitized_and_response_is_closed(tmp_path):
 @pytest.mark.parametrize(
     "value",
     [
-        "http://downloads.s3.amazonaws.com/x.zip",
-        "https://user@downloads.s3.amazonaws.com/x.zip",
-        "https://downloads.s3.amazonaws.com:8443/x.zip",
+        f"http://{module.OBSERVED_BULK_HOST}/x.zip",
+        f"https://user@{module.OBSERVED_BULK_HOST}/x.zip",
+        f"https://{module.OBSERVED_BULK_HOST}:8443/x.zip",
+        "https://downloads.s3.amazonaws.com/x.zip",
         "https://distribution.cloudfront.net/x.zip",
         "https://evilamazonaws.com/x.zip",
+        f"https://{module.OBSERVED_BULK_HOST}.evil.example/x.zip",
     ],
 )
 def test_redirect_boundary_rejects_downgrade_userinfo_port_and_near_misses(value):
@@ -964,6 +1073,7 @@ def test_bulk_cli_status_is_explicitly_advisory_and_secret_free(monkeypatch, cap
 def test_bulk_status_dataclass_rejects_unbounded_size_and_wrong_filename():
     required = {
         "table": "tickers",
+        "history": "full",
         "name": "tickers.csv.zip",
         "size": 100,
         "modified": "2026-08-20T10:00:00+00:00",
@@ -976,3 +1086,5 @@ def test_bulk_status_dataclass_rejects_unbounded_size_and_wrong_filename():
         SharadarBulkStatus(**{**required, "name": "wrong.zip"})
     with pytest.raises(ValueError, match="size"):
         SharadarBulkStatus(**{**required, "size": 2**63})
+    with pytest.raises(ValueError, match="history"):
+        SharadarBulkStatus(**{**required, "history": "10y"})

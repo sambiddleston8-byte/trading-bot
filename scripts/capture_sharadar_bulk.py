@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-"""Inspect or download the frozen five-table Sharadar ten-year bundle."""
+"""Inspect or download the frozen five-table Sharadar ten-year foundation."""
 
 import argparse
 import json
@@ -25,7 +25,8 @@ def parser() -> argparse.ArgumentParser:
     value = argparse.ArgumentParser(
         description=(
             "Inspect licensed Sharadar bulk-file sizes or download the exact "
-            "ten-year Stage 1 foundation into owner-local quarantine."
+            "Stage 1 foundation (full security master plus ten-year histories) "
+            "into owner-local quarantine."
         )
     )
     modes = value.add_mutually_exclusive_group(required=True)
