@@ -29,9 +29,15 @@ from core.orchestration.sharadar_quarantine import (
     execute_connectivity_capture,
     execute_ten_year_bulk_capture,
     inspect_ten_year_bulk_status,
+    load_verified_bulk_captures,
     persist_bulk_capture,
     persist_probe,
     validate_probe_csv,
+)
+from core.orchestration.sharadar_foundation import (
+    STATUS as FOUNDATION_PROFILE_STATUS,
+    build_foundation_profile,
+    persist_foundation_profile,
 )
 
 
@@ -435,6 +441,7 @@ def bulk_archive(
     symlink_member: bool = False,
     bomb_member: bool = False,
     encrypted_member: bool = False,
+    row_overrides: dict[str, str] | None = None,
 ) -> bytes:
     stream = io.BytesIO()
     fields = sorted(BULK_REQUIRED_FIELDS[table])
@@ -442,6 +449,9 @@ def bulk_archive(
     values.update(
         {
             "ticker": "AAPL",
+            "table": "SEP",
+            "permaticker": "199059",
+            "isdelisted": "N",
             "dimension": "ARQ",
             "date": "2022-01-04",
             "datekey": "2022-01-04",
@@ -452,6 +462,7 @@ def bulk_archive(
             "lastpricedate": "2026-08-19",
         }
     )
+    values.update(row_overrides or {})
     content = (
         ",".join(fields) + "\n" + ",".join(values[name] for name in fields) + "\n"
     ).encode()
@@ -598,6 +609,7 @@ def bulk_stack(
     symlink_member=False,
     bomb_member=False,
     encrypted_member=False,
+    row_overrides=None,
 ):
     archives = {
         table: bulk_archive(
@@ -606,6 +618,7 @@ def bulk_stack(
             symlink_member=symlink_member,
             bomb_member=bomb_member,
             encrypted_member=encrypted_member,
+            row_overrides=(row_overrides or {}).get(table),
         )
         for table in module.TEN_YEAR_TABLES
     }
@@ -852,6 +865,196 @@ def test_end_to_end_bulk_capture_is_five_table_quarantine_only(tmp_path):
         "10y",
         "10y",
     ]
+
+
+def test_verified_bulk_loader_rechecks_exact_five_table_foundation(tmp_path):
+    _, session, access = bulk_stack()
+    captured = execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    loaded = load_verified_bulk_captures(tmp_path)
+
+    assert [record["record_hash"] for record in loaded] == [
+        record["record_hash"] for record in captured
+    ]
+    assert all(record["dataset_admitted"] is False for record in loaded)
+
+
+def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
+    _, session, access = bulk_stack()
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
+
+    assert profile["status"] == FOUNDATION_PROFILE_STATUS
+    assert profile["synthetic_fixture"] is True
+    assert profile["archive_integrity_verified"] is True
+    assert profile["every_row_stream_parsed"] is True
+    assert profile["tables"]["stocks"]["row_count"] == 1
+    assert profile["tables"]["fundamentals"]["dimension_counts"] == {"ARQ": 1}
+    assert profile["tables"]["tickers"]["table_counts"] == {"SEP": 1}
+    assert profile["observed_stock_date_span_days"] == 0
+    assert profile["structural_identity_gap_count"] == 1
+    assert profile["dataset_admitted"] is False
+    assert profile["performance_claim_allowed"] is False
+    assert profile["validation_access_authorized"] is False
+    assert profile["test_access_authorized"] is False
+    repeated = build_foundation_profile(tmp_path, synthetic_fixture=True)
+    assert repeated["profile_sha256"] == profile["profile_sha256"]
+
+
+def test_real_profile_persistence_is_content_addressed_owner_only(tmp_path):
+    _, session, access = bulk_stack()
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    profile = persist_foundation_profile(tmp_path)
+    repeated = persist_foundation_profile(tmp_path)
+
+    assert repeated == profile
+    target = (
+        tmp_path
+        / QUARANTINE_RELATIVE_PATH
+        / f"foundation-profile-{profile['profile_sha256']}.json"
+    )
+    assert stat.S_IMODE(target.stat().st_mode) == 0o400
+    assert json.loads(target.read_text())["profile_sha256"] == profile["profile_sha256"]
+
+
+@pytest.mark.parametrize(
+    ("row_overrides", "message"),
+    [
+        ({"fundamentals": {"dimension": "BAD"}}, "dimension"),
+        ({"stocks": {"high": "0"}}, "OHLCV"),
+        ({"stocks": {"close": "nan"}}, "numerics"),
+        ({"stocks": {"high": "inf"}}, "numerics"),
+        ({"stocks": {"closeadj": "Infinity"}}, "numerics"),
+        ({"fundamentals": {"datekey": "2020-01-01"}}, "predates"),
+    ],
+)
+def test_foundation_profile_rejects_semantically_invalid_rows(
+    tmp_path, row_overrides, message
+):
+    _, session, access = bulk_stack(row_overrides=row_overrides)
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    with pytest.raises(ValueError, match=message):
+        build_foundation_profile(tmp_path, synthetic_fixture=True)
+
+
+def _rewrite_bulk_ledger(ledger: Path, field: str, value):
+    records = [json.loads(line) for line in ledger.read_text().splitlines()]
+    records[-1][field] = value
+    previous_hash = module.GENESIS_HASH
+    rewritten = []
+    for record in records:
+        material = {key: item for key, item in record.items() if key != "record_hash"}
+        material["previous_hash"] = previous_hash
+        record_hash = hashlib.sha256(module._canonical_json(material)).hexdigest()
+        rewritten.append({**material, "record_hash": record_hash})
+        previous_hash = record_hash
+    ledger.write_bytes(b"".join(module._canonical_json(record) + b"\n" for record in rewritten))
+    ledger.chmod(0o600)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("dataset_admitted", True),
+        ("csv_header_sha256", "0" * 64),
+        ("history", "full"),
+    ],
+)
+def test_verified_bulk_loader_rejects_rechained_unsafe_records(
+    tmp_path, field, value
+):
+    _, session, access = bulk_stack()
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    ledger = tmp_path / QUARANTINE_RELATIVE_PATH / "bulk_captures.jsonl"
+    _rewrite_bulk_ledger(ledger, field, value)
+
+    with pytest.raises(ValueError):
+        load_verified_bulk_captures(tmp_path)
+
+
+def test_verified_bulk_loader_rejects_loose_mode_and_corrupt_bytes(tmp_path):
+    _, session, access = bulk_stack()
+    records = execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    root = tmp_path / QUARANTINE_RELATIVE_PATH
+    archive = root / records[0]["blob_relative_path"]
+    archive.chmod(0o444)
+    with pytest.raises(ValueError, match="archive failed verification"):
+        load_verified_bulk_captures(tmp_path)
+
+    archive.chmod(0o600)
+    payload = bytearray(archive.read_bytes())
+    payload[len(payload) // 2] ^= 0x01
+    archive.write_bytes(payload)
+    archive.chmod(0o400)
+    with pytest.raises(ValueError, match="archive failed verification"):
+        load_verified_bulk_captures(tmp_path)
+
+
+def test_verified_bulk_loader_selects_newest_capture_per_table(tmp_path):
+    _, session, access = bulk_stack()
+    first = execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    _, refreshed_session, refreshed_access = bulk_stack(
+        status_extra={"revision": 2},
+        row_overrides={"stocks": {"close": "2", "high": "2"}},
+    )
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=refreshed_session,
+        access=refreshed_access,
+        clock=clocks(),
+    )
+
+    loaded = load_verified_bulk_captures(tmp_path)
+    ledger = tmp_path / QUARANTINE_RELATIVE_PATH / "bulk_captures.jsonl"
+
+    assert len(ledger.read_text().splitlines()) == 6
+    assert loaded[1]["payload_sha256"] != first[1]["payload_sha256"]
 
 
 def test_status_size_is_advisory_and_actual_download_length_is_authoritative(tmp_path):

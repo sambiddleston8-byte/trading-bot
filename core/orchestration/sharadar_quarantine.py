@@ -23,6 +23,7 @@ import re
 import shutil
 import stat
 import tempfile
+import zlib
 from types import MappingProxyType
 from typing import Any, Callable, Mapping
 from urllib.parse import urlencode, urljoin, urlsplit
@@ -850,7 +851,7 @@ class SharadarSampleClient:
                     header_bytes = source.readline(1024 * 1024 + 1)
                 if not header_bytes or len(header_bytes) > 1024 * 1024:
                     raise ValueError("Sharadar bulk CSV header is invalid")
-        except (OSError, zipfile.BadZipFile, RuntimeError) as error:
+        except (OSError, zipfile.BadZipFile, RuntimeError, zlib.error) as error:
             raise ValueError("Sharadar bulk response is not a valid ZIP archive") from error
         try:
             header_text = header_bytes.decode("utf-8-sig").rstrip("\r\n")
@@ -1333,6 +1334,92 @@ def _existing_bulk_record(
             raise ValueError("Sharadar bulk quarantine archive failed verification")
         return MappingProxyType(record)
     return None
+
+
+def load_verified_bulk_captures(
+    repository_root: Path,
+) -> tuple[Mapping[str, Any], ...]:
+    """Reverify one exact five-table quarantine foundation without network I/O.
+
+    This is an integrity boundary only. It authenticates the locally captured
+    bytes against their append-only records and rechecks the ZIP/header shape;
+    it does not qualify provider semantics, coverage, PIT availability, or any
+    downstream replay/admission authority.
+    """
+
+    if not isinstance(repository_root, Path):
+        raise TypeError("repository_root must be a Path")
+    root = repository_root / QUARANTINE_RELATIVE_PATH
+    if not root.exists():
+        raise ValueError("Sharadar bulk quarantine is missing")
+    _private_directory(root)
+    records = _read_ledger(root / "bulk_captures.jsonl")
+    if any(record.get("table") not in TEN_YEAR_TABLES for record in records):
+        raise ValueError("Sharadar bulk quarantine contains an unsupported table")
+    newest: dict[str, Mapping[str, Any]] = {}
+    for record in reversed(records):
+        table = record.get("table")
+        if isinstance(table, str) and table not in newest:
+            newest[table] = record
+    if set(newest) != set(TEN_YEAR_TABLES):
+        raise ValueError("Sharadar bulk quarantine is missing a foundation table")
+
+    verified: list[Mapping[str, Any]] = []
+    for table in TEN_YEAR_TABLES:
+        record = newest[table]
+        history = FOUNDATION_HISTORY[table]
+        payload_sha256 = record.get("payload_sha256")
+        byte_length = record.get("byte_length")
+        expected_name = f"{table}-{history}-{payload_sha256}.csv.zip"
+        if (
+            not isinstance(payload_sha256, str)
+            or _SHA256_PATTERN.fullmatch(payload_sha256) is None
+            or isinstance(byte_length, bool)
+            or not isinstance(byte_length, int)
+            or not 0 < byte_length <= MAX_COMPRESSED_BYTES[table]
+            or record.get("policy_version") != POLICY_VERSION
+            or record.get("provider_id") != PROVIDER_ID
+            or record.get("capture_type") != "FOUNDATION_BULK_COMPRESSED_CSV"
+            or record.get("history") != history
+            or record.get("status_history") != history
+            or record.get("blob_relative_path") != expected_name
+            or record.get("quarantine_only") is not True
+            or record.get("license_restricted") is not True
+            or record.get("raw_response_bytes_retained") is not True
+            or any(record.get(name) is not False for name in SAFETY_FALSE)
+        ):
+            raise ValueError("Sharadar bulk quarantine record is invalid")
+        archive = root / expected_name
+        try:
+            details = archive.lstat()
+        except FileNotFoundError:
+            raise ValueError("Sharadar bulk quarantine archive is missing") from None
+        if (
+            archive.is_symlink()
+            or not stat.S_ISREG(details.st_mode)
+            or details.st_uid != os.geteuid()
+            or stat.S_IMODE(details.st_mode) != 0o400
+            or details.st_size != byte_length
+        ):
+            raise ValueError("Sharadar bulk quarantine archive failed verification")
+        digest, size = _file_sha256(
+            archive,
+            maximum_bytes=MAX_COMPRESSED_BYTES[table],
+        )
+        if digest != payload_sha256 or size != byte_length:
+            raise ValueError("Sharadar bulk quarantine archive failed verification")
+        member, member_size, header_sha256 = SharadarSampleClient._validate_archive(
+            archive,
+            table,
+        )
+        if (
+            record.get("archive_member") != member
+            or record.get("archive_member_declared_bytes") != member_size
+            or record.get("csv_header_sha256") != header_sha256
+        ):
+            raise ValueError("Sharadar bulk quarantine archive failed verification")
+        verified.append(MappingProxyType(dict(record)))
+    return tuple(verified)
 
 
 def execute_connectivity_capture(
