@@ -444,6 +444,7 @@ def bulk_archive(
             "ticker": "AAPL",
             "dimension": "ARQ",
             "date": "2022-01-04",
+            "datekey": "2022-01-04",
             "calendardate": "2021-12-31",
             "reportperiod": "2021-12-25",
             "lastupdated": "2022-01-28",
@@ -623,6 +624,13 @@ def bulk_stack(
             status_extra=status_extra,
         ),
     )
+
+
+def test_fundamentals_bulk_schema_uses_observed_archive_datekey():
+    required = BULK_REQUIRED_FIELDS["fundamentals"]
+
+    assert "datekey" in required
+    assert "date" not in required
 
 
 def test_bulk_status_is_exact_bounded_and_credential_free():

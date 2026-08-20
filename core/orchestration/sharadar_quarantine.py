@@ -110,7 +110,7 @@ BULK_REQUIRED_FIELDS = MappingProxyType(
                 "ticker",
                 "dimension",
                 "calendardate",
-                "date",
+                "datekey",
                 "reportperiod",
                 "lastupdated",
                 "revenue",
