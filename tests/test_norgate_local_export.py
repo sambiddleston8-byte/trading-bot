@@ -17,6 +17,7 @@ import pandas as pd
 import pytest
 
 import core.orchestration.norgate_local_export as module
+import scripts.assemble_norgate_local_capture as capture_module
 import scripts.compare_norgate_local_exports as compare_module
 import scripts.export_norgate_local_sample as export_module
 import scripts.ingest_norgate_local_export as ingest_module
@@ -24,6 +25,8 @@ from core.orchestration.norgate_local_export import (
     NorgateLocalExportAdapter,
     NorgateLocalExportSource,
     NorgateLocalStagingBatch,
+    NorgateShardedCaptureManifest,
+    assemble_norgate_sharded_capture_manifest,
     compare_norgate_same_vintage_exports,
     parse_norgate_local_export,
 )
@@ -93,6 +96,39 @@ def normalize(payload: bytes | None = None, *, decision_at: str = RETRIEVED_AT):
     return NorgateLocalExportAdapter().normalize(
         source=source(payload),
         decision_at=decision_at,
+    )
+
+
+def shard_payload(
+    requested_symbol: str,
+    *,
+    asset_id: int,
+    resolved_symbol: str | None = None,
+    security_name: str | None = None,
+    exported_at: str = EXPORTED_AT,
+    **changes,
+) -> bytes:
+    symbol = resolved_symbol or requested_symbol
+    row = {
+        "asset_id": asset_id,
+        "requested_symbol": requested_symbol,
+        "symbol": symbol,
+        "security_name": security_name or f"{requested_symbol} Incorporated",
+        "session_date": "2026-08-17",
+        "open": 100.0,
+        "high": 103.0,
+        "low": 99.0,
+        "close": 102.0,
+        "volume": 1_000_000.0,
+        "unadjusted_close": 102.0,
+        "dividend": 0.0,
+        "sp500_constituent": True,
+    }
+    return export_payload(
+        rows=[row],
+        requested_symbols=[requested_symbol],
+        exported_at=exported_at,
+        **changes,
     )
 
 
@@ -743,9 +779,254 @@ def test_same_vintage_comparison_cli_rejects_drift_and_same_file(tmp_path: Path)
         assert expected in completed.stderr
 
 
+def test_sharded_capture_binds_exact_same_vintage_symbol_partition():
+    aapl = shard_payload("AAPL", asset_id=101)
+    msft = shard_payload(
+        "MSFT",
+        asset_id=202,
+        exported_at="2026-08-19T10:01:00.000000+00:00",
+    )
+
+    result = assemble_norgate_sharded_capture_manifest(
+        [aapl, msft],
+        expected_symbols=["AAPL", "MSFT"],
+    )
+
+    summary = result.as_dict()
+    assert summary["manifest_scope"] == (
+        "SAME_VINTAGE_SHARDED_QUARANTINE_CAPTURE_ONLY"
+    )
+    assert summary["requested_symbols"] == ["AAPL", "MSFT"]
+    assert summary["requested_symbols_sha256"] == hashlib.sha256(
+        b'["AAPL","MSFT"]'
+    ).hexdigest()
+    assert [item["source_payload_sha256"] for item in summary["shards"]] == [
+        hashlib.sha256(aapl).hexdigest(),
+        hashlib.sha256(msft).hexdigest(),
+    ]
+    assert [item["ordinal"] for item in summary["shards"]] == [0, 1]
+    assert summary["asset_count"] == 2
+    assert summary["row_count"] == 2
+    assert summary["same_vintage_shard_contract_match"] is True
+    assert summary["requested_symbol_partition_match"] is True
+    assert summary["cross_shard_row_identity_unique"] is True
+    for flag in module.SAFETY_FLAG_NAMES:
+        assert summary[flag] is False
+    repeated = assemble_norgate_sharded_capture_manifest(
+        [aapl, msft],
+        expected_symbols=["AAPL", "MSFT"],
+    )
+    assert repeated.manifest_sha256 == result.manifest_sha256
+    with pytest.raises(TypeError, match="not pickleable"):
+        pickle.dumps(result)
+
+
+@pytest.mark.parametrize(
+    ("payloads", "expected", "message"),
+    [
+        (
+            [
+                shard_payload("AAPL", asset_id=101),
+                shard_payload("MSFT", asset_id=202),
+            ],
+            ["MSFT", "AAPL"],
+            "exactly match",
+        ),
+        (
+            [
+                shard_payload("AAPL", asset_id=101),
+                shard_payload("MSFT", asset_id=202),
+            ],
+            ["AAPL"],
+            "exactly match",
+        ),
+        (
+            [
+                shard_payload("AAPL", asset_id=101),
+                shard_payload(
+                    "AAPL",
+                    asset_id=202,
+                    exported_at="2026-08-19T10:01:00.000000+00:00",
+                ),
+            ],
+            ["AAPL"],
+            "repeats a requested symbol",
+        ),
+    ],
+)
+def test_sharded_capture_rejects_partition_gap_order_and_overlap(
+    payloads, expected, message
+):
+    with pytest.raises(ValueError, match=message):
+        assemble_norgate_sharded_capture_manifest(
+            payloads,
+            expected_symbols=expected,
+        )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("database_update_at", "2026-08-19T09:56:00.000000+00:00"),
+        ("norgatedata_package_version", "1.0.78"),
+        ("requested_end", "2026-08-17"),
+        ("database_name", "Different Equities"),
+    ],
+)
+def test_sharded_capture_rejects_mixed_contracts(field, value):
+    with pytest.raises(ValueError, match="does not share the capture contract"):
+        assemble_norgate_sharded_capture_manifest(
+            [
+                shard_payload("AAPL", asset_id=101),
+                shard_payload("MSFT", asset_id=202, **{field: value}),
+            ],
+            expected_symbols=["AAPL", "MSFT"],
+        )
+
+
+def test_sharded_capture_rejects_cross_shard_row_and_asset_identity_drift():
+    with pytest.raises(ValueError, match="repeats an asset/date identity"):
+        assemble_norgate_sharded_capture_manifest(
+            [
+                shard_payload("AAPL", asset_id=101),
+                shard_payload("MSFT", asset_id=101),
+            ],
+            expected_symbols=["AAPL", "MSFT"],
+        )
+
+    second_row = json.loads(shard_payload("MSFT", asset_id=101))["rows"][0]
+    second_row["session_date"] = "2026-08-18"
+    second_row["symbol"] = "AAPL"
+    second_row["security_name"] = "AAPL Incorporated"
+    drifted = export_payload(rows=[second_row], requested_symbols=["MSFT"])
+    with pytest.raises(ValueError, match="changes a Norgate asset identity"):
+        assemble_norgate_sharded_capture_manifest(
+            [shard_payload("AAPL", asset_id=101), drifted],
+            expected_symbols=["AAPL", "MSFT"],
+        )
+
+
+def test_sharded_capture_surfaces_resolved_symbol_reuse_across_shards():
+    result = assemble_norgate_sharded_capture_manifest(
+        [
+            shard_payload(
+                "OLD",
+                asset_id=101,
+                resolved_symbol="XYZ",
+                security_name="Old Issuer",
+            ),
+            shard_payload(
+                "NEW",
+                asset_id=202,
+                resolved_symbol="XYZ",
+                security_name="New Issuer",
+            ),
+        ],
+        expected_symbols=["OLD", "NEW"],
+    )
+
+    assert result.as_dict()["aggregate_reused_symbols"] == ["XYZ"]
+    assert result.coverage_completeness_proven is False
+    assert result.historical_ticker_history_qualified is False
+
+
+def test_sharded_capture_manifest_authority_and_flags_cannot_be_forged():
+    required = {
+        "manifest_sha256": "0" * 64,
+        "database_name": "US Equities",
+        "database_update_at": "2026-08-19T09:55:00.000000+00:00",
+        "norgatedata_package_version": "1.0.77",
+        "requested_start": "2026-08-01",
+        "requested_end": "2026-08-18",
+        "requested_symbols": ("AAPL", "MSFT"),
+        "requested_symbols_sha256": "1" * 64,
+        "shard_source_payload_sha256": ("2" * 64, "3" * 64),
+        "shard_requested_symbols_sha256": ("4" * 64, "5" * 64),
+        "shard_exported_at": (EXPORTED_AT, EXPORTED_AT),
+        "shard_symbol_counts": (1, 1),
+        "shard_row_counts": (1, 1),
+        "aggregate_reused_symbols": (),
+        "asset_count": 2,
+        "row_count": 2,
+    }
+    with pytest.raises(PermissionError):
+        NorgateShardedCaptureManifest(**required)
+    with pytest.raises(ValueError, match="safety flags were altered"):
+        NorgateShardedCaptureManifest(
+            **required,
+            performance_use_allowed=True,
+            _authority=module._CAPTURE_MANIFEST_AUTHORITY,
+        )
+    with pytest.raises(ValueError, match="assertions were altered"):
+        NorgateShardedCaptureManifest(
+            **required,
+            same_vintage_shard_contract_match=False,
+            _authority=module._CAPTURE_MANIFEST_AUTHORITY,
+        )
+
+
+def test_sharded_capture_cli_is_read_only_and_fail_closed(tmp_path: Path):
+    first = tmp_path / "aapl.json"
+    second = tmp_path / "msft.json"
+    symbols = tmp_path / "symbols.txt"
+    first.write_bytes(shard_payload("AAPL", asset_id=101))
+    second.write_bytes(shard_payload("MSFT", asset_id=202))
+    symbols.write_text("AAPL\nMSFT\n", encoding="utf-8")
+
+    command = [
+        sys.executable,
+        "scripts/assemble_norgate_local_capture.py",
+        "--export-file",
+        str(first),
+        "--export-file",
+        str(second),
+        "--symbols-file",
+        str(symbols),
+    ]
+    completed = subprocess.run(
+        command,
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={},
+    )
+    assert completed.returncode == 0, completed.stderr
+    summary = json.loads(completed.stdout)
+    assert summary["requested_symbol_partition_match"] is True
+    assert summary["performance_use_allowed"] is False
+    assert summary["validation_accessed"] is False
+    assert summary["test_accessed"] is False
+    assert summary["broker_connection_allowed"] is False
+
+    rejected = subprocess.run(
+        [
+            sys.executable,
+            "scripts/assemble_norgate_local_capture.py",
+            "--export-file",
+            str(first),
+            "--export-file",
+            str(first),
+            "--symbols-file",
+            str(symbols),
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={},
+    )
+    assert rejected.returncode == 1
+    assert rejected.stdout == ""
+    assert "distinct paths" in rejected.stderr
+
+
 def test_modules_have_no_network_broker_execution_or_order_surface():
     for inspected in (
         module,
+        capture_module,
         compare_module,
         sys.modules[build_export.__module__],
         ingest_module,

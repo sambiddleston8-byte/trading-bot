@@ -37,8 +37,12 @@ MEMBERSHIP_ROLE = "POINT_IN_TIME_SUPPLEMENTAL_PROVIDER_EVIDENCE"
 INDEX_NAME = "S&P 500"
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_RECORDS = 200_000
+MAX_CAPTURE_SHARDS = 100
+MAX_CAPTURE_SYMBOLS = 10_000
+MAX_CAPTURE_BYTES = 512 * 1024 * 1024
 _STAGING_AUTHORITY = object()
 _DETERMINISM_AUTHORITY = object()
+_CAPTURE_MANIFEST_AUTHORITY = object()
 _SYMBOL_PATTERN = re.compile(r"[A-Z0-9][A-Z0-9.\-/]{0,31}")
 _VERSION_PATTERN = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 _TOP_LEVEL_FIELDS = frozenset(
@@ -402,11 +406,10 @@ class NorgateSameVintageDeterminismCheck:
         }
 
 
-def compare_norgate_same_vintage_exports(
+def _same_vintage_roots(
     baseline_payload: bytes,
     repeat_payload: bytes,
-) -> NorgateSameVintageDeterminismCheck:
-    """Require two independently exported payloads to match at one DB vintage."""
+) -> tuple[Mapping[str, Any], Mapping[str, Any], str]:
 
     for name, payload in (
         ("baseline_payload", baseline_payload),
@@ -425,6 +428,336 @@ def compare_norgate_same_vintage_exports(
             raise ValueError(f"{name} export root fields are not exactly pinned")
     baseline_exported_at = _canonical_timestamp(
         baseline_root["exported_at"], "baseline exported_at"
+    )
+    return baseline_root, repeat_root, baseline_exported_at
+
+
+@dataclass(frozen=True, slots=True)
+class NorgateShardedCaptureManifest:
+    manifest_sha256: str
+    database_name: str
+    database_update_at: str
+    norgatedata_package_version: str
+    requested_start: str
+    requested_end: str
+    requested_symbols: tuple[str, ...]
+    requested_symbols_sha256: str
+    shard_source_payload_sha256: tuple[str, ...]
+    shard_requested_symbols_sha256: tuple[str, ...]
+    shard_exported_at: tuple[str, ...]
+    shard_symbol_counts: tuple[int, ...]
+    shard_row_counts: tuple[int, ...]
+    aggregate_reused_symbols: tuple[str, ...]
+    asset_count: int
+    row_count: int
+    same_vintage_shard_contract_match: bool = True
+    requested_symbol_partition_match: bool = True
+    cross_shard_row_identity_unique: bool = True
+    quarantine_capture_bound: bool = False
+    provider_payload_semantics_qualified: bool = False
+    source_bytes_authenticated: bool = False
+    historical_ticker_history_qualified: bool = False
+    historical_availability_qualified: bool = False
+    coverage_completeness_proven: bool = False
+    observation_selection_validated: bool = False
+    role_coverage_validated: bool = False
+    engine_input_ready: bool = False
+    performance_use_allowed: bool = False
+    replay_executed: bool = False
+    validation_accessed: bool = False
+    test_accessed: bool = False
+    broker_connection_allowed: bool = False
+    orders_submitted: bool = False
+    live_trading_enabled: bool = False
+    _authority: object = field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self._authority is not _CAPTURE_MANIFEST_AUTHORITY:
+            raise PermissionError(
+                "NorgateShardedCaptureManifest must be issued by the assembler"
+            )
+        object.__setattr__(self, "_authority", None)
+        assertions = (
+            self.same_vintage_shard_contract_match,
+            self.requested_symbol_partition_match,
+            self.cross_shard_row_identity_unique,
+        )
+        if any(value is not True for value in assertions):
+            raise ValueError("Norgate sharded-capture assertions were altered")
+        shard_count = len(self.shard_source_payload_sha256)
+        if not 2 <= shard_count <= MAX_CAPTURE_SHARDS or any(
+            len(values) != shard_count
+            for values in (
+                self.shard_requested_symbols_sha256,
+                self.shard_exported_at,
+                self.shard_symbol_counts,
+                self.shard_row_counts,
+            )
+        ):
+            raise ValueError("Norgate sharded-capture evidence is inconsistent")
+        if any(getattr(self, name) is not False for name in SAFETY_FLAG_NAMES):
+            raise ValueError("Norgate sharded-capture safety flags were altered")
+
+    def __reduce__(self) -> Any:
+        raise TypeError(
+            "Norgate sharded-capture manifests are deliberately not pickleable"
+        )
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "provider_id": PROVIDER_ID,
+            "provider_dataset_id": DATASET_ID,
+            "manifest_scope": "SAME_VINTAGE_SHARDED_QUARANTINE_CAPTURE_ONLY",
+            "manifest_sha256": self.manifest_sha256,
+            "database_name": self.database_name,
+            "database_update_at": self.database_update_at,
+            "norgatedata_package_version": self.norgatedata_package_version,
+            "requested_start": self.requested_start,
+            "requested_end": self.requested_end,
+            "requested_symbols": list(self.requested_symbols),
+            "requested_symbols_sha256": self.requested_symbols_sha256,
+            "shards": [
+                {
+                    "ordinal": ordinal,
+                    "source_payload_sha256": self.shard_source_payload_sha256[
+                        ordinal
+                    ],
+                    "requested_symbols_sha256": (
+                        self.shard_requested_symbols_sha256[ordinal]
+                    ),
+                    "exported_at": self.shard_exported_at[ordinal],
+                    "symbol_count": self.shard_symbol_counts[ordinal],
+                    "row_count": self.shard_row_counts[ordinal],
+                }
+                for ordinal in range(len(self.shard_source_payload_sha256))
+            ],
+            "aggregate_reused_symbols": list(self.aggregate_reused_symbols),
+            "asset_count": self.asset_count,
+            "row_count": self.row_count,
+            "same_vintage_shard_contract_match": (
+                self.same_vintage_shard_contract_match
+            ),
+            "requested_symbol_partition_match": (
+                self.requested_symbol_partition_match
+            ),
+            "cross_shard_row_identity_unique": (
+                self.cross_shard_row_identity_unique
+            ),
+            **{name: getattr(self, name) for name in SAFETY_FLAG_NAMES},
+        }
+
+
+def assemble_norgate_sharded_capture_manifest(
+    payloads: Sequence[bytes],
+    *,
+    expected_symbols: Sequence[str],
+) -> NorgateShardedCaptureManifest:
+    """Bind same-vintage export shards without authenticating provider semantics."""
+
+    if not isinstance(payloads, Sequence) or isinstance(
+        payloads, (bytes, bytearray, str)
+    ):
+        raise ValueError("payloads must be a bounded sequence of export bytes")
+    if not 2 <= len(payloads) <= MAX_CAPTURE_SHARDS:
+        raise ValueError("payloads must contain between 2 and 100 export shards")
+    shards = tuple(payloads)
+    if not isinstance(expected_symbols, Sequence) or isinstance(
+        expected_symbols, (bytes, bytearray, str)
+    ):
+        raise ValueError("expected_symbols must be a bounded canonical sequence")
+    if not 1 <= len(expected_symbols) <= MAX_CAPTURE_SYMBOLS:
+        raise ValueError("expected_symbols must be a bounded canonical sequence")
+    expected = tuple(expected_symbols)
+    if (
+        not expected
+        or len(expected) > MAX_CAPTURE_SYMBOLS
+        or len(expected) != len(set(expected))
+        or any(
+            not isinstance(symbol, str) or _SYMBOL_PATTERN.fullmatch(symbol) is None
+            for symbol in expected
+        )
+    ):
+        raise ValueError("expected_symbols must be a bounded unique canonical sequence")
+
+    total_bytes = 0
+    roots_and_rows: list[
+        tuple[Mapping[str, Any], tuple[Mapping[str, Any], ...]]
+    ] = []
+    source_hashes: list[str] = []
+    for ordinal, payload in enumerate(shards):
+        if (
+            not isinstance(payload, bytes)
+            or not payload
+            or len(payload) > MAX_SOURCE_BYTES
+        ):
+            raise ValueError(f"payloads[{ordinal}] must contain bounded nonempty bytes")
+        total_bytes += len(payload)
+        if total_bytes > MAX_CAPTURE_BYTES:
+            raise ValueError("sharded capture exceeds the aggregate byte boundary")
+        source_hash = hashlib.sha256(payload).hexdigest()
+        if source_hash in source_hashes:
+            raise ValueError("sharded capture repeats exact source payload bytes")
+        source_hashes.append(source_hash)
+        root, rows = _parse_export(payload)
+        if set(root) != _TOP_LEVEL_FIELDS:
+            raise ValueError(f"payloads[{ordinal}] root fields are not exactly pinned")
+        roots_and_rows.append((root, rows))
+
+    invariant_fields = (
+        "schema_version",
+        "export_contract",
+        "provider_id",
+        "provider_dataset_id",
+        "norgatedata_package_version",
+        "database_name",
+        "database_update_at",
+        "universe_selection_basis",
+        "license_restricted_provider_data",
+        "source_code_repository_storage_allowed",
+        "requested_start",
+        "requested_end",
+        "frequency",
+        "stock_price_adjustment",
+        "padding",
+        "membership_dataset",
+    )
+    baseline_root = roots_and_rows[0][0]
+    for ordinal, (root, _) in enumerate(roots_and_rows[1:], start=1):
+        changed = [
+            name for name in invariant_fields if root[name] != baseline_root[name]
+        ]
+        if changed:
+            raise ValueError(
+                f"payloads[{ordinal}] does not share the capture contract: "
+                + ", ".join(changed)
+            )
+
+    flattened_symbols = tuple(
+        symbol
+        for root, _ in roots_and_rows
+        for symbol in root["requested_symbols"]
+    )
+    if len(flattened_symbols) != len(set(flattened_symbols)):
+        raise ValueError("sharded capture repeats a requested symbol across shards")
+    if flattened_symbols != expected:
+        raise ValueError(
+            "sharded capture does not exactly match the expected symbol partition"
+        )
+
+    row_identities: set[tuple[int, str]] = set()
+    identity_by_asset: dict[int, tuple[str, str, str]] = {}
+    assets_by_resolved_symbol: dict[str, set[int]] = {}
+    for ordinal, (_, rows) in enumerate(roots_and_rows):
+        for row in rows:
+            row_identity = (row["asset_id"], row["session_date"])
+            if row_identity in row_identities:
+                raise ValueError(
+                    "sharded capture repeats an asset/date identity across shards"
+                )
+            row_identities.add(row_identity)
+            identity = (
+                row["requested_symbol"],
+                row["symbol"],
+                row["security_name"],
+            )
+            prior = identity_by_asset.setdefault(row["asset_id"], identity)
+            if prior != identity:
+                raise ValueError(
+                    f"payloads[{ordinal}] changes a Norgate asset identity across shards"
+                )
+            assets_by_resolved_symbol.setdefault(row["symbol"], set()).add(
+                row["asset_id"]
+            )
+    aggregate_reused_symbols = tuple(
+        sorted(
+            symbol
+            for symbol, asset_ids in assets_by_resolved_symbol.items()
+            if len(asset_ids) > 1
+        )
+    )
+    requested_symbols_sha256 = hashlib.sha256(
+        json.dumps(expected, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    shard_requested_hashes = tuple(
+        str(root["requested_symbols_sha256"]) for root, _ in roots_and_rows
+    )
+    shard_exported_at = tuple(
+        _canonical_timestamp(root["exported_at"], "exported_at")
+        for root, _ in roots_and_rows
+    )
+    shard_symbol_counts = tuple(
+        len(root["requested_symbols"]) for root, _ in roots_and_rows
+    )
+    shard_row_counts = tuple(len(rows) for _, rows in roots_and_rows)
+    manifest_material = {
+        "provider_id": PROVIDER_ID,
+        "provider_dataset_id": DATASET_ID,
+        "manifest_scope": "SAME_VINTAGE_SHARDED_QUARANTINE_CAPTURE_ONLY",
+        "database_name": baseline_root["database_name"],
+        "database_update_at": _canonical_timestamp(
+            baseline_root["database_update_at"], "database_update_at"
+        ),
+        "norgatedata_package_version": baseline_root[
+            "norgatedata_package_version"
+        ],
+        "requested_start": baseline_root["requested_start"],
+        "requested_end": baseline_root["requested_end"],
+        "requested_symbols": list(expected),
+        "requested_symbols_sha256": requested_symbols_sha256,
+        "shard_source_payload_sha256": source_hashes,
+        "shard_requested_symbols_sha256": list(shard_requested_hashes),
+        "shard_exported_at": list(shard_exported_at),
+        "shard_symbol_counts": list(shard_symbol_counts),
+        "shard_row_counts": list(shard_row_counts),
+        "aggregate_reused_symbols": list(aggregate_reused_symbols),
+        "asset_count": len(identity_by_asset),
+        "row_count": len(row_identities),
+        "same_vintage_shard_contract_match": True,
+        "requested_symbol_partition_match": True,
+        "cross_shard_row_identity_unique": True,
+        "safety_flags": {name: False for name in SAFETY_FLAG_NAMES},
+    }
+    manifest_sha256 = hashlib.sha256(
+        json.dumps(
+            manifest_material,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    return NorgateShardedCaptureManifest(
+        manifest_sha256=manifest_sha256,
+        database_name=str(baseline_root["database_name"]),
+        database_update_at=str(manifest_material["database_update_at"]),
+        norgatedata_package_version=str(
+            baseline_root["norgatedata_package_version"]
+        ),
+        requested_start=str(baseline_root["requested_start"]),
+        requested_end=str(baseline_root["requested_end"]),
+        requested_symbols=expected,
+        requested_symbols_sha256=requested_symbols_sha256,
+        shard_source_payload_sha256=tuple(source_hashes),
+        shard_requested_symbols_sha256=shard_requested_hashes,
+        shard_exported_at=shard_exported_at,
+        shard_symbol_counts=shard_symbol_counts,
+        shard_row_counts=shard_row_counts,
+        aggregate_reused_symbols=aggregate_reused_symbols,
+        asset_count=len(identity_by_asset),
+        row_count=len(row_identities),
+        _authority=_CAPTURE_MANIFEST_AUTHORITY,
+    )
+
+
+def compare_norgate_same_vintage_exports(
+    baseline_payload: bytes,
+    repeat_payload: bytes,
+) -> NorgateSameVintageDeterminismCheck:
+    """Require two independently exported payloads to match at one DB vintage."""
+
+    baseline_root, repeat_root, baseline_exported_at = _same_vintage_roots(
+        baseline_payload,
+        repeat_payload,
     )
     repeat_exported_at = _canonical_timestamp(
         repeat_root["exported_at"], "repeat exported_at"
