@@ -5,16 +5,19 @@ from datetime import date, datetime, timezone
 import hashlib
 import inspect
 import json
+import os
 import pickle
 from pathlib import Path
 import subprocess
 import sys
+import textwrap
 from types import SimpleNamespace
 
 import pandas as pd
 import pytest
 
 import core.orchestration.norgate_local_export as module
+import scripts.export_norgate_local_sample as export_module
 import scripts.ingest_norgate_local_export as ingest_module
 from core.orchestration.norgate_local_export import (
     NorgateLocalExportAdapter,
@@ -393,6 +396,92 @@ def test_windows_export_builder_uses_stable_id_unadjusted_unpadded_local_calls()
         "Unadjusted Close",
         "Dividend",
     ]
+
+
+def test_windows_import_guard_is_available_but_file_locking_fails_closed():
+    missing = object()
+    saved = sys.modules.pop("fcntl", missing)
+    try:
+        export_module._install_windows_fcntl_guard("Windows")
+        guard = sys.modules["fcntl"]
+        assert guard.LOCK_SH == 1
+        assert guard.LOCK_EX == 2
+        assert guard.LOCK_NB == 4
+        assert guard.LOCK_UN == 8
+        with pytest.raises(OSError, match="unavailable in the Windows extraction VM"):
+            guard.flock(None, guard.LOCK_EX)
+        for unsupported in ("lockf", "fcntl", "ioctl", "F_SETLK"):
+            with pytest.raises(
+                OSError, match="unavailable in the Windows extraction VM"
+            ):
+                getattr(guard, unsupported)
+        assert not hasattr(guard, "__file__")
+        assert inspect.getmodule(inspect.currentframe()) is sys.modules[__name__]
+    finally:
+        sys.modules.pop("fcntl", None)
+        if saved is not missing:
+            sys.modules["fcntl"] = saved
+
+
+def test_windows_script_imports_when_posix_fcntl_is_unavailable():
+    probe = textwrap.dedent(
+        """
+        import importlib.abc
+        import importlib.util
+        import platform
+        import sys
+
+        class BlockFcntl(importlib.abc.MetaPathFinder):
+            def find_spec(self, fullname, path=None, target=None):
+                if fullname == "fcntl":
+                    raise ModuleNotFoundError("blocked fcntl")
+                return None
+
+        sys.modules.pop("fcntl", None)
+        sys.meta_path.insert(0, BlockFcntl())
+        platform.system = lambda: "Windows"
+        spec = importlib.util.spec_from_file_location(
+            "windows_import_probe",
+            "scripts/export_norgate_local_sample.py",
+        )
+        if spec is None or spec.loader is None:
+            raise AssertionError("could not load Windows export script")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        module._norgate_contract()
+        guard = sys.modules["fcntl"]
+        try:
+            guard.flock(None, guard.LOCK_EX)
+        except OSError:
+            pass
+        else:
+            raise AssertionError("Windows file locking did not fail closed")
+        """
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", probe],
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={
+            key: os.environ[key]
+            for key in (
+                "HOME",
+                "NUMBA_CACHE_DIR",
+                "PATH",
+                "SYSTEMROOT",
+                "TEMP",
+                "TMP",
+                "TMPDIR",
+                "WINDIR",
+            )
+            if key in os.environ
+        },
+    )
+    assert completed.returncode == 0, completed.stderr
 
 
 def test_export_records_requested_to_resolved_symbol_drift_and_missing_membership():
