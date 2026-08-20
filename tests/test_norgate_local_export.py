@@ -9,6 +9,7 @@ import pickle
 from pathlib import Path
 import subprocess
 import sys
+import textwrap
 from types import SimpleNamespace
 
 import pandas as pd
@@ -412,6 +413,48 @@ def test_windows_import_guard_is_available_but_file_locking_fails_closed():
         sys.modules.pop("fcntl", None)
         if saved is not missing:
             sys.modules["fcntl"] = saved
+
+
+def test_windows_script_imports_when_posix_fcntl_is_unavailable():
+    probe = textwrap.dedent(
+        """
+        import importlib.abc
+        import platform
+        import runpy
+        import sys
+
+        class BlockFcntl(importlib.abc.MetaPathFinder):
+            def find_spec(self, fullname, path=None, target=None):
+                if fullname == "fcntl":
+                    raise ModuleNotFoundError("blocked fcntl")
+                return None
+
+        sys.modules.pop("fcntl", None)
+        sys.meta_path.insert(0, BlockFcntl())
+        platform.system = lambda: "Windows"
+        runpy.run_path(
+            "scripts/export_norgate_local_sample.py",
+            run_name="windows_import_probe",
+        )
+        guard = sys.modules["fcntl"]
+        try:
+            guard.flock(None, guard.LOCK_EX)
+        except OSError:
+            pass
+        else:
+            raise AssertionError("Windows file locking did not fail closed")
+        """
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", probe],
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={},
+    )
+    assert completed.returncode == 0, completed.stderr
 
 
 def test_export_records_requested_to_resolved_symbol_drift_and_missing_membership():
