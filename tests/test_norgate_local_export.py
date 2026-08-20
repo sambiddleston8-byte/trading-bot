@@ -20,17 +20,23 @@ import core.orchestration.norgate_local_export as module
 import scripts.assemble_norgate_local_capture as capture_module
 import scripts.compare_norgate_local_exports as compare_module
 import scripts.export_norgate_local_sample as export_module
+import scripts.export_norgate_local_universe as universe_export_module
 import scripts.ingest_norgate_local_export as ingest_module
+import scripts.ingest_norgate_local_universe as universe_ingest_module
 from core.orchestration.norgate_local_export import (
     NorgateLocalExportAdapter,
     NorgateLocalExportSource,
     NorgateLocalStagingBatch,
+    NorgateLocalUniverseCatalogEvidence,
     NorgateShardedCaptureManifest,
     assemble_norgate_sharded_capture_manifest,
     compare_norgate_same_vintage_exports,
     parse_norgate_local_export,
+    parse_norgate_local_universe_catalog,
+    stage_norgate_local_universe_catalog,
 )
 from scripts.export_norgate_local_sample import build_export, write_verified_export
+from scripts.export_norgate_local_universe import build_universe_catalog
 
 
 EXPORTED_AT = "2026-08-19T10:00:00.000000+00:00"
@@ -130,6 +136,54 @@ def shard_payload(
         exported_at=exported_at,
         **changes,
     )
+
+
+def universe_catalog_payload(
+    *,
+    entries: list[dict] | None = None,
+    **changes,
+) -> bytes:
+    values = entries if entries is not None else [
+        {"asset_id": 101, "symbol": "AAPL", "security_name": "Apple Inc"},
+        {"asset_id": 202, "symbol": "MSFT", "security_name": "Microsoft Corp"},
+    ]
+    assets_by_symbol: dict[str, set[int]] = {}
+    for entry in values:
+        assets_by_symbol.setdefault(entry["symbol"], set()).add(entry["asset_id"])
+    reused_symbols = sorted(
+        symbol for symbol, asset_ids in assets_by_symbol.items() if len(asset_ids) > 1
+    )
+    entries_sha256 = hashlib.sha256(
+        json.dumps(
+            values,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    payload = {
+        "schema_version": "1.0",
+        "export_contract": "NORGATE_LOCAL_UNIVERSE_CATALOG_V1",
+        "provider_id": "NORGATE",
+        "provider_dataset_id": "NORGATE_US_STOCKS_PLATINUM_LOCAL_V1",
+        "norgatedata_package_version": "1.0.77",
+        "database_name": "US Equities",
+        "database_update_at": "2026-08-19T09:55:00.000000+00:00",
+        "watchlist_name": "S&P 500 Current & Past",
+        "watchlist_semantics_basis": (
+            "PROVIDER_NAMED_CURRENT_AND_PAST_WATCHLIST_UNQUALIFIED"
+        ),
+        "exported_at": EXPORTED_AT,
+        "license_restricted_provider_data": True,
+        "source_code_repository_storage_allowed": False,
+        "entry_count": len(values),
+        "entries_sha256": entries_sha256,
+        "reused_symbols": reused_symbols,
+        "entries": values,
+        **changes,
+    }
+    return (json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n").encode()
 
 
 def test_provider_shaped_export_stages_bars_and_membership_fail_closed():
@@ -363,6 +417,13 @@ class FakeNorgate:
         result = kwargs["pandas_dataframe"].copy()
         result["Index Constituent"] = [1]
         return result
+
+    def watchlist(self, name):
+        assert name == "S&P 500 Current & Past"
+        return [
+            {"symbol": "MSFT", "assetid": 202, "securityname": "Microsoft Corp"},
+            {"symbol": "AAPL", "assetid": 101, "securityname": "Apple Inc"},
+        ]
 
 
 class MissingMembershipNorgate(FakeNorgate):
@@ -601,6 +662,207 @@ def test_local_ingest_cli_stages_exact_synthetic_file(tmp_path: Path):
     assert summary["validation_accessed"] is False
     assert summary["test_accessed"] is False
     assert summary["broker_connection_allowed"] is False
+
+
+def test_local_universe_builder_and_stager_preserve_stable_identity_without_authority():
+    provider = FakeNorgate()
+    payload = build_universe_catalog(
+        norgatedata=provider,
+        database_name="US Equities",
+        exported_at=datetime(2026, 8, 19, 10, tzinfo=timezone.utc),
+    )
+    root = json.loads(payload)
+    assert [entry["asset_id"] for entry in root["entries"]] == [101, 202]
+    assert root["watchlist_name"] == "S&P 500 Current & Past"
+    assert root["watchlist_semantics_basis"].endswith("_UNQUALIFIED")
+    assert root["license_restricted_provider_data"] is True
+    assert root["source_code_repository_storage_allowed"] is False
+
+    entries = parse_norgate_local_universe_catalog(payload)
+    assert tuple(entry["symbol"] for entry in entries) == ("AAPL", "MSFT")
+    evidence = stage_norgate_local_universe_catalog(
+        NorgateLocalExportSource(retrieved_at=RETRIEVED_AT, payload_bytes=payload)
+    )
+    summary = evidence.as_dict()
+    assert summary["catalog_scope"] == (
+        "CURRENT_DATABASE_VINTAGE_PROVIDER_NAMED_WATCHLIST_UNQUALIFIED"
+    )
+    assert summary["entry_count"] == 2
+    assert summary["asset_id_min"] == 101
+    assert summary["asset_id_max"] == 202
+    assert summary["source_payload_sha256"] == hashlib.sha256(payload).hexdigest()
+    assert summary["entries_sha256"] == root["entries_sha256"]
+    assert summary["catalog_evidence_sha256"] == (
+        "70a196719428ed0ff213fa43a8cd2733f4c0e0df16bedd663518204d2f0a1e17"
+    )
+    assert summary["license_restricted_provider_data"] is True
+    assert summary["source_code_repository_storage_allowed"] is False
+    for flag in module.UNIVERSE_CATALOG_SAFETY_FLAG_NAMES:
+        assert summary[flag] is False
+    with pytest.raises(TypeError):
+        evidence.entries[0]["symbol"] = "CHANGED"
+    with pytest.raises(TypeError, match="not pickleable"):
+        pickle.dumps(evidence)
+
+
+@pytest.mark.parametrize(
+    ("payload", "message"),
+    [
+        (
+            universe_catalog_payload(watchlist_name="S&P 500"),
+            "watchlist_name",
+        ),
+        (
+            universe_catalog_payload(entries_sha256="0" * 64),
+            "entry hash",
+        ),
+        (
+            universe_catalog_payload(
+                entries=[
+                    {"asset_id": 202, "symbol": "MSFT", "security_name": "Microsoft"},
+                    {"asset_id": 101, "symbol": "AAPL", "security_name": "Apple"},
+                ]
+            ),
+            "ordered unique asset IDs",
+        ),
+        (
+            universe_catalog_payload(
+                source_code_repository_storage_allowed=True
+            ),
+            "source control",
+        ),
+        (
+            universe_catalog_payload(entry_count=True),
+            "bounded counted list",
+        ),
+        (
+            universe_catalog_payload(entries=[]),
+            "bounded counted list",
+        ),
+        (
+            universe_catalog_payload(unexpected_field="unsupported"),
+            "top-level fields",
+        ),
+        (
+            universe_catalog_payload(
+                database_update_at="2026-08-19T10:00:01.000000+00:00"
+            ),
+            "cannot postdate",
+        ),
+    ],
+)
+def test_local_universe_parser_rejects_semantic_and_integrity_drift(
+    payload, message
+):
+    with pytest.raises(ValueError, match=message):
+        parse_norgate_local_universe_catalog(payload)
+
+
+def test_local_universe_builder_rejects_duplicate_asset_ids_and_bad_clock():
+    provider = FakeNorgate()
+    provider.watchlist = lambda _name: [
+        {"symbol": "AAPL", "assetid": 101, "securityname": "Apple Inc"},
+        {"symbol": "AAPL2", "assetid": 101, "securityname": "Apple Inc"},
+    ]
+    with pytest.raises(ValueError, match="repeats a stable assetid"):
+        build_universe_catalog(
+            norgatedata=provider,
+            database_name="US Equities",
+            exported_at=datetime(2026, 8, 19, 10, tzinfo=timezone.utc),
+        )
+    with pytest.raises(ValueError, match="timezone-aware"):
+        build_universe_catalog(
+            norgatedata=FakeNorgate(),
+            database_name="US Equities",
+            exported_at=datetime(2026, 8, 19, 10),
+        )
+
+
+def test_local_universe_catalog_surfaces_cross_asset_symbol_reuse():
+    entries = [
+        {"asset_id": 101, "symbol": "XYZ", "security_name": "Old Issuer"},
+        {"asset_id": 202, "symbol": "XYZ", "security_name": "New Issuer"},
+    ]
+    evidence = stage_norgate_local_universe_catalog(
+        NorgateLocalExportSource(
+            retrieved_at=RETRIEVED_AT,
+            payload_bytes=universe_catalog_payload(entries=entries),
+        )
+    )
+
+    assert evidence.as_dict()["reused_symbols"] == ["XYZ"]
+    assert evidence.historical_ticker_history_qualified is False
+    assert evidence.security_master_admission_allowed is False
+
+
+def test_local_universe_catalog_rejects_export_after_local_receipt():
+    with pytest.raises(ValueError, match="cannot postdate local retrieval"):
+        stage_norgate_local_universe_catalog(
+            NorgateLocalExportSource(
+                retrieved_at="2026-08-19T09:59:59.000000+00:00",
+                payload_bytes=universe_catalog_payload(),
+            )
+        )
+
+
+def test_local_universe_catalog_authority_flags_and_license_cannot_be_forged():
+    required = {
+        "retrieved_at": RETRIEVED_AT,
+        "exported_at": EXPORTED_AT,
+        "database_name": "US Equities",
+        "database_update_at": "2026-08-19T09:55:00.000000+00:00",
+        "norgatedata_package_version": "1.0.77",
+        "entries": ({"asset_id": 101, "symbol": "AAPL", "security_name": "Apple"},),
+        "source_payload_sha256": "0" * 64,
+        "entries_sha256": "1" * 64,
+        "catalog_evidence_sha256": "2" * 64,
+        "reused_symbols": (),
+    }
+    with pytest.raises(PermissionError):
+        NorgateLocalUniverseCatalogEvidence(**required)
+    with pytest.raises(ValueError, match="safety flags were altered"):
+        NorgateLocalUniverseCatalogEvidence(
+            **required,
+            security_master_admission_allowed=True,
+            _authority=module._UNIVERSE_CATALOG_AUTHORITY,
+        )
+    with pytest.raises(ValueError, match="license markings were altered"):
+        NorgateLocalUniverseCatalogEvidence(
+            **required,
+            source_code_repository_storage_allowed=True,
+            _authority=module._UNIVERSE_CATALOG_AUTHORITY,
+        )
+
+
+def test_local_universe_ingest_cli_stages_summary_only(tmp_path: Path):
+    catalog = tmp_path / "norgate-universe.json"
+    catalog.write_bytes(universe_catalog_payload())
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/ingest_norgate_local_universe.py",
+            "--catalog-file",
+            str(catalog),
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={},
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    summary = json.loads(completed.stdout)
+    assert summary["entry_count"] == 2
+    assert "entries" not in summary
+    assert summary["provider_watchlist_semantics_qualified"] is False
+    assert summary["provider_watchlist_completeness_proven"] is False
+    assert summary["security_master_admission_allowed"] is False
+    assert summary["performance_use_allowed"] is False
+    assert summary["validation_accessed"] is False
+    assert summary["test_accessed"] is False
 
 
 def test_same_vintage_repeat_export_matches_only_after_excluding_observation_time():
@@ -1071,6 +1333,8 @@ def test_modules_have_no_network_broker_execution_or_order_surface():
         compare_module,
         sys.modules[build_export.__module__],
         ingest_module,
+        universe_export_module,
+        universe_ingest_module,
     ):
         tree = ast.parse(inspect.getsource(inspected))
         imports = {
