@@ -1117,13 +1117,49 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
     profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
 
     assert profile["status"] == FOUNDATION_PROFILE_STATUS
-    assert profile["schema_version"] == "1.2"
-    assert profile["policy_version"] == "sharadar-foundation-structural-profile-v3"
+    assert profile["schema_version"] == "1.3"
+    assert profile["policy_version"] == "sharadar-foundation-structural-profile-v4"
     assert profile["synthetic_fixture"] is True
     assert profile["archive_integrity_verified"] is True
     assert profile["every_row_stream_parsed"] is True
     assert profile["tables"]["stocks"]["row_count"] == 1
     assert profile["tables"]["fundamentals"]["dimension_counts"] == {"ARQ": 1}
+    assert profile["tables"]["stocks"]["lastupdated_vs_date_screen"] == {
+        "row_count": 1,
+        "lag_bucket_counts": {
+            "NEGATIVE": 0,
+            "SAME_DAY": 0,
+            "1_TO_7_DAYS": 0,
+            "8_TO_30_DAYS": 1,
+            "31_TO_90_DAYS": 0,
+            "91_TO_365_DAYS": 0,
+            "366_TO_1825_DAYS": 0,
+            "OVER_1825_DAYS": 0,
+        },
+        "negative_lag_rows": 0,
+        "same_day_rows": 0,
+        "positive_lag_rows": 1,
+        "min_lag_days": 24,
+        "max_lag_days": 24,
+        "field_values_are_literal_provider_metadata": True,
+        "screen_only": True,
+        "revision_or_restatement_proven": False,
+        "point_in_time_semantics_qualified": False,
+        "historical_availability_qualified": False,
+    }
+    fundamentals = profile["tables"]["fundamentals"]
+    assert fundamentals["lastupdated_vs_datekey_screen"]["lag_bucket_counts"][
+        "8_TO_30_DAYS"
+    ] == 1
+    assert fundamentals["lastupdated_vs_datekey_screen"]["by_dimension"]["ARQ"][
+        "max_lag_days"
+    ] == 24
+    assert fundamentals["datekey_vs_reportperiod_screen"]["lag_bucket_counts"][
+        "8_TO_30_DAYS"
+    ] == 1
+    assert fundamentals["datekey_vs_reportperiod_screen"]["by_dimension"]["ARQ"][
+        "max_lag_days"
+    ] == 10
     assert profile["tables"]["stocks"]["identity_state_counts"] == {"UNIQUE": 1}
     assert profile["tables"]["fundamentals"]["identity_state_counts"] == {
         "MISSING": 1
@@ -1169,6 +1205,80 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
     assert profile["test_access_authorized"] is False
     repeated = build_foundation_profile(tmp_path, synthetic_fixture=True)
     assert repeated["profile_sha256"] == profile["profile_sha256"]
+
+
+def test_foundation_profile_revision_timing_screen_is_bounded_and_dimensioned(
+    tmp_path,
+):
+    _, session, access = bulk_stack(
+        additional_rows={
+            "stocks": [
+                {"date": "2022-01-05", "lastupdated": "2022-01-05"},
+                {"date": "2022-01-06", "lastupdated": "2022-01-05"},
+                {"date": "2020-01-01", "lastupdated": "2026-01-01"},
+            ],
+            "fundamentals": [
+                {
+                    "dimension": "ARY",
+                    "reportperiod": "2021-12-31",
+                    "datekey": "2022-01-01",
+                    "lastupdated": "2022-01-01",
+                },
+                {
+                    "dimension": "ART",
+                    "reportperiod": "2021-12-25",
+                    "datekey": "2022-01-05",
+                    "lastupdated": "2021-12-31",
+                },
+                {
+                    "dimension": "MRQ",
+                    "reportperiod": "2019-12-31",
+                    "datekey": "2020-01-01",
+                    "lastupdated": "2026-01-01",
+                },
+            ],
+        }
+    )
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
+
+    stocks = profile["tables"]["stocks"]["lastupdated_vs_date_screen"]
+    assert stocks["row_count"] == 4
+    assert stocks["lag_bucket_counts"] == {
+        "NEGATIVE": 1,
+        "SAME_DAY": 1,
+        "1_TO_7_DAYS": 0,
+        "8_TO_30_DAYS": 1,
+        "31_TO_90_DAYS": 0,
+        "91_TO_365_DAYS": 0,
+        "366_TO_1825_DAYS": 0,
+        "OVER_1825_DAYS": 1,
+    }
+    assert stocks["min_lag_days"] == -1
+    assert stocks["max_lag_days"] == 2192
+    fundamentals = profile["tables"]["fundamentals"]
+    lastupdated = fundamentals["lastupdated_vs_datekey_screen"]
+    assert lastupdated["row_count"] == 4
+    assert lastupdated["lag_bucket_counts"]["NEGATIVE"] == 1
+    assert lastupdated["lag_bucket_counts"]["SAME_DAY"] == 1
+    assert lastupdated["lag_bucket_counts"]["8_TO_30_DAYS"] == 1
+    assert lastupdated["lag_bucket_counts"]["OVER_1825_DAYS"] == 1
+    assert sorted(lastupdated["by_dimension"]) == ["ARQ", "ART", "ARY", "MRQ"]
+    assert lastupdated["by_dimension"]["ART"]["negative_lag_rows"] == 1
+    assert lastupdated["by_dimension"]["MRQ"]["max_lag_days"] == 2192
+    availability = fundamentals["datekey_vs_reportperiod_screen"]
+    assert availability["row_count"] == 4
+    assert availability["lag_bucket_counts"]["1_TO_7_DAYS"] == 2
+    assert availability["lag_bucket_counts"]["8_TO_30_DAYS"] == 2
+    assert lastupdated["revision_or_restatement_proven"] is False
+    assert availability["point_in_time_semantics_qualified"] is False
 
 
 def test_identity_classifier_never_guesses_across_permatickers():
