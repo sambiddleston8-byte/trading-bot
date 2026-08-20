@@ -302,7 +302,7 @@ class SharadarBulkStatus:
         if (
             isinstance(self.size, bool)
             or not isinstance(self.size, int)
-            or not 0 < self.size <= MAX_COMPRESSED_BYTES[self.table]
+            or not 0 < self.size < 2**63
         ):
             raise ValueError("Sharadar bulk-status size is outside the safe boundary")
         if (
@@ -329,6 +329,7 @@ class SharadarBulkStatus:
             "status_retrieved_at": self.retrieved_at,
             "status_provider_access": dict(self.provider_access),
             "status_size_is_advisory": True,
+            "status_modified_is_opaque": True,
         }
 
 
@@ -385,7 +386,6 @@ class SharadarBulkCapture:
             "redirect_path_sha256": self.redirect_path_sha256,
             **self.status.as_dict(),
             "entitlement_basis": "OPERATOR_ASSERTED_SHARADAR_10_YEAR_BUNDLE_UNAUTHENTICATED",
-            "provider_terms_uri": "https://sharadar.com/terms",
             "license_restricted": True,
             "raw_response_bytes_retained": True,
             "quarantine_only": True,
@@ -591,6 +591,8 @@ class SharadarFetchedProbe:
             "row_count": self.row_count,
             "csv_header_sha256": self.csv_header_sha256,
             "provider_access": dict(self.provider_access),
+            "entitlement_basis": "OPERATOR_ASSERTED_SHARADAR_10_YEAR_BUNDLE_UNAUTHENTICATED",
+            "license_restricted": True,
             "raw_response_bytes_retained": True,
             "quarantine_only": True,
             **{name: False for name in SAFETY_FALSE},
@@ -959,7 +961,12 @@ class SharadarSampleClient:
             final = quarantine_root / f"{status.table}-10y-{payload_sha256}.csv.zip"
             if final.exists():
                 details = final.lstat()
-                if final.is_symlink() or not stat.S_ISREG(details.st_mode):
+                if (
+                    final.is_symlink()
+                    or not stat.S_ISREG(details.st_mode)
+                    or details.st_uid != os.geteuid()
+                    or stat.S_IMODE(details.st_mode) != 0o400
+                ):
                     raise ValueError("Sharadar bulk quarantine file is unsafe")
                 final_hash, final_size = _file_sha256(
                     final,
@@ -1201,7 +1208,7 @@ def persist_probe(root: Path, probe: SharadarFetchedProbe) -> Mapping[str, Any]:
     return _append_ledger(
         root / "captures.jsonl",
         material,
-        duplicate_identity=("table", "role", "payload_sha256"),
+        duplicate_identity=("table", "role", "payload_sha256", "requested_at"),
     )
 
 
@@ -1264,7 +1271,12 @@ def _existing_bulk_record(
         ):
             raise ValueError("Sharadar bulk quarantine record is invalid")
         archive = root / expected_name
-        details = archive.lstat()
+        try:
+            details = archive.lstat()
+        except FileNotFoundError:
+            raise ValueError(
+                "Sharadar bulk quarantine archive is missing; explicit quarantine recovery is required"
+            ) from None
         if (
             archive.is_symlink()
             or not stat.S_ISREG(details.st_mode)

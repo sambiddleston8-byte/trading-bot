@@ -309,9 +309,36 @@ def test_tampered_ledger_or_blob_is_rejected(tmp_path: Path):
     record = persist_probe(clean, probe)
     blob = clean / record["blob_relative_path"]
     blob.chmod(0o600)
-    blob.write_bytes(b"tampered")
-    with pytest.raises(ValueError, match="unsafe|hash verification"):
+    with pytest.raises(ValueError, match="unsafe"):
         persist_probe(clean, probe)
+    blob.write_bytes(b"tampered")
+    blob.chmod(0o400)
+    with pytest.raises(ValueError, match="hash verification"):
+        persist_probe(clean, probe)
+
+
+def test_repeat_probe_capture_records_new_observation_time_without_rewriting_blob(
+    tmp_path: Path,
+):
+    root = tmp_path / "quarantine"
+
+    def fetched_at(moment: datetime) -> SharadarFetchedProbe:
+        values = iter((moment, moment + timedelta(seconds=1)))
+        return SharadarSampleClient(
+            API_KEY,
+            session=object(),
+            access=Access(),
+            clock=lambda: next(values),
+        ).fetch(PROBE_DEFINITIONS[0])
+
+    first = persist_probe(root, fetched_at(START))
+    second = persist_probe(root, fetched_at(START + timedelta(days=12)))
+
+    assert first["payload_sha256"] == second["payload_sha256"]
+    assert first["requested_at"] != second["requested_at"]
+    assert first["record_hash"] != second["record_hash"]
+    assert len((root / "captures.jsonl").read_text().splitlines()) == 2
+    assert len(list((root / "blobs").glob("*.csv"))) == 1
 
 
 def test_execute_runs_exactly_three_probes_and_stays_out_of_source_control(tmp_path: Path):
@@ -330,6 +357,7 @@ def test_execute_runs_exactly_three_probes_and_stays_out_of_source_control(tmp_p
         "fundamentals",
     ]
     assert all(record["dataset_admitted"] is False for record in records)
+    assert all(record["license_restricted"] is True for record in records)
     assert (tmp_path / module.QUARANTINE_RELATIVE_PATH / "captures.jsonl").exists()
 
 
@@ -405,6 +433,7 @@ def bulk_archive(
     extra_member: bool = False,
     symlink_member: bool = False,
     bomb_member: bool = False,
+    encrypted_member: bool = False,
 ) -> bytes:
     stream = io.BytesIO()
     fields = sorted(BULK_REQUIRED_FIELDS[table])
@@ -436,7 +465,19 @@ def bulk_archive(
             archive.writestr(f"{table}.csv", content)
         if extra_member:
             archive.writestr("unexpected.csv", content)
-    return stream.getvalue()
+    payload = bytearray(stream.getvalue())
+    if encrypted_member:
+        for signature, flag_offset in ((b"PK\x03\x04", 6), (b"PK\x01\x02", 8)):
+            position = payload.find(signature)
+            assert position >= 0
+            flags = int.from_bytes(
+                payload[position + flag_offset : position + flag_offset + 2],
+                "little",
+            )
+            payload[position + flag_offset : position + flag_offset + 2] = (
+                flags | 1
+            ).to_bytes(2, "little")
+    return bytes(payload)
 
 
 class BulkAccess:
@@ -518,6 +559,7 @@ def bulk_stack(
     stream_error=False,
     symlink_member=False,
     bomb_member=False,
+    encrypted_member=False,
 ):
     archives = {
         table: bulk_archive(
@@ -525,6 +567,7 @@ def bulk_stack(
             extra_member=extra_member,
             symlink_member=symlink_member,
             bomb_member=bomb_member,
+            encrypted_member=encrypted_member,
         )
         for table in module.TEN_YEAR_TABLES
     }
@@ -559,6 +602,25 @@ def test_bulk_status_is_exact_bounded_and_credential_free():
     assert all(item.modified.endswith("GMT") for item in statuses)
     assert API_KEY not in json.dumps([item.as_dict() for item in statuses])
     assert all(call[2]["params"]["api_key"] == API_KEY for call in access.calls)
+
+
+def test_bulk_status_size_is_advisory_even_above_ten_year_download_ceiling():
+    archives, session, access = bulk_stack()
+    access.status_delta = (
+        module.MAX_COMPRESSED_BYTES["stocks"] + 1 - len(archives["stocks"])
+    )
+    client = SharadarSampleClient(
+        API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    status = client.fetch_bulk_status("stocks")
+
+    assert status.size == module.MAX_COMPRESSED_BYTES["stocks"] + 1
+    assert status.as_dict()["status_size_is_advisory"] is True
+    assert status.as_dict()["status_modified_is_opaque"] is True
 
 
 def test_bulk_download_validates_redirect_size_zip_schema_and_persists_hash_chain(
@@ -621,7 +683,24 @@ def test_bulk_download_rejects_unsafe_redirect_changed_size_and_archive_shape(
     assert not list((tmp_path / "q").glob("*.partial"))
 
 
-@pytest.mark.parametrize("option", ["symlink_member", "bomb_member"])
+def test_bulk_stream_rejects_more_bytes_than_content_length(tmp_path):
+    _, session, access = bulk_stack(length_delta=-1)
+    client = SharadarSampleClient(
+        API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    status = client.fetch_bulk_status("tickers")
+
+    with pytest.raises(SharadarCaptureError, match="exceeded its declared size"):
+        client.download_ten_year_bulk(status=status, quarantine_root=tmp_path / "q")
+    assert not list((tmp_path / "q").glob("*.partial"))
+
+
+@pytest.mark.parametrize(
+    "option", ["symlink_member", "bomb_member", "encrypted_member"]
+)
 def test_bulk_archive_rejects_symlink_and_extreme_compression_ratio(tmp_path, option):
     _, session, access = bulk_stack(**{option: True})
     client = SharadarSampleClient(
@@ -771,7 +850,7 @@ def test_concurrent_bulk_persistence_serializes_and_deduplicates_ledger(tmp_path
     assert len((root / "bulk_captures.jsonl").read_text().splitlines()) == 1
 
 
-def test_bulk_ledger_non_object_and_hash_tamper_fail_closed(tmp_path):
+def test_bulk_ledger_non_object_fails_closed(tmp_path):
     _, session, access = bulk_stack()
     execute_ten_year_bulk_capture(
         repository_root=tmp_path,
@@ -792,6 +871,56 @@ def test_bulk_ledger_non_object_and_hash_tamper_fail_closed(tmp_path):
             access=access,
             clock=lambda: START,
         )
+
+
+def test_bulk_ledger_hash_tamper_fails_closed(tmp_path):
+    _, session, access = bulk_stack()
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=lambda: START,
+    )
+    ledger = tmp_path / QUARANTINE_RELATIVE_PATH / "bulk_captures.jsonl"
+    records = [json.loads(line) for line in ledger.read_text().splitlines()]
+    records[0]["byte_length"] += 1
+    ledger.write_text(
+        "\n".join(json.dumps(record, sort_keys=True) for record in records) + "\n"
+    )
+    ledger.chmod(0o600)
+
+    with pytest.raises(ValueError, match="hash"):
+        execute_ten_year_bulk_capture(
+            repository_root=tmp_path,
+            api_key=API_KEY,
+            session=session,
+            access=access,
+            clock=lambda: START,
+        )
+
+
+def test_missing_resumable_archive_has_sanitized_recovery_failure(tmp_path):
+    _, session, access = bulk_stack()
+    records = execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=lambda: START,
+    )
+    root = tmp_path / QUARANTINE_RELATIVE_PATH
+    (root / records[0]["blob_relative_path"]).unlink()
+
+    with pytest.raises(ValueError, match="missing; explicit quarantine recovery") as caught:
+        execute_ten_year_bulk_capture(
+            repository_root=tmp_path,
+            api_key=API_KEY,
+            session=session,
+            access=access,
+            clock=lambda: START,
+        )
+    assert str(root) not in str(caught.value)
 
 
 def test_private_directory_rejects_symlink_without_chmodding_target(tmp_path):
@@ -831,7 +960,7 @@ def test_bulk_cli_status_is_explicitly_advisory_and_secret_free(monkeypatch, cap
     assert '"actual_download_requires_content_length_and_double_space_margin": true' in output
 
 
-def test_bulk_status_dataclass_rejects_oversize_and_wrong_filename():
+def test_bulk_status_dataclass_rejects_unbounded_size_and_wrong_filename():
     required = {
         "table": "tickers",
         "name": "tickers.csv.zip",
@@ -845,6 +974,4 @@ def test_bulk_status_dataclass_rejects_oversize_and_wrong_filename():
     with pytest.raises(ValueError, match="filename"):
         SharadarBulkStatus(**{**required, "name": "wrong.zip"})
     with pytest.raises(ValueError, match="size"):
-        SharadarBulkStatus(
-            **{**required, "size": module.MAX_COMPRESSED_BYTES["tickers"] + 1}
-        )
+        SharadarBulkStatus(**{**required, "size": 2**63})
