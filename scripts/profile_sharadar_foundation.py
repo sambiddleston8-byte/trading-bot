@@ -48,6 +48,17 @@ def main() -> int:
                         profile["tables"]["stocks"]["min_date"],
                         profile["tables"]["stocks"]["max_date"],
                     ],
+                    "revision_timing_screens": {
+                        "stocks_lastupdated_vs_date": profile["tables"]["stocks"][
+                            "lastupdated_vs_date_screen"
+                        ],
+                        "fundamentals_lastupdated_vs_datekey": profile["tables"][
+                            "fundamentals"
+                        ]["lastupdated_vs_datekey_screen"],
+                        "fundamentals_datekey_vs_reportperiod": profile["tables"][
+                            "fundamentals"
+                        ]["datekey_vs_reportperiod_screen"],
+                    },
                     "structural_identity_gap_count": profile[
                         "structural_identity_gap_count"
                     ],

@@ -30,8 +30,8 @@ from core.orchestration.sharadar_quarantine import (
 )
 
 
-SCHEMA_VERSION = "1.2"
-POLICY_VERSION = "sharadar-foundation-structural-profile-v3"
+SCHEMA_VERSION = "1.3"
+POLICY_VERSION = "sharadar-foundation-structural-profile-v4"
 STATUS = "STRUCTURE_VERIFIED_SEMANTICS_AND_AVAILABILITY_UNQUALIFIED"
 MAX_ROWS_PER_TABLE = 100_000_000
 MAX_CELL_CHARACTERS = 1_000_000
@@ -46,6 +46,16 @@ IDENTITY_AMBIGUOUS = "AMBIGUOUS"
 COUNTERPARTY_NOT_PROVIDED = "NOT_PROVIDED"
 MISSING_ABSENT_FROM_MASTER = "ABSENT_FROM_MASTER"
 MISSING_PRESENT_OUTSIDE_REQUIRED_TABLES = "PRESENT_OUTSIDE_REQUIRED_TABLES"
+LAG_BUCKETS = (
+    "NEGATIVE",
+    "SAME_DAY",
+    "1_TO_7_DAYS",
+    "8_TO_30_DAYS",
+    "31_TO_90_DAYS",
+    "91_TO_365_DAYS",
+    "366_TO_1825_DAYS",
+    "OVER_1825_DAYS",
+)
 FALSE_AUTHORITIES = (
     "primary_key_uniqueness_proven",
     "cross_table_identity_complete",
@@ -111,6 +121,124 @@ def _update_range(profile: dict[str, Any], name: str, value: str) -> None:
     high = f"max_{name}"
     profile[low] = resolved if low not in profile else min(profile[low], resolved)
     profile[high] = resolved if high not in profile else max(profile[high], resolved)
+
+
+def _lag_bucket(days: int) -> str:
+    if days < 0:
+        return "NEGATIVE"
+    if days == 0:
+        return "SAME_DAY"
+    if days <= 7:
+        return "1_TO_7_DAYS"
+    if days <= 30:
+        return "8_TO_30_DAYS"
+    if days <= 90:
+        return "31_TO_90_DAYS"
+    if days <= 365:
+        return "91_TO_365_DAYS"
+    if days <= 1825:
+        return "366_TO_1825_DAYS"
+    return "OVER_1825_DAYS"
+
+
+def _empty_lag_observations() -> dict[str, Any]:
+    return {
+        "row_count": 0,
+        "lag_bucket_counts": Counter(),
+        "min_lag_days": None,
+        "max_lag_days": None,
+    }
+
+
+def _observe_lag(
+    observations: dict[str, Any],
+    earlier: str,
+    later: str,
+    *,
+    earlier_name: str,
+    later_name: str,
+) -> None:
+    days = (
+        date.fromisoformat(_day(later, later_name))
+        - date.fromisoformat(_day(earlier, earlier_name))
+    ).days
+    observations["row_count"] += 1
+    observations["lag_bucket_counts"][_lag_bucket(days)] += 1
+    minimum = observations.get("min_lag_days")
+    maximum = observations.get("max_lag_days")
+    observations["min_lag_days"] = days if minimum is None else min(minimum, days)
+    observations["max_lag_days"] = days if maximum is None else max(maximum, days)
+
+
+def _lag_screen(observations: Mapping[str, Any]) -> dict[str, Any]:
+    row_count = observations.get("row_count")
+    minimum = observations.get("min_lag_days")
+    maximum = observations.get("max_lag_days")
+    counts = observations.get("lag_bucket_counts")
+    if not isinstance(row_count, int) or isinstance(row_count, bool):
+        raise ValueError("Sharadar lag screen is incomplete")
+    if row_count == 0:
+        raise ValueError("Sharadar lag screen requires a nonempty table")
+    if (
+        row_count < 0
+        or not isinstance(minimum, int)
+        or isinstance(minimum, bool)
+        or not isinstance(maximum, int)
+        or isinstance(maximum, bool)
+        or not isinstance(counts, Counter)
+        or sum(counts.values()) != row_count
+    ):
+        raise ValueError("Sharadar lag screen is incomplete")
+    bucket_counts = {bucket: int(counts[bucket]) for bucket in LAG_BUCKETS}
+    return {
+        "row_count": row_count,
+        "lag_bucket_counts": bucket_counts,
+        "negative_lag_rows": bucket_counts["NEGATIVE"],
+        "same_day_rows": bucket_counts["SAME_DAY"],
+        "positive_lag_rows": row_count
+        - bucket_counts["NEGATIVE"]
+        - bucket_counts["SAME_DAY"],
+        "min_lag_days": minimum,
+        "max_lag_days": maximum,
+        "field_values_are_literal_provider_metadata": True,
+        "screen_only": True,
+        "revision_or_restatement_proven": False,
+        "point_in_time_semantics_qualified": False,
+        "historical_availability_qualified": False,
+    }
+
+
+def _dimensioned_lag_screen(
+    observations: Mapping[str, Any],
+    by_dimension: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    aggregate = _lag_screen(observations)
+    dimensions = {
+        dimension: _lag_screen(by_dimension[dimension])
+        for dimension in sorted(by_dimension)
+    }
+    if (
+        sum(item["row_count"] for item in dimensions.values())
+        != aggregate["row_count"]
+        or any(
+            sum(
+                item["lag_bucket_counts"][bucket]
+                for item in dimensions.values()
+            )
+            != aggregate["lag_bucket_counts"][bucket]
+            for bucket in LAG_BUCKETS
+        )
+        or min(item["min_lag_days"] for item in dimensions.values())
+        != aggregate["min_lag_days"]
+        or max(item["max_lag_days"] for item in dimensions.values())
+        != aggregate["max_lag_days"]
+    ):
+        raise ValueError("Sharadar dimension lag screen does not reconcile")
+    return {
+        **aggregate,
+        "by_dimension": dimensions,
+        "by_dimension_reconciled": True,
+    }
 
 
 def _identity_state(
@@ -275,6 +403,7 @@ def _profile_stocks(
     rows_by_identity_state: Counter[str] = Counter()
     missing_dispositions: dict[str, str] = {}
     rows_by_missing_disposition: Counter[str] = Counter()
+    lastupdated_vs_date = _empty_lag_observations()
     for row in _archive_rows(root, record):
         profile["row_count"] += 1
         ticker = _text(row.get("ticker"), "stock ticker")
@@ -294,6 +423,13 @@ def _profile_stocks(
             rows_by_missing_disposition[disposition] += 1
         _update_range(profile, "date", row.get("date"))
         _update_range(profile, "lastupdated", row.get("lastupdated"))
+        _observe_lag(
+            lastupdated_vs_date,
+            row["date"],
+            row["lastupdated"],
+            earlier_name="stock date",
+            later_name="stock lastupdated",
+        )
         try:
             open_, high, low, close = (
                 float(row[name]) for name in ("open", "high", "low", "close")
@@ -335,6 +471,7 @@ def _profile_stocks(
                 identity_state_counts[IDENTITY_MISSING] == 0
                 and identity_state_counts[IDENTITY_AMBIGUOUS] == 0
             ),
+            "lastupdated_vs_date_screen": _lag_screen(lastupdated_vs_date),
         }
     )
     return profile
@@ -440,6 +577,14 @@ def _profile_fundamentals(
     missing_dispositions: dict[str, str] = {}
     rows_by_missing_disposition: Counter[str] = Counter()
     as_reported_rows = 0
+    lastupdated_vs_datekey = _empty_lag_observations()
+    datekey_vs_reportperiod = _empty_lag_observations()
+    lastupdated_by_dimension: dict[str, dict[str, Any]] = defaultdict(
+        _empty_lag_observations
+    )
+    datekey_by_dimension: dict[str, dict[str, Any]] = defaultdict(
+        _empty_lag_observations
+    )
     for row in _archive_rows(root, record):
         profile["row_count"] += 1
         ticker = _text(row.get("ticker"), "fundamental ticker")
@@ -463,6 +608,34 @@ def _profile_fundamentals(
         dimensions[dimension] += 1
         for field in ("datekey", "calendardate", "reportperiod", "lastupdated"):
             _update_range(profile, field, row.get(field))
+        _observe_lag(
+            lastupdated_vs_datekey,
+            row["datekey"],
+            row["lastupdated"],
+            earlier_name="fundamental datekey",
+            later_name="fundamental lastupdated",
+        )
+        _observe_lag(
+            lastupdated_by_dimension[dimension],
+            row["datekey"],
+            row["lastupdated"],
+            earlier_name="fundamental datekey",
+            later_name="fundamental lastupdated",
+        )
+        _observe_lag(
+            datekey_vs_reportperiod,
+            row["reportperiod"],
+            row["datekey"],
+            earlier_name="fundamental reportperiod",
+            later_name="fundamental datekey",
+        )
+        _observe_lag(
+            datekey_by_dimension[dimension],
+            row["reportperiod"],
+            row["datekey"],
+            earlier_name="fundamental reportperiod",
+            later_name="fundamental datekey",
+        )
         if dimension.startswith("AR"):
             as_reported_rows += 1
             if row["datekey"] < row["reportperiod"]:
@@ -488,6 +661,14 @@ def _profile_fundamentals(
             "structural_identity_join_ready": (
                 identity_state_counts[IDENTITY_MISSING] == 0
                 and identity_state_counts[IDENTITY_AMBIGUOUS] == 0
+            ),
+            "lastupdated_vs_datekey_screen": _dimensioned_lag_screen(
+                lastupdated_vs_datekey,
+                lastupdated_by_dimension,
+            ),
+            "datekey_vs_reportperiod_screen": _dimensioned_lag_screen(
+                datekey_vs_reportperiod,
+                datekey_by_dimension,
             ),
         }
     )
