@@ -17,6 +17,7 @@ from core.orchestration.sharadar_quarantine import (
     QUARANTINE_RELATIVE_PATH,
     execute_ten_year_bulk_capture,
     inspect_ten_year_bulk_status,
+    load_verified_foundation_observations,
 )
 from scripts._sharadar_keychain import load as load_key
 
@@ -65,18 +66,43 @@ def main(argv: list[str] | None = None) -> int:
                 repository_root=ROOT,
                 api_key=key,
             )
+            expected_record_hashes = {
+                str(record["table"]): str(record["record_hash"])
+                for record in records
+            }
+            matching_observations = [
+                item
+                for item in load_verified_foundation_observations(ROOT)
+                if item["origin"] == "CAPTURE_RUN"
+                and item["capture_record_hashes"] == expected_record_hashes
+            ]
+            if not matching_observations:
+                raise ValueError("Sharadar capture observation is unavailable")
+            observation = max(
+                matching_observations,
+                key=lambda item: str(item["observation_completed_at"]),
+            )
             print(
                 json.dumps(
-                    [
-                        {
-                            "table": record["table"],
-                            "byte_length": record["byte_length"],
-                            "payload_sha256": record["payload_sha256"],
-                            "quarantine_only": record["quarantine_only"],
-                            "dataset_admitted": record["dataset_admitted"],
-                        }
-                        for record in records
-                    ],
+                    {
+                        "captures": [
+                            {
+                                "table": record["table"],
+                                "byte_length": record["byte_length"],
+                                "payload_sha256": record["payload_sha256"],
+                                "quarantine_only": record["quarantine_only"],
+                                "dataset_admitted": record["dataset_admitted"],
+                            }
+                            for record in records
+                        ],
+                        "foundation_observation_hash": observation["record_hash"],
+                        "observation_completed_at": observation[
+                            "observation_completed_at"
+                        ],
+                        "historical_availability_qualified": observation[
+                            "historical_availability_qualified"
+                        ],
+                    },
                     indent=2,
                     sort_keys=True,
                 )

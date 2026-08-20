@@ -28,8 +28,10 @@ from core.orchestration.sharadar_quarantine import (
     SharadarSampleClient,
     execute_connectivity_capture,
     execute_ten_year_bulk_capture,
+    ensure_foundation_baseline_observation,
     inspect_ten_year_bulk_status,
     load_verified_bulk_captures,
+    load_verified_foundation_observations,
     persist_bulk_capture,
     persist_probe,
     validate_probe_csv,
@@ -45,6 +47,11 @@ from core.orchestration.sharadar_foundation import (
     _identity_state,
     build_foundation_profile,
     persist_foundation_profile,
+)
+from core.orchestration.sharadar_vintages import (
+    STATUS as VINTAGE_COMPARISON_STATUS,
+    build_foundation_vintage_comparison,
+    persist_foundation_vintage_comparison,
 )
 
 
@@ -132,8 +139,8 @@ class Access:
         )
 
 
-def clocks():
-    values = iter(START + timedelta(seconds=index) for index in range(20))
+def clocks(start=START):
+    values = iter(start + timedelta(seconds=index) for index in range(20))
     return lambda: next(values)
 
 
@@ -444,6 +451,7 @@ def test_keychain_load_keeps_secret_out_of_errors_and_validates_output(monkeypat
 def bulk_archive(
     table: str,
     *,
+    empty: bool = False,
     extra_member: bool = False,
     symlink_member: bool = False,
     bomb_member: bool = False,
@@ -471,7 +479,7 @@ def bulk_archive(
         }
     )
     values.update(row_overrides or {})
-    rows = [values]
+    rows = [] if empty else [values]
     for overrides in additional_rows or ():
         rows.append({**values, **overrides})
     content = (
@@ -514,11 +522,13 @@ class BulkAccess:
         redirect_host=module.OBSERVED_BULK_HOST,
         status_delta=0,
         status_extra=None,
+        modified="2026-08-20T10:00:00.000Z",
     ):
         self.archives = archives
         self.redirect_host = redirect_host
         self.status_delta = status_delta
         self.status_extra = status_extra or {}
+        self.modified = modified
         self.calls = []
 
     def get(self, session, url, **kwargs):
@@ -541,7 +551,7 @@ class BulkAccess:
                 "name": name,
                 "size": len(self.archives[table]) + self.status_delta,
                 "sizeLabel": f"{len(self.archives[table])} B",
-                "modified": "2026-08-20T10:00:00.000Z",
+                "modified": self.modified,
             }
             files = [selected_file]
             if history == "10y":
@@ -624,10 +634,13 @@ def bulk_stack(
     encrypted_member=False,
     row_overrides=None,
     additional_rows=None,
+    modified="2026-08-20T10:00:00.000Z",
+    empty_tables=(),
 ):
     archives = {
         table: bulk_archive(
             table,
+            empty=table in empty_tables,
             extra_member=extra_member,
             symlink_member=symlink_member,
             bomb_member=bomb_member,
@@ -650,6 +663,7 @@ def bulk_stack(
             redirect_host=redirect_host,
             status_delta=status_delta,
             status_extra=status_extra,
+            modified=modified,
         ),
     )
 
@@ -898,6 +912,196 @@ def test_verified_bulk_loader_rechecks_exact_five_table_foundation(tmp_path):
         record["record_hash"] for record in captured
     ]
     assert all(record["dataset_admitted"] is False for record in loaded)
+
+
+def test_foundation_observations_reobserve_unchanged_capture_set(tmp_path):
+    _, first_session, first_access = bulk_stack()
+    first_records = execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=first_session,
+        access=first_access,
+        clock=clocks(),
+    )
+    _, second_session, second_access = bulk_stack()
+    second_records = execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=second_session,
+        access=second_access,
+        clock=clocks(START + timedelta(days=1)),
+    )
+
+    observations = load_verified_foundation_observations(tmp_path)
+
+    assert len(observations) == 2
+    assert observations[0]["origin"] == "CAPTURE_RUN"
+    assert observations[0]["downloaded_by_table"] == {
+        table: True for table in sorted(module.TEN_YEAR_TABLES)
+    }
+    assert observations[1]["downloaded_by_table"] == {
+        table: False for table in sorted(module.TEN_YEAR_TABLES)
+    }
+    assert observations[0]["capture_record_hashes"] == observations[1][
+        "capture_record_hashes"
+    ]
+    assert [record["record_hash"] for record in first_records] == [
+        record["record_hash"] for record in second_records
+    ]
+    assert second_session.calls == []
+    assert all(item[2]["params"].get("status") == "True" for item in second_access.calls)
+    assert observations[1]["dataset_admitted"] is False
+
+
+def test_cross_vintage_exact_repeat_is_measurement_not_qualification(tmp_path):
+    for start in (START, START + timedelta(days=1)):
+        _, session, access = bulk_stack()
+        execute_ten_year_bulk_capture(
+            repository_root=tmp_path,
+            api_key=API_KEY,
+            session=session,
+            access=access,
+            clock=clocks(start),
+        )
+    baseline, candidate = load_verified_foundation_observations(tmp_path)
+
+    comparison = build_foundation_vintage_comparison(
+        tmp_path,
+        baseline_observation_hash=baseline["record_hash"],
+        candidate_observation_hash=candidate["record_hash"],
+        synthetic_fixture=True,
+    )
+
+    assert comparison["status"] == VINTAGE_COMPARISON_STATUS
+    assert comparison["every_table_reobserved_later"] is True
+    assert comparison["sha256_canonical_row_multisets_compared"] is True
+    assert comparison["historical_row_churn_count"] == 0
+    assert comparison["undated_ticker_master_churn_count"] == 0
+    assert all(
+        details["identical_rows"] == 1
+        and details["removed_rows"] == 0
+        and details["added_rows"] == 0
+        for details in comparison["tables"].values()
+    )
+    assert comparison["historical_availability_qualified"] is False
+    assert comparison["dataset_admitted"] is False
+    assert comparison["performance_claim_allowed"] is False
+
+
+def test_cross_vintage_comparison_counts_historical_and_undated_churn(tmp_path):
+    _, session, access = bulk_stack()
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    _, later_session, later_access = bulk_stack(
+        modified="2026-08-21T10:00:00.000Z",
+        row_overrides={
+            "stocks": {
+                "close": "2",
+                "high": "2",
+                "closeadj": "2",
+                "closeunadj": "2",
+                "lastupdated": "2022-02-01",
+            }
+        },
+        additional_rows={
+            "stocks": [{"date": "2022-01-05"}],
+            "tickers": [{"ticker": "MSFT", "permaticker": "2"}],
+        },
+    )
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=later_session,
+        access=later_access,
+        clock=clocks(START + timedelta(days=1)),
+    )
+    baseline, candidate = load_verified_foundation_observations(tmp_path)
+
+    comparison = persist_foundation_vintage_comparison(
+        tmp_path,
+        baseline_observation_hash=baseline["record_hash"],
+        candidate_observation_hash=candidate["record_hash"],
+    )
+
+    stocks = comparison["tables"]["stocks"]
+    assert stocks["baseline_rows"] == 1
+    assert stocks["candidate_rows"] == 2
+    assert stocks["identical_rows"] == 0
+    assert stocks["removed_rows"] == 1
+    assert stocks["added_rows"] == 2
+    assert stocks["added_rows_at_or_before_baseline_max_observed_date"] == 1
+    assert stocks["added_rows_after_baseline_max_observed_date"] == 1
+    assert stocks["historical_row_churn_observed"] is True
+    assert comparison["historical_row_churn_count"] == 2
+    assert comparison["historical_row_churn_count_basis"] == (
+        "REMOVED_PLUS_ADDED_AT_OR_BEFORE_BASELINE_MAX_LITERAL_DATE"
+    )
+    assert comparison["undated_ticker_master_churn_count"] == 1
+    serialized = json.dumps(comparison, sort_keys=True)
+    assert "AAPL" not in serialized
+    assert "MSFT" not in serialized
+    target = (
+        tmp_path
+        / QUARANTINE_RELATIVE_PATH
+        / f"foundation-vintage-{comparison['comparison_sha256']}.json"
+    )
+    assert stat.S_IMODE(target.stat().st_mode) == 0o400
+    with pytest.raises(ValueError, match="must be later"):
+        build_foundation_vintage_comparison(
+            tmp_path,
+            baseline_observation_hash=candidate["record_hash"],
+            candidate_observation_hash=baseline["record_hash"],
+            synthetic_fixture=True,
+        )
+
+
+def test_existing_capture_can_seed_one_honest_baseline_observation(tmp_path):
+    _, session, access = bulk_stack()
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    observation_ledger = (
+        tmp_path / QUARANTINE_RELATIVE_PATH / "foundation_observations.jsonl"
+    )
+    observation_ledger.unlink()
+
+    baseline = ensure_foundation_baseline_observation(tmp_path)
+    repeated = ensure_foundation_baseline_observation(tmp_path)
+
+    assert baseline["origin"] == "CAPTURE_RECORD_BASELINE"
+    assert baseline["record_hash"] == repeated["record_hash"]
+    assert baseline["historical_availability_qualified"] is False
+    assert len(observation_ledger.read_text().splitlines()) == 1
+
+
+def test_cross_vintage_comparison_rejects_empty_foundation_table(tmp_path):
+    for start in (START, START + timedelta(days=1)):
+        _, session, access = bulk_stack(empty_tables=("actions",))
+        execute_ten_year_bulk_capture(
+            repository_root=tmp_path,
+            api_key=API_KEY,
+            session=session,
+            access=access,
+            clock=clocks(start),
+        )
+    baseline, candidate = load_verified_foundation_observations(tmp_path)
+
+    with pytest.raises(ValueError, match="nonempty foundation tables"):
+        build_foundation_vintage_comparison(
+            tmp_path,
+            baseline_observation_hash=baseline["record_hash"],
+            candidate_observation_hash=candidate["record_hash"],
+            synthetic_fixture=True,
+        )
 
 
 def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
@@ -1285,7 +1489,11 @@ def test_verified_bulk_loader_selects_newest_capture_per_table(tmp_path):
     loaded = load_verified_bulk_captures(tmp_path)
     ledger = tmp_path / QUARANTINE_RELATIVE_PATH / "bulk_captures.jsonl"
 
-    assert len(ledger.read_text().splitlines()) == 6
+    assert len(ledger.read_text().splitlines()) == 10
+    assert all(
+        loaded[index]["record_hash"] != first[index]["record_hash"]
+        for index in range(len(module.TEN_YEAR_TABLES))
+    )
     assert loaded[1]["payload_sha256"] != first[1]["payload_sha256"]
 
 
