@@ -33,8 +33,8 @@ def main() -> int:
                     "structural_identity_gap_count": profile[
                         "structural_identity_gap_count"
                     ],
-                    "history_span_can_support_three_year_train": profile[
-                        "history_span_can_support_three_year_train"
+                    "observed_stock_date_span_days": profile[
+                        "observed_stock_date_span_days"
                     ],
                     "dataset_admitted": profile["dataset_admitted"],
                     "performance_claim_allowed": profile[

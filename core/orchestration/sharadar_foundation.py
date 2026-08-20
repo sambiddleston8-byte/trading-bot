@@ -16,6 +16,7 @@ from datetime import date, datetime
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import stat
@@ -34,6 +35,7 @@ POLICY_VERSION = "sharadar-foundation-structural-profile-v1"
 STATUS = "STRUCTURE_VERIFIED_SEMANTICS_AND_AVAILABILITY_UNQUALIFIED"
 MAX_ROWS_PER_TABLE = 100_000_000
 MAX_CELL_CHARACTERS = 1_000_000
+MAX_PROFILE_BYTES = 1024 * 1024
 ALLOWED_FUNDAMENTAL_DIMENSIONS = frozenset({"ARQ", "ARY", "ART", "MRQ", "MRY", "MRT"})
 FALSE_AUTHORITIES = (
     "primary_key_uniqueness_proven",
@@ -184,12 +186,17 @@ def _profile_stocks(
                 float(row[name]) for name in ("open", "high", "low", "close")
             )
             volume = float(row["volume"])
-            float(row["closeadj"])
-            float(row["closeunadj"])
+            closeadj = float(row["closeadj"])
+            closeunadj = float(row["closeunadj"])
         except (TypeError, ValueError) as error:
             raise ValueError("Sharadar stock row contains invalid numerics") from error
+        if not all(
+            math.isfinite(value)
+            for value in (open_, high, low, close, volume, closeadj, closeunadj)
+        ):
+            raise ValueError("Sharadar stock row contains invalid numerics")
         if (
-            min(open_, high, low, close) <= 0
+            min(open_, high, low, close, closeadj, closeunadj) <= 0
             or volume < 0
             or high < max(open_, close)
             or low > min(open_, close)
@@ -320,10 +327,10 @@ def build_foundation_profile(
         "lexical_date_validity_verified": True,
         "basic_ohlcv_invariants_verified": True,
         "structural_identity_gap_count": structural_identity_gaps,
-        "history_span_can_support_three_year_train": (
-            (date.fromisoformat(stocks["max_date"]) - date.fromisoformat(stocks["min_date"])).days
-            >= 365 * 3
-        ),
+        "observed_stock_date_span_days": (
+            date.fromisoformat(stocks["max_date"])
+            - date.fromisoformat(stocks["min_date"])
+        ).days,
         "license_restricted": True,
         "owner_local_profile": True,
         "synthetic_fixture": synthetic_fixture,
@@ -348,11 +355,17 @@ def persist_foundation_profile(repository_root: Path) -> Mapping[str, Any]:
         details = os.fstat(descriptor)
         existing = b""
         try:
+            if details.st_size > MAX_PROFILE_BYTES:
+                raise ValueError("Sharadar foundation profile exceeds its size boundary")
             chunks = []
+            total = 0
             while True:
                 chunk = os.read(descriptor, 64 * 1024)
                 if not chunk:
                     break
+                total += len(chunk)
+                if total > MAX_PROFILE_BYTES:
+                    raise ValueError("Sharadar foundation profile exceeds its size boundary")
                 chunks.append(chunk)
             existing = b"".join(chunks)
         finally:
@@ -385,7 +398,12 @@ def persist_foundation_profile(repository_root: Path) -> Mapping[str, Any]:
         except FileExistsError:
             raise ValueError("Sharadar foundation profile already exists") from None
         partial.unlink()
-        directory = os.open(root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        directory = os.open(
+            root,
+            os.O_RDONLY
+            | getattr(os, "O_DIRECTORY", 0)
+            | getattr(os, "O_NOFOLLOW", 0),
+        )
         try:
             os.fsync(directory)
         finally:
