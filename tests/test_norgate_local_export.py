@@ -5,6 +5,7 @@ from datetime import date, datetime, timezone
 import hashlib
 import inspect
 import json
+import os
 import pickle
 from pathlib import Path
 import subprocess
@@ -409,6 +410,11 @@ def test_windows_import_guard_is_available_but_file_locking_fails_closed():
         assert guard.LOCK_UN == 8
         with pytest.raises(OSError, match="unavailable in the Windows extraction VM"):
             guard.flock(None, guard.LOCK_EX)
+        for unsupported in ("lockf", "fcntl", "ioctl", "F_SETLK"):
+            with pytest.raises(
+                OSError, match="unavailable in the Windows extraction VM"
+            ):
+                getattr(guard, unsupported)
     finally:
         sys.modules.pop("fcntl", None)
         if saved is not missing:
@@ -419,8 +425,8 @@ def test_windows_script_imports_when_posix_fcntl_is_unavailable():
     probe = textwrap.dedent(
         """
         import importlib.abc
+        import importlib.util
         import platform
-        import runpy
         import sys
 
         class BlockFcntl(importlib.abc.MetaPathFinder):
@@ -432,10 +438,15 @@ def test_windows_script_imports_when_posix_fcntl_is_unavailable():
         sys.modules.pop("fcntl", None)
         sys.meta_path.insert(0, BlockFcntl())
         platform.system = lambda: "Windows"
-        runpy.run_path(
+        spec = importlib.util.spec_from_file_location(
+            "windows_import_probe",
             "scripts/export_norgate_local_sample.py",
-            run_name="windows_import_probe",
         )
+        if spec is None or spec.loader is None:
+            raise AssertionError("could not load Windows export script")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module._norgate_contract()
         guard = sys.modules["fcntl"]
         try:
             guard.flock(None, guard.LOCK_EX)
@@ -452,7 +463,20 @@ def test_windows_script_imports_when_posix_fcntl_is_unavailable():
         capture_output=True,
         text=True,
         timeout=10,
-        env={},
+        env={
+            key: os.environ[key]
+            for key in (
+                "HOME",
+                "NUMBA_CACHE_DIR",
+                "PATH",
+                "SYSTEMROOT",
+                "TEMP",
+                "TMP",
+                "TMPDIR",
+                "WINDIR",
+            )
+            if key in os.environ
+        },
     )
     assert completed.returncode == 0, completed.stderr
 
