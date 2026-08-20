@@ -49,6 +49,16 @@ MAX_HEADERS = 100
 MAX_HEADER_VALUE_LENGTH = 10_000
 QUARANTINE_RELATIVE_PATH = Path("data/research/sharadar_quarantine")
 TEN_YEAR_TABLES = ("tickers", "stocks", "actions", "sp500", "fundamentals")
+FOUNDATION_HISTORY = MappingProxyType(
+    {
+        "tickers": "full",
+        "stocks": "10y",
+        "actions": "10y",
+        "sp500": "10y",
+        "fundamentals": "10y",
+    }
+)
+OBSERVED_BULK_HOST = "static-sharadar.nyc3.digitaloceanspaces.com"
 MAX_COMPRESSED_BYTES = MappingProxyType(
     {
         "tickers": 512 * 1024 * 1024,
@@ -279,6 +289,7 @@ class SharadarCaptureError(RuntimeError):
 @dataclass(frozen=True, slots=True)
 class SharadarBulkStatus:
     table: str
+    history: str
     name: str
     size: int
     modified: str
@@ -290,6 +301,8 @@ class SharadarBulkStatus:
     def __post_init__(self) -> None:
         if self.table not in TEN_YEAR_TABLES:
             raise ValueError("Sharadar bulk-status table is unsupported")
+        if self.history != FOUNDATION_HISTORY[self.table]:
+            raise ValueError("Sharadar bulk-status history is outside the foundation scope")
         if (
             not isinstance(self.name, str)
             or not self.name.endswith(".csv.zip")
@@ -321,6 +334,7 @@ class SharadarBulkStatus:
     def as_dict(self) -> dict[str, Any]:
         return {
             "table": self.table,
+            "status_history": self.history,
             "name": self.name,
             "size": self.size,
             "modified": self.modified,
@@ -336,7 +350,7 @@ class SharadarBulkStatus:
 @dataclass(frozen=True, slots=True)
 class SharadarBulkCapture:
     table: str
-    years: int
+    history: str
     requested_at: str
     retrieved_at: str
     payload_sha256: str
@@ -352,9 +366,15 @@ class SharadarBulkCapture:
     def __post_init__(self) -> None:
         if self._authority is not _CAPTURE_AUTHORITY:
             raise PermissionError("SharadarBulkCapture must be issued by the client")
-        if self.table not in TEN_YEAR_TABLES or self.years != 10:
+        if (
+            self.table not in TEN_YEAR_TABLES
+            or self.history != FOUNDATION_HISTORY[self.table]
+        ):
             raise ValueError("Sharadar bulk capture scope is invalid")
-        if self.status.table != self.table:
+        if (
+            self.status.table != self.table
+            or self.status.history != FOUNDATION_HISTORY[self.table]
+        ):
             raise ValueError("Sharadar bulk capture is not bound to its status response")
         if not 0 < self.byte_length <= MAX_COMPRESSED_BYTES[self.table]:
             raise ValueError("Sharadar bulk capture size is invalid")
@@ -372,9 +392,9 @@ class SharadarBulkCapture:
         return {
             "policy_version": POLICY_VERSION,
             "provider_id": PROVIDER_ID,
-            "capture_type": "TEN_YEAR_BULK_COMPRESSED_CSV",
+            "capture_type": "FOUNDATION_BULK_COMPRESSED_CSV",
             "table": self.table,
-            "years": self.years,
+            "history": self.history,
             "requested_at": self.requested_at,
             "retrieved_at": self.retrieved_at,
             "payload_sha256": self.payload_sha256,
@@ -705,13 +725,31 @@ class SharadarSampleClient:
         payload = getattr(response, "content", None)
         root = _strict_json(payload)
         if (
-            len(root) > 50
-            or not {"table", "name", "size", "modified"}.issubset(root)
+            len(root) > 20
+            or not {"table", "files"}.issubset(root)
             or any(not isinstance(key, str) or len(key) > 200 for key in root)
         ):
             raise ValueError("Sharadar bulk-status fields are unsupported")
         if root.get("table") != table:
             raise ValueError("Sharadar bulk-status table does not match the request")
+        files = root.get("files")
+        if not isinstance(files, list) or not 1 <= len(files) <= 10:
+            raise ValueError("Sharadar bulk-status files are unsupported")
+        expected_history = FOUNDATION_HISTORY[table]
+        candidates = []
+        for item in files:
+            if (
+                not isinstance(item, Mapping)
+                or len(item) > 30
+                or any(not isinstance(key, str) or len(key) > 200 for key in item)
+                or not {"available", "history", "name", "size", "modified"}.issubset(item)
+            ):
+                raise ValueError("Sharadar bulk-status file fields are unsupported")
+            if item.get("history") == expected_history:
+                candidates.append(item)
+        if len(candidates) != 1 or candidates[0].get("available") is not True:
+            raise ValueError("Sharadar bulk-status foundation file is unavailable")
+        selected = candidates[0]
         retrieved_at = _canonical_timestamp(self._clock(), "retrieved_at")
         if retrieved_at < requested_at:
             raise SharadarCaptureError("Sharadar bulk-status clock moved backwards")
@@ -720,9 +758,10 @@ class SharadarSampleClient:
             raise SharadarCaptureError("Sharadar bulk-status access metadata is invalid")
         return SharadarBulkStatus(
             table=table,
-            name=root.get("name"),
-            size=root.get("size"),
-            modified=root.get("modified"),
+            history=expected_history,
+            name=selected.get("name"),
+            size=selected.get("size"),
+            modified=selected.get("modified"),
             payload_sha256=hashlib.sha256(payload).hexdigest(),
             requested_at=requested_at,
             retrieved_at=retrieved_at,
@@ -736,16 +775,10 @@ class SharadarSampleClient:
         resolved_url = urljoin(base_url, value)
         parsed = urlsplit(resolved_url)
         host = parsed.hostname
-        labels = host.split(".") if isinstance(host, str) else []
-        s3_host = (
-            isinstance(host, str)
-            and host.endswith(".amazonaws.com")
-            and any(label == "s3" or label.startswith("s3-") for label in labels[:-2])
-        )
         allowed = (
             host == "api.sharadar.com"
             or (isinstance(host, str) and host.endswith(".sharadar.com"))
-            or s3_host
+            or host == OBSERVED_BULK_HOST
         )
         if (
             parsed.scheme != "https"
@@ -854,7 +887,10 @@ class SharadarSampleClient:
             result = self._access.get(
                 self._session,
                 url,
-                params={"api_key": self._api_key, "years": "10"},
+                params={
+                    "api_key": self._api_key,
+                    "years": "full" if status.history == "full" else "10",
+                },
                 headers={"Accept": "application/zip"},
                 timeout=30,
                 allow_redirects=False,
@@ -958,7 +994,9 @@ class SharadarSampleClient:
             archive_member, archive_member_declared_bytes, csv_header_sha256 = self._validate_archive(
                 partial, status.table
             )
-            final = quarantine_root / f"{status.table}-10y-{payload_sha256}.csv.zip"
+            final = quarantine_root / (
+                f"{status.table}-{status.history}-{payload_sha256}.csv.zip"
+            )
             if final.exists():
                 details = final.lstat()
                 if (
@@ -984,7 +1022,7 @@ class SharadarSampleClient:
                 raise SharadarCaptureError("Sharadar bulk download clock moved backwards")
             return SharadarBulkCapture(
                 table=status.table,
-                years=10,
+                history=status.history,
                 requested_at=requested_at,
                 retrieved_at=retrieved_at,
                 payload_sha256=payload_sha256,
@@ -1220,7 +1258,9 @@ def persist_bulk_capture(
     if not isinstance(root, Path) or not isinstance(capture, SharadarBulkCapture):
         raise TypeError("root and capture have invalid types")
     _private_directory(root)
-    archive = root / f"{capture.table}-10y-{capture.payload_sha256}.csv.zip"
+    archive = root / (
+        f"{capture.table}-{capture.status.history}-{capture.payload_sha256}.csv.zip"
+    )
     if not archive.exists():
         raise ValueError("Sharadar bulk quarantine archive is missing")
     details = archive.lstat()
@@ -1261,7 +1301,7 @@ def _existing_bulk_record(
             continue
         payload_sha256 = record.get("payload_sha256")
         byte_length = record.get("byte_length")
-        expected_name = f"{status.table}-10y-{payload_sha256}.csv.zip"
+        expected_name = f"{status.table}-{status.history}-{payload_sha256}.csv.zip"
         if (
             not isinstance(payload_sha256, str)
             or _SHA256_PATTERN.fullmatch(payload_sha256) is None
