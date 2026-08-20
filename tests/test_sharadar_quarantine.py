@@ -911,6 +911,8 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
     profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
 
     assert profile["status"] == FOUNDATION_PROFILE_STATUS
+    assert profile["schema_version"] == "1.1"
+    assert profile["policy_version"] == "sharadar-foundation-structural-profile-v2"
     assert profile["synthetic_fixture"] is True
     assert profile["archive_integrity_verified"] is True
     assert profile["every_row_stream_parsed"] is True
@@ -921,6 +923,23 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
         "MISSING": 1
     }
     assert profile["tables"]["tickers"]["table_counts"] == {"SEP": 1}
+    assert profile["tables"]["tickers"]["ticker_reuse_groups"] == 0
+    assert profile["tables"]["tickers"]["permaticker_alias_groups"] == 0
+    assert profile["tables"]["tickers"]["ticker_only_join_safe"] is True
+    assert profile["tables"]["tickers"]["ticker_only_join_safe_by_table"] == {
+        "SEP": True
+    }
+    assert (
+        profile["tables"]["tickers"]["observed_tradable_ticker_only_join_safe"]
+        is False
+    )
+    assert profile["tables"]["tickers"]["observed_tradable_master_tables"] == [
+        "SEP"
+    ]
+    assert profile["tables"]["tickers"]["unobserved_tradable_master_tables"] == [
+        "SF1",
+        "SFP",
+    ]
     assert profile["observed_stock_date_span_days"] == 0
     assert profile["structural_identity_missing_count"] == 1
     assert profile["structural_identity_ambiguous_count"] == 0
@@ -937,7 +956,7 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
     assert repeated["profile_sha256"] == profile["profile_sha256"]
 
 
-def test_identity_classifier_never_guesses_across_permanent_identities():
+def test_identity_classifier_never_guesses_across_permatickers():
     master = {
         ("SEP", "UNIQUE"): {"1"},
         ("SF1", "UNIQUE"): {"1"},
@@ -971,8 +990,78 @@ def test_duplicate_master_permatickers_stay_ambiguous_end_to_end(tmp_path):
         "AMBIGUOUS": 1
     }
     assert profile["tables"]["stocks"]["tickers_ambiguous_sep_identity"] == 1
+    tickers = profile["tables"]["tickers"]
+    assert tickers["ticker_reuse_groups"] == 1
+    assert tickers["ticker_reuse_group_counts_by_table"] == {"SEP": 1}
+    assert tickers["max_permatickers_per_table_ticker"] == 2
+    assert tickers["ticker_only_join_safe"] is False
+    assert tickers["ticker_only_join_safe_by_table"] == {"SEP": False}
+    assert tickers["observed_tradable_ticker_only_join_safe"] is False
     assert profile["structural_identity_ambiguous_count"] == 3
     assert profile["structural_identity_join_ready"] is False
+
+
+def test_master_profiles_permaticker_ticker_aliases_end_to_end(tmp_path):
+    _, session, access = bulk_stack(
+        additional_rows={
+            "tickers": [
+                {"table": "SEP", "ticker": "AAPL.NEW", "permaticker": "199059"}
+            ]
+        }
+    )
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
+
+    tickers = profile["tables"]["tickers"]
+    assert tickers["unique_table_tickers"] == 2
+    assert tickers["unique_table_permatickers"] == 1
+    assert tickers["permaticker_alias_groups"] == 1
+    assert tickers["permaticker_alias_group_counts_by_table"] == {"SEP": 1}
+    assert tickers["max_tickers_per_table_permaticker"] == 2
+    assert tickers["ticker_reuse_groups"] == 0
+    assert tickers["ticker_only_join_safe"] is True
+    assert tickers["ticker_only_join_safe_by_table"] == {"SEP": True}
+    assert tickers["observed_tradable_ticker_only_join_safe"] is False
+
+
+def test_all_expected_tradable_master_tables_must_be_observed_for_safe_rollup(
+    tmp_path,
+):
+    _, session, access = bulk_stack(
+        additional_rows={
+            "tickers": [
+                {"table": "SF1", "ticker": "AAPL", "permaticker": "199059"},
+                {"table": "SFP", "ticker": "AAPL", "permaticker": "199059"},
+            ]
+        }
+    )
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    tickers = build_foundation_profile(tmp_path, synthetic_fixture=True)["tables"][
+        "tickers"
+    ]
+
+    assert tickers["observed_tradable_master_tables"] == ["SEP", "SF1", "SFP"]
+    assert tickers["unobserved_tradable_master_tables"] == []
+    assert tickers["ticker_only_join_safe_by_table"] == {
+        "SEP": True,
+        "SF1": True,
+        "SFP": True,
+    }
+    assert tickers["observed_tradable_ticker_only_join_safe"] is True
 
 
 def test_foundation_profile_classifies_unmapped_action_counterparty_without_mapping_it(

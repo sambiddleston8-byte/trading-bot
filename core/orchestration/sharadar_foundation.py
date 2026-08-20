@@ -30,8 +30,8 @@ from core.orchestration.sharadar_quarantine import (
 )
 
 
-SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "sharadar-foundation-structural-profile-v1"
+SCHEMA_VERSION = "1.1"
+POLICY_VERSION = "sharadar-foundation-structural-profile-v2"
 STATUS = "STRUCTURE_VERIFIED_SEMANTICS_AND_AVAILABILITY_UNQUALIFIED"
 MAX_ROWS_PER_TABLE = 100_000_000
 MAX_CELL_CHARACTERS = 1_000_000
@@ -162,6 +162,7 @@ def _profile_tickers(
     profile: dict[str, Any] = {"row_count": 0}
     table_counts: Counter[str] = Counter()
     master: dict[tuple[str, str], set[str]] = defaultdict(set)
+    permaticker_tickers: dict[tuple[str, str], set[str]] = defaultdict(set)
     identities: set[tuple[str, str, str]] = set()
     delisted = 0
     for row in _archive_rows(root, record):
@@ -175,6 +176,7 @@ def _profile_tickers(
         identities.add(identity)
         table_counts[table] += 1
         master[(table, ticker)].add(permaticker)
+        permaticker_tickers[(table, permaticker)].add(ticker)
         isdelisted = row.get("isdelisted")
         if table in {"SEP", "SF1", "SFP"} and isdelisted not in {"Y", "N"}:
             raise ValueError("Sharadar tradable ticker has invalid delisting state")
@@ -183,12 +185,58 @@ def _profile_tickers(
             value = row.get(field)
             if value:
                 _update_range(profile, field, value)
+    ticker_reuse_groups_by_table = Counter(
+        table for (table, _), values in master.items() if len(values) > 1
+    )
+    permaticker_alias_groups_by_table = Counter(
+        table
+        for (table, _), values in permaticker_tickers.items()
+        if len(values) > 1
+    )
+    ticker_only_join_safe_by_table = {
+        table: ticker_reuse_groups_by_table[table] == 0
+        for table in sorted(table_counts)
+    }
+    observed_tradable_master_tables = sorted(
+        set(TRADABLE_MASTER_TABLES).intersection(table_counts)
+    )
+    unobserved_tradable_master_tables = sorted(
+        set(TRADABLE_MASTER_TABLES).difference(table_counts)
+    )
     profile.update(
         {
             "table_counts": dict(sorted(table_counts.items())),
             "unique_table_tickers": len(master),
+            "unique_table_permatickers": len(permaticker_tickers),
             "delisted_rows": delisted,
             "ticker_reuse_groups": sum(len(values) > 1 for values in master.values()),
+            "ticker_reuse_group_counts_by_table": dict(
+                sorted(ticker_reuse_groups_by_table.items())
+            ),
+            "max_permatickers_per_table_ticker": max(
+                (len(values) for values in master.values()), default=0
+            ),
+            "permaticker_alias_groups": sum(
+                len(values) > 1 for values in permaticker_tickers.values()
+            ),
+            "permaticker_alias_group_counts_by_table": dict(
+                sorted(permaticker_alias_groups_by_table.items())
+            ),
+            "max_tickers_per_table_permaticker": max(
+                (len(values) for values in permaticker_tickers.values()), default=0
+            ),
+            "ticker_only_join_safe": bool(master)
+            and not ticker_reuse_groups_by_table,
+            "ticker_only_join_safe_by_table": ticker_only_join_safe_by_table,
+            "observed_tradable_master_tables": observed_tradable_master_tables,
+            "unobserved_tradable_master_tables": unobserved_tradable_master_tables,
+            "observed_tradable_ticker_only_join_safe": (
+                not unobserved_tradable_master_tables
+                and all(
+                    ticker_only_join_safe_by_table[table]
+                    for table in observed_tradable_master_tables
+                )
+            ),
         }
     )
     return profile, master

@@ -26,6 +26,24 @@ def main() -> int:
                         table: details["row_count"]
                         for table, details in profile["tables"].items()
                     },
+                    "ticker_master_identity_structure": {
+                        name: profile["tables"]["tickers"][name]
+                        for name in (
+                            "unique_table_tickers",
+                            "unique_table_permatickers",
+                            "ticker_reuse_groups",
+                            "ticker_reuse_group_counts_by_table",
+                            "max_permatickers_per_table_ticker",
+                            "permaticker_alias_groups",
+                            "permaticker_alias_group_counts_by_table",
+                            "max_tickers_per_table_permaticker",
+                            "ticker_only_join_safe",
+                            "ticker_only_join_safe_by_table",
+                            "observed_tradable_master_tables",
+                            "unobserved_tradable_master_tables",
+                            "observed_tradable_ticker_only_join_safe",
+                        )
+                    },
                     "stock_date_range": [
                         profile["tables"]["stocks"]["min_date"],
                         profile["tables"]["stocks"]["max_date"],
