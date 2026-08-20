@@ -42,7 +42,7 @@ START = datetime(2026, 8, 20, 12, 0, tzinfo=UTC)
 
 def csv_payload(definition: SharadarProbeDefinition) -> bytes:
     values = {
-        "table": "SF1",
+        "table": "fundamentals",
         "permaticker": "199059",
         "ticker": "AAPL",
         "name": "Apple Inc",
@@ -142,6 +142,7 @@ def test_frozen_connectivity_plan_is_tiny_train_only_and_credential_free():
     assert all(int(item.query["limit"]) <= 5 for item in PROBE_DEFINITIONS)
     assert all("api_key" not in item.request_query_canonical for item in PROBE_DEFINITIONS)
     assert all(item.query.get("ticker") == "AAPL" for item in PROBE_DEFINITIONS)
+    assert PROBE_DEFINITIONS[0].query["table"] == "fundamentals"
     assert PROBE_DEFINITIONS[1].query["to"] == "2022-01-07"
     assert PROBE_DEFINITIONS[2].query["dimension"] == "ARQ"
 
