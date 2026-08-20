@@ -73,8 +73,8 @@ def _norgate_contract() -> _NorgateContract:
 
     _install_windows_fcntl_guard()
     from core.orchestration.norgate_local_export import (
+        CAPTURE_EXPORT_CONTRACT,
         DATASET_ID,
-        EXPORT_CONTRACT,
         INDEX_NAME,
         MAX_RECORDS,
         MAX_SOURCE_BYTES,
@@ -84,7 +84,7 @@ def _norgate_contract() -> _NorgateContract:
 
     return _NorgateContract(
         dataset_id=DATASET_ID,
-        export_contract=EXPORT_CONTRACT,
+        export_contract=CAPTURE_EXPORT_CONTRACT,
         index_name=INDEX_NAME,
         max_records=MAX_RECORDS,
         max_source_bytes=MAX_SOURCE_BYTES,
@@ -240,6 +240,7 @@ def build_export(
     ):
         raise ValueError("Norgate database update time must be timezone-aware")
     rows: list[dict[str, Any]] = []
+    asset_dispositions: list[dict[str, Any]] = []
     for symbol in requested_symbols:
         asset_id = norgatedata.assetid(symbol)
         if isinstance(asset_id, bool) or not isinstance(asset_id, int) or asset_id <= 0:
@@ -259,8 +260,19 @@ def build_export(
             timeseriesformat="pandas-dataframe",
             interval="D",
         )
-        if not _price_rows(prices):
-            raise ValueError("Norgate price result is empty for a requested symbol")
+        raw_price_rows = _price_rows(prices)
+        if not raw_price_rows:
+            asset_dispositions.append(
+                {
+                    "asset_id": asset_id,
+                    "requested_symbol": symbol,
+                    "symbol": resolved_symbol.strip(),
+                    "security_name": security_name.strip(),
+                    "status": "NO_ROWS_IN_REQUESTED_WINDOW",
+                    "row_count": 0,
+                }
+            )
+            continue
         membership = norgatedata.index_constituent_timeseries(
             asset_id,
             contract.index_name,
@@ -294,18 +306,44 @@ def build_export(
             )
             if len(rows) > contract.max_records:
                 raise ValueError("Norgate export exceeds the record boundary")
+        asset_dispositions.append(
+            {
+                "asset_id": asset_id,
+                "requested_symbol": symbol,
+                "symbol": resolved_symbol.strip(),
+                "security_name": security_name.strip(),
+                "status": "ROWS_PRESENT",
+                "row_count": len(price_rows),
+            }
+        )
     rows.sort(key=lambda item: (item["asset_id"], item["session_date"]))
+    asset_dispositions.sort(key=lambda item: item["asset_id"])
+    if tuple(item["requested_symbol"] for item in asset_dispositions) != (
+        requested_symbols
+    ):
+        raise ValueError("requested symbols must be ordered by stable asset ID")
     assets_by_symbol: dict[str, set[int]] = {}
-    for row in rows:
-        assets_by_symbol.setdefault(row["symbol"], set()).add(row["asset_id"])
+    for disposition in asset_dispositions:
+        assets_by_symbol.setdefault(disposition["symbol"], set()).add(
+            disposition["asset_id"]
+        )
     reused_symbols = sorted(
         symbol for symbol, asset_ids in assets_by_symbol.items() if len(asset_ids) > 1
     )
     requested_symbols_sha256 = hashlib.sha256(
         json.dumps(requested_symbols, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
+    asset_dispositions_sha256 = hashlib.sha256(
+        json.dumps(
+            asset_dispositions,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
     payload = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "export_contract": contract.export_contract,
         "provider_id": contract.provider_id,
         "provider_dataset_id": contract.dataset_id,
@@ -317,6 +355,8 @@ def build_export(
         "universe_selection_basis": "OPERATOR_SUPPLIED_SYMBOLS_UNQUALIFIED",
         "requested_symbols": list(requested_symbols),
         "requested_symbols_sha256": requested_symbols_sha256,
+        "asset_dispositions": asset_dispositions,
+        "asset_dispositions_sha256": asset_dispositions_sha256,
         "reused_symbols": reused_symbols,
         "license_restricted_provider_data": True,
         "source_code_repository_storage_allowed": False,
@@ -341,8 +381,8 @@ def build_export(
         )
         + "\n"
     ).encode("utf-8")
-    if not rows or len(encoded) > contract.max_source_bytes:
-        raise ValueError("Norgate export is empty or exceeds the byte boundary")
+    if len(encoded) > contract.max_source_bytes:
+        raise ValueError("Norgate export exceeds the byte boundary")
     contract.parse_export(encoded)
     return encoded
 
