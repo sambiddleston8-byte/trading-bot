@@ -35,7 +35,12 @@ from core.orchestration.sharadar_quarantine import (
     validate_probe_csv,
 )
 from core.orchestration.sharadar_foundation import (
+    COUNTERPARTY_NOT_PROVIDED,
+    IDENTITY_AMBIGUOUS,
+    IDENTITY_MISSING,
+    IDENTITY_UNIQUE,
     STATUS as FOUNDATION_PROFILE_STATUS,
+    _identity_state,
     build_foundation_profile,
     persist_foundation_profile,
 )
@@ -442,6 +447,7 @@ def bulk_archive(
     bomb_member: bool = False,
     encrypted_member: bool = False,
     row_overrides: dict[str, str] | None = None,
+    additional_rows: list[dict[str, str]] | None = None,
 ) -> bytes:
     stream = io.BytesIO()
     fields = sorted(BULK_REQUIRED_FIELDS[table])
@@ -463,8 +469,13 @@ def bulk_archive(
         }
     )
     values.update(row_overrides or {})
+    rows = [values]
+    for overrides in additional_rows or ():
+        rows.append({**values, **overrides})
     content = (
-        ",".join(fields) + "\n" + ",".join(values[name] for name in fields) + "\n"
+        ",".join(fields)
+        + "\n"
+        + "".join(",".join(row[name] for name in fields) + "\n" for row in rows)
     ).encode()
     if bomb_member:
         content += b"0" * (2 * 1024 * 1024)
@@ -610,6 +621,7 @@ def bulk_stack(
     bomb_member=False,
     encrypted_member=False,
     row_overrides=None,
+    additional_rows=None,
 ):
     archives = {
         table: bulk_archive(
@@ -619,6 +631,7 @@ def bulk_stack(
             bomb_member=bomb_member,
             encrypted_member=encrypted_member,
             row_overrides=(row_overrides or {}).get(table),
+            additional_rows=(additional_rows or {}).get(table),
         )
         for table in module.TEN_YEAR_TABLES
     }
@@ -903,15 +916,123 @@ def test_foundation_profile_streams_every_row_and_withholds_authority(tmp_path):
     assert profile["every_row_stream_parsed"] is True
     assert profile["tables"]["stocks"]["row_count"] == 1
     assert profile["tables"]["fundamentals"]["dimension_counts"] == {"ARQ": 1}
+    assert profile["tables"]["stocks"]["identity_state_counts"] == {"UNIQUE": 1}
+    assert profile["tables"]["fundamentals"]["identity_state_counts"] == {
+        "MISSING": 1
+    }
     assert profile["tables"]["tickers"]["table_counts"] == {"SEP": 1}
     assert profile["observed_stock_date_span_days"] == 0
+    assert profile["structural_identity_missing_count"] == 1
+    assert profile["structural_identity_ambiguous_count"] == 0
     assert profile["structural_identity_gap_count"] == 1
+    assert profile["structural_identity_gap_count_basis"] == (
+        "SUM_OF_DEPENDENT_TABLE_UNIQUE_TICKER_REFERENCES"
+    )
+    assert profile["structural_identity_join_ready"] is False
     assert profile["dataset_admitted"] is False
     assert profile["performance_claim_allowed"] is False
     assert profile["validation_access_authorized"] is False
     assert profile["test_access_authorized"] is False
     repeated = build_foundation_profile(tmp_path, synthetic_fixture=True)
     assert repeated["profile_sha256"] == profile["profile_sha256"]
+
+
+def test_identity_classifier_never_guesses_across_permanent_identities():
+    master = {
+        ("SEP", "UNIQUE"): {"1"},
+        ("SF1", "UNIQUE"): {"1"},
+        ("SEP", "REUSED"): {"2", "3"},
+    }
+
+    assert _identity_state(master, "ABSENT", ("SEP", "SF1")) == IDENTITY_MISSING
+    assert _identity_state(master, "UNIQUE", ("SEP", "SF1")) == IDENTITY_UNIQUE
+    assert _identity_state(master, "REUSED", ("SEP",)) == IDENTITY_AMBIGUOUS
+
+
+def test_duplicate_master_permatickers_stay_ambiguous_end_to_end(tmp_path):
+    _, session, access = bulk_stack(
+        additional_rows={
+            "tickers": [
+                {"table": "SEP", "ticker": "AAPL", "permaticker": "600001"}
+            ]
+        }
+    )
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
+
+    assert profile["tables"]["stocks"]["identity_state_counts"] == {
+        "AMBIGUOUS": 1
+    }
+    assert profile["tables"]["stocks"]["tickers_ambiguous_sep_identity"] == 1
+    assert profile["structural_identity_ambiguous_count"] == 3
+    assert profile["structural_identity_join_ready"] is False
+
+
+def test_foundation_profile_classifies_unmapped_action_counterparty_without_mapping_it(
+    tmp_path,
+):
+    _, session, access = bulk_stack(
+        row_overrides={
+            "actions": {
+                "ticker": "PRIVATE_TARGET",
+                "action": "acquisitionof",
+                "contraticker": "AAPL",
+            }
+        }
+    )
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
+
+    actions = profile["tables"]["actions"]
+    assert actions["primary_identity_state_counts"] == {"MISSING": 1}
+    assert actions["unresolved_primary_action_counts"] == {"acquisitionof": 1}
+    assert actions["unresolved_primary_counterparty_state_counts"] == {
+        "UNIQUE": 1
+    }
+    assert actions["structural_identity_join_ready"] is False
+    assert profile["structural_identity_missing_count"] == 2
+    assert profile["cross_table_identity_complete"] is False
+
+
+def test_unresolved_action_without_counterparty_is_not_a_missing_identity(tmp_path):
+    _, session, access = bulk_stack(
+        row_overrides={
+            "actions": {
+                "ticker": "PRIVATE_TARGET",
+                "action": "delisted",
+                "contraticker": "",
+            }
+        }
+    )
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+
+    profile = build_foundation_profile(tmp_path, synthetic_fixture=True)
+
+    actions = profile["tables"]["actions"]
+    assert actions["primary_identity_state_counts"] == {"MISSING": 1}
+    assert actions["unresolved_primary_counterparty_state_counts"] == {
+        COUNTERPARTY_NOT_PROVIDED: 1
+    }
 
 
 def test_real_profile_persistence_is_content_addressed_owner_only(tmp_path):
@@ -946,6 +1067,7 @@ def test_real_profile_persistence_is_content_addressed_owner_only(tmp_path):
         ({"stocks": {"high": "inf"}}, "numerics"),
         ({"stocks": {"closeadj": "Infinity"}}, "numerics"),
         ({"fundamentals": {"datekey": "2020-01-01"}}, "predates"),
+        ({"actions": {"contraticker": " BAD "}}, "contra ticker"),
     ],
 )
 def test_foundation_profile_rejects_semantically_invalid_rows(
