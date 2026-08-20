@@ -570,6 +570,7 @@ def test_local_ingest_cli_stages_exact_synthetic_file(tmp_path: Path):
 def test_same_vintage_repeat_export_matches_only_after_excluding_observation_time():
     baseline = export_payload()
     repeat = export_payload(exported_at="2026-08-19T10:01:00.000000+00:00")
+    assert set(json.loads(baseline)) == module._TOP_LEVEL_FIELDS
 
     result = compare_norgate_same_vintage_exports(baseline, repeat)
 
@@ -630,6 +631,28 @@ def test_same_vintage_comparison_requires_a_later_independent_export():
         compare_norgate_same_vintage_exports(export_payload(), export_payload())
 
 
+def test_determinism_check_authority_and_false_flags_cannot_be_forged():
+    required = {
+        "baseline_source_payload_sha256": "0" * 64,
+        "repeat_source_payload_sha256": "1" * 64,
+        "invariant_payload_sha256": "2" * 64,
+        "baseline_exported_at": EXPORTED_AT,
+        "repeat_exported_at": "2026-08-19T10:01:00.000000+00:00",
+        "database_update_at": "2026-08-19T09:55:00.000000+00:00",
+        "requested_start": "2026-08-01",
+        "requested_end": "2026-08-18",
+        "requested_symbols": ("AAPL",),
+    }
+    with pytest.raises(PermissionError):
+        module.NorgateSameVintageDeterminismCheck(**required)
+    with pytest.raises(ValueError, match="safety flags were altered"):
+        module.NorgateSameVintageDeterminismCheck(
+            **required,
+            performance_use_allowed=True,
+            _authority=module._DETERMINISM_AUTHORITY,
+        )
+
+
 def test_same_vintage_comparison_rejects_changed_provider_row():
     changed = json.loads(export_payload())["rows"]
     changed[0]["close"] = 101.0
@@ -682,6 +705,42 @@ def test_same_vintage_comparison_cli_is_read_only_and_fail_closed(tmp_path: Path
     assert summary["validation_accessed"] is False
     assert summary["test_accessed"] is False
     assert summary["broker_connection_allowed"] is False
+
+
+def test_same_vintage_comparison_cli_rejects_drift_and_same_file(tmp_path: Path):
+    baseline = tmp_path / "baseline.json"
+    drifted = tmp_path / "drifted.json"
+    baseline.write_bytes(export_payload())
+    drifted.write_bytes(
+        export_payload(
+            exported_at="2026-08-19T10:01:00.000000+00:00",
+            database_update_at="2026-08-19T09:56:00.000000+00:00",
+        )
+    )
+
+    for repeat, expected in (
+        (drifted, "invariant content changed"),
+        (baseline, "distinct files"),
+    ):
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "scripts/compare_norgate_local_exports.py",
+                "--baseline-file",
+                str(baseline),
+                "--repeat-file",
+                str(repeat),
+            ],
+            cwd=Path(__file__).resolve().parents[1],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            env={},
+        )
+        assert completed.returncode == 1
+        assert completed.stdout == ""
+        assert expected in completed.stderr
 
 
 def test_modules_have_no_network_broker_execution_or_order_surface():

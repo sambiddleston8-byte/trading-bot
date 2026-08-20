@@ -420,6 +420,9 @@ def compare_norgate_same_vintage_exports(
             raise ValueError(f"{name} must contain bounded nonempty bytes")
     baseline_root, _ = _parse_export(baseline_payload)
     repeat_root, _ = _parse_export(repeat_payload)
+    for name, root in (("baseline", baseline_root), ("repeat", repeat_root)):
+        if set(root) != _TOP_LEVEL_FIELDS:
+            raise ValueError(f"{name} export root fields are not exactly pinned")
     baseline_exported_at = _canonical_timestamp(
         baseline_root["exported_at"], "baseline exported_at"
     )
@@ -428,32 +431,34 @@ def compare_norgate_same_vintage_exports(
     )
     if repeat_exported_at <= baseline_exported_at:
         raise ValueError("repeat export must be a later independent observation")
-    changed = sorted(
-        name
-        for name in _TOP_LEVEL_FIELDS - {"exported_at"}
-        if baseline_root[name] != repeat_root[name]
-    )
-    if changed:
-        raise ValueError(
-            "same-vintage Norgate invariant content changed: " + ", ".join(changed)
+    invariant_bytes_by_label: dict[str, bytes] = {}
+    for label, root in (("baseline", baseline_root), ("repeat", repeat_root)):
+        invariant = dict(root)
+        invariant.pop("exported_at")
+        invariant_bytes_by_label[label] = (
+            json.dumps(
+                invariant,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            )
+            + "\n"
+        ).encode("utf-8")
+    if invariant_bytes_by_label["baseline"] != invariant_bytes_by_label["repeat"]:
+        changed = sorted(
+            name
+            for name in _TOP_LEVEL_FIELDS - {"exported_at"}
+            if baseline_root[name] != repeat_root[name]
         )
-
-    invariant = dict(baseline_root)
-    invariant.pop("exported_at")
-    invariant_bytes = (
-        json.dumps(
-            invariant,
-            sort_keys=True,
-            separators=(",", ":"),
-            ensure_ascii=False,
-            allow_nan=False,
-        )
-        + "\n"
-    ).encode("utf-8")
+        detail = ", ".join(changed) if changed else "canonical invariant bytes"
+        raise ValueError("same-vintage Norgate invariant content changed: " + detail)
     return NorgateSameVintageDeterminismCheck(
         baseline_source_payload_sha256=hashlib.sha256(baseline_payload).hexdigest(),
         repeat_source_payload_sha256=hashlib.sha256(repeat_payload).hexdigest(),
-        invariant_payload_sha256=hashlib.sha256(invariant_bytes).hexdigest(),
+        invariant_payload_sha256=hashlib.sha256(
+            invariant_bytes_by_label["baseline"]
+        ).hexdigest(),
         baseline_exported_at=baseline_exported_at,
         repeat_exported_at=repeat_exported_at,
         database_update_at=_canonical_timestamp(

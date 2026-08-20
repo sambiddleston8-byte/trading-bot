@@ -48,7 +48,7 @@ def main() -> int:
             _payload(baseline_path, "baseline file"),
             _payload(repeat_path, "repeat file"),
         )
-    except (OSError, ValueError, RuntimeError) as error:
+    except (OSError, TypeError, ValueError, RuntimeError) as error:
         print(f"Norgate local comparison failed: {error}", file=sys.stderr)
         return 1
     print(json.dumps(result.as_dict(), sort_keys=True, indent=2))
