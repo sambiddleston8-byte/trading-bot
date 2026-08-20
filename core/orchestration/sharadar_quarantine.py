@@ -209,7 +209,7 @@ PROBE_DEFINITIONS = (
             ),
             "format": "csv",
             "limit": "5",
-            "table": "SF1",
+            "table": "fundamentals",
             "ticker": "AAPL",
         },
         expected_fields=(
