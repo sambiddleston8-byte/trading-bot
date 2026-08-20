@@ -415,6 +415,8 @@ def test_windows_import_guard_is_available_but_file_locking_fails_closed():
                 OSError, match="unavailable in the Windows extraction VM"
             ):
                 getattr(guard, unsupported)
+        assert not hasattr(guard, "__file__")
+        assert inspect.getmodule(inspect.currentframe()) is sys.modules[__name__]
     finally:
         sys.modules.pop("fcntl", None)
         if saved is not missing:
@@ -445,6 +447,7 @@ def test_windows_script_imports_when_posix_fcntl_is_unavailable():
         if spec is None or spec.loader is None:
             raise AssertionError("could not load Windows export script")
         module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
         spec.loader.exec_module(module)
         module._norgate_contract()
         guard = sys.modules["fcntl"]

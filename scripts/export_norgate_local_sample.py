@@ -9,6 +9,7 @@ exclusive-create canonical JSON file for later fail-closed staging on macOS.
 """
 
 import argparse
+from dataclasses import dataclass
 from datetime import date, datetime, timezone
 import hashlib
 from importlib.machinery import ModuleSpec
@@ -19,7 +20,18 @@ from pathlib import Path
 import platform
 import sys
 from types import ModuleType
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
+
+
+@dataclass(frozen=True)
+class _NorgateContract:
+    dataset_id: str
+    export_contract: str
+    index_name: str
+    max_records: int
+    max_source_bytes: int
+    provider_id: str
+    parse_export: Callable[[bytes], Any]
 
 
 def _install_windows_fcntl_guard(system_name: str | None = None) -> None:
@@ -43,6 +55,8 @@ def _install_windows_fcntl_guard(system_name: str | None = None) -> None:
     guard.flock = unavailable  # type: ignore[attr-defined]
 
     def unavailable_attribute(_name: str) -> Any:
+        if _name.startswith("__") and _name.endswith("__"):
+            raise AttributeError(_name)
         raise OSError("POSIX file locking is unavailable in the Windows extraction VM")
 
     guard.__getattr__ = unavailable_attribute  # type: ignore[attr-defined]
@@ -54,7 +68,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 
-def _norgate_contract() -> tuple[Any, ...]:
+def _norgate_contract() -> _NorgateContract:
     """Load the repository contract only when an export is actually built."""
 
     _install_windows_fcntl_guard()
@@ -68,14 +82,14 @@ def _norgate_contract() -> tuple[Any, ...]:
         parse_norgate_local_export,
     )
 
-    return (
-        DATASET_ID,
-        EXPORT_CONTRACT,
-        INDEX_NAME,
-        MAX_RECORDS,
-        MAX_SOURCE_BYTES,
-        PROVIDER_ID,
-        parse_norgate_local_export,
+    return _NorgateContract(
+        dataset_id=DATASET_ID,
+        export_contract=EXPORT_CONTRACT,
+        index_name=INDEX_NAME,
+        max_records=MAX_RECORDS,
+        max_source_bytes=MAX_SOURCE_BYTES,
+        provider_id=PROVIDER_ID,
+        parse_export=parse_norgate_local_export,
     )
 
 
@@ -197,15 +211,7 @@ def build_export(
 ) -> bytes:
     """Build canonical bytes from an injected local Norgate package instance."""
 
-    (
-        dataset_id,
-        export_contract,
-        index_name,
-        max_records,
-        max_source_bytes,
-        provider_id,
-        parse_export,
-    ) = _norgate_contract()
+    contract = _norgate_contract()
 
     if end < start:
         raise ValueError("requested date range is reversed")
@@ -257,7 +263,7 @@ def build_export(
             raise ValueError("Norgate price result is empty for a requested symbol")
         membership = norgatedata.index_constituent_timeseries(
             asset_id,
-            index_name,
+            contract.index_name,
             padding_setting=norgatedata.PaddingType.NONE,
             pandas_dataframe=prices,
             timeseriesformat="pandas-dataframe",
@@ -286,7 +292,7 @@ def build_export(
                     "sp500_constituent": membership_by_date[session],
                 }
             )
-            if len(rows) > max_records:
+            if len(rows) > contract.max_records:
                 raise ValueError("Norgate export exceeds the record boundary")
     rows.sort(key=lambda item: (item["asset_id"], item["session_date"]))
     assets_by_symbol: dict[str, set[int]] = {}
@@ -300,9 +306,9 @@ def build_export(
     ).hexdigest()
     payload = {
         "schema_version": "1.0",
-        "export_contract": export_contract,
-        "provider_id": provider_id,
-        "provider_dataset_id": dataset_id,
+        "export_contract": contract.export_contract,
+        "provider_id": contract.provider_id,
+        "provider_dataset_id": contract.dataset_id,
         "norgatedata_package_version": str(norgatedata.__version__),
         "database_name": database_name,
         "database_update_at": database_update_at.astimezone(timezone.utc).isoformat(
@@ -322,7 +328,7 @@ def build_export(
         "frequency": "DAILY",
         "stock_price_adjustment": "NONE",
         "padding": "NONE",
-        "membership_dataset": index_name,
+        "membership_dataset": contract.index_name,
         "rows": rows,
     }
     encoded = (
@@ -335,9 +341,9 @@ def build_export(
         )
         + "\n"
     ).encode("utf-8")
-    if not rows or len(encoded) > max_source_bytes:
+    if not rows or len(encoded) > contract.max_source_bytes:
         raise ValueError("Norgate export is empty or exceeds the byte boundary")
-    parse_export(encoded)
+    contract.parse_export(encoded)
     return encoded
 
 
