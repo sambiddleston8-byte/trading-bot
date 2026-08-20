@@ -13,17 +13,19 @@ records.
 import csv
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
+import fcntl
 import hashlib
 import io
 import json
 import os
 from pathlib import Path
 import re
+import shutil
 import stat
 import tempfile
 from types import MappingProxyType
 from typing import Any, Callable, Mapping
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import urlencode, urljoin, urlsplit
 import zipfile
 
 import requests
@@ -288,7 +290,14 @@ class SharadarBulkStatus:
     def __post_init__(self) -> None:
         if self.table not in TEN_YEAR_TABLES:
             raise ValueError("Sharadar bulk-status table is unsupported")
-        if self.name != f"{self.table}.csv.zip":
+        if (
+            not isinstance(self.name, str)
+            or not self.name.endswith(".csv.zip")
+            or len(self.name) > 200
+            or "/" in self.name
+            or "\\" in self.name
+            or any(ord(character) < 32 for character in self.name)
+        ):
             raise ValueError("Sharadar bulk-status filename is unexpected")
         if (
             isinstance(self.size, bool)
@@ -296,7 +305,13 @@ class SharadarBulkStatus:
             or not 0 < self.size <= MAX_COMPRESSED_BYTES[self.table]
         ):
             raise ValueError("Sharadar bulk-status size is outside the safe boundary")
-        _canonical_timestamp(self.modified, "modified")
+        if (
+            not isinstance(self.modified, str)
+            or not self.modified
+            or len(self.modified) > 200
+            or any(ord(character) < 32 for character in self.modified)
+        ):
+            raise ValueError("Sharadar bulk-status modified value is invalid")
         _canonical_timestamp(self.requested_at, "requested_at")
         _canonical_timestamp(self.retrieved_at, "retrieved_at")
         if _SHA256_PATTERN.fullmatch(self.payload_sha256) is None:
@@ -313,6 +328,7 @@ class SharadarBulkStatus:
             "status_requested_at": self.requested_at,
             "status_retrieved_at": self.retrieved_at,
             "status_provider_access": dict(self.provider_access),
+            "status_size_is_advisory": True,
         }
 
 
@@ -325,7 +341,7 @@ class SharadarBulkCapture:
     payload_sha256: str
     byte_length: int
     archive_member: str
-    archive_member_bytes: int
+    archive_member_declared_bytes: int
     csv_header_sha256: str
     redirect_host: str
     redirect_path_sha256: str
@@ -337,11 +353,11 @@ class SharadarBulkCapture:
             raise PermissionError("SharadarBulkCapture must be issued by the client")
         if self.table not in TEN_YEAR_TABLES or self.years != 10:
             raise ValueError("Sharadar bulk capture scope is invalid")
-        if self.status.table != self.table or self.status.size != self.byte_length:
+        if self.status.table != self.table:
             raise ValueError("Sharadar bulk capture is not bound to its status response")
         if not 0 < self.byte_length <= MAX_COMPRESSED_BYTES[self.table]:
             raise ValueError("Sharadar bulk capture size is invalid")
-        if not 0 < self.archive_member_bytes <= MAX_UNCOMPRESSED_BYTES[self.table]:
+        if not 0 < self.archive_member_declared_bytes <= MAX_UNCOMPRESSED_BYTES[self.table]:
             raise ValueError("Sharadar bulk archive member size is invalid")
         if not self.archive_member.endswith(".csv") or "/" in self.archive_member or "\\" in self.archive_member:
             raise ValueError("Sharadar bulk archive member is invalid")
@@ -363,11 +379,14 @@ class SharadarBulkCapture:
             "payload_sha256": self.payload_sha256,
             "byte_length": self.byte_length,
             "archive_member": self.archive_member,
-            "archive_member_bytes": self.archive_member_bytes,
+            "archive_member_declared_bytes": self.archive_member_declared_bytes,
             "csv_header_sha256": self.csv_header_sha256,
             "redirect_host": self.redirect_host,
             "redirect_path_sha256": self.redirect_path_sha256,
             **self.status.as_dict(),
+            "entitlement_basis": "OPERATOR_ASSERTED_SHARADAR_10_YEAR_BUNDLE_UNAUTHENTICATED",
+            "provider_terms_uri": "https://sharadar.com/terms",
+            "license_restricted": True,
             "raw_response_bytes_retained": True,
             "quarantine_only": True,
             **{name: False for name in SAFETY_FALSE},
@@ -478,7 +497,7 @@ def validate_probe_csv(
         raise ValueError("Sharadar probe CSV must not contain NUL bytes")
     reader = csv.DictReader(io.StringIO(text, newline=""), strict=True)
     fields = reader.fieldnames
-    if fields is None or tuple(fields) != definition.expected_fields:
+    if fields is None or set(fields) != set(definition.expected_fields):
         raise ValueError("Sharadar probe CSV schema does not match the exact request")
     if len(fields) != len(set(fields)) or any(not field for field in fields):
         raise ValueError("Sharadar probe CSV columns must be unique and nonempty")
@@ -503,7 +522,7 @@ def validate_probe_csv(
                 if canonical != value:
                     raise ValueError(f"Sharadar {name} must be a canonical ISO date")
     header_sha256 = hashlib.sha256(
-        ",".join(definition.expected_fields).encode("utf-8")
+        ",".join(fields).encode("utf-8")
     ).hexdigest()
     return len(rows), header_sha256
 
@@ -683,7 +702,11 @@ class SharadarSampleClient:
             raise SharadarCaptureError("Sharadar bulk-status response media type is invalid")
         payload = getattr(response, "content", None)
         root = _strict_json(payload)
-        if set(root) != {"table", "name", "size", "sizeLabel", "modified"}:
+        if (
+            len(root) > 50
+            or not {"table", "name", "size", "modified"}.issubset(root)
+            or any(not isinstance(key, str) or len(key) > 200 for key in root)
+        ):
             raise ValueError("Sharadar bulk-status fields are unsupported")
         if root.get("table") != table:
             raise ValueError("Sharadar bulk-status table does not match the request")
@@ -705,16 +728,22 @@ class SharadarSampleClient:
         )
 
     @staticmethod
-    def _safe_redirect(value: Any) -> tuple[str, str]:
+    def _safe_redirect(value: Any, *, base_url: str) -> tuple[str, str, str]:
         if not isinstance(value, str) or not value or len(value) > 16_384:
             raise SharadarCaptureError("Sharadar bulk redirect is invalid")
-        parsed = urlsplit(value)
+        resolved_url = urljoin(base_url, value)
+        parsed = urlsplit(resolved_url)
         host = parsed.hostname
+        labels = host.split(".") if isinstance(host, str) else []
+        s3_host = (
+            isinstance(host, str)
+            and host.endswith(".amazonaws.com")
+            and any(label == "s3" or label.startswith("s3-") for label in labels[:-2])
+        )
         allowed = (
             host == "api.sharadar.com"
             or (isinstance(host, str) and host.endswith(".sharadar.com"))
-            or (isinstance(host, str) and host.endswith(".amazonaws.com"))
-            or (isinstance(host, str) and host.endswith(".cloudfront.net"))
+            or s3_host
         )
         if (
             parsed.scheme != "https"
@@ -730,10 +759,14 @@ class SharadarSampleClient:
             raise SharadarCaptureError(
                 f"Sharadar bulk redirect target was rejected ({safe_host})"
             )
-        return host, hashlib.sha256(parsed.path.encode("utf-8")).hexdigest()
+        return (
+            resolved_url,
+            host,
+            hashlib.sha256(parsed.path.encode("utf-8")).hexdigest(),
+        )
 
     @staticmethod
-    def _download_headers(value: Any, expected_size: int) -> None:
+    def _download_headers(value: Any, table: str) -> int:
         if not isinstance(value, Mapping) or len(value) > MAX_HEADERS:
             raise SharadarCaptureError("Sharadar bulk response headers are invalid")
         media_type = str(value.get("Content-Type", value.get("content-type", ""))).split(";", 1)[0].lower()
@@ -745,13 +778,13 @@ class SharadarSampleClient:
         }:
             raise SharadarCaptureError("Sharadar bulk response media type is invalid")
         raw_length = value.get("Content-Length", value.get("content-length"))
-        if raw_length is not None:
-            try:
-                length = int(raw_length)
-            except (TypeError, ValueError) as error:
-                raise SharadarCaptureError("Sharadar bulk content length is invalid") from error
-            if length != expected_size:
-                raise SharadarCaptureError("Sharadar bulk content length changed after status")
+        try:
+            length = int(raw_length)
+        except (TypeError, ValueError) as error:
+            raise SharadarCaptureError("Sharadar bulk content length is required") from error
+        if not 0 < length <= MAX_COMPRESSED_BYTES[table]:
+            raise SharadarCaptureError("Sharadar bulk content length is outside the safe boundary")
+        return length
 
     @staticmethod
     def _validate_archive(path: Path, table: str) -> tuple[str, int, str]:
@@ -833,50 +866,94 @@ class SharadarSampleClient:
         if not isinstance(headers, Mapping):
             raise SharadarCaptureError("Sharadar bulk redirect headers are invalid")
         location = headers.get("Location", headers.get("location"))
-        redirect_host, redirect_path_sha256 = self._safe_redirect(location)
+        current_url = url
+        download = None
+        redirect_host = ""
+        redirect_path_sha256 = ""
+        for _ in range(3):
+            resolved_url, redirect_host, redirect_path_sha256 = self._safe_redirect(
+                location,
+                base_url=current_url,
+            )
+            try:
+                candidate = self._session.get(
+                    resolved_url,
+                    headers={"Accept": "application/zip"},
+                    timeout=(20, 600),
+                    allow_redirects=False,
+                    stream=True,
+                )
+            except requests.RequestException:
+                raise SharadarCaptureError("Sharadar bulk file could not be downloaded") from None
+            candidate_status = getattr(candidate, "status_code", None)
+            if candidate_status == 200:
+                download = candidate
+                break
+            if candidate_status not in {301, 302, 303, 307, 308}:
+                if callable(getattr(candidate, "close", None)):
+                    candidate.close()
+                raise SharadarCaptureError("Sharadar bulk file request was rejected")
+            candidate_headers = getattr(candidate, "headers", None)
+            if not isinstance(candidate_headers, Mapping):
+                if callable(getattr(candidate, "close", None)):
+                    candidate.close()
+                raise SharadarCaptureError("Sharadar bulk redirect headers are invalid")
+            location = candidate_headers.get("Location", candidate_headers.get("location"))
+            current_url = resolved_url
+            if callable(getattr(candidate, "close", None)):
+                candidate.close()
+        if download is None:
+            raise SharadarCaptureError("Sharadar bulk redirect limit was exceeded")
+        try:
+            observed_size = self._download_headers(
+                getattr(download, "headers", None),
+                status.table,
+            )
+        except (SharadarCaptureError, TypeError, ValueError):
+            if callable(getattr(download, "close", None)):
+                download.close()
+            raise
+        if shutil.disk_usage(quarantine_root).free < observed_size * 2:
+            if callable(getattr(download, "close", None)):
+                download.close()
+            raise SharadarCaptureError("Sharadar bulk download lacks required disk headroom")
 
         try:
-            download = self._session.get(
-                location,
-                headers={"Accept": "application/zip"},
-                timeout=(20, 600),
-                allow_redirects=False,
-                stream=True,
+            descriptor, raw_path = tempfile.mkstemp(
+                prefix=f".{status.table}-",
+                suffix=".partial",
+                dir=quarantine_root,
             )
-        except requests.RequestException:
-            raise SharadarCaptureError("Sharadar bulk file could not be downloaded") from None
-        if getattr(download, "status_code", None) != 200:
-            raise SharadarCaptureError("Sharadar bulk file request was rejected")
-        self._download_headers(getattr(download, "headers", None), status.size)
-
-        descriptor, raw_path = tempfile.mkstemp(
-            prefix=f".{status.table}-",
-            suffix=".partial",
-            dir=quarantine_root,
-        )
+        except OSError:
+            if callable(getattr(download, "close", None)):
+                download.close()
+            raise
         partial = Path(raw_path)
         digest = hashlib.sha256()
         total = 0
         try:
             try:
-                iterator = download.iter_content(1024 * 1024)
-                for chunk in iterator:
-                    if not isinstance(chunk, bytes):
-                        raise SharadarCaptureError("Sharadar bulk response chunk is invalid")
-                    if not chunk:
-                        continue
-                    total += len(chunk)
-                    if total > status.size or total > MAX_COMPRESSED_BYTES[status.table]:
-                        raise SharadarCaptureError("Sharadar bulk response exceeded its bounded size")
-                    digest.update(chunk)
-                    _write_all(descriptor, chunk)
-                os.fsync(descriptor)
+                try:
+                    iterator = download.iter_content(1024 * 1024)
+                    for chunk in iterator:
+                        if not isinstance(chunk, bytes):
+                            raise SharadarCaptureError("Sharadar bulk response chunk is invalid")
+                        if not chunk:
+                            continue
+                        total += len(chunk)
+                        if total > observed_size:
+                            raise SharadarCaptureError("Sharadar bulk response exceeded its declared size")
+                        digest.update(chunk)
+                        _write_all(descriptor, chunk)
+                    os.fsync(descriptor)
+                except requests.RequestException:
+                    raise SharadarCaptureError("Sharadar bulk stream could not be completed") from None
             finally:
                 os.close(descriptor)
-            if total != status.size:
-                raise SharadarCaptureError("Sharadar bulk response size did not match status")
+            if total != observed_size:
+                raise SharadarCaptureError("Sharadar bulk response size did not match its declaration")
             payload_sha256 = digest.hexdigest()
-            archive_member, archive_member_bytes, csv_header_sha256 = self._validate_archive(
+            archive_member, archive_member_declared_bytes, csv_header_sha256 = self._validate_archive(
                 partial, status.table
             )
             final = quarantine_root / f"{status.table}-10y-{payload_sha256}.csv.zip"
@@ -894,6 +971,7 @@ class SharadarSampleClient:
             else:
                 os.chmod(partial, 0o400)
                 os.replace(partial, final)
+                _fsync_directory(quarantine_root)
             retrieved_at = _canonical_timestamp(self._clock(), "retrieved_at")
             if retrieved_at < requested_at:
                 raise SharadarCaptureError("Sharadar bulk download clock moved backwards")
@@ -905,7 +983,7 @@ class SharadarSampleClient:
                 payload_sha256=payload_sha256,
                 byte_length=total,
                 archive_member=archive_member,
-                archive_member_bytes=archive_member_bytes,
+                archive_member_declared_bytes=archive_member_declared_bytes,
                 csv_header_sha256=csv_header_sha256,
                 redirect_host=redirect_host,
                 redirect_path_sha256=redirect_path_sha256,
@@ -913,6 +991,8 @@ class SharadarSampleClient:
                 _authority=_CAPTURE_AUTHORITY,
             )
         finally:
+            if callable(getattr(download, "close", None)):
+                download.close()
             if partial.exists():
                 partial.unlink()
 
@@ -946,9 +1026,22 @@ def _file_sha256(path: Path, *, maximum_bytes: int) -> tuple[str, int]:
         os.close(descriptor)
 
 
+def _fsync_directory(path: Path) -> None:
+    descriptor = os.open(
+        path,
+        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0),
+    )
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
 def _private_directory(path: Path) -> None:
-    path.mkdir(parents=True, exist_ok=True, mode=0o700)
-    path.chmod(0o700)
+    try:
+        path.mkdir(parents=True, mode=0o700)
+    except FileExistsError:
+        pass
     details = path.lstat()
     if (
         path.is_symlink()
@@ -957,6 +1050,111 @@ def _private_directory(path: Path) -> None:
         or stat.S_IMODE(details.st_mode) != 0o700
     ):
         raise ValueError("Sharadar quarantine directory must be owner-only")
+    descriptor = os.open(
+        path,
+        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0),
+    )
+    try:
+        opened = os.fstat(descriptor)
+        if opened.st_dev != details.st_dev or opened.st_ino != details.st_ino:
+            raise ValueError("Sharadar quarantine directory changed during verification")
+    finally:
+        os.close(descriptor)
+
+
+def _verified_ledger_records(descriptor: int) -> tuple[dict[str, Any], ...]:
+    details = os.fstat(descriptor)
+    if (
+        not stat.S_ISREG(details.st_mode)
+        or details.st_uid != os.geteuid()
+        or stat.S_IMODE(details.st_mode) != 0o600
+        or details.st_nlink != 1
+        or details.st_size > 4 * 1024 * 1024
+    ):
+        raise ValueError("Sharadar quarantine ledger is unsafe")
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    chunks: list[bytes] = []
+    total = 0
+    while True:
+        chunk = os.read(descriptor, 64 * 1024)
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > 4 * 1024 * 1024:
+            raise ValueError("Sharadar quarantine ledger exceeds its safe size limit")
+        chunks.append(chunk)
+    payload = b"".join(chunks)
+    if payload and not payload.endswith(b"\n"):
+        raise ValueError("Sharadar quarantine ledger has a partial record")
+    previous_hash = GENESIS_HASH
+    records: list[dict[str, Any]] = []
+    for raw_line in payload.splitlines():
+        try:
+            record = json.loads(raw_line)
+        except (json.JSONDecodeError, UnicodeDecodeError) as error:
+            raise ValueError("Sharadar quarantine ledger contains invalid JSON") from error
+        if not isinstance(record, dict):
+            raise ValueError("Sharadar quarantine ledger records must be objects")
+        if record.get("previous_hash") != previous_hash:
+            raise ValueError("Sharadar quarantine ledger chain is invalid")
+        supplied = record.get("record_hash")
+        material = {key: value for key, value in record.items() if key != "record_hash"}
+        if (
+            not isinstance(supplied, str)
+            or hashlib.sha256(_canonical_json(material)).hexdigest() != supplied
+        ):
+            raise ValueError("Sharadar quarantine ledger hash is invalid")
+        previous_hash = supplied
+        records.append(record)
+    return tuple(records)
+
+
+def _read_ledger(path: Path) -> tuple[dict[str, Any], ...]:
+    if not path.exists():
+        return ()
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_SH)
+        return _verified_ledger_records(descriptor)
+    finally:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+        os.close(descriptor)
+
+
+def _append_ledger(
+    path: Path,
+    material: Mapping[str, Any],
+    *,
+    duplicate_identity: tuple[str, ...],
+) -> Mapping[str, Any]:
+    descriptor = os.open(
+        path,
+        os.O_RDWR
+        | os.O_CREAT
+        | os.O_APPEND
+        | getattr(os, "O_NOFOLLOW", 0),
+        0o600,
+    )
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        records = _verified_ledger_records(descriptor)
+        for existing in records:
+            if all(existing.get(name) == material.get(name) for name in duplicate_identity):
+                return MappingProxyType(existing)
+        previous_hash = records[-1]["record_hash"] if records else GENESIS_HASH
+        record_material = {**material, "previous_hash": previous_hash}
+        record = {
+            **record_material,
+            "record_hash": hashlib.sha256(_canonical_json(record_material)).hexdigest(),
+        }
+        os.lseek(descriptor, 0, os.SEEK_END)
+        _write_all(descriptor, _canonical_json(record) + b"\n")
+        os.fsync(descriptor)
+        return MappingProxyType(record)
+    finally:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+        os.close(descriptor)
+        _fsync_directory(path.parent)
 
 
 def persist_probe(root: Path, probe: SharadarFetchedProbe) -> Mapping[str, Any]:
@@ -970,10 +1168,18 @@ def persist_probe(root: Path, probe: SharadarFetchedProbe) -> Mapping[str, Any]:
     blob = blob_directory / f"{probe.payload_sha256}.csv"
     if blob.exists():
         details = blob.lstat()
-        if blob.is_symlink() or not stat.S_ISREG(details.st_mode):
+        if (
+            blob.is_symlink()
+            or not stat.S_ISREG(details.st_mode)
+            or details.st_uid != os.geteuid()
+            or stat.S_IMODE(details.st_mode) != 0o400
+        ):
             raise ValueError("Sharadar quarantine blob is unsafe")
-        existing = blob.read_bytes()
-        if hashlib.sha256(existing).hexdigest() != probe.payload_sha256:
+        existing_hash, existing_size = _file_sha256(
+            blob,
+            maximum_bytes=MAX_SOURCE_BYTES,
+        )
+        if existing_size != probe.byte_length or existing_hash != probe.payload_sha256:
             raise ValueError("Sharadar quarantine blob failed hash verification")
     else:
         descriptor = os.open(
@@ -986,50 +1192,17 @@ def persist_probe(root: Path, probe: SharadarFetchedProbe) -> Mapping[str, Any]:
             os.fsync(descriptor)
         finally:
             os.close(descriptor)
-
-    ledger = root / "captures.jsonl"
-    previous_hash = GENESIS_HASH
-    if ledger.exists():
-        details = ledger.lstat()
-        if ledger.is_symlink() or not stat.S_ISREG(details.st_mode) or details.st_size > 4 * 1024 * 1024:
-            raise ValueError("Sharadar quarantine ledger is unsafe")
-        for raw_line in ledger.read_bytes().splitlines():
-            record = json.loads(raw_line)
-            if record.get("previous_hash") != previous_hash:
-                raise ValueError("Sharadar quarantine ledger chain is invalid")
-            supplied = record.get("record_hash")
-            material = {key: value for key, value in record.items() if key != "record_hash"}
-            if not isinstance(supplied, str) or hashlib.sha256(_canonical_json(material)).hexdigest() != supplied:
-                raise ValueError("Sharadar quarantine ledger hash is invalid")
-            previous_hash = supplied
+        _fsync_directory(blob_directory)
 
     material = {
         **probe.as_record(),
         "blob_relative_path": f"blobs/{probe.payload_sha256}.csv",
-        "previous_hash": previous_hash,
     }
-    record = {
-        **material,
-        "record_hash": hashlib.sha256(_canonical_json(material)).hexdigest(),
-    }
-    encoded = _canonical_json(record) + b"\n"
-    descriptor = os.open(
-        ledger,
-        os.O_WRONLY
-        | os.O_CREAT
-        | os.O_APPEND
-        | getattr(os, "O_NOFOLLOW", 0),
-        0o600,
+    return _append_ledger(
+        root / "captures.jsonl",
+        material,
+        duplicate_identity=("table", "role", "payload_sha256"),
     )
-    try:
-        details = os.fstat(descriptor)
-        if not stat.S_ISREG(details.st_mode) or details.st_nlink != 1:
-            raise ValueError("Sharadar quarantine ledger is unsafe")
-        _write_all(descriptor, encoded)
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
-    return MappingProxyType(record)
 
 
 def persist_bulk_capture(
@@ -1047,6 +1220,8 @@ def persist_bulk_capture(
     if (
         archive.is_symlink()
         or not stat.S_ISREG(details.st_mode)
+        or details.st_uid != os.geteuid()
+        or stat.S_IMODE(details.st_mode) != 0o400
         or details.st_size != capture.byte_length
     ):
         raise ValueError("Sharadar bulk quarantine archive failed verification")
@@ -1056,54 +1231,56 @@ def persist_bulk_capture(
     )
     if archive_size != capture.byte_length or archive_hash != capture.payload_sha256:
         raise ValueError("Sharadar bulk quarantine archive failed verification")
-    ledger = root / "bulk_captures.jsonl"
-    previous_hash = GENESIS_HASH
-    if ledger.exists():
-        details = ledger.lstat()
-        if (
-            ledger.is_symlink()
-            or not stat.S_ISREG(details.st_mode)
-            or details.st_size > 4 * 1024 * 1024
-        ):
-            raise ValueError("Sharadar bulk quarantine ledger is unsafe")
-        for raw_line in ledger.read_bytes().splitlines():
-            prior = json.loads(raw_line)
-            if prior.get("previous_hash") != previous_hash:
-                raise ValueError("Sharadar bulk quarantine ledger chain is invalid")
-            supplied = prior.get("record_hash")
-            material = {key: value for key, value in prior.items() if key != "record_hash"}
-            if (
-                not isinstance(supplied, str)
-                or hashlib.sha256(_canonical_json(material)).hexdigest() != supplied
-            ):
-                raise ValueError("Sharadar bulk quarantine ledger hash is invalid")
-            previous_hash = supplied
     material = {
         **capture.as_record(),
         "blob_relative_path": archive.name,
-        "previous_hash": previous_hash,
     }
-    record = {
-        **material,
-        "record_hash": hashlib.sha256(_canonical_json(material)).hexdigest(),
-    }
-    descriptor = os.open(
-        ledger,
-        os.O_WRONLY
-        | os.O_CREAT
-        | os.O_APPEND
-        | getattr(os, "O_NOFOLLOW", 0),
-        0o600,
+    return _append_ledger(
+        root / "bulk_captures.jsonl",
+        material,
+        duplicate_identity=("table", "payload_sha256"),
     )
-    try:
-        details = os.fstat(descriptor)
-        if not stat.S_ISREG(details.st_mode) or details.st_nlink != 1:
-            raise ValueError("Sharadar bulk quarantine ledger is unsafe")
-        _write_all(descriptor, _canonical_json(record) + b"\n")
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
-    return MappingProxyType(record)
+
+
+def _existing_bulk_record(
+    root: Path,
+    status: SharadarBulkStatus,
+) -> Mapping[str, Any] | None:
+    for record in reversed(_read_ledger(root / "bulk_captures.jsonl")):
+        if (
+            record.get("table") != status.table
+            or record.get("status_payload_sha256") != status.payload_sha256
+        ):
+            continue
+        payload_sha256 = record.get("payload_sha256")
+        byte_length = record.get("byte_length")
+        expected_name = f"{status.table}-10y-{payload_sha256}.csv.zip"
+        if (
+            not isinstance(payload_sha256, str)
+            or _SHA256_PATTERN.fullmatch(payload_sha256) is None
+            or isinstance(byte_length, bool)
+            or not isinstance(byte_length, int)
+            or record.get("blob_relative_path") != expected_name
+        ):
+            raise ValueError("Sharadar bulk quarantine record is invalid")
+        archive = root / expected_name
+        details = archive.lstat()
+        if (
+            archive.is_symlink()
+            or not stat.S_ISREG(details.st_mode)
+            or details.st_uid != os.geteuid()
+            or stat.S_IMODE(details.st_mode) != 0o400
+            or details.st_size != byte_length
+        ):
+            raise ValueError("Sharadar bulk quarantine archive failed verification")
+        digest, size = _file_sha256(
+            archive,
+            maximum_bytes=MAX_COMPRESSED_BYTES[status.table],
+        )
+        if digest != payload_sha256 or size != byte_length:
+            raise ValueError("Sharadar bulk quarantine archive failed verification")
+        return MappingProxyType(record)
+    return None
 
 
 def execute_connectivity_capture(
@@ -1168,6 +1345,10 @@ def execute_ten_year_bulk_capture(
     records: list[Mapping[str, Any]] = []
     for table in TEN_YEAR_TABLES:
         status = client.fetch_bulk_status(table)
+        existing = _existing_bulk_record(target, status)
+        if existing is not None:
+            records.append(existing)
+            continue
         capture = client.download_ten_year_bulk(status=status, quarantine_root=target)
         records.append(persist_bulk_capture(target, capture))
     return tuple(records)

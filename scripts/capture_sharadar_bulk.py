@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
         key = load_key()
         if arguments.status:
             statuses = inspect_ten_year_bulk_status(api_key=key)
-            required = sum(item.size for item in statuses)
+            declared = sum(item.size for item in statuses)
             destination = ROOT / QUARANTINE_RELATIVE_PATH
             destination.parent.mkdir(parents=True, exist_ok=True)
             free = shutil.disk_usage(destination.parent).free
@@ -48,9 +48,10 @@ def main(argv: list[str] | None = None) -> int:
                 json.dumps(
                     {
                         "tables": [item.as_dict() for item in statuses],
-                        "compressed_bytes_required": required,
+                        "provider_declared_bytes_advisory": declared,
                         "free_disk_bytes": free,
-                        "download_fits_with_double_space_margin": free >= required * 2,
+                        "disk_preflight_authoritative": False,
+                        "actual_download_requires_content_length_and_double_space_margin": True,
                         "quarantine_only": True,
                         "dataset_admitted": False,
                     },

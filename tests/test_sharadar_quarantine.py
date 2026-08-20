@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 import hashlib
 import io
@@ -9,9 +10,11 @@ import stat
 import zipfile
 
 import pytest
+import requests
 
 import core.orchestration.sharadar_quarantine as module
 import scripts._sharadar_keychain as keychain
+import scripts.capture_sharadar_bulk as bulk_script
 import scripts.capture_sharadar_connectivity as script
 from core.data_sources.provider_access import ProviderAttemptMetadata, ProviderHTTPResult
 from core.orchestration.sharadar_quarantine import (
@@ -77,10 +80,14 @@ class Response:
         self.status_code = status_code
         self.headers = {"Content-Type": content_type}
         self.ok = status_code == 200
+        self.closed = False
 
     def iter_content(self, chunk_size):
         for offset in range(0, len(self.content), chunk_size):
             yield self.content[offset : offset + chunk_size]
+
+    def close(self):
+        self.closed = True
 
 
 def metadata() -> ProviderAttemptMetadata:
@@ -168,6 +175,27 @@ def test_exact_csv_shapes_pass_without_granting_semantic_authority():
         rows, header_sha = validate_probe_csv(csv_payload(definition), definition)
         assert rows == 1
         assert len(header_sha) == 64
+
+
+def test_probe_accepts_provider_native_column_order_and_hashes_observed_header():
+    definition = PROBE_DEFINITIONS[0]
+    payload = csv_payload(definition)
+    lines = payload.decode().splitlines()
+    fields = lines[0].split(",")
+    values = lines[1].split(",")
+    reordered = (
+        ",".join(reversed(fields))
+        + "\n"
+        + ",".join(reversed(values))
+        + "\n"
+    ).encode()
+
+    rows, header_sha = validate_probe_csv(reordered, definition)
+
+    assert rows == 1
+    assert header_sha == hashlib.sha256(
+        ",".join(reversed(fields)).encode()
+    ).hexdigest()
 
 
 @pytest.mark.parametrize(
@@ -282,7 +310,7 @@ def test_tampered_ledger_or_blob_is_rejected(tmp_path: Path):
     blob = clean / record["blob_relative_path"]
     blob.chmod(0o600)
     blob.write_bytes(b"tampered")
-    with pytest.raises(ValueError, match="hash verification"):
+    with pytest.raises(ValueError, match="unsafe|hash verification"):
         persist_probe(clean, probe)
 
 
@@ -371,7 +399,13 @@ def test_keychain_load_keeps_secret_out_of_errors_and_validates_output(monkeypat
     assert API_KEY not in str(caught.value)
 
 
-def bulk_archive(table: str, *, extra_member: bool = False) -> bytes:
+def bulk_archive(
+    table: str,
+    *,
+    extra_member: bool = False,
+    symlink_member: bool = False,
+    bomb_member: bool = False,
+) -> bytes:
     stream = io.BytesIO()
     fields = sorted(BULK_REQUIRED_FIELDS[table])
     values = {name: "1" for name in fields}
@@ -390,17 +424,34 @@ def bulk_archive(table: str, *, extra_member: bool = False) -> bytes:
     content = (
         ",".join(fields) + "\n" + ",".join(values[name] for name in fields) + "\n"
     ).encode()
+    if bomb_member:
+        content += b"0" * (2 * 1024 * 1024)
     with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr(f"{table}.csv", content)
+        if symlink_member:
+            member = zipfile.ZipInfo(f"{table}.csv")
+            member.create_system = 3
+            member.external_attr = (stat.S_IFLNK | 0o777) << 16
+            archive.writestr(member, content)
+        else:
+            archive.writestr(f"{table}.csv", content)
         if extra_member:
             archive.writestr("unexpected.csv", content)
     return stream.getvalue()
 
 
 class BulkAccess:
-    def __init__(self, archives, *, redirect_host="downloads.s3.amazonaws.com"):
+    def __init__(
+        self,
+        archives,
+        *,
+        redirect_host="downloads.s3.amazonaws.com",
+        status_delta=0,
+        status_extra=None,
+    ):
         self.archives = archives
         self.redirect_host = redirect_host
+        self.status_delta = status_delta
+        self.status_extra = status_extra or {}
         self.calls = []
 
     def get(self, session, url, **kwargs):
@@ -410,10 +461,11 @@ class BulkAccess:
             payload = json.dumps(
                 {
                     "table": table,
-                    "name": f"{table}.csv.zip",
-                    "size": len(self.archives[table]),
+                    "name": f"SHARADAR_{table}_10y.csv.zip",
+                    "size": len(self.archives[table]) + self.status_delta,
                     "sizeLabel": f"{len(self.archives[table])} B",
-                    "modified": "2026-08-20T10:00:00+00:00",
+                    "modified": "Wed, 20 Aug 2026 10:00:00 GMT",
+                    **self.status_extra,
                 },
                 separators=(",", ":"),
             ).encode()
@@ -430,17 +482,28 @@ class BulkAccess:
 
 
 class BulkSession:
-    def __init__(self, archives, *, length_delta=0):
+    def __init__(self, archives, *, length_delta=0, omit_length=False, stream_error=False):
         self.archives = archives
         self.length_delta = length_delta
+        self.omit_length = omit_length
+        self.stream_error = stream_error
         self.calls = []
+        self.responses = []
 
     def get(self, url, **kwargs):
         self.calls.append((url, kwargs))
         table = url.split("/licensed/", 1)[1].split(".csv.zip", 1)[0]
         payload = self.archives[table]
         response = Response(payload, content_type="application/zip")
-        response.headers["Content-Length"] = str(len(payload) + self.length_delta)
+        if not self.omit_length:
+            response.headers["Content-Length"] = str(len(payload) + self.length_delta)
+        if self.stream_error:
+            response.iter_content = lambda chunk_size: (_ for _ in ()).throw(
+                requests.exceptions.ChunkedEncodingError(
+                    "signed-url-secret-must-not-leak"
+                )
+            )
+        self.responses.append(response)
         return response
 
 
@@ -449,15 +512,36 @@ def bulk_stack(
     extra_member=False,
     redirect_host="downloads.s3.amazonaws.com",
     length_delta=0,
+    status_delta=0,
+    status_extra=None,
+    omit_length=False,
+    stream_error=False,
+    symlink_member=False,
+    bomb_member=False,
 ):
     archives = {
-        table: bulk_archive(table, extra_member=extra_member)
+        table: bulk_archive(
+            table,
+            extra_member=extra_member,
+            symlink_member=symlink_member,
+            bomb_member=bomb_member,
+        )
         for table in module.TEN_YEAR_TABLES
     }
     return (
         archives,
-        BulkSession(archives, length_delta=length_delta),
-        BulkAccess(archives, redirect_host=redirect_host),
+        BulkSession(
+            archives,
+            length_delta=length_delta,
+            omit_length=omit_length,
+            stream_error=stream_error,
+        ),
+        BulkAccess(
+            archives,
+            redirect_host=redirect_host,
+            status_delta=status_delta,
+            status_extra=status_extra,
+        ),
     )
 
 
@@ -471,6 +555,8 @@ def test_bulk_status_is_exact_bounded_and_credential_free():
     )
     assert [item.table for item in statuses] == list(module.TEN_YEAR_TABLES)
     assert all(item.size == len(archives[item.table]) for item in statuses)
+    assert all(item.name.startswith("SHARADAR_") for item in statuses)
+    assert all(item.modified.endswith("GMT") for item in statuses)
     assert API_KEY not in json.dumps([item.as_dict() for item in statuses])
     assert all(call[2]["params"]["api_key"] == API_KEY for call in access.calls)
 
@@ -497,6 +583,9 @@ def test_bulk_download_validates_redirect_size_zip_schema_and_persists_hash_chai
     assert API_KEY not in json.dumps(dict(record))
     assert record["dataset_admitted"] is False
     assert record["validation_opened"] is False
+    assert record["status_size_is_advisory"] is True
+    assert record["archive_member_declared_bytes"] > 0
+    assert record["license_restricted"] is True
     archive = root / record["blob_relative_path"]
     assert stat.S_IMODE(archive.stat().st_mode) == 0o400
     assert hashlib.sha256(archive.read_bytes()).hexdigest() == record["payload_sha256"]
@@ -507,7 +596,7 @@ def test_bulk_download_validates_redirect_size_zip_schema_and_persists_hash_chai
     ("redirect_host", "length_delta", "extra_member", "message"),
     [
         ("127.0.0.1", 0, False, "redirect target"),
-        ("downloads.s3.amazonaws.com", 1, False, "content length"),
+        ("downloads.s3.amazonaws.com", 1, False, "declaration"),
         ("downloads.s3.amazonaws.com", 0, True, "exactly one"),
     ],
 )
@@ -532,6 +621,21 @@ def test_bulk_download_rejects_unsafe_redirect_changed_size_and_archive_shape(
     assert not list((tmp_path / "q").glob("*.partial"))
 
 
+@pytest.mark.parametrize("option", ["symlink_member", "bomb_member"])
+def test_bulk_archive_rejects_symlink_and_extreme_compression_ratio(tmp_path, option):
+    _, session, access = bulk_stack(**{option: True})
+    client = SharadarSampleClient(
+        API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    status = client.fetch_bulk_status("tickers")
+
+    with pytest.raises(ValueError, match="archive member is unsafe"):
+        client.download_ten_year_bulk(status=status, quarantine_root=tmp_path / "q")
+
+
 def test_end_to_end_bulk_capture_is_five_table_quarantine_only(tmp_path):
     _, session, access = bulk_stack()
     records = execute_ten_year_bulk_capture(
@@ -547,6 +651,184 @@ def test_end_to_end_bulk_capture_is_five_table_quarantine_only(tmp_path):
     root = tmp_path / QUARANTINE_RELATIVE_PATH
     assert len((root / "bulk_captures.jsonl").read_text().splitlines()) == 5
     assert API_KEY not in (root / "bulk_captures.jsonl").read_text()
+
+
+def test_status_size_is_advisory_and_actual_download_length_is_authoritative(tmp_path):
+    archives, session, access = bulk_stack(status_delta=123, status_extra={"rows": 1})
+    client = SharadarSampleClient(
+        API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    status = client.fetch_bulk_status("stocks")
+    capture = client.download_ten_year_bulk(
+        status=status,
+        quarantine_root=tmp_path / "q",
+    )
+
+    assert status.size == len(archives["stocks"]) + 123
+    assert capture.byte_length == len(archives["stocks"])
+    assert capture.status.size != capture.byte_length
+
+
+def test_bulk_requires_content_length_before_writing(tmp_path):
+    _, session, access = bulk_stack(omit_length=True)
+    client = SharadarSampleClient(
+        API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    status = client.fetch_bulk_status("tickers")
+
+    with pytest.raises(SharadarCaptureError, match="content length is required"):
+        client.download_ten_year_bulk(status=status, quarantine_root=tmp_path / "q")
+    assert not list((tmp_path / "q").glob("*.partial"))
+
+
+def test_bulk_stream_errors_are_sanitized_and_response_is_closed(tmp_path):
+    _, session, access = bulk_stack(stream_error=True)
+    client = SharadarSampleClient(
+        API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    status = client.fetch_bulk_status("tickers")
+
+    with pytest.raises(SharadarCaptureError, match="stream could not be completed") as caught:
+        client.download_ten_year_bulk(status=status, quarantine_root=tmp_path / "q")
+    assert "signed-url-secret" not in str(caught.value)
+    assert session.responses[-1].closed is True
+    assert not list((tmp_path / "q").glob("*.partial"))
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "http://downloads.s3.amazonaws.com/x.zip",
+        "https://user@downloads.s3.amazonaws.com/x.zip",
+        "https://downloads.s3.amazonaws.com:8443/x.zip",
+        "https://distribution.cloudfront.net/x.zip",
+        "https://evilamazonaws.com/x.zip",
+    ],
+)
+def test_redirect_boundary_rejects_downgrade_userinfo_port_and_near_misses(value):
+    with pytest.raises(SharadarCaptureError, match="redirect target"):
+        SharadarSampleClient._safe_redirect(
+            value,
+            base_url="https://api.sharadar.com/v1.0/data/stocks",
+        )
+
+
+def test_redirect_boundary_resolves_relative_provider_location():
+    resolved, host, path_hash = SharadarSampleClient._safe_redirect(
+        "/licensed/stocks.csv.zip?signature=secret",
+        base_url="https://api.sharadar.com/v1.0/data/stocks",
+    )
+    assert resolved.startswith("https://api.sharadar.com/licensed/")
+    assert host == "api.sharadar.com"
+    assert len(path_hash) == 64
+    assert "secret" not in path_hash
+
+
+def test_bulk_capture_resume_skips_verified_same_status_archives(tmp_path):
+    _, session, access = bulk_stack()
+    arguments = {
+        "repository_root": tmp_path,
+        "api_key": API_KEY,
+        "session": session,
+        "access": access,
+        "clock": lambda: START,
+    }
+    first = execute_ten_year_bulk_capture(**arguments)
+    second = execute_ten_year_bulk_capture(**arguments)
+
+    assert [dict(record) for record in second] == [dict(record) for record in first]
+    assert len(session.calls) == 5
+    assert len(access.calls) == 15
+    ledger = tmp_path / QUARANTINE_RELATIVE_PATH / "bulk_captures.jsonl"
+    assert len(ledger.read_text().splitlines()) == 5
+
+
+def test_concurrent_bulk_persistence_serializes_and_deduplicates_ledger(tmp_path):
+    _, session, access = bulk_stack()
+    client = SharadarSampleClient(
+        API_KEY,
+        session=session,
+        access=access,
+        clock=clocks(),
+    )
+    root = tmp_path / "q"
+    status = client.fetch_bulk_status("tickers")
+    capture = client.download_ten_year_bulk(status=status, quarantine_root=root)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        records = list(pool.map(lambda _: persist_bulk_capture(root, capture), range(2)))
+
+    assert records[0]["record_hash"] == records[1]["record_hash"]
+    assert len((root / "bulk_captures.jsonl").read_text().splitlines()) == 1
+
+
+def test_bulk_ledger_non_object_and_hash_tamper_fail_closed(tmp_path):
+    _, session, access = bulk_stack()
+    execute_ten_year_bulk_capture(
+        repository_root=tmp_path,
+        api_key=API_KEY,
+        session=session,
+        access=access,
+        clock=lambda: START,
+    )
+    ledger = tmp_path / QUARANTINE_RELATIVE_PATH / "bulk_captures.jsonl"
+    ledger.write_text("5\n")
+    ledger.chmod(0o600)
+
+    with pytest.raises(ValueError, match="objects"):
+        execute_ten_year_bulk_capture(
+            repository_root=tmp_path,
+            api_key=API_KEY,
+            session=session,
+            access=access,
+            clock=lambda: START,
+        )
+
+
+def test_private_directory_rejects_symlink_without_chmodding_target(tmp_path):
+    victim = tmp_path / "victim"
+    victim.mkdir(mode=0o755)
+    root = tmp_path / "quarantine"
+    root.symlink_to(victim, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="owner-only"):
+        persist_probe(root, fetch())
+    assert stat.S_IMODE(victim.stat().st_mode) == 0o755
+
+
+def test_bulk_cli_status_is_explicitly_advisory_and_secret_free(monkeypatch, capsys):
+    archives, _, access = bulk_stack()
+    statuses = tuple(
+        SharadarSampleClient(
+            API_KEY,
+            session=object(),
+            access=access,
+            clock=lambda: START,
+        ).fetch_bulk_status(table)
+        for table in module.TEN_YEAR_TABLES
+    )
+    monkeypatch.setattr(bulk_script, "load_key", lambda: API_KEY)
+    monkeypatch.setattr(
+        bulk_script,
+        "inspect_ten_year_bulk_status",
+        lambda **kwargs: statuses,
+    )
+
+    assert bulk_script.main(["--status"]) == 0
+    output = capsys.readouterr().out
+    assert API_KEY not in output
+    assert "X-Amz" not in output
+    assert '"disk_preflight_authoritative": false' in output
+    assert '"actual_download_requires_content_length_and_double_space_margin": true' in output
 
 
 def test_bulk_status_dataclass_rejects_oversize_and_wrong_filename():
