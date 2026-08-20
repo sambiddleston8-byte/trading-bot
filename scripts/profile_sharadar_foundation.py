@@ -30,15 +30,17 @@ def main() -> int:
                         name: profile["tables"]["tickers"][name]
                         for name in (
                             "unique_table_tickers",
-                            "unique_table_permanent_identities",
+                            "unique_table_permatickers",
                             "ticker_reuse_groups",
                             "ticker_reuse_group_counts_by_table",
-                            "max_permanent_identities_per_table_ticker",
-                            "permanent_identity_alias_groups",
-                            "permanent_identity_alias_group_counts_by_table",
-                            "max_tickers_per_table_permanent_identity",
+                            "max_permatickers_per_table_ticker",
+                            "permaticker_alias_groups",
+                            "permaticker_alias_group_counts_by_table",
+                            "max_tickers_per_table_permaticker",
                             "ticker_only_join_safe",
                             "ticker_only_join_safe_by_table",
+                            "observed_tradable_master_tables",
+                            "unobserved_tradable_master_tables",
                             "observed_tradable_ticker_only_join_safe",
                         )
                     },
