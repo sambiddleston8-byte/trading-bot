@@ -581,19 +581,26 @@ def _same_vintage_roots(
 @dataclass(frozen=True, slots=True)
 class NorgateShardedCaptureManifest:
     manifest_sha256: str
+    catalog_source_payload_sha256: str
+    catalog_entries_sha256: str
+    catalog_evidence_sha256: str
+    catalog_entry_count: int
+    catalog_exported_at: str
+    catalog_retrieved_at: str
+    catalog_receipt_timestamp_basis: str
     database_name: str
     database_update_at: str
     norgatedata_package_version: str
     requested_start: str
     requested_end: str
-    requested_symbols: tuple[str, ...]
+    requested_symbols: tuple[str, ...] = field(repr=False)
     requested_symbols_sha256: str
     shard_source_payload_sha256: tuple[str, ...]
     shard_requested_symbols_sha256: tuple[str, ...]
     shard_exported_at: tuple[str, ...]
     shard_symbol_counts: tuple[int, ...]
     shard_row_counts: tuple[int, ...]
-    aggregate_reused_symbols: tuple[str, ...]
+    aggregate_reused_symbols: tuple[str, ...] = field(repr=False)
     asset_count: int
     row_count: int
     license_restricted_provider_data: bool = True
@@ -601,6 +608,8 @@ class NorgateShardedCaptureManifest:
     same_vintage_shard_contract_match: bool = True
     requested_symbol_partition_match: bool = True
     cross_shard_row_identity_unique: bool = True
+    catalog_vintage_match: bool = True
+    catalog_asset_identity_match: bool = True
     quarantine_capture_bound: bool = False
     provider_payload_semantics_qualified: bool = False
     source_bytes_authenticated: bool = False
@@ -625,10 +634,43 @@ class NorgateShardedCaptureManifest:
                 "NorgateShardedCaptureManifest must be issued by the assembler"
             )
         object.__setattr__(self, "_authority", None)
+        hashes = (
+            self.manifest_sha256,
+            self.catalog_source_payload_sha256,
+            self.catalog_entries_sha256,
+            self.catalog_evidence_sha256,
+            self.requested_symbols_sha256,
+            *self.shard_source_payload_sha256,
+            *self.shard_requested_symbols_sha256,
+        )
+        if any(
+            not isinstance(value, str)
+            or re.fullmatch(r"[0-9a-f]{64}", value) is None
+            for value in hashes
+        ):
+            raise ValueError("Norgate sharded-capture hashes are not canonical")
+        timestamp_fields = (
+            (self.catalog_exported_at, "catalog_exported_at"),
+            (self.catalog_retrieved_at, "catalog_retrieved_at"),
+            (self.database_update_at, "database_update_at"),
+            *((value, "shard_exported_at") for value in self.shard_exported_at),
+        )
+        if any(
+            value != _canonical_timestamp(value, name)
+            for value, name in timestamp_fields
+        ):
+            raise ValueError("Norgate sharded-capture timestamps are not canonical")
+        if self.catalog_receipt_timestamp_basis not in {
+            "SYSTEM_CLOCK_AT_FILE_READ_UNQUALIFIED",
+            "CALLER_SUPPLIED_UNQUALIFIED",
+        }:
+            raise ValueError("Norgate sharded-capture receipt basis is unsupported")
         assertions = (
             self.same_vintage_shard_contract_match,
             self.requested_symbol_partition_match,
             self.cross_shard_row_identity_unique,
+            self.catalog_vintage_match,
+            self.catalog_asset_identity_match,
         )
         if any(value is not True for value in assertions):
             raise ValueError("Norgate sharded-capture assertions were altered")
@@ -637,6 +679,12 @@ class NorgateShardedCaptureManifest:
             or self.source_code_repository_storage_allowed is not False
         ):
             raise ValueError("Norgate sharded-capture license markings were altered")
+        if (
+            self.catalog_entry_count != len(self.requested_symbols)
+            or self.catalog_entry_count != self.asset_count
+            or self.aggregate_reused_symbols
+        ):
+            raise ValueError("Norgate catalog-bound capture evidence is inconsistent")
         shard_count = len(self.shard_source_payload_sha256)
         if not 2 <= shard_count <= MAX_CAPTURE_SHARDS or any(
             len(values) != shard_count
@@ -660,14 +708,25 @@ class NorgateShardedCaptureManifest:
         return {
             "provider_id": PROVIDER_ID,
             "provider_dataset_id": DATASET_ID,
-            "manifest_scope": "SAME_VINTAGE_SHARDED_QUARANTINE_CAPTURE_ONLY",
+            "manifest_scope": (
+                "CATALOG_BOUND_SAME_VINTAGE_SHARDED_QUARANTINE_CAPTURE_ONLY"
+            ),
             "manifest_sha256": self.manifest_sha256,
+            "catalog_source_payload_sha256": self.catalog_source_payload_sha256,
+            "catalog_entries_sha256": self.catalog_entries_sha256,
+            "catalog_evidence_sha256": self.catalog_evidence_sha256,
+            "catalog_entry_count": self.catalog_entry_count,
+            "catalog_exported_at": self.catalog_exported_at,
+            "catalog_retrieved_at": self.catalog_retrieved_at,
+            "catalog_receipt_timestamp_basis": (
+                self.catalog_receipt_timestamp_basis
+            ),
             "database_name": self.database_name,
             "database_update_at": self.database_update_at,
             "norgatedata_package_version": self.norgatedata_package_version,
             "requested_start": self.requested_start,
             "requested_end": self.requested_end,
-            "requested_symbols": list(self.requested_symbols),
+            "requested_symbol_count": len(self.requested_symbols),
             "requested_symbols_sha256": self.requested_symbols_sha256,
             "shards": [
                 {
@@ -684,7 +743,6 @@ class NorgateShardedCaptureManifest:
                 }
                 for ordinal in range(len(self.shard_source_payload_sha256))
             ],
-            "aggregate_reused_symbols": list(self.aggregate_reused_symbols),
             "asset_count": self.asset_count,
             "row_count": self.row_count,
             "license_restricted_provider_data": (
@@ -702,6 +760,8 @@ class NorgateShardedCaptureManifest:
             "cross_shard_row_identity_unique": (
                 self.cross_shard_row_identity_unique
             ),
+            "catalog_vintage_match": self.catalog_vintage_match,
+            "catalog_asset_identity_match": self.catalog_asset_identity_match,
             **{name: getattr(self, name) for name in SAFETY_FLAG_NAMES},
         }
 
@@ -709,9 +769,9 @@ class NorgateShardedCaptureManifest:
 def assemble_norgate_sharded_capture_manifest(
     payloads: Sequence[bytes],
     *,
-    expected_symbols: Sequence[str],
+    catalog_evidence: NorgateLocalUniverseCatalogEvidence,
 ) -> NorgateShardedCaptureManifest:
-    """Bind same-vintage export shards without authenticating provider semantics."""
+    """Bind shards to one exact unqualified catalog without admitting semantics."""
 
     if not isinstance(payloads, Sequence) or isinstance(
         payloads, (bytes, bytearray, str)
@@ -720,23 +780,30 @@ def assemble_norgate_sharded_capture_manifest(
     if not 2 <= len(payloads) <= MAX_CAPTURE_SHARDS:
         raise ValueError("payloads must contain between 2 and 100 export shards")
     shards = tuple(payloads)
-    if not isinstance(expected_symbols, Sequence) or isinstance(
-        expected_symbols, (bytes, bytearray, str)
-    ):
-        raise ValueError("expected_symbols must be a bounded canonical sequence")
-    if not 1 <= len(expected_symbols) <= MAX_CAPTURE_SYMBOLS:
-        raise ValueError("expected_symbols must be a bounded canonical sequence")
-    expected = tuple(expected_symbols)
+    if not isinstance(catalog_evidence, NorgateLocalUniverseCatalogEvidence):
+        raise ValueError("catalog_evidence must be staged catalog evidence")
+    catalog_entries = catalog_evidence.entries
+    catalog_asset_ids = tuple(int(entry["asset_id"]) for entry in catalog_entries)
+    if catalog_asset_ids != tuple(sorted(catalog_asset_ids)):
+        raise ValueError("staged catalog entries are not ordered by stable asset ID")
+    expected = tuple(str(entry["symbol"]) for entry in catalog_entries)
     if (
         not expected
         or len(expected) > MAX_CAPTURE_SYMBOLS
         or len(expected) != len(set(expected))
+        or catalog_evidence.reused_symbols
         or any(
             not isinstance(symbol, str) or _SYMBOL_PATTERN.fullmatch(symbol) is None
             for symbol in expected
         )
     ):
-        raise ValueError("expected_symbols must be a bounded unique canonical sequence")
+        raise ValueError("catalog symbols must be bounded, canonical, and unambiguous")
+    catalog_identity_by_asset = {
+        int(entry["asset_id"]): (str(entry["symbol"]), str(entry["security_name"]))
+        for entry in catalog_entries
+    }
+    if len(catalog_identity_by_asset) != len(catalog_entries):
+        raise ValueError("catalog repeats a stable asset identity")
 
     shard_variant_fields = {
         "exported_at",
@@ -828,6 +895,15 @@ def assemble_norgate_sharded_capture_manifest(
                 raise ValueError(
                     f"payloads[{ordinal}] changes a Norgate asset identity across shards"
                 )
+            catalog_identity = catalog_identity_by_asset.get(row["asset_id"])
+            if catalog_identity != (row["symbol"], row["security_name"]):
+                raise ValueError(
+                    f"payloads[{ordinal}] does not match the pinned catalog identity"
+                )
+            if row["requested_symbol"] != catalog_identity[0]:
+                raise ValueError(
+                    f"payloads[{ordinal}] requested symbol does not match the catalog"
+                )
             assets_by_resolved_symbol.setdefault(row["symbol"], set()).add(
                 row["asset_id"]
             )
@@ -840,8 +916,24 @@ def assemble_norgate_sharded_capture_manifest(
         raise ValueError("sharded capture repeats a requested symbol across shards")
     if flattened != expected:
         raise ValueError(
-            "sharded capture does not exactly match the expected symbol partition"
+            "sharded capture does not exactly match the catalog symbol partition"
         )
+    if set(identity_by_asset) != set(catalog_identity_by_asset):
+        raise ValueError("sharded capture does not cover every catalog asset identity")
+    catalog_vintage = (
+        catalog_evidence.database_name,
+        catalog_evidence.database_update_at,
+        catalog_evidence.norgatedata_package_version,
+    )
+    shard_vintage = (
+        baseline_root["database_name"],
+        _canonical_timestamp(
+            baseline_root["database_update_at"], "database_update_at"
+        ),
+        baseline_root["norgatedata_package_version"],
+    )
+    if shard_vintage != catalog_vintage:
+        raise ValueError("sharded capture does not match the pinned catalog vintage")
 
     aggregate_reused_symbols = tuple(
         sorted(
@@ -856,7 +948,18 @@ def assemble_norgate_sharded_capture_manifest(
     manifest_material = {
         "provider_id": PROVIDER_ID,
         "provider_dataset_id": DATASET_ID,
-        "manifest_scope": "SAME_VINTAGE_SHARDED_QUARANTINE_CAPTURE_ONLY",
+        "manifest_scope": (
+            "CATALOG_BOUND_SAME_VINTAGE_SHARDED_QUARANTINE_CAPTURE_ONLY"
+        ),
+        "catalog_source_payload_sha256": catalog_evidence.source_payload_sha256,
+        "catalog_entries_sha256": catalog_evidence.entries_sha256,
+        "catalog_evidence_sha256": catalog_evidence.catalog_evidence_sha256,
+        "catalog_entry_count": len(catalog_entries),
+        "catalog_exported_at": catalog_evidence.exported_at,
+        "catalog_retrieved_at": catalog_evidence.retrieved_at,
+        "catalog_receipt_timestamp_basis": (
+            catalog_evidence.receipt_timestamp_basis
+        ),
         "database_name": baseline_root["database_name"],
         "database_update_at": _canonical_timestamp(
             baseline_root["database_update_at"], "database_update_at"
@@ -885,6 +988,8 @@ def assemble_norgate_sharded_capture_manifest(
         "same_vintage_shard_contract_match": True,
         "requested_symbol_partition_match": True,
         "cross_shard_row_identity_unique": True,
+        "catalog_vintage_match": True,
+        "catalog_asset_identity_match": True,
         "safety_flags": {name: False for name in SAFETY_FLAG_NAMES},
     }
     manifest_sha256 = hashlib.sha256(
@@ -898,6 +1003,13 @@ def assemble_norgate_sharded_capture_manifest(
     ).hexdigest()
     return NorgateShardedCaptureManifest(
         manifest_sha256=manifest_sha256,
+        catalog_source_payload_sha256=catalog_evidence.source_payload_sha256,
+        catalog_entries_sha256=catalog_evidence.entries_sha256,
+        catalog_evidence_sha256=catalog_evidence.catalog_evidence_sha256,
+        catalog_entry_count=len(catalog_entries),
+        catalog_exported_at=catalog_evidence.exported_at,
+        catalog_retrieved_at=catalog_evidence.retrieved_at,
+        catalog_receipt_timestamp_basis=catalog_evidence.receipt_timestamp_basis,
         database_name=str(baseline_root["database_name"]),
         database_update_at=str(manifest_material["database_update_at"]),
         norgatedata_package_version=str(
@@ -983,15 +1095,16 @@ def compare_norgate_same_vintage_exports(
 @dataclass(frozen=True, slots=True)
 class NorgateLocalUniverseCatalogEvidence:
     retrieved_at: str
+    receipt_timestamp_basis: str
     exported_at: str
     database_name: str
     database_update_at: str
     norgatedata_package_version: str
-    entries: tuple[Mapping[str, Any], ...]
+    entries: tuple[Mapping[str, Any], ...] = field(repr=False)
     source_payload_sha256: str
     entries_sha256: str
     catalog_evidence_sha256: str
-    reused_symbols: tuple[str, ...]
+    reused_symbols: tuple[str, ...] = field(repr=False)
     license_restricted_provider_data: bool = True
     source_code_repository_storage_allowed: bool = False
     quarantine_capture_bound: bool = False
@@ -1023,6 +1136,11 @@ class NorgateLocalUniverseCatalogEvidence:
         object.__setattr__(self, "_authority", None)
         if not self.entries:
             raise ValueError("Norgate universe catalog evidence cannot be empty")
+        if self.receipt_timestamp_basis not in {
+            "SYSTEM_CLOCK_AT_FILE_READ_UNQUALIFIED",
+            "CALLER_SUPPLIED_UNQUALIFIED",
+        }:
+            raise ValueError("Norgate universe catalog receipt basis is unsupported")
         if (
             self.license_restricted_provider_data is not True
             or self.source_code_repository_storage_allowed is not False
@@ -1049,6 +1167,7 @@ class NorgateLocalUniverseCatalogEvidence:
                 "PROVIDER_NAMED_CURRENT_AND_PAST_WATCHLIST_UNQUALIFIED"
             ),
             "retrieved_at": self.retrieved_at,
+            "receipt_timestamp_basis": self.receipt_timestamp_basis,
             "exported_at": self.exported_at,
             "database_name": self.database_name,
             "database_update_at": self.database_update_at,
@@ -1146,6 +1265,7 @@ def stage_norgate_local_universe_catalog(
     ).hexdigest()
     return NorgateLocalUniverseCatalogEvidence(
         retrieved_at=str(source.retrieved_at),
+        receipt_timestamp_basis=source.receipt_timestamp_basis,
         exported_at=exported_at,
         database_name=str(root["database_name"]),
         database_update_at=str(evidence_material["database_update_at"]),
