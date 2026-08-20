@@ -37,6 +37,7 @@ BAR_ROLE = "RAW_DAILY_SESSION_BARS"
 MEMBERSHIP_ROLE = "POINT_IN_TIME_SUPPLEMENTAL_PROVIDER_EVIDENCE"
 INDEX_NAME = "S&P 500"
 UNIVERSE_WATCHLIST_NAME = "S&P 500 Current & Past"
+UNIVERSE_DATABASE_NAME = "US Equities"
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_RECORDS = 200_000
 MAX_UNIVERSE_CATALOG_BYTES = 8 * 1024 * 1024
@@ -392,6 +393,7 @@ def _parse_universe_catalog(
         "export_contract": UNIVERSE_CATALOG_CONTRACT,
         "provider_id": PROVIDER_ID,
         "provider_dataset_id": DATASET_ID,
+        "database_name": UNIVERSE_DATABASE_NAME,
         "watchlist_name": UNIVERSE_WATCHLIST_NAME,
         "watchlist_semantics_basis": (
             "PROVIDER_NAMED_CURRENT_AND_PAST_WATCHLIST_UNQUALIFIED"
@@ -407,7 +409,6 @@ def _parse_universe_catalog(
     )
     if _VERSION_PATTERN.fullmatch(package_version) is None:
         raise ValueError("Norgate package version must be canonical")
-    _text(root.get("database_name"), "database_name", maximum=100)
     database_update_at = _canonical_timestamp(
         root.get("database_update_at"), "database_update_at"
     )
@@ -1055,7 +1056,7 @@ class NorgateLocalUniverseCatalogEvidence:
             "entry_count": len(self.entries),
             "asset_id_min": min(entry["asset_id"] for entry in self.entries),
             "asset_id_max": max(entry["asset_id"] for entry in self.entries),
-            "reused_symbols": list(self.reused_symbols),
+            "reused_symbol_count": len(self.reused_symbols),
             "source_payload_sha256": self.source_payload_sha256,
             "entries_sha256": self.entries_sha256,
             "catalog_evidence_sha256": self.catalog_evidence_sha256,

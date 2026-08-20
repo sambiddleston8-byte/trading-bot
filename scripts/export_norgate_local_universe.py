@@ -26,6 +26,7 @@ from scripts.export_norgate_local_sample import (
 @dataclass(frozen=True)
 class _UniverseContract:
     contract: str
+    database_name: str
     dataset_id: str
     maximum_bytes: int
     maximum_entries: int
@@ -42,12 +43,14 @@ def _universe_contract() -> _UniverseContract:
         MAX_UNIVERSE_CATALOG_ENTRIES,
         PROVIDER_ID,
         UNIVERSE_CATALOG_CONTRACT,
+        UNIVERSE_DATABASE_NAME,
         UNIVERSE_WATCHLIST_NAME,
         parse_norgate_local_universe_catalog,
     )
 
     return _UniverseContract(
         contract=UNIVERSE_CATALOG_CONTRACT,
+        database_name=UNIVERSE_DATABASE_NAME,
         dataset_id=DATASET_ID,
         maximum_bytes=MAX_UNIVERSE_CATALOG_BYTES,
         maximum_entries=MAX_UNIVERSE_CATALOG_ENTRIES,
@@ -81,6 +84,13 @@ def _canonical_text(value: Any, name: str, maximum: int) -> str:
     return value
 
 
+def _provider_file_outside_repository(path: Path) -> Path:
+    resolved = path.expanduser().resolve()
+    if resolved == ROOT or ROOT in resolved.parents:
+        raise ValueError("provider catalog must be written outside the repository")
+    return resolved
+
+
 def build_universe_catalog(
     *,
     norgatedata: Any,
@@ -91,6 +101,8 @@ def build_universe_catalog(
 
     contract = _universe_contract()
     database = _canonical_text(database_name, "database_name", 100)
+    if database != contract.database_name:
+        raise ValueError(f"database_name must be {contract.database_name}")
     if exported_at.tzinfo is None or exported_at.utcoffset() is None:
         raise ValueError("exported_at must be timezone-aware")
     database_update_at = norgatedata.last_database_update_time(database)
@@ -198,7 +210,7 @@ def main() -> int:
             database_name=arguments.database_name,
             exported_at=datetime.now(timezone.utc),
         )
-        output = arguments.output.expanduser().resolve()
+        output = _provider_file_outside_repository(arguments.output)
         source_payload_sha256 = write_verified_export(output, payload)
         entry_count = len(json.loads(payload)["entries"])
     except (OSError, TypeError, ValueError, RuntimeError) as error:

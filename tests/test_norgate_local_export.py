@@ -713,6 +713,10 @@ def test_local_universe_builder_and_stager_preserve_stable_identity_without_auth
             "watchlist_name",
         ),
         (
+            universe_catalog_payload(database_name="Different Equities"),
+            "database_name",
+        ),
+        (
             universe_catalog_payload(entries_sha256="0" * 64),
             "entry hash",
         ),
@@ -776,6 +780,12 @@ def test_local_universe_builder_rejects_duplicate_asset_ids_and_bad_clock():
             database_name="US Equities",
             exported_at=datetime(2026, 8, 19, 10),
         )
+    with pytest.raises(ValueError, match="database_name must be US Equities"):
+        build_universe_catalog(
+            norgatedata=FakeNorgate(),
+            database_name="Different Equities",
+            exported_at=datetime(2026, 8, 19, 10, tzinfo=timezone.utc),
+        )
 
 
 def test_local_universe_catalog_surfaces_cross_asset_symbol_reuse():
@@ -790,7 +800,8 @@ def test_local_universe_catalog_surfaces_cross_asset_symbol_reuse():
         )
     )
 
-    assert evidence.as_dict()["reused_symbols"] == ["XYZ"]
+    assert evidence.reused_symbols == ("XYZ",)
+    assert evidence.as_dict()["reused_symbol_count"] == 1
     assert evidence.historical_ticker_history_qualified is False
     assert evidence.security_master_admission_allowed is False
 
@@ -844,6 +855,8 @@ def test_local_universe_ingest_cli_stages_summary_only(tmp_path: Path):
             "scripts/ingest_norgate_local_universe.py",
             "--catalog-file",
             str(catalog),
+            "--expected-source-sha256",
+            hashlib.sha256(catalog.read_bytes()).hexdigest(),
         ],
         cwd=Path(__file__).resolve().parents[1],
         check=False,
@@ -857,12 +870,55 @@ def test_local_universe_ingest_cli_stages_summary_only(tmp_path: Path):
     summary = json.loads(completed.stdout)
     assert summary["entry_count"] == 2
     assert "entries" not in summary
+    assert "reused_symbols" not in summary
+    assert summary["reused_symbol_count"] == 0
     assert summary["provider_watchlist_semantics_qualified"] is False
     assert summary["provider_watchlist_completeness_proven"] is False
     assert summary["security_master_admission_allowed"] is False
     assert summary["performance_use_allowed"] is False
     assert summary["validation_accessed"] is False
     assert summary["test_accessed"] is False
+
+
+def test_local_universe_ingest_cli_rejects_source_hash_mismatch(tmp_path: Path):
+    catalog = tmp_path / "norgate-universe.json"
+    catalog.write_bytes(universe_catalog_payload())
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/ingest_norgate_local_universe.py",
+            "--catalog-file",
+            str(catalog),
+            "--expected-source-sha256",
+            "0" * 64,
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={},
+    )
+
+    assert completed.returncode == 1
+    assert completed.stdout == ""
+    assert "does not match expected source SHA-256" in completed.stderr
+
+
+def test_local_universe_scripts_reject_provider_catalog_paths_inside_repository(
+    tmp_path: Path, monkeypatch
+):
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    provider_file = repository / "norgate-quarantine-catalog.json"
+    monkeypatch.setattr(universe_export_module, "ROOT", repository)
+    monkeypatch.setattr(universe_ingest_module, "ROOT", repository)
+
+    with pytest.raises(ValueError, match="written outside the repository"):
+        universe_export_module._provider_file_outside_repository(provider_file)
+    with pytest.raises(ValueError, match="read outside the repository"):
+        universe_ingest_module._provider_file_outside_repository(provider_file)
 
 
 def test_same_vintage_repeat_export_matches_only_after_excluding_observation_time():
