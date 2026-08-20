@@ -32,6 +32,7 @@ from core.orchestration.historical_role_cutoff import (
 PROVIDER_ID = "NORGATE"
 DATASET_ID = "NORGATE_US_STOCKS_PLATINUM_LOCAL_V1"
 EXPORT_CONTRACT = "NORGATE_LOCAL_EXPORT_V1"
+CAPTURE_EXPORT_CONTRACT = "NORGATE_LOCAL_EXPORT_V2"
 UNIVERSE_CATALOG_CONTRACT = "NORGATE_LOCAL_UNIVERSE_CATALOG_V1"
 BAR_ROLE = "RAW_DAILY_SESSION_BARS"
 MEMBERSHIP_ROLE = "POINT_IN_TIME_SUPPLEMENTAL_PROVIDER_EVIDENCE"
@@ -77,6 +78,10 @@ _TOP_LEVEL_FIELDS = frozenset(
         "rows",
     }
 )
+_CAPTURE_TOP_LEVEL_FIELDS = _TOP_LEVEL_FIELDS | {
+    "asset_dispositions",
+    "asset_dispositions_sha256",
+}
 _ROW_FIELDS = frozenset(
     {
         "asset_id",
@@ -93,6 +98,19 @@ _ROW_FIELDS = frozenset(
         "dividend",
         "sp500_constituent",
     }
+)
+_ASSET_DISPOSITION_FIELDS = frozenset(
+    {
+        "asset_id",
+        "requested_symbol",
+        "symbol",
+        "security_name",
+        "status",
+        "row_count",
+    }
+)
+CAPTURE_DISPOSITION_STATUSES = frozenset(
+    {"ROWS_PRESENT", "NO_ROWS_IN_REQUESTED_WINDOW"}
 )
 _UNIVERSE_CATALOG_FIELDS = frozenset(
     {
@@ -268,15 +286,62 @@ def _parse_row(value: Any, *, start: date, end: date) -> dict[str, Any]:
     }
 
 
+def _parse_asset_disposition(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping) or set(value) != _ASSET_DISPOSITION_FIELDS:
+        raise ValueError("Norgate asset disposition fields are unsupported")
+    asset_id = value.get("asset_id")
+    if isinstance(asset_id, bool) or not isinstance(asset_id, int) or asset_id <= 0:
+        raise ValueError("asset disposition asset_id must be a positive integer")
+    requested_symbol = _text(
+        value.get("requested_symbol"), "disposition requested_symbol", maximum=32
+    )
+    symbol = _text(value.get("symbol"), "disposition symbol", maximum=32)
+    if (
+        _SYMBOL_PATTERN.fullmatch(requested_symbol) is None
+        or _SYMBOL_PATTERN.fullmatch(symbol) is None
+    ):
+        raise ValueError("asset disposition symbols must be canonical")
+    security_name = _text(
+        value.get("security_name"), "disposition security_name", maximum=300
+    )
+    status = value.get("status")
+    if status not in CAPTURE_DISPOSITION_STATUSES:
+        raise ValueError("asset disposition status is unsupported")
+    row_count = value.get("row_count")
+    if (
+        isinstance(row_count, bool)
+        or not isinstance(row_count, int)
+        or row_count < 0
+        or (status == "ROWS_PRESENT" and row_count == 0)
+        or (status == "NO_ROWS_IN_REQUESTED_WINDOW" and row_count != 0)
+    ):
+        raise ValueError("asset disposition row_count contradicts its status")
+    return {
+        "asset_id": asset_id,
+        "requested_symbol": requested_symbol,
+        "symbol": symbol,
+        "security_name": security_name,
+        "status": status,
+        "row_count": row_count,
+    }
+
+
 def _parse_export(
     payload: bytes,
 ) -> tuple[Mapping[str, Any], tuple[Mapping[str, Any], ...]]:
     root = _strict_json(payload)
-    if not isinstance(root, Mapping) or set(root) != _TOP_LEVEL_FIELDS:
+    capture_v2 = (
+        isinstance(root, Mapping)
+        and root.get("export_contract") == CAPTURE_EXPORT_CONTRACT
+    )
+    required_fields = _CAPTURE_TOP_LEVEL_FIELDS if capture_v2 else _TOP_LEVEL_FIELDS
+    if not isinstance(root, Mapping) or set(root) != required_fields:
         raise ValueError("Norgate export has missing or unsupported top-level fields")
     expected = {
-        "schema_version": "1.0",
-        "export_contract": EXPORT_CONTRACT,
+        "schema_version": "2.0" if capture_v2 else "1.0",
+        "export_contract": (
+            CAPTURE_EXPORT_CONTRACT if capture_v2 else EXPORT_CONTRACT
+        ),
         "provider_id": PROVIDER_ID,
         "provider_dataset_id": DATASET_ID,
         "frequency": "DAILY",
@@ -339,7 +404,9 @@ def _parse_export(
     if end < start:
         raise ValueError("Norgate requested date range is reversed")
     rows = root.get("rows")
-    if not isinstance(rows, list) or not rows or len(rows) > MAX_RECORDS:
+    if not isinstance(rows, list) or len(rows) > MAX_RECORDS:
+        raise ValueError("Norgate rows must be a bounded list")
+    if not capture_v2 and not rows:
         raise ValueError("Norgate rows must be a bounded nonempty list")
     parsed = tuple(_parse_row(item, start=start, end=end) for item in rows)
     identities = [(item["asset_id"], item["session_date"]) for item in parsed]
@@ -357,8 +424,83 @@ def _parse_export(
             raise ValueError("one Norgate asset_id cannot change identity within an export")
         assets_by_symbol.setdefault(row["symbol"], set()).add(row["asset_id"])
         observed_requested_symbols.add(row["requested_symbol"])
-    if observed_requested_symbols != set(requested_symbols):
+    dispositions: tuple[dict[str, Any], ...] = ()
+    if capture_v2:
+        disposition_values = root.get("asset_dispositions")
+        if (
+            not isinstance(disposition_values, list)
+            or not disposition_values
+            or len(disposition_values) != len(requested_symbols)
+        ):
+            raise ValueError(
+                "Norgate asset dispositions must cover every requested symbol"
+            )
+        dispositions = tuple(
+            _parse_asset_disposition(value) for value in disposition_values
+        )
+        asset_ids = tuple(item["asset_id"] for item in dispositions)
+        disposition_requested = tuple(
+            item["requested_symbol"] for item in dispositions
+        )
+        if (
+            asset_ids != tuple(sorted(asset_ids))
+            or len(asset_ids) != len(set(asset_ids))
+            or disposition_requested != tuple(requested_symbols)
+        ):
+            raise ValueError(
+                "Norgate asset dispositions must be unique asset-ID-ordered requests"
+            )
+        canonical_dispositions = [dict(item) for item in dispositions]
+        expected_dispositions_sha256 = hashlib.sha256(
+            json.dumps(
+                canonical_dispositions,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            ).encode("utf-8")
+        ).hexdigest()
+        if root.get("asset_dispositions_sha256") != expected_dispositions_sha256:
+            raise ValueError("Norgate asset disposition hash does not match")
+        disposition_by_requested = {
+            item["requested_symbol"]: item for item in dispositions
+        }
+        rows_by_requested: dict[str, list[Mapping[str, Any]]] = {}
+        for row in parsed:
+            rows_by_requested.setdefault(row["requested_symbol"], []).append(row)
+        for requested_symbol, disposition in disposition_by_requested.items():
+            disposition_rows = rows_by_requested.get(requested_symbol, [])
+            if len(disposition_rows) != disposition["row_count"]:
+                raise ValueError("Norgate asset disposition row_count does not match rows")
+            if any(
+                (
+                    row["asset_id"],
+                    row["symbol"],
+                    row["security_name"],
+                )
+                != (
+                    disposition["asset_id"],
+                    disposition["symbol"],
+                    disposition["security_name"],
+                )
+                for row in disposition_rows
+            ):
+                raise ValueError("Norgate rows do not match their asset disposition")
+        expected_observed = {
+            item["requested_symbol"]
+            for item in dispositions
+            if item["status"] == "ROWS_PRESENT"
+        }
+        if observed_requested_symbols != expected_observed:
+            raise ValueError("Norgate rows contradict asset disposition statuses")
+    elif observed_requested_symbols != set(requested_symbols):
         raise ValueError("Norgate export does not cover every requested symbol")
+    if capture_v2:
+        assets_by_symbol = {}
+        for disposition in dispositions:
+            assets_by_symbol.setdefault(disposition["symbol"], set()).add(
+                disposition["asset_id"]
+            )
     expected_reused = sorted(
         symbol for symbol, asset_ids in assets_by_symbol.items() if len(asset_ids) > 1
     )
@@ -570,8 +712,10 @@ def _same_vintage_roots(
     baseline_root, _ = _parse_export(baseline_payload)
     repeat_root, _ = _parse_export(repeat_payload)
     for name, root in (("baseline", baseline_root), ("repeat", repeat_root)):
-        if set(root) != _TOP_LEVEL_FIELDS:
+        if frozenset(root) not in {_TOP_LEVEL_FIELDS, _CAPTURE_TOP_LEVEL_FIELDS}:
             raise ValueError(f"{name} export root fields are not exactly pinned")
+    if frozenset(baseline_root) != frozenset(repeat_root):
+        raise ValueError("same-vintage exports mix contract versions")
     baseline_exported_at = _canonical_timestamp(
         baseline_root["exported_at"], "baseline exported_at"
     )
@@ -597,11 +741,16 @@ class NorgateShardedCaptureManifest:
     requested_symbols_sha256: str
     shard_source_payload_sha256: tuple[str, ...]
     shard_requested_symbols_sha256: tuple[str, ...]
+    shard_asset_dispositions_sha256: tuple[str, ...]
     shard_exported_at: tuple[str, ...]
     shard_symbol_counts: tuple[int, ...]
+    shard_captured_asset_counts: tuple[int, ...]
+    shard_zero_row_asset_counts: tuple[int, ...]
     shard_row_counts: tuple[int, ...]
     aggregate_reused_symbols: tuple[str, ...] = field(repr=False)
     asset_count: int
+    captured_asset_count: int
+    zero_row_asset_count: int
     row_count: int
     license_restricted_provider_data: bool = True
     source_code_repository_storage_allowed: bool = False
@@ -642,6 +791,7 @@ class NorgateShardedCaptureManifest:
             self.requested_symbols_sha256,
             *self.shard_source_payload_sha256,
             *self.shard_requested_symbols_sha256,
+            *self.shard_asset_dispositions_sha256,
         )
         if any(
             not isinstance(value, str)
@@ -682,6 +832,21 @@ class NorgateShardedCaptureManifest:
         if (
             self.catalog_entry_count != len(self.requested_symbols)
             or self.catalog_entry_count != self.asset_count
+            or self.captured_asset_count + self.zero_row_asset_count
+            != self.asset_count
+            or sum(self.shard_captured_asset_counts) != self.captured_asset_count
+            or sum(self.shard_zero_row_asset_counts) != self.zero_row_asset_count
+            or sum(self.shard_symbol_counts) != self.asset_count
+            or sum(self.shard_row_counts) != self.row_count
+            or any(
+                captured + zero != symbols
+                for captured, zero, symbols in zip(
+                    self.shard_captured_asset_counts,
+                    self.shard_zero_row_asset_counts,
+                    self.shard_symbol_counts,
+                    strict=True,
+                )
+            )
             or self.aggregate_reused_symbols
         ):
             raise ValueError("Norgate catalog-bound capture evidence is inconsistent")
@@ -690,8 +855,11 @@ class NorgateShardedCaptureManifest:
             len(values) != shard_count
             for values in (
                 self.shard_requested_symbols_sha256,
+                self.shard_asset_dispositions_sha256,
                 self.shard_exported_at,
                 self.shard_symbol_counts,
+                self.shard_captured_asset_counts,
+                self.shard_zero_row_asset_counts,
                 self.shard_row_counts,
             )
         ):
@@ -737,13 +905,24 @@ class NorgateShardedCaptureManifest:
                     "requested_symbols_sha256": (
                         self.shard_requested_symbols_sha256[ordinal]
                     ),
+                    "asset_dispositions_sha256": (
+                        self.shard_asset_dispositions_sha256[ordinal]
+                    ),
                     "exported_at": self.shard_exported_at[ordinal],
                     "symbol_count": self.shard_symbol_counts[ordinal],
+                    "captured_asset_count": self.shard_captured_asset_counts[
+                        ordinal
+                    ],
+                    "zero_row_asset_count": self.shard_zero_row_asset_counts[
+                        ordinal
+                    ],
                     "row_count": self.shard_row_counts[ordinal],
                 }
                 for ordinal in range(len(self.shard_source_payload_sha256))
             ],
             "asset_count": self.asset_count,
+            "captured_asset_count": self.captured_asset_count,
+            "zero_row_asset_count": self.zero_row_asset_count,
             "row_count": self.row_count,
             "license_restricted_provider_data": (
                 self.license_restricted_provider_data
@@ -809,10 +988,13 @@ def assemble_norgate_sharded_capture_manifest(
         "exported_at",
         "requested_symbols",
         "requested_symbols_sha256",
+        "asset_dispositions",
+        "asset_dispositions_sha256",
         "reused_symbols",
         "rows",
     }
-    invariant_fields = _TOP_LEVEL_FIELDS - shard_variant_fields
+    invariant_fields: frozenset[str] = frozenset()
+    capture_root_fields: frozenset[str] | None = None
     total_bytes = 0
     total_records = 0
     baseline_root: dict[str, Any] | None = None
@@ -820,11 +1002,15 @@ def assemble_norgate_sharded_capture_manifest(
     seen_source_hashes: set[str] = set()
     flattened_symbols: list[str] = []
     shard_requested_hashes: list[str] = []
+    shard_disposition_hashes: list[str] = []
     shard_exported_at: list[str] = []
     shard_symbol_counts: list[int] = []
+    shard_captured_asset_counts: list[int] = []
+    shard_zero_row_asset_counts: list[int] = []
     shard_row_counts: list[int] = []
     row_identities: set[tuple[int, str]] = set()
     identity_by_asset: dict[int, tuple[str, str, str]] = {}
+    disposition_identity_by_asset: dict[int, tuple[str, str, str]] = {}
     assets_by_resolved_symbol: dict[str, set[int]] = {}
     for ordinal, payload in enumerate(shards):
         if (
@@ -842,11 +1028,15 @@ def assemble_norgate_sharded_capture_manifest(
         seen_source_hashes.add(source_hash)
         source_hashes.append(source_hash)
         root, rows = _parse_export(payload)
-        if set(root) != _TOP_LEVEL_FIELDS:
+        root_fields = frozenset(root)
+        if root_fields not in {_TOP_LEVEL_FIELDS, _CAPTURE_TOP_LEVEL_FIELDS}:
             raise ValueError(f"payloads[{ordinal}] root fields are not exactly pinned")
-        lightweight_root = {
-            name: root[name] for name in _TOP_LEVEL_FIELDS - {"rows"}
-        }
+        if capture_root_fields is None:
+            capture_root_fields = root_fields
+            invariant_fields = capture_root_fields - shard_variant_fields
+        elif root_fields != capture_root_fields:
+            raise ValueError("sharded capture mixes export contract versions")
+        lightweight_root = {name: root[name] for name in root_fields - {"rows"}}
         if baseline_root is None:
             baseline_root = lightweight_root
         else:
@@ -875,6 +1065,66 @@ def assemble_norgate_sharded_capture_manifest(
         )
         shard_symbol_counts.append(len(requested))
         shard_row_counts.append(len(rows))
+        if root_fields == _CAPTURE_TOP_LEVEL_FIELDS:
+            dispositions = tuple(root["asset_dispositions"])
+            disposition_hash = str(root["asset_dispositions_sha256"])
+        else:
+            rows_by_asset: dict[int, list[Mapping[str, Any]]] = {}
+            for row in rows:
+                rows_by_asset.setdefault(row["asset_id"], []).append(row)
+            dispositions = tuple(
+                {
+                    "asset_id": asset_rows[0]["asset_id"],
+                    "requested_symbol": asset_rows[0]["requested_symbol"],
+                    "symbol": asset_rows[0]["symbol"],
+                    "security_name": asset_rows[0]["security_name"],
+                    "status": "ROWS_PRESENT",
+                    "row_count": len(asset_rows),
+                }
+                for _, asset_rows in sorted(rows_by_asset.items())
+            )
+            disposition_hash = hashlib.sha256(
+                json.dumps(
+                    dispositions,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                    allow_nan=False,
+                ).encode("utf-8")
+            ).hexdigest()
+        shard_disposition_hashes.append(disposition_hash)
+        captured_in_shard = sum(
+            item["status"] == "ROWS_PRESENT" for item in dispositions
+        )
+        zero_row_in_shard = sum(
+            item["status"] == "NO_ROWS_IN_REQUESTED_WINDOW"
+            for item in dispositions
+        )
+        shard_captured_asset_counts.append(captured_in_shard)
+        shard_zero_row_asset_counts.append(zero_row_in_shard)
+        for disposition in dispositions:
+            disposition_identity = (
+                disposition["requested_symbol"],
+                disposition["symbol"],
+                disposition["security_name"],
+            )
+            prior_disposition = disposition_identity_by_asset.setdefault(
+                disposition["asset_id"], disposition_identity
+            )
+            if prior_disposition != disposition_identity:
+                raise ValueError("sharded capture changes an asset disposition identity")
+            catalog_identity = catalog_identity_by_asset.get(disposition["asset_id"])
+            if catalog_identity != (
+                disposition["symbol"],
+                disposition["security_name"],
+            ):
+                raise ValueError(
+                    f"payloads[{ordinal}] disposition does not match the pinned catalog identity"
+                )
+            if disposition["requested_symbol"] != catalog_identity[0]:
+                raise ValueError(
+                    f"payloads[{ordinal}] disposition request does not match the catalog"
+                )
         total_records += len(rows)
         if total_records > MAX_CAPTURE_RECORDS:
             raise ValueError("sharded capture exceeds the aggregate record boundary")
@@ -918,8 +1168,8 @@ def assemble_norgate_sharded_capture_manifest(
         raise ValueError(
             "sharded capture does not exactly match the catalog symbol partition"
         )
-    if set(identity_by_asset) != set(catalog_identity_by_asset):
-        raise ValueError("sharded capture does not cover every catalog asset identity")
+    if set(disposition_identity_by_asset) != set(catalog_identity_by_asset):
+        raise ValueError("sharded capture does not dispose every catalog asset identity")
     catalog_vintage = (
         catalog_evidence.database_name,
         catalog_evidence.database_update_at,
@@ -973,11 +1223,16 @@ def assemble_norgate_sharded_capture_manifest(
         "requested_symbols_sha256": requested_symbols_sha256,
         "shard_source_payload_sha256": source_hashes,
         "shard_requested_symbols_sha256": list(shard_requested_hashes),
+        "shard_asset_dispositions_sha256": list(shard_disposition_hashes),
         "shard_exported_at": list(shard_exported_at),
         "shard_symbol_counts": list(shard_symbol_counts),
+        "shard_captured_asset_counts": list(shard_captured_asset_counts),
+        "shard_zero_row_asset_counts": list(shard_zero_row_asset_counts),
         "shard_row_counts": list(shard_row_counts),
         "aggregate_reused_symbols": list(aggregate_reused_symbols),
-        "asset_count": len(identity_by_asset),
+        "asset_count": len(disposition_identity_by_asset),
+        "captured_asset_count": sum(shard_captured_asset_counts),
+        "zero_row_asset_count": sum(shard_zero_row_asset_counts),
         "row_count": len(row_identities),
         "license_restricted_provider_data": baseline_root[
             "license_restricted_provider_data"
@@ -1021,11 +1276,16 @@ def assemble_norgate_sharded_capture_manifest(
         requested_symbols_sha256=requested_symbols_sha256,
         shard_source_payload_sha256=tuple(source_hashes),
         shard_requested_symbols_sha256=tuple(shard_requested_hashes),
+        shard_asset_dispositions_sha256=tuple(shard_disposition_hashes),
         shard_exported_at=tuple(shard_exported_at),
         shard_symbol_counts=tuple(shard_symbol_counts),
+        shard_captured_asset_counts=tuple(shard_captured_asset_counts),
+        shard_zero_row_asset_counts=tuple(shard_zero_row_asset_counts),
         shard_row_counts=tuple(shard_row_counts),
         aggregate_reused_symbols=aggregate_reused_symbols,
-        asset_count=len(identity_by_asset),
+        asset_count=len(disposition_identity_by_asset),
+        captured_asset_count=sum(shard_captured_asset_counts),
+        zero_row_asset_count=sum(shard_zero_row_asset_counts),
         row_count=len(row_identities),
         license_restricted_provider_data=baseline_root[
             "license_restricted_provider_data"
@@ -1069,7 +1329,7 @@ def compare_norgate_same_vintage_exports(
     if invariant_bytes_by_label["baseline"] != invariant_bytes_by_label["repeat"]:
         changed = sorted(
             name
-            for name in _TOP_LEVEL_FIELDS - {"exported_at"}
+            for name in frozenset(baseline_root) - {"exported_at"}
             if baseline_root[name] != repeat_root[name]
         )
         detail = ", ".join(changed) if changed else "canonical invariant bytes"

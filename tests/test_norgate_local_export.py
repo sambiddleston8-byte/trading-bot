@@ -464,6 +464,38 @@ class ReusedSymbolNorgate(FakeNorgate):
         return {101: "Old Issuer", 202: "New Issuer"}[asset_id]
 
 
+class CatalogNorgate(FakeNorgate):
+    def __init__(self, *, zero_row_symbols=()) -> None:
+        super().__init__()
+        self.zero_row_symbols = set(zero_row_symbols)
+
+    def assetid(self, symbol):
+        return {"AAPL": 101, "MSFT": 202}[symbol]
+
+    def symbol(self, asset_id):
+        return {101: "AAPL", 202: "MSFT"}[asset_id]
+
+    def security_name(self, asset_id):
+        return {101: "Apple Inc", 202: "Microsoft Corp"}[asset_id]
+
+    def price_timeseries(self, asset_id, **kwargs):
+        symbol = self.symbol(asset_id)
+        if symbol in self.zero_row_symbols:
+            self.price_calls.append((asset_id, kwargs))
+            return pd.DataFrame(
+                columns=[
+                    "Open",
+                    "High",
+                    "Low",
+                    "Close",
+                    "Volume",
+                    "Unadjusted Close",
+                    "Dividend",
+                ]
+            )
+        return super().price_timeseries(asset_id, **kwargs)
+
+
 def test_windows_export_builder_uses_stable_id_unadjusted_unpadded_local_calls():
     provider = FakeNorgate()
 
@@ -477,6 +509,18 @@ def test_windows_export_builder_uses_stable_id_unadjusted_unpadded_local_calls()
     )
 
     root = json.loads(payload)
+    assert root["schema_version"] == "2.0"
+    assert root["export_contract"] == module.CAPTURE_EXPORT_CONTRACT
+    assert root["asset_dispositions"] == [
+        {
+            "asset_id": 101,
+            "requested_symbol": "AAPL",
+            "row_count": 1,
+            "security_name": "Apple Inc",
+            "status": "ROWS_PRESENT",
+            "symbol": "AAPL",
+        }
+    ]
     assert root["rows"][0]["asset_id"] == 101
     assert root["rows"][0]["requested_symbol"] == "AAPL"
     assert root["database_name"] == "US Equities"
@@ -510,6 +554,111 @@ def test_windows_export_builder_uses_stable_id_unadjusted_unpadded_local_calls()
         "Unadjusted Close",
         "Dividend",
     ]
+
+
+def test_windows_export_records_zero_row_disposition_without_membership_call():
+    provider = CatalogNorgate(zero_row_symbols={"MSFT"})
+    payload = build_export(
+        norgatedata=provider,
+        symbols=["AAPL", "MSFT"],
+        database_name="US Equities",
+        start=date(2026, 8, 1),
+        end=date(2026, 8, 18),
+        exported_at=datetime(2026, 8, 19, 10, tzinfo=timezone.utc),
+    )
+
+    root = json.loads(payload)
+    assert [item["status"] for item in root["asset_dispositions"]] == [
+        "ROWS_PRESENT",
+        "NO_ROWS_IN_REQUESTED_WINDOW",
+    ]
+    assert [item["row_count"] for item in root["asset_dispositions"]] == [1, 0]
+    assert [row["requested_symbol"] for row in root["rows"]] == ["AAPL"]
+    assert len(provider.price_calls) == 2
+    assert len(provider.membership_calls) == 1
+    assert parse_norgate_local_export(payload)[0]["requested_symbol"] == "AAPL"
+
+
+def test_v2_export_rejects_disposition_hash_status_and_row_count_drift():
+    payload = build_export(
+        norgatedata=CatalogNorgate(zero_row_symbols={"MSFT"}),
+        symbols=["AAPL", "MSFT"],
+        database_name="US Equities",
+        start=date(2026, 8, 1),
+        end=date(2026, 8, 18),
+        exported_at=datetime(2026, 8, 19, 10, tzinfo=timezone.utc),
+    )
+    for mutate, message in (
+        (
+            lambda root: root.__setitem__("asset_dispositions_sha256", "0" * 64),
+            "disposition hash",
+        ),
+        (
+            lambda root: root["asset_dispositions"][1].__setitem__(
+                "status", "ROWS_PRESENT"
+            ),
+            "row_count contradicts",
+        ),
+        (
+            lambda root: root["asset_dispositions"][0].__setitem__("row_count", 2),
+            "row_count does not match rows",
+        ),
+    ):
+        root = json.loads(payload)
+        mutate(root)
+        if root["asset_dispositions_sha256"] != "0" * 64:
+            root["asset_dispositions_sha256"] = hashlib.sha256(
+                json.dumps(
+                    root["asset_dispositions"],
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode()
+            ).hexdigest()
+        changed = (json.dumps(root, sort_keys=True, separators=(",", ":")) + "\n").encode()
+        with pytest.raises(ValueError, match=message):
+            parse_norgate_local_export(changed)
+
+
+def test_same_vintage_comparison_supports_v2_dispositions_and_rejects_mixing():
+    arguments = {
+        "norgatedata": CatalogNorgate(zero_row_symbols={"MSFT"}),
+        "symbols": ["AAPL", "MSFT"],
+        "database_name": "US Equities",
+        "start": date(2026, 8, 1),
+        "end": date(2026, 8, 18),
+    }
+    baseline = build_export(
+        **arguments,
+        exported_at=datetime(2026, 8, 19, 10, tzinfo=timezone.utc),
+    )
+    repeat = build_export(
+        **arguments,
+        exported_at=datetime(2026, 8, 19, 10, 1, tzinfo=timezone.utc),
+    )
+
+    result = compare_norgate_same_vintage_exports(baseline, repeat)
+    assert result.same_vintage_invariant_match is True
+    assert result.requested_symbols == ("AAPL", "MSFT")
+
+    drifted_root = json.loads(repeat)
+    drifted_root["asset_dispositions"][1]["security_name"] = (
+        "Changed Zero-Row Identity"
+    )
+    drifted_root["asset_dispositions_sha256"] = hashlib.sha256(
+        json.dumps(
+            drifted_root["asset_dispositions"],
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    drifted = (
+        json.dumps(drifted_root, sort_keys=True, separators=(",", ":")) + "\n"
+    ).encode()
+    with pytest.raises(ValueError, match="asset_dispositions"):
+        compare_norgate_same_vintage_exports(baseline, drifted)
+
+    with pytest.raises(ValueError, match="mix contract versions"):
+        compare_norgate_same_vintage_exports(export_payload(), repeat)
 
 
 def test_windows_import_guard_is_available_but_file_locking_fails_closed():
@@ -1196,7 +1345,7 @@ def test_sharded_capture_binds_exact_same_vintage_symbol_partition():
         [aapl, msft], catalog_evidence=catalog
     )
     assert result.manifest_sha256 == (
-        "deee00942ea6a06e8b3b6f6a87f3c97f8fb25f73c613c25c0ce377da3faff55c"
+        "66ed86bb1889556b679f5374945ac54befa6fd008580c3617ef747cda691871b"
     )
     assert repeated.manifest_sha256 == result.manifest_sha256
     alternate_catalog = universe_catalog_evidence(
@@ -1247,6 +1396,68 @@ def test_sharded_capture_partition_is_stable_asset_id_order_not_symbol_order():
         assemble_norgate_sharded_capture_manifest(
             [aapl, msft], catalog_evidence=catalog
         )
+
+
+def test_sharded_capture_accounts_for_catalog_bound_zero_row_disposition():
+    aapl = build_export(
+        norgatedata=CatalogNorgate(),
+        symbols=["AAPL"],
+        database_name="US Equities",
+        start=date(2026, 8, 1),
+        end=date(2026, 8, 18),
+        exported_at=datetime(2026, 8, 19, 10, tzinfo=timezone.utc),
+    )
+    msft = build_export(
+        norgatedata=CatalogNorgate(zero_row_symbols={"MSFT"}),
+        symbols=["MSFT"],
+        database_name="US Equities",
+        start=date(2026, 8, 1),
+        end=date(2026, 8, 18),
+        exported_at=datetime(2026, 8, 19, 10, 1, tzinfo=timezone.utc),
+    )
+
+    result = assemble_norgate_sharded_capture_manifest(
+        [aapl, msft], catalog_evidence=universe_catalog_evidence()
+    )
+    summary = result.as_dict()
+    assert summary["asset_count"] == 2
+    assert summary["captured_asset_count"] == 1
+    assert summary["zero_row_asset_count"] == 1
+    assert summary["row_count"] == 1
+    assert [item["captured_asset_count"] for item in summary["shards"]] == [1, 0]
+    assert [item["zero_row_asset_count"] for item in summary["shards"]] == [0, 1]
+    assert all(
+        len(item["asset_dispositions_sha256"]) == 64 for item in summary["shards"]
+    )
+    assert "asset_dispositions" not in summary
+    assert "AAPL" not in repr(result)
+    assert "MSFT" not in repr(result)
+    for flag in module.SAFETY_FLAG_NAMES:
+        assert summary[flag] is False
+
+    drifted_root = json.loads(msft)
+    drifted_root["asset_dispositions"][0]["symbol"] = "FAKE"
+    drifted_root["asset_dispositions_sha256"] = hashlib.sha256(
+        json.dumps(
+            drifted_root["asset_dispositions"],
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    drifted = (
+        json.dumps(drifted_root, sort_keys=True, separators=(",", ":")) + "\n"
+    ).encode()
+    with pytest.raises(ValueError, match="pinned catalog identity"):
+        assemble_norgate_sharded_capture_manifest(
+            [aapl, drifted], catalog_evidence=universe_catalog_evidence()
+        )
+
+    v1_aapl = shard_payload("AAPL", asset_id=101)
+    for mixed in ([v1_aapl, msft], [msft, v1_aapl]):
+        with pytest.raises(ValueError, match="mixes export contract versions"):
+            assemble_norgate_sharded_capture_manifest(
+                mixed, catalog_evidence=universe_catalog_evidence()
+            )
 
 
 @pytest.mark.parametrize(
@@ -1345,7 +1556,7 @@ def test_sharded_capture_rejects_catalog_vintage_drift(field, value):
 
 
 def test_sharded_capture_rejects_cross_shard_row_and_asset_identity_drift():
-    with pytest.raises(ValueError, match="repeats an asset/date identity"):
+    with pytest.raises(ValueError, match="asset disposition identity"):
         assemble_norgate_sharded_capture_manifest(
             [
                 shard_payload("AAPL", asset_id=101),
@@ -1372,7 +1583,7 @@ def test_sharded_capture_rejects_cross_shard_row_and_asset_identity_drift():
     second_row["symbol"] = "AAPL"
     second_row["security_name"] = "AAPL Incorporated"
     drifted = export_payload(rows=[second_row], requested_symbols=["MSFT"])
-    with pytest.raises(ValueError, match="changes a Norgate asset identity"):
+    with pytest.raises(ValueError, match="asset disposition identity"):
         assemble_norgate_sharded_capture_manifest(
             [shard_payload("AAPL", asset_id=101), drifted],
             catalog_evidence=universe_catalog_evidence(),
@@ -1478,11 +1689,16 @@ def test_sharded_capture_manifest_authority_and_flags_cannot_be_forged():
         "requested_symbols_sha256": "1" * 64,
         "shard_source_payload_sha256": ("2" * 64, "3" * 64),
         "shard_requested_symbols_sha256": ("4" * 64, "5" * 64),
+        "shard_asset_dispositions_sha256": ("6" * 64, "7" * 64),
         "shard_exported_at": (EXPORTED_AT, EXPORTED_AT),
         "shard_symbol_counts": (1, 1),
+        "shard_captured_asset_counts": (1, 1),
+        "shard_zero_row_asset_counts": (0, 0),
         "shard_row_counts": (1, 1),
         "aggregate_reused_symbols": (),
         "asset_count": 2,
+        "captured_asset_count": 2,
+        "zero_row_asset_count": 0,
         "row_count": 2,
     }
     with pytest.raises(PermissionError):
@@ -1515,6 +1731,12 @@ def test_sharded_capture_manifest_authority_and_flags_cannot_be_forged():
     with pytest.raises(ValueError, match="catalog-bound capture evidence"):
         NorgateShardedCaptureManifest(
             **inconsistent,
+            _authority=module._CAPTURE_MANIFEST_AUTHORITY,
+        )
+    inconsistent_dispositions = dict(required, zero_row_asset_count=1)
+    with pytest.raises(ValueError, match="catalog-bound capture evidence"):
+        NorgateShardedCaptureManifest(
+            **inconsistent_dispositions,
             _authority=module._CAPTURE_MANIFEST_AUTHORITY,
         )
     with pytest.raises(ValueError, match="hashes are not canonical"):
