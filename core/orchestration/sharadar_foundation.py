@@ -43,6 +43,7 @@ TRADABLE_MASTER_TABLES = ("SEP", "SF1", "SFP")
 IDENTITY_MISSING = "MISSING"
 IDENTITY_UNIQUE = "UNIQUE"
 IDENTITY_AMBIGUOUS = "AMBIGUOUS"
+COUNTERPARTY_NOT_PROVIDED = "NOT_PROVIDED"
 FALSE_AUTHORITIES = (
     "primary_key_uniqueness_proven",
     "cross_table_identity_complete",
@@ -286,7 +287,7 @@ def _profile_event_table(
             counterparty_state = (
                 _identity_state(master, contra, TRADABLE_MASTER_TABLES)
                 if contra
-                else IDENTITY_MISSING
+                else COUNTERPARTY_NOT_PROVIDED
             )
             unresolved_primary_counterparty_states[counterparty_state] += 1
         _update_range(profile, "date", event_day)
@@ -304,7 +305,7 @@ def _profile_event_table(
             "unresolved_primary_action_counts": dict(
                 sorted(unresolved_primary_actions.items())
             ),
-            "unresolved_primary_counterparty_identity_state_counts": dict(
+            "unresolved_primary_counterparty_state_counts": dict(
                 sorted(unresolved_primary_counterparty_states.items())
             ),
             "tickers_missing_any_tradable_identity": identity_state_counts[
@@ -429,6 +430,9 @@ def build_foundation_profile(
         "structural_identity_missing_count": structural_identity_missing,
         "structural_identity_ambiguous_count": structural_identity_ambiguous,
         "structural_identity_gap_count": structural_identity_gaps,
+        "structural_identity_gap_count_basis": (
+            "SUM_OF_DEPENDENT_TABLE_UNIQUE_TICKER_REFERENCES"
+        ),
         "structural_identity_join_ready": structural_identity_gaps == 0,
         "observed_stock_date_span_days": (
             date.fromisoformat(stocks["max_date"])

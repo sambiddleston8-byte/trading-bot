@@ -42,6 +42,9 @@ def main() -> int:
                     "structural_identity_join_ready": profile[
                         "structural_identity_join_ready"
                     ],
+                    "structural_identity_gap_count_basis": profile[
+                        "structural_identity_gap_count_basis"
+                    ],
                     "observed_stock_date_span_days": profile[
                         "observed_stock_date_span_days"
                     ],
