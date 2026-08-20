@@ -36,7 +36,13 @@ STATUS = "STRUCTURE_VERIFIED_SEMANTICS_AND_AVAILABILITY_UNQUALIFIED"
 MAX_ROWS_PER_TABLE = 100_000_000
 MAX_CELL_CHARACTERS = 1_000_000
 MAX_PROFILE_BYTES = 1024 * 1024
-ALLOWED_FUNDAMENTAL_DIMENSIONS = frozenset({"ARQ", "ARY", "ART", "MRQ", "MRY", "MRT"})
+ALLOWED_FUNDAMENTAL_DIMENSIONS = frozenset(
+    {"ARQ", "ARY", "ART", "MRQ", "MRY", "MRT"}
+)
+TRADABLE_MASTER_TABLES = ("SEP", "SF1", "SFP")
+IDENTITY_MISSING = "MISSING"
+IDENTITY_UNIQUE = "UNIQUE"
+IDENTITY_AMBIGUOUS = "AMBIGUOUS"
 FALSE_AUTHORITIES = (
     "primary_key_uniqueness_proven",
     "cross_table_identity_complete",
@@ -102,6 +108,25 @@ def _update_range(profile: dict[str, Any], name: str, value: str) -> None:
     high = f"max_{name}"
     profile[low] = resolved if low not in profile else min(profile[low], resolved)
     profile[high] = resolved if high not in profile else max(profile[high], resolved)
+
+
+def _identity_state(
+    master: Mapping[tuple[str, str], set[str]],
+    ticker: str,
+    tables: Iterable[str],
+) -> str:
+    """Classify a ticker join without guessing across permanent identities."""
+
+    identities = {
+        permaticker
+        for table in tables
+        for permaticker in master.get((table, ticker), ())
+    }
+    if not identities:
+        return IDENTITY_MISSING
+    if len(identities) == 1:
+        return IDENTITY_UNIQUE
+    return IDENTITY_AMBIGUOUS
 
 
 def _archive_rows(
@@ -175,10 +200,17 @@ def _profile_stocks(
 ) -> dict[str, Any]:
     profile: dict[str, Any] = {"row_count": 0}
     tickers: set[str] = set()
+    ticker_identity_states: dict[str, str] = {}
+    rows_by_identity_state: Counter[str] = Counter()
     for row in _archive_rows(root, record):
         profile["row_count"] += 1
         ticker = _text(row.get("ticker"), "stock ticker")
         tickers.add(ticker)
+        identity_state = ticker_identity_states.get(ticker)
+        if identity_state is None:
+            identity_state = _identity_state(master, ticker, ("SEP",))
+            ticker_identity_states[ticker] = identity_state
+        rows_by_identity_state[identity_state] += 1
         _update_range(profile, "date", row.get("date"))
         _update_range(profile, "lastupdated", row.get("lastupdated"))
         try:
@@ -202,11 +234,19 @@ def _profile_stocks(
             or low > min(open_, close)
         ):
             raise ValueError("Sharadar stock row violates OHLCV invariants")
+    identity_state_counts = Counter(ticker_identity_states.values())
     profile.update(
         {
             "unique_tickers": len(tickers),
-            "tickers_missing_sep_identity": sum(
-                ("SEP", ticker) not in master for ticker in tickers
+            "identity_state_counts": dict(sorted(identity_state_counts.items())),
+            "rows_by_identity_state": dict(sorted(rows_by_identity_state.items())),
+            "tickers_missing_sep_identity": identity_state_counts[IDENTITY_MISSING],
+            "tickers_ambiguous_sep_identity": identity_state_counts[
+                IDENTITY_AMBIGUOUS
+            ],
+            "structural_identity_join_ready": (
+                identity_state_counts[IDENTITY_MISSING] == 0
+                and identity_state_counts[IDENTITY_AMBIGUOUS] == 0
             ),
         }
     )
@@ -221,6 +261,10 @@ def _profile_event_table(
     profile: dict[str, Any] = {"row_count": 0}
     actions: Counter[str] = Counter()
     tickers: set[str] = set()
+    ticker_identity_states: dict[str, str] = {}
+    rows_by_primary_identity_state: Counter[str] = Counter()
+    unresolved_primary_actions: Counter[str] = Counter()
+    unresolved_primary_counterparty_states: Counter[str] = Counter()
     capture_day = datetime.fromisoformat(str(record["retrieved_at"])).date().isoformat()
     future_effective_rows = 0
     for row in _archive_rows(root, record):
@@ -228,18 +272,50 @@ def _profile_event_table(
         ticker = _text(row.get("ticker"), "event ticker")
         action = _text(row.get("action"), "event action")
         event_day = _day(row.get("date"), "event date")
+        contra_value = row.get("contraticker", "")
+        contra = _text(contra_value, "event contra ticker") if contra_value else ""
         tickers.add(ticker)
         actions[action] += 1
+        primary_state = ticker_identity_states.get(ticker)
+        if primary_state is None:
+            primary_state = _identity_state(master, ticker, TRADABLE_MASTER_TABLES)
+            ticker_identity_states[ticker] = primary_state
+        rows_by_primary_identity_state[primary_state] += 1
+        if primary_state != IDENTITY_UNIQUE:
+            unresolved_primary_actions[action] += 1
+            counterparty_state = (
+                _identity_state(master, contra, TRADABLE_MASTER_TABLES)
+                if contra
+                else IDENTITY_MISSING
+            )
+            unresolved_primary_counterparty_states[counterparty_state] += 1
         _update_range(profile, "date", event_day)
         future_effective_rows += event_day > capture_day
+    identity_state_counts = Counter(ticker_identity_states.values())
     profile.update(
         {
             "unique_tickers": len(tickers),
             "action_counts": dict(sorted(actions.items())),
             "future_effective_rows_at_capture": future_effective_rows,
-            "tickers_missing_any_tradable_identity": sum(
-                not any((table, ticker) in master for table in ("SEP", "SF1", "SFP"))
-                for ticker in tickers
+            "primary_identity_state_counts": dict(sorted(identity_state_counts.items())),
+            "rows_by_primary_identity_state": dict(
+                sorted(rows_by_primary_identity_state.items())
+            ),
+            "unresolved_primary_action_counts": dict(
+                sorted(unresolved_primary_actions.items())
+            ),
+            "unresolved_primary_counterparty_identity_state_counts": dict(
+                sorted(unresolved_primary_counterparty_states.items())
+            ),
+            "tickers_missing_any_tradable_identity": identity_state_counts[
+                IDENTITY_MISSING
+            ],
+            "tickers_ambiguous_any_tradable_identity": identity_state_counts[
+                IDENTITY_AMBIGUOUS
+            ],
+            "structural_identity_join_ready": (
+                identity_state_counts[IDENTITY_MISSING] == 0
+                and identity_state_counts[IDENTITY_AMBIGUOUS] == 0
             ),
         }
     )
@@ -254,6 +330,8 @@ def _profile_fundamentals(
     profile: dict[str, Any] = {"row_count": 0}
     dimensions: Counter[str] = Counter()
     tickers: set[str] = set()
+    ticker_identity_states: dict[str, str] = {}
+    rows_by_identity_state: Counter[str] = Counter()
     as_reported_rows = 0
     for row in _archive_rows(root, record):
         profile["row_count"] += 1
@@ -262,6 +340,11 @@ def _profile_fundamentals(
         if dimension not in ALLOWED_FUNDAMENTAL_DIMENSIONS:
             raise ValueError("Sharadar fundamental dimension is unsupported")
         tickers.add(ticker)
+        identity_state = ticker_identity_states.get(ticker)
+        if identity_state is None:
+            identity_state = _identity_state(master, ticker, ("SF1",))
+            ticker_identity_states[ticker] = identity_state
+        rows_by_identity_state[identity_state] += 1
         dimensions[dimension] += 1
         for field in ("datekey", "calendardate", "reportperiod", "lastupdated"):
             _update_range(profile, field, row.get(field))
@@ -269,13 +352,21 @@ def _profile_fundamentals(
             as_reported_rows += 1
             if row["datekey"] < row["reportperiod"]:
                 raise ValueError("Sharadar as-reported row predates its report period")
+    identity_state_counts = Counter(ticker_identity_states.values())
     profile.update(
         {
             "unique_tickers": len(tickers),
             "dimension_counts": dict(sorted(dimensions.items())),
             "as_reported_rows": as_reported_rows,
-            "tickers_missing_sf1_identity": sum(
-                ("SF1", ticker) not in master for ticker in tickers
+            "identity_state_counts": dict(sorted(identity_state_counts.items())),
+            "rows_by_identity_state": dict(sorted(rows_by_identity_state.items())),
+            "tickers_missing_sf1_identity": identity_state_counts[IDENTITY_MISSING],
+            "tickers_ambiguous_sf1_identity": identity_state_counts[
+                IDENTITY_AMBIGUOUS
+            ],
+            "structural_identity_join_ready": (
+                identity_state_counts[IDENTITY_MISSING] == 0
+                and identity_state_counts[IDENTITY_AMBIGUOUS] == 0
             ),
         }
     )
@@ -303,11 +394,20 @@ def build_foundation_profile(
         "fundamentals": _profile_fundamentals(root, by_table["fundamentals"], master),
     }
     stocks = tables["stocks"]
-    structural_identity_gaps = (
+    structural_identity_missing = (
         stocks["tickers_missing_sep_identity"]
         + tables["actions"]["tickers_missing_any_tradable_identity"]
         + tables["sp500"]["tickers_missing_any_tradable_identity"]
         + tables["fundamentals"]["tickers_missing_sf1_identity"]
+    )
+    structural_identity_ambiguous = (
+        stocks["tickers_ambiguous_sep_identity"]
+        + tables["actions"]["tickers_ambiguous_any_tradable_identity"]
+        + tables["sp500"]["tickers_ambiguous_any_tradable_identity"]
+        + tables["fundamentals"]["tickers_ambiguous_sf1_identity"]
+    )
+    structural_identity_gaps = (
+        structural_identity_missing + structural_identity_ambiguous
     )
     material: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
@@ -326,7 +426,10 @@ def build_foundation_profile(
         "row_shape_verified": True,
         "lexical_date_validity_verified": True,
         "basic_ohlcv_invariants_verified": True,
+        "structural_identity_missing_count": structural_identity_missing,
+        "structural_identity_ambiguous_count": structural_identity_ambiguous,
         "structural_identity_gap_count": structural_identity_gaps,
+        "structural_identity_join_ready": structural_identity_gaps == 0,
         "observed_stock_date_span_days": (
             date.fromisoformat(stocks["max_date"])
             - date.fromisoformat(stocks["min_date"])
