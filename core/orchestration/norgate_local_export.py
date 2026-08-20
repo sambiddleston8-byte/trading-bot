@@ -32,11 +32,16 @@ from core.orchestration.historical_role_cutoff import (
 PROVIDER_ID = "NORGATE"
 DATASET_ID = "NORGATE_US_STOCKS_PLATINUM_LOCAL_V1"
 EXPORT_CONTRACT = "NORGATE_LOCAL_EXPORT_V1"
+UNIVERSE_CATALOG_CONTRACT = "NORGATE_LOCAL_UNIVERSE_CATALOG_V1"
 BAR_ROLE = "RAW_DAILY_SESSION_BARS"
 MEMBERSHIP_ROLE = "POINT_IN_TIME_SUPPLEMENTAL_PROVIDER_EVIDENCE"
 INDEX_NAME = "S&P 500"
+UNIVERSE_WATCHLIST_NAME = "S&P 500 Current & Past"
+UNIVERSE_DATABASE_NAME = "US Equities"
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_RECORDS = 200_000
+MAX_UNIVERSE_CATALOG_BYTES = 8 * 1024 * 1024
+MAX_UNIVERSE_CATALOG_ENTRIES = 5_000
 MAX_CAPTURE_SHARDS = 100
 MAX_CAPTURE_SYMBOLS = 10_000
 MAX_CAPTURE_BYTES = 256 * 1024 * 1024
@@ -44,6 +49,7 @@ MAX_CAPTURE_RECORDS = 500_000
 _STAGING_AUTHORITY = object()
 _DETERMINISM_AUTHORITY = object()
 _CAPTURE_MANIFEST_AUTHORITY = object()
+_UNIVERSE_CATALOG_AUTHORITY = object()
 _SYMBOL_PATTERN = re.compile(r"[A-Z0-9][A-Z0-9.\-/]{0,31}")
 _VERSION_PATTERN = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 _TOP_LEVEL_FIELDS = frozenset(
@@ -88,6 +94,27 @@ _ROW_FIELDS = frozenset(
         "sp500_constituent",
     }
 )
+_UNIVERSE_CATALOG_FIELDS = frozenset(
+    {
+        "schema_version",
+        "export_contract",
+        "provider_id",
+        "provider_dataset_id",
+        "norgatedata_package_version",
+        "database_name",
+        "database_update_at",
+        "watchlist_name",
+        "watchlist_semantics_basis",
+        "exported_at",
+        "license_restricted_provider_data",
+        "source_code_repository_storage_allowed",
+        "entry_count",
+        "entries_sha256",
+        "reused_symbols",
+        "entries",
+    }
+)
+_UNIVERSE_ENTRY_FIELDS = frozenset({"asset_id", "symbol", "security_name"})
 SAFETY_FLAG_NAMES = (
     "quarantine_capture_bound",
     "provider_payload_semantics_qualified",
@@ -105,6 +132,11 @@ SAFETY_FLAG_NAMES = (
     "broker_connection_allowed",
     "orders_submitted",
     "live_trading_enabled",
+)
+UNIVERSE_CATALOG_SAFETY_FLAG_NAMES = SAFETY_FLAG_NAMES + (
+    "provider_watchlist_semantics_qualified",
+    "provider_watchlist_completeness_proven",
+    "security_master_admission_allowed",
 )
 
 
@@ -340,6 +372,119 @@ def parse_norgate_local_export(payload: bytes) -> tuple[Mapping[str, Any], ...]:
 
     _, rows = _parse_export(payload)
     return rows
+
+
+def _parse_universe_catalog(
+    payload: bytes,
+) -> tuple[Mapping[str, Any], tuple[Mapping[str, Any], ...]]:
+    if (
+        not isinstance(payload, bytes)
+        or not payload
+        or len(payload) > MAX_UNIVERSE_CATALOG_BYTES
+    ):
+        raise ValueError("Norgate universe catalog must contain bounded nonempty bytes")
+    root = _strict_json(payload)
+    if not isinstance(root, Mapping) or set(root) != _UNIVERSE_CATALOG_FIELDS:
+        raise ValueError(
+            "Norgate universe catalog has missing or unsupported top-level fields"
+        )
+    expected = {
+        "schema_version": "1.0",
+        "export_contract": UNIVERSE_CATALOG_CONTRACT,
+        "provider_id": PROVIDER_ID,
+        "provider_dataset_id": DATASET_ID,
+        "database_name": UNIVERSE_DATABASE_NAME,
+        "watchlist_name": UNIVERSE_WATCHLIST_NAME,
+        "watchlist_semantics_basis": (
+            "PROVIDER_NAMED_CURRENT_AND_PAST_WATCHLIST_UNQUALIFIED"
+        ),
+    }
+    for name, required in expected.items():
+        if root.get(name) != required:
+            raise ValueError(f"Norgate universe catalog {name} is unsupported")
+    package_version = _text(
+        root.get("norgatedata_package_version"),
+        "norgatedata_package_version",
+        maximum=30,
+    )
+    if _VERSION_PATTERN.fullmatch(package_version) is None:
+        raise ValueError("Norgate package version must be canonical")
+    database_update_at = _canonical_timestamp(
+        root.get("database_update_at"), "database_update_at"
+    )
+    exported_at = _canonical_timestamp(root.get("exported_at"), "exported_at")
+    if database_update_at > exported_at:
+        raise ValueError("Norgate database update cannot postdate catalog export")
+    if root.get("license_restricted_provider_data") is not True:
+        raise ValueError("Norgate provider data must remain license restricted")
+    if root.get("source_code_repository_storage_allowed") is not False:
+        raise ValueError("Norgate universe entries cannot be stored in source control")
+    entries = root.get("entries")
+    entry_count = root.get("entry_count")
+    if (
+        not isinstance(entries, list)
+        or not entries
+        or len(entries) > MAX_UNIVERSE_CATALOG_ENTRIES
+        or isinstance(entry_count, bool)
+        or not isinstance(entry_count, int)
+        or entry_count != len(entries)
+    ):
+        raise ValueError("Norgate universe entries must be a bounded counted list")
+    parsed: list[Mapping[str, Any]] = []
+    for value in entries:
+        if not isinstance(value, Mapping) or set(value) != _UNIVERSE_ENTRY_FIELDS:
+            raise ValueError("Norgate universe entry fields are unsupported")
+        asset_id = value.get("asset_id")
+        if isinstance(asset_id, bool) or not isinstance(asset_id, int) or asset_id <= 0:
+            raise ValueError("universe asset_id must be a positive stable identifier")
+        symbol = _text(value.get("symbol"), "universe symbol", maximum=32)
+        if _SYMBOL_PATTERN.fullmatch(symbol) is None:
+            raise ValueError("universe symbol must be a canonical U.S. stock symbol")
+        security_name = _text(
+            value.get("security_name"), "universe security_name", maximum=300
+        )
+        parsed.append(
+            MappingProxyType(
+                {
+                    "asset_id": asset_id,
+                    "symbol": symbol,
+                    "security_name": security_name,
+                }
+            )
+        )
+    asset_ids = [entry["asset_id"] for entry in parsed]
+    if asset_ids != sorted(asset_ids) or len(asset_ids) != len(set(asset_ids)):
+        raise ValueError("Norgate universe entries must have ordered unique asset IDs")
+    assets_by_symbol: dict[str, set[int]] = {}
+    for entry in parsed:
+        assets_by_symbol.setdefault(entry["symbol"], set()).add(entry["asset_id"])
+    expected_reused = sorted(
+        symbol for symbol, values in assets_by_symbol.items() if len(values) > 1
+    )
+    if root.get("reused_symbols") != expected_reused:
+        raise ValueError("Norgate universe reused_symbols does not match entries")
+    canonical_entries = [dict(entry) for entry in parsed]
+    entries_sha256 = hashlib.sha256(
+        json.dumps(
+            canonical_entries,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    if root.get("entries_sha256") != entries_sha256:
+        raise ValueError("Norgate universe entry hash does not match exact entries")
+    return MappingProxyType(dict(root)), tuple(parsed)
+
+
+def parse_norgate_local_universe_catalog(
+    payload: bytes,
+) -> tuple[Mapping[str, Any], ...]:
+    """Parse a provider-named identity catalog without qualifying its semantics."""
+
+    _, entries = _parse_universe_catalog(payload)
+    return entries
 
 
 @dataclass(frozen=True, slots=True)
@@ -836,6 +981,99 @@ def compare_norgate_same_vintage_exports(
 
 
 @dataclass(frozen=True, slots=True)
+class NorgateLocalUniverseCatalogEvidence:
+    retrieved_at: str
+    exported_at: str
+    database_name: str
+    database_update_at: str
+    norgatedata_package_version: str
+    entries: tuple[Mapping[str, Any], ...]
+    source_payload_sha256: str
+    entries_sha256: str
+    catalog_evidence_sha256: str
+    reused_symbols: tuple[str, ...]
+    license_restricted_provider_data: bool = True
+    source_code_repository_storage_allowed: bool = False
+    quarantine_capture_bound: bool = False
+    provider_payload_semantics_qualified: bool = False
+    source_bytes_authenticated: bool = False
+    historical_ticker_history_qualified: bool = False
+    historical_availability_qualified: bool = False
+    coverage_completeness_proven: bool = False
+    observation_selection_validated: bool = False
+    role_coverage_validated: bool = False
+    engine_input_ready: bool = False
+    performance_use_allowed: bool = False
+    replay_executed: bool = False
+    validation_accessed: bool = False
+    test_accessed: bool = False
+    broker_connection_allowed: bool = False
+    orders_submitted: bool = False
+    live_trading_enabled: bool = False
+    provider_watchlist_semantics_qualified: bool = False
+    provider_watchlist_completeness_proven: bool = False
+    security_master_admission_allowed: bool = False
+    _authority: object = field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self._authority is not _UNIVERSE_CATALOG_AUTHORITY:
+            raise PermissionError(
+                "NorgateLocalUniverseCatalogEvidence must be issued by the stager"
+            )
+        object.__setattr__(self, "_authority", None)
+        if not self.entries:
+            raise ValueError("Norgate universe catalog evidence cannot be empty")
+        if (
+            self.license_restricted_provider_data is not True
+            or self.source_code_repository_storage_allowed is not False
+        ):
+            raise ValueError("Norgate universe catalog license markings were altered")
+        if any(
+            getattr(self, name) is not False
+            for name in UNIVERSE_CATALOG_SAFETY_FLAG_NAMES
+        ):
+            raise ValueError("Norgate universe catalog safety flags were altered")
+
+    def __reduce__(self) -> Any:
+        raise TypeError("Norgate universe catalog evidence is deliberately not pickleable")
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "provider_id": PROVIDER_ID,
+            "provider_dataset_id": DATASET_ID,
+            "catalog_scope": (
+                "CURRENT_DATABASE_VINTAGE_PROVIDER_NAMED_WATCHLIST_UNQUALIFIED"
+            ),
+            "watchlist_name": UNIVERSE_WATCHLIST_NAME,
+            "watchlist_semantics_basis": (
+                "PROVIDER_NAMED_CURRENT_AND_PAST_WATCHLIST_UNQUALIFIED"
+            ),
+            "retrieved_at": self.retrieved_at,
+            "exported_at": self.exported_at,
+            "database_name": self.database_name,
+            "database_update_at": self.database_update_at,
+            "norgatedata_package_version": self.norgatedata_package_version,
+            "entry_count": len(self.entries),
+            "asset_id_min": min(entry["asset_id"] for entry in self.entries),
+            "asset_id_max": max(entry["asset_id"] for entry in self.entries),
+            "reused_symbol_count": len(self.reused_symbols),
+            "source_payload_sha256": self.source_payload_sha256,
+            "entries_sha256": self.entries_sha256,
+            "catalog_evidence_sha256": self.catalog_evidence_sha256,
+            "license_restricted_provider_data": (
+                self.license_restricted_provider_data
+            ),
+            "source_code_repository_storage_allowed": (
+                self.source_code_repository_storage_allowed
+            ),
+            **{
+                name: getattr(self, name)
+                for name in UNIVERSE_CATALOG_SAFETY_FLAG_NAMES
+            },
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class NorgateLocalExportSource:
     retrieved_at: str | datetime
     payload_bytes: bytes
@@ -858,6 +1096,67 @@ class NorgateLocalExportSource:
             "CALLER_SUPPLIED_UNQUALIFIED",
         }:
             raise ValueError("receipt_timestamp_basis is unsupported")
+
+
+def stage_norgate_local_universe_catalog(
+    source: NorgateLocalExportSource,
+) -> NorgateLocalUniverseCatalogEvidence:
+    """Hash a local watchlist catalog while withholding every admission authority."""
+
+    if not isinstance(source, NorgateLocalExportSource):
+        raise ValueError("source must be a NorgateLocalExportSource")
+    root, entries = _parse_universe_catalog(source.payload_bytes)
+    exported_at = _canonical_timestamp(root["exported_at"], "exported_at")
+    if exported_at > source.retrieved_at:
+        raise ValueError("Norgate universe catalog cannot postdate local retrieval")
+    source_payload_sha256 = hashlib.sha256(source.payload_bytes).hexdigest()
+    entries_sha256 = str(root["entries_sha256"])
+    evidence_material = {
+        "provider_id": PROVIDER_ID,
+        "provider_dataset_id": DATASET_ID,
+        "export_contract": UNIVERSE_CATALOG_CONTRACT,
+        "watchlist_name": UNIVERSE_WATCHLIST_NAME,
+        "watchlist_semantics_basis": root["watchlist_semantics_basis"],
+        "retrieved_at": source.retrieved_at,
+        "receipt_timestamp_basis": source.receipt_timestamp_basis,
+        "exported_at": exported_at,
+        "database_name": root["database_name"],
+        "database_update_at": _canonical_timestamp(
+            root["database_update_at"], "database_update_at"
+        ),
+        "norgatedata_package_version": root["norgatedata_package_version"],
+        "entry_count": len(entries),
+        "source_payload_sha256": source_payload_sha256,
+        "entries_sha256": entries_sha256,
+        "reused_symbols": list(root["reused_symbols"]),
+        "license_restricted_provider_data": True,
+        "source_code_repository_storage_allowed": False,
+        "safety_flags": {
+            name: False for name in UNIVERSE_CATALOG_SAFETY_FLAG_NAMES
+        },
+    }
+    catalog_evidence_sha256 = hashlib.sha256(
+        json.dumps(
+            evidence_material,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    return NorgateLocalUniverseCatalogEvidence(
+        retrieved_at=str(source.retrieved_at),
+        exported_at=exported_at,
+        database_name=str(root["database_name"]),
+        database_update_at=str(evidence_material["database_update_at"]),
+        norgatedata_package_version=str(root["norgatedata_package_version"]),
+        entries=entries,
+        source_payload_sha256=source_payload_sha256,
+        entries_sha256=entries_sha256,
+        catalog_evidence_sha256=catalog_evidence_sha256,
+        reused_symbols=tuple(root["reused_symbols"]),
+        _authority=_UNIVERSE_CATALOG_AUTHORITY,
+    )
 
 
 @dataclass(frozen=True, slots=True)
