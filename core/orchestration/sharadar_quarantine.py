@@ -44,6 +44,7 @@ PROVIDER_ID = "SHARADAR"
 BASE_URL = "https://api.sharadar.com"
 API_PATH_PREFIX = "/v1.0/data/"
 POLICY_VERSION = "sharadar-bounded-connectivity-quarantine-v1"
+FOUNDATION_OBSERVATION_POLICY_VERSION = "sharadar-foundation-observation-v1"
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
 MAX_ROWS = 25
 MAX_HEADERS = 100
@@ -1286,7 +1287,132 @@ def persist_bulk_capture(
     return _append_ledger(
         root / "bulk_captures.jsonl",
         material,
-        duplicate_identity=("table", "payload_sha256"),
+        duplicate_identity=("table", "payload_sha256", "status_payload_sha256"),
+    )
+
+
+def _observation_material(
+    statuses: tuple[SharadarBulkStatus, ...],
+    records: tuple[Mapping[str, Any], ...],
+    *,
+    downloaded_by_table: Mapping[str, bool],
+    origin: str,
+) -> dict[str, Any]:
+    if origin not in {"CAPTURE_RUN", "CAPTURE_RECORD_BASELINE"}:
+        raise ValueError("Sharadar foundation observation origin is invalid")
+    status_by_table = {status.table: status for status in statuses}
+    record_by_table = {str(record.get("table")): record for record in records}
+    expected = set(TEN_YEAR_TABLES)
+    if (
+        len(statuses) != len(TEN_YEAR_TABLES)
+        or len(records) != len(TEN_YEAR_TABLES)
+        or set(status_by_table) != expected
+        or set(record_by_table) != expected
+        or set(downloaded_by_table) != expected
+        or any(type(value) is not bool for value in downloaded_by_table.values())
+    ):
+        raise ValueError("Sharadar foundation observation is incomplete")
+    for table in TEN_YEAR_TABLES:
+        status = status_by_table[table]
+        record = record_by_table[table]
+        if (
+            status.history != FOUNDATION_HISTORY[table]
+            or record.get("history") != FOUNDATION_HISTORY[table]
+            or record.get("provider_id") != PROVIDER_ID
+        ):
+            raise ValueError("Sharadar foundation observation is inconsistent")
+    started = min(status.requested_at for status in statuses)
+    bytes_verified_at = {
+        table: (
+            str(record_by_table[table]["retrieved_at"])
+            if downloaded_by_table[table]
+            else status_by_table[table].retrieved_at
+        )
+        for table in TEN_YEAR_TABLES
+    }
+    completed = max(bytes_verified_at.values())
+    return {
+        "policy_version": FOUNDATION_OBSERVATION_POLICY_VERSION,
+        "provider_id": PROVIDER_ID,
+        "record_type": "SHARADAR_FOUNDATION_OBSERVATION",
+        "origin": origin,
+        "observation_started_at": started,
+        "observation_completed_at": completed,
+        "capture_record_hashes": {
+            table: str(record_by_table[table]["record_hash"])
+            for table in sorted(expected)
+        },
+        "capture_payload_sha256": {
+            table: str(record_by_table[table]["payload_sha256"])
+            for table in sorted(expected)
+        },
+        "status_payload_sha256": {
+            table: status_by_table[table].payload_sha256
+            for table in sorted(expected)
+        },
+        "status_modified_opaque": {
+            table: status_by_table[table].modified for table in sorted(expected)
+        },
+        "status_requested_at": {
+            table: status_by_table[table].requested_at for table in sorted(expected)
+        },
+        "status_retrieved_at": {
+            table: status_by_table[table].retrieved_at for table in sorted(expected)
+        },
+        "downloaded_by_table": {
+            table: downloaded_by_table[table] for table in sorted(expected)
+        },
+        "bytes_verified_at": {
+            table: bytes_verified_at[table] for table in sorted(expected)
+        },
+        "referenced_capture_bytes_reverified": True,
+        "status_modified_is_opaque": True,
+        "historical_availability_qualified": False,
+        "license_restricted": True,
+        "quarantine_only": True,
+        **{name: False for name in SAFETY_FALSE},
+    }
+
+
+def persist_foundation_observation(
+    root: Path,
+    statuses: tuple[SharadarBulkStatus, ...],
+    records: tuple[Mapping[str, Any], ...],
+    *,
+    downloaded_by_table: Mapping[str, bool],
+    origin: str = "CAPTURE_RUN",
+) -> Mapping[str, Any]:
+    """Bind one ordered five-table status observation to verified archives."""
+
+    if not isinstance(root, Path):
+        raise TypeError("root must be a Path")
+    _private_directory(root)
+    known_records = {
+        str(record.get("record_hash")): record
+        for record in _read_ledger(root / "bulk_captures.jsonl")
+    }
+    for record in records:
+        known = known_records.get(str(record.get("record_hash")))
+        if (
+            known is None
+            or known.get("table") != record.get("table")
+            or known.get("payload_sha256") != record.get("payload_sha256")
+        ):
+            raise ValueError("Sharadar foundation observation capture is unavailable")
+    material = _observation_material(
+        statuses,
+        records,
+        downloaded_by_table=downloaded_by_table,
+        origin=origin,
+    )
+    return _append_ledger(
+        root / "foundation_observations.jsonl",
+        material,
+        duplicate_identity=(
+            "observation_completed_at",
+            "capture_record_hashes",
+            "status_payload_sha256",
+        ),
     )
 
 
@@ -1336,37 +1462,15 @@ def _existing_bulk_record(
     return None
 
 
-def load_verified_bulk_captures(
-    repository_root: Path,
+def _verify_bulk_capture_selection(
+    root: Path,
+    selected: Mapping[str, Mapping[str, Any]],
 ) -> tuple[Mapping[str, Any], ...]:
-    """Reverify one exact five-table quarantine foundation without network I/O.
-
-    This is an integrity boundary only. It authenticates the locally captured
-    bytes against their append-only records and rechecks the ZIP/header shape;
-    it does not qualify provider semantics, coverage, PIT availability, or any
-    downstream replay/admission authority.
-    """
-
-    if not isinstance(repository_root, Path):
-        raise TypeError("repository_root must be a Path")
-    root = repository_root / QUARANTINE_RELATIVE_PATH
-    if not root.exists():
-        raise ValueError("Sharadar bulk quarantine is missing")
-    _private_directory(root)
-    records = _read_ledger(root / "bulk_captures.jsonl")
-    if any(record.get("table") not in TEN_YEAR_TABLES for record in records):
-        raise ValueError("Sharadar bulk quarantine contains an unsupported table")
-    newest: dict[str, Mapping[str, Any]] = {}
-    for record in reversed(records):
-        table = record.get("table")
-        if isinstance(table, str) and table not in newest:
-            newest[table] = record
-    if set(newest) != set(TEN_YEAR_TABLES):
+    if set(selected) != set(TEN_YEAR_TABLES):
         raise ValueError("Sharadar bulk quarantine is missing a foundation table")
-
     verified: list[Mapping[str, Any]] = []
     for table in TEN_YEAR_TABLES:
-        record = newest[table]
+        record = selected[table]
         history = FOUNDATION_HISTORY[table]
         payload_sha256 = record.get("payload_sha256")
         byte_length = record.get("byte_length")
@@ -1420,6 +1524,207 @@ def load_verified_bulk_captures(
             raise ValueError("Sharadar bulk quarantine archive failed verification")
         verified.append(MappingProxyType(dict(record)))
     return tuple(verified)
+
+
+def load_verified_bulk_capture_set(
+    repository_root: Path,
+    record_hashes: Mapping[str, str],
+) -> tuple[Mapping[str, Any], ...]:
+    """Reverify the exact five capture records named by a vintage observation."""
+
+    if not isinstance(repository_root, Path) or not isinstance(record_hashes, Mapping):
+        raise TypeError("repository_root and record_hashes have invalid types")
+    if (
+        set(record_hashes) != set(TEN_YEAR_TABLES)
+        or any(
+            not isinstance(value, str) or _SHA256_PATTERN.fullmatch(value) is None
+            for value in record_hashes.values()
+        )
+    ):
+        raise ValueError("Sharadar bulk capture selection is invalid")
+    root = repository_root / QUARANTINE_RELATIVE_PATH
+    if not root.exists():
+        raise ValueError("Sharadar bulk quarantine is missing")
+    _private_directory(root)
+    records = _read_ledger(root / "bulk_captures.jsonl")
+    by_hash = {str(record.get("record_hash")): record for record in records}
+    selected: dict[str, Mapping[str, Any]] = {}
+    for table in TEN_YEAR_TABLES:
+        record = by_hash.get(record_hashes[table])
+        if record is None or record.get("table") != table:
+            raise ValueError("Sharadar bulk capture selection is unavailable")
+        selected[table] = record
+    return _verify_bulk_capture_selection(root, selected)
+
+
+def load_verified_bulk_captures(
+    repository_root: Path,
+) -> tuple[Mapping[str, Any], ...]:
+    """Reverify the newest exact five-table foundation without network I/O."""
+
+    if not isinstance(repository_root, Path):
+        raise TypeError("repository_root must be a Path")
+    root = repository_root / QUARANTINE_RELATIVE_PATH
+    if not root.exists():
+        raise ValueError("Sharadar bulk quarantine is missing")
+    _private_directory(root)
+    records = _read_ledger(root / "bulk_captures.jsonl")
+    if any(record.get("table") not in TEN_YEAR_TABLES for record in records):
+        raise ValueError("Sharadar bulk quarantine contains an unsupported table")
+    newest: dict[str, Mapping[str, Any]] = {}
+    for record in reversed(records):
+        table = record.get("table")
+        if isinstance(table, str) and table not in newest:
+            newest[table] = record
+    return _verify_bulk_capture_selection(root, newest)
+
+
+def _validate_foundation_observation(
+    record: Mapping[str, Any],
+    capture_records: Mapping[str, Mapping[str, Any]],
+) -> Mapping[str, Any]:
+    expected = set(TEN_YEAR_TABLES)
+    mapping_fields = (
+        "capture_record_hashes",
+        "capture_payload_sha256",
+        "status_payload_sha256",
+        "status_modified_opaque",
+        "status_requested_at",
+        "status_retrieved_at",
+        "downloaded_by_table",
+        "bytes_verified_at",
+    )
+    if (
+        record.get("policy_version") != FOUNDATION_OBSERVATION_POLICY_VERSION
+        or record.get("provider_id") != PROVIDER_ID
+        or record.get("record_type") != "SHARADAR_FOUNDATION_OBSERVATION"
+        or record.get("origin") not in {"CAPTURE_RUN", "CAPTURE_RECORD_BASELINE"}
+        or record.get("referenced_capture_bytes_reverified") is not True
+        or record.get("status_modified_is_opaque") is not True
+        or record.get("historical_availability_qualified") is not False
+        or record.get("license_restricted") is not True
+        or record.get("quarantine_only") is not True
+        or any(record.get(name) is not False for name in SAFETY_FALSE)
+        or any(
+            not isinstance(record.get(name), Mapping)
+            or set(record[name]) != expected
+            for name in mapping_fields
+        )
+    ):
+        raise ValueError("Sharadar foundation observation is invalid")
+    raw_started = record.get("observation_started_at")
+    raw_completed = record.get("observation_completed_at")
+    started = _canonical_timestamp(raw_started, "observation_started_at")
+    completed = _canonical_timestamp(raw_completed, "observation_completed_at")
+    if raw_started != started or raw_completed != completed or completed < started:
+        raise ValueError("Sharadar foundation observation clock moved backwards")
+    record_hashes = record["capture_record_hashes"]
+    requested_times: list[str] = []
+    for table in TEN_YEAR_TABLES:
+        raw_requested = record["status_requested_at"][table]
+        raw_retrieved = record["status_retrieved_at"][table]
+        raw_verified_at = record["bytes_verified_at"][table]
+        requested = _canonical_timestamp(raw_requested, "status_requested_at")
+        retrieved = _canonical_timestamp(raw_retrieved, "status_retrieved_at")
+        verified_at = _canonical_timestamp(raw_verified_at, "bytes_verified_at")
+        requested_times.append(requested)
+        status_hash = record["status_payload_sha256"][table]
+        capture_hash = record_hashes[table]
+        payload_hash = record["capture_payload_sha256"][table]
+        modified = record["status_modified_opaque"][table]
+        capture_record = (
+            capture_records.get(capture_hash)
+            if isinstance(capture_hash, str)
+            else None
+        )
+        if (
+            retrieved < requested
+            or raw_requested != requested
+            or raw_retrieved != retrieved
+            or raw_verified_at != verified_at
+            or requested < started
+            or verified_at < retrieved
+            or verified_at > completed
+            or not isinstance(modified, str)
+            or not modified
+            or len(modified) > 200
+            or any(ord(character) < 32 for character in modified)
+            or not isinstance(status_hash, str)
+            or _SHA256_PATTERN.fullmatch(status_hash) is None
+            or not isinstance(capture_hash, str)
+            or _SHA256_PATTERN.fullmatch(capture_hash) is None
+            or not isinstance(payload_hash, str)
+            or _SHA256_PATTERN.fullmatch(payload_hash) is None
+            or type(record["downloaded_by_table"][table]) is not bool
+            or capture_record is None
+            or capture_record.get("table") != table
+            or capture_record.get("payload_sha256") != payload_hash
+        ):
+            raise ValueError("Sharadar foundation observation is invalid")
+    if started != min(requested_times) or completed != max(
+        record["bytes_verified_at"].values()
+    ):
+        raise ValueError("Sharadar foundation observation envelope is invalid")
+    return MappingProxyType(dict(record))
+
+
+def load_verified_foundation_observations(
+    repository_root: Path,
+) -> tuple[Mapping[str, Any], ...]:
+    """Load immutable aggregate-only capture-set observations."""
+
+    if not isinstance(repository_root, Path):
+        raise TypeError("repository_root must be a Path")
+    root = repository_root / QUARANTINE_RELATIVE_PATH
+    if not root.exists():
+        raise ValueError("Sharadar bulk quarantine is missing")
+    _private_directory(root)
+    records = _read_ledger(root / "foundation_observations.jsonl")
+    capture_records = {
+        str(record.get("record_hash")): record
+        for record in _read_ledger(root / "bulk_captures.jsonl")
+    }
+    return tuple(
+        _validate_foundation_observation(record, capture_records)
+        for record in records
+    )
+
+
+def ensure_foundation_baseline_observation(
+    repository_root: Path,
+) -> Mapping[str, Any]:
+    """Bind pre-observation-ledger captures to their original status evidence."""
+
+    records = load_verified_bulk_captures(repository_root)
+    record_by_table = {str(record["table"]): record for record in records}
+    expected_hashes = {
+        table: str(record_by_table[table]["record_hash"])
+        for table in sorted(TEN_YEAR_TABLES)
+    }
+    for observation in load_verified_foundation_observations(repository_root):
+        if observation["capture_record_hashes"] == expected_hashes:
+            return observation
+    statuses = tuple(
+        SharadarBulkStatus(
+            table=table,
+            history=str(record_by_table[table]["status_history"]),
+            name=str(record_by_table[table]["name"]),
+            size=int(record_by_table[table]["size"]),
+            modified=str(record_by_table[table]["modified"]),
+            payload_sha256=str(record_by_table[table]["status_payload_sha256"]),
+            requested_at=str(record_by_table[table]["status_requested_at"]),
+            retrieved_at=str(record_by_table[table]["status_retrieved_at"]),
+            provider_access=record_by_table[table]["status_provider_access"],
+        )
+        for table in TEN_YEAR_TABLES
+    )
+    return persist_foundation_observation(
+        repository_root / QUARANTINE_RELATIVE_PATH,
+        statuses,
+        records,
+        downloaded_by_table={table: True for table in TEN_YEAR_TABLES},
+        origin="CAPTURE_RECORD_BASELINE",
+    )
 
 
 def execute_connectivity_capture(
@@ -1482,12 +1787,24 @@ def execute_ten_year_bulk_capture(
     )
     target = repository_root / QUARANTINE_RELATIVE_PATH
     records: list[Mapping[str, Any]] = []
+    statuses: list[SharadarBulkStatus] = []
+    downloaded_by_table: dict[str, bool] = {}
     for table in TEN_YEAR_TABLES:
         status = client.fetch_bulk_status(table)
+        statuses.append(status)
         existing = _existing_bulk_record(target, status)
         if existing is not None:
             records.append(existing)
+            downloaded_by_table[table] = False
             continue
         capture = client.download_ten_year_bulk(status=status, quarantine_root=target)
         records.append(persist_bulk_capture(target, capture))
-    return tuple(records)
+        downloaded_by_table[table] = True
+    result = tuple(records)
+    persist_foundation_observation(
+        target,
+        tuple(statuses),
+        result,
+        downloaded_by_table=downloaded_by_table,
+    )
+    return result
